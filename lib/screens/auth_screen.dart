@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../models/http_exception.dart';
 
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+
 enum AuthMode { Signup, Login }
 
 class AuthScreen extends StatelessWidget {
@@ -18,15 +20,18 @@ class AuthScreen extends StatelessWidget {
     // final transformConfig = Matrix4.rotationZ(-8 * pi / 180);
     // transformConfig.translate(-10.0);
     return Scaffold(
-      body: Container(
-        margin: MediaQuery.of(context).padding,
-        width: deviceSize.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            AuthCard(),
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          height: deviceSize.height * .88,
+          margin: MediaQuery.of(context).padding,
+          width: deviceSize.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              AuthCard(),
+            ],
+          ),
         ),
       ),
     );
@@ -89,9 +94,10 @@ class _AuthCardState extends State<AuthCard> {
       } else {
         // Sign user up
         await Provider.of<Auth>(context, listen: false).signup(
-          _authData['email'],
-          _authData['password'],
-        );
+            _authData['email'],
+            _authData['password'],
+            _authData['firstname'],
+            _authData['lastname']);
       }
     } on HttpException catch (error) {
       var errorMessage = 'Authentication failed';
@@ -134,8 +140,8 @@ class _AuthCardState extends State<AuthCard> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Container(
-      constraints:
-          BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+//      constraints:
+//          BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
       padding: EdgeInsets.all(16.0),
       child: Form(
         key: _formKey,
@@ -145,11 +151,13 @@ class _AuthCardState extends State<AuthCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                _authMode == AuthMode.Login ? 'Log In' : 'Sign Up',
+                _authMode == AuthMode.Login ? '      Log In' : '      Sign Up',
                 style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[700]),
+                  fontSize: 30,
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+//                    color: Colors.grey[700],
+                ),
               ),
               SizedBox(
                 height: 30,
@@ -166,7 +174,8 @@ class _AuthCardState extends State<AuthCard> {
                   validator: (value) {
                     if (value.isEmpty || !value.contains('@')) {
                       return 'Invalid email!';
-                    }
+                    } else
+                      return null; //Todo
                   },
                   onSaved: (value) {
                     _authData['email'] = value;
@@ -182,7 +191,25 @@ class _AuthCardState extends State<AuthCard> {
                       labelText: 'Name',
                       icon: Icon(Icons.person_outline),
                     ),
-                    validator: _authMode == AuthMode.Signup ? (value) {} : null,
+                    //validator: _authMode == AuthMode.Signup ? (value) {} : null,
+                    onSaved: (value) {
+                      _authData['firstname'] = value;
+                    },
+                  ),
+                ),
+              if (_authMode == AuthMode.Signup)
+                Container(
+                  width: deviceSize.width * 0.8,
+                  child: TextFormField(
+                    enabled: _authMode == AuthMode.Signup,
+                    decoration: InputDecoration(
+                      labelText: 'Surname',
+                      icon: Icon(Icons.person_outline),
+                    ),
+                    //validator: _authMode == AuthMode.Signup ? (value) {} : null,
+                    onSaved: (value) {
+                      _authData['lastname'] = value;
+                    },
                   ),
                 ),
               Container(
@@ -197,7 +224,8 @@ class _AuthCardState extends State<AuthCard> {
                   validator: (value) {
                     if (value.isEmpty || value.length < 5) {
                       return 'Password is too short!';
-                    }
+                    } else
+                      return null; //Todo
                   },
                   onSaved: (value) {
                     _authData['password'] = value;
@@ -218,7 +246,8 @@ class _AuthCardState extends State<AuthCard> {
                         ? (value) {
                             if (value != _passwordController.text) {
                               return 'Passwords do not match!';
-                            }
+                            } else
+                              return null; //Todo
                           }
                         : null,
                   ),
@@ -239,7 +268,7 @@ class _AuthCardState extends State<AuthCard> {
 //                ),
                     Text(
                       "Or",
-                      style: TextStyle(color: Colors.grey[600], fontSize: 20),
+                      style: TextStyle(color: Colors.grey[500], fontSize: 20),
                     ),
 //                Expanded(
 //                  child: new Container(
@@ -300,15 +329,15 @@ class _AuthCardState extends State<AuthCard> {
                         : 'Already a member?',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
-                  FlatButton(
+                  InkWell(
                     child: Text(
-                      '${_authMode == AuthMode.Login ? 'Sign up' : 'Log in'} ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      '${_authMode == AuthMode.Login ? ' Sign up' : ' Log in'} ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).accentColor),
                     ),
-                    onPressed: _switchAuthMode,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textColor: Theme.of(context).accentColor,
-                  )
+                    onTap: _switchAuthMode,
+                  ),
                 ],
               ),
               if (_authMode == AuthMode.Login)
@@ -319,15 +348,15 @@ class _AuthCardState extends State<AuthCard> {
                       'Forgot',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
-                    FlatButton(
+                    InkWell(
                       child: Text(
                         ' password ?',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).accentColor),
                       ),
-                      onPressed: _switchAuthMode,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      textColor: Theme.of(context).accentColor,
-                    )
+                      onTap: _switchAuthMode, //Todo
+                    ),
                   ],
                 ),
               if (_authMode == AuthMode.Signup)
@@ -335,18 +364,54 @@ class _AuthCardState extends State<AuthCard> {
                   height: 20,
                 ),
               if (_authMode == AuthMode.Signup)
-                Center(
-                  child: Container(
-                    width: deviceSize.width * 0.6,
-                    child: Text(
-                      "By creating an account, you agree to our Privacy Policy and Terms of use",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[500],
+                Column(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        width: deviceSize.width * 0.6,
+                        child: Text(
+                          "By creating an account, you agree to our ",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[500],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        InkWell(
+                          child: Text(
+                            ' Privacy Policy ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).accentColor,
+                                fontSize: 13),
+                          ),
+                          onTap: _switchAuthMode, //Todo
+                        ),
+                        Text(
+                          "and",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        InkWell(
+                          child: Text(
+                            ' Terms of use ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).accentColor,
+                                fontSize: 13),
+                          ),
+                          onTap: _switchAuthMode, //Todo
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
             ],
           ),

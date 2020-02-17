@@ -76,8 +76,57 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> signup(String email, String password) async {
-    return _authenticate(email, password, 'signupNewUser');
+  Future<void> signup(
+      String email, String password, String firstname, String lastname) async {
+    //return _authenticate(email, password, 'signupNewUser');
+
+    const url = "http://briddgy.herokuapp.com/api/users/";
+    try {
+      final response = await http.post(
+        url,
+        headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+        body: json.encode(
+          {
+            'email': email,
+            'password': password,
+            'password2': password,
+            'first_name': firstname,
+            'last_name': lastname,
+//            'returnSecureToken': true,
+          },
+        ),
+      );
+      final responseData = json.decode(response.body);
+//      final responseData = response.body;
+      print("Token: $responseData");
+//      if (responseData['error'] != null) {
+//        throw HttpException(responseData['error']['message']);
+//      }
+      _token = responseData;
+//      _token = responseData['idToken'];
+//      _userId = responseData['localId'];
+//      _expiryDate = DateTime.now().add(
+//        Duration(
+//          seconds: int.parse(
+//            responseData['expiresIn'],
+//          ),
+//        ),
+//      );
+//      _autoLogout();
+      notifyListeners();
+      final prefs = await SharedPreferences.getInstance();
+      final userData = json.encode(
+        {
+          'token': _token,
+//          'userId': _userId,
+//          'expiryDate': _expiryDate.toIso8601String(),
+        },
+      );
+      prefs.setString('userData', userData);
+    } catch (error) {
+      throw error;
+    }
+    //return _authenticate(email, password, 'verifyPassword');
   }
 
   Future<void> login(String email, String password) async {
