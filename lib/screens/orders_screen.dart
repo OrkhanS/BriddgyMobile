@@ -1,4 +1,5 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -104,202 +105,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       });
   }
 
-  Widget _searchBar() {
-    final deviceSize = MediaQuery.of(context).size;
-    return Container(
-      width: deviceSize.width,
-      margin: EdgeInsets.only(top: 3, left: 4, right: 4, bottom: 3),
-      height: 90,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        //color: Colors.lightBlueAccent,
-        boxShadow: [
-          BoxShadow(
-              color: Theme.of(context).primaryColor,
-              blurRadius: 30,
-              spreadRadius: 30)
-        ],
-      ),
-      child: Container(
-        child: Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.search,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.all(5),
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => _selectStartDate(context), //Todo
-                            child: Container(
-                              color: Colors.grey[200],
-//                              padding: EdgeInsets.all(5),
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    "From",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.white,
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => _selectStartDate(context), //Todo
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    "To",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.grey[200],
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.grey[200],
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => _selectStartDate(context), //Todo
-                            child: Container(
-                              color: Colors.white,
-//                              padding: EdgeInsets.all(5),
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    "From",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.grey[200],
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => _selectStartDate(context), //Todo
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                    "To",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.grey[200],
-                                    ),
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _orderItem() {
     return InkWell(
 //        onTap: Navigator.push(
@@ -363,6 +168,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
+  bool expanded = true;
   @override
   Widget build(BuildContext context) {
     print('oorderscreen'); //todo:delete
@@ -381,7 +187,160 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
       body: Column(
         children: <Widget>[
-          _searchBar(),
+          Form(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15)),
+                child: Container(
+//                  color: Theme.of(context).primaryColor,
+                  child: ExpansionTile(
+                    onExpansionChanged: (val) {
+                      val = !val;
+                    },
+                    //                    backgroundColor: Theme.of(context).backgroundColor,
+
+//                    backgroundColor: Theme.of(context).primaryColor,
+                    subtitle: Text("Source:  Destination: "),
+                    title: Text(
+                      "Configure Filtering",
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 20, right: 20, bottom: 20),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'From:',
+                                  //icon: Icon(Icons.place),
+                                ),
+                                keyboardType: TextInputType.text,
+//
+                                onSaved: (value) {
+//                        _authData['email'] = value;
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 20, right: 20, bottom: 20),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'To:',
+                                  //icon: Icon(Icons.location_on),
+                                ),
+
+                                keyboardType: TextInputType.text,
+//                      validator: (value) {
+//                        if (value.isEmpty || !value.contains('@')) {
+//                          return 'Invalid email!';
+//                        } else
+//                          return null; //Todo
+//                      },
+                                onSaved: (value) {
+//                        _authData['email'] = value;
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          RaisedButton(
+                            color: Colors.white,
+                            child: Text("Start Date",
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                )),
+                            onPressed: () => _selectStartDate(context),
+                          ),
+                          RaisedButton(
+                            color: Colors.white,
+                            child: Text("End Date",
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                )),
+                            onPressed: () => _selectStartDate(context),
+                          ),
+//                          DateTimeField(),
+                          RaisedButton(
+                            color: Theme.of(context).primaryColor,
+
+                            elevation: 8,
+//                            color: Theme.of(context).primaryColor,
+                            child: Text(
+                              "       Search         ",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: () {},
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                      ),
+                    ],
+                    initiallyExpanded: true,
+                  ),
+                ),
+              ),
+            ),
+          ),
+//          Padding(
+//            padding: const EdgeInsets.all(8),
+//            child: ClipRRect(
+//              borderRadius: BorderRadius.only(
+//                  topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+//              child: GestureDetector(
+//                onTap: () {
+////                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>{}));
+//                },
+//                child: Container(
+//                  padding: EdgeInsets.all(8),
+//                  height: 45,
+//                  color: Theme.of(context).primaryColor,
+//                  child: Row(
+//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                    children: <Widget>[
+//                      Icon(
+//                        Icons.arrow_drop_down,
+//                        color: Colors.white,
+//                      ),
+//                      Text(
+//                        "Configure Filtering",
+//                        style: TextStyle(
+//                            color: Colors.white,
+//                            fontWeight: FontWeight.bold,
+//                            fontSize: 20),
+//                      ),
+//                      Icon(
+//                        Icons.arrow_drop_down,
+//                        color: Colors.white,
+//                      ),
+//                    ],
+//                  ),
+//                ),
+//              ),
+//            ),
+//          ),
           Expanded(
             child: ListView(
               children: <Widget>[

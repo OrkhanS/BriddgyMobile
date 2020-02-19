@@ -197,7 +197,7 @@ class Auth with ChangeNotifier {
     return true;
   }
 
-  Future<void> logout() async {
+  Future<void> logout(context) async {
     _token = null;
 //    _userId = null;
 //    _expiryDate = null;
@@ -205,6 +205,7 @@ class Auth with ChangeNotifier {
 //      _authTimer.cancel();
 //      _authTimer = null;
 //    }
+    Navigator.of(context).pop();
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('userData');

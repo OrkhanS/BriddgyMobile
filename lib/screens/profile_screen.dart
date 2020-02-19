@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optisend/providers/pagectrl.dart';
 import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
@@ -75,6 +76,8 @@ List<Order> tasks = [
 ];
 
 class ProfileScreen extends StatelessWidget {
+//  final PageController pageController;
+//  ProfileScreen(this.pageController);
   @override
   Widget build(BuildContext context) {
     var auth = Provider.of<Auth>(context, listen: false);
@@ -104,45 +107,42 @@ class OrderRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: animation,
-      child: SizeTransition(
-        sizeFactor: animation,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Row(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32.0 - dotSize / 2),
-                child: Container(
-                  height: dotSize,
-                  width: dotSize,
-                  decoration:
-                      BoxDecoration(shape: BoxShape.circle, color: task.color),
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32.0 - dotSize / 2),
+              child: Container(
+                height: dotSize,
+                width: dotSize,
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: task.color),
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      task.name,
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    Text(
-                      task.category,
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                    )
-                  ],
-                ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    task.name,
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  Text(
+                    task.category,
+                    style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                  )
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Text(
-                  task.time,
-                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Text(
+                task.time,
+                style: TextStyle(fontSize: 12.0, color: Colors.grey),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -150,7 +150,9 @@ class OrderRow extends StatelessWidget {
 }
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key}) : super(key: key);
+//  final PageController pagectrl;
+//  MainPage(this.pagectrl);
+//  MainPage({Key key}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -169,6 +171,14 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+//    widget.pagectrl.animateToPage(1,
+//        duration: Duration(milliseconds: 200), curve: Curves.ease);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<ListTile> choices = <ListTile>[
       ListTile(
@@ -178,8 +188,7 @@ class _MainPageState extends State<MainPage> {
         ),
         title: Text("Logout"),
         onTap: () {
-          Navigator.of(context).pushReplacementNamed('/');
-          Provider.of<Auth>(context, listen: false).logout();
+          Provider.of<Auth>(context, listen: false).logout(context);
         },
       ),
       ListTile(
@@ -239,7 +248,7 @@ class _MainPageState extends State<MainPage> {
           fit: BoxFit.fill,
           height: _imageHeight,
           colorBlendMode: BlendMode.srcOver,
-          color: Color.fromARGB(120, 20, 10, 40),
+          color: Color.fromARGB(60, 20, 10, 50),
         ),
       ),
     );
@@ -253,7 +262,7 @@ class _MainPageState extends State<MainPage> {
           CircleAvatar(
             minRadius: 28.0,
             maxRadius: 28.0,
-            backgroundImage: AssetImage('images/avatar.jpg'),
+//            backgroundImage: AssetImage('images/avatar.jpg'), //todo: users photo
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
@@ -262,7 +271,7 @@ class _MainPageState extends State<MainPage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Gismat beleymish',
+                  'Gismat beleymish', //todo: users name
                   style: TextStyle(
                       fontSize: 26.0,
                       color: Colors.white,

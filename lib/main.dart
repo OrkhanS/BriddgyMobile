@@ -19,6 +19,7 @@ import './screens/profile_screen.dart';
 import './screens/add_screen.dart';
 import './screens/notification_screen.dart';
 import './screens/chats_screen.dart';
+import './screens/chat_window.dart';
 
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
@@ -99,15 +100,18 @@ class _MyAppState extends State<MyApp> {
             ),
             bottomNavigationBar: BottomNavigationBar(
               elevation: 4,
+              type: BottomNavigationBarType.fixed,
 
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              backgroundColor: Colors.black,
+//              backgroundColor: Colors.black,
               currentIndex: _currentIndex,
               selectedItemColor: Theme.of(context).primaryColor,
+
               unselectedItemColor: Colors.grey[500],
 
               //selectedIndex: _currentIndex,
-              //showElevation: true,
+              unselectedFontSize: 9,
+              selectedFontSize: 11,
 
               onTap: (index) {
                 setState(() => _currentIndex = index);
@@ -116,34 +120,41 @@ class _MyAppState extends State<MyApp> {
               },
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                    title: Text(''),
+                  title: Text('Add'),
 //                    textAlign: TextAlign.center,
 //                    inactiveColor: Colors.black45,
-                    icon: Icon(Icons.add)),
-                BottomNavigationBarItem(
-                  title: Text(''),
-//                  textAlign: TextAlign.end,
-//                  inactiveColor: Colors.black45,
-                  icon: Icon(Icons.search),
+                  icon: Icon(Icons.add),
                 ),
                 BottomNavigationBarItem(
-                  title: Text(''),
+                  title: Text('Search'),
+//                  textAlign: TextAlign.end,
+//                  inactiveColor: Colors.black45,
+                  icon: Icon(
+                    Icons.search,
+                  ),
+//                  activeIcon: Icon(Icons),
+                ),
+                BottomNavigationBarItem(
+                  title: Text('Chats'),
 //                  textAlign: TextAlign.center,
 //                  inactiveColor: Colors.black45,
                   icon: Icon(Icons.chat_bubble_outline),
+                  activeIcon: Icon(Icons.chat_bubble),
                 ),
                 BottomNavigationBarItem(
-                  title: Text(''),
+                  title: Text('Notifications'),
 //                  textAlign: TextAlign.center,
 //                  inactiveColor: Colors.black45,
                   icon: Icon(Icons.notifications_none),
+                  activeIcon: Icon(Icons.notifications),
                 ),
                 BottomNavigationBarItem(
-                  title: Text(''),
+                  title: Text('Profile'),
 //                  textAlign: TextAlign.center,
 //                  inactiveColor: Colors.black45,
                   //activeColor: Theme.of(context).accentColor,
                   icon: Icon(Icons.person_outline),
+                  activeIcon: Icon(Icons.person),
                 ),
               ],
             ),
@@ -197,6 +208,7 @@ class _MyAppState extends State<MyApp> {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
             EditProductScreen.routeName: (ctx) => EditProductScreen(),
+            ChatWindow.routeName: (ctx) => ChatWindow(),
           },
         );
       }),
