@@ -1,87 +1,11 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:optisend/screens/splash_screen.dart';
-import 'package:provider/provider.dart';
-
-import '../providers/orders.dart' show Orders;
-import '../widgets/order_item.dart';
-import '../widgets/app_drawer.dart';
-import '../widgets/bottom_navbar.dart';
-import 'profile_screen.dart';
-import 'add_screen.dart';
-import 'notification_screen.dart';
-import 'chats_screen.dart';
-
-//class OrdersScreen extends StatelessWidget {
-//  static const routeName = '/orders';
-//  var _selectedIndex = 1;
-//  @override
-//  Widget build(BuildContext context) {
-//    print('building orders');
-//    // final orderData = Provider.of<Orders>(context);
-//    return Scaffold(
-//        appBar: AppBar(
-//          title: Text('Your Orders'),
-//        ),
-//        drawer: AppDrawer(),
-//        bottomNavigationBar: BottomNavyBar(
-//          selectedIndex: _selectedIndex,
-//          showElevation: true, // use this to remove appBar's elevation
-//          onItemSelected: (index) => setState(() {
-//            _selectedIndex = index;
-//            _pageController.animateToPage(index,
-//                duration: Duration(milliseconds: 300), curve: Curves.ease);
-//          }),
-//          items: [
-//            BottomNavyBarItem(
-//              icon: Icon(Icons.apps),
-//              title: Text('Home'),
-//              activeColor: Colors.red,
-//            ),
-//            BottomNavyBarItem(
-//                icon: Icon(Icons.people),
-//                title: Text('Users'),
-//                activeColor: Colors.purpleAccent),
-//            BottomNavyBarItem(
-//                icon: Icon(Icons.message),
-//                title: Text('Messages'),
-//                activeColor: Colors.pink),
-//            BottomNavyBarItem(
-//                icon: Icon(Icons.settings),
-//                title: Text('Settings'),
-//                activeColor: Colors.blue),
-//          ],
-//        ),
-//        body: Center(child: Text("orders Screen"))
-////      FutureBuilder(
-////        future: Provider.of<Orders>(context, listen: false).fetchAndSetOrders(),
-////        builder: (ctx, dataSnapshot) {
-////          if (dataSnapshot.connectionState == ConnectionState.waiting) {
-////            return Center(child: CircularProgressIndicator());
-////          } else {
-////            if (dataSnapshot.error != null) {
-////              // ...
-////              // Do error handling stuff
-////              return Center(
-////                child: Text('An error occurred!'),
-////              );
-////            } else {
-////              return Consumer<Orders>(
-////                builder: (ctx, orderData, child) => ListView.builder(
-////                      itemCount: orderData.orders.length,
-////                      itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
-////                    ),
-////              );
-////            }
-////          }
-////        },
-////      ),
-//        );
-//  }
-//}
+import 'package:optisend/widgets/filter_panel.dart';
+import 'package:optisend/screens/item_screen.dart';
+import 'package:optisend/main.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
@@ -91,28 +15,23 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
 //  var deviceSize = MediaQuery.of(context).size;
+  bool expands = true;
+  String _startDate = "Starting from";
+  String _endDate = "Untill";
+  String _time = "Not set";
   DateTime startDate = DateTime.now();
 
-  Future<Null> _selectStartDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: startDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != startDate)
-      setState(() {
-        startDate = picked;
-      });
+  initState() {
+    super.initState();
   }
 
   Widget _orderItem() {
     return InkWell(
-//        onTap: Navigator.push(
-//          context,
-//          MaterialPageRoute(builder: (context) => _orderWindow()),
-//        );
+      onTap: () {
+        Navigator.pushNamed(context, ItemScreen.routeName);
+      },
       child: Container(
-        height: 130,
+        height: 140,
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Card(
           elevation: 4,
@@ -137,10 +56,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                     Row(
                       children: <Widget>[
-                        Icon(
-                          Icons.location_on,
-                          color: Colors.blue[200],
-                        ),
+//                        Icon(
+//                          Icons.location_on,
+//                          color: Colors.blue[200],
+//                        ),
                         Text(
                           "City1 - City2", //Todo: Source -> Destination
                           style: TextStyle(
@@ -168,11 +87,208 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  bool expanded = true;
+  Widget filterBar() {
+    return Form(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+          child: Container(
+            child: FilterPanel(
+              initiallyExpanded: expands,
+              onExpansionChanged: (val) {
+                val = !val;
+              },
+              subtitle: Text("Source:  Destination: "),
+              title: Text(
+                "Configure Filtering",
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'From:',
+                            //icon: Icon(Icons.place),
+                          ),
+                          keyboardType: TextInputType.text,
+//
+                          onSaved: (value) {
+//                        _authData['email'] = value;
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'To:',
+                            //icon: Icon(Icons.location_on),
+                          ),
+
+                          keyboardType: TextInputType.text,
+//                      validator: (value) {
+//                        if (value.isEmpty || !value.contains('@')) {
+//                          return 'Invalid email!';
+//                        } else
+//                          return null; //Todo
+//                      },
+                          onSaved: (value) {
+//                        _authData['email'] = value;
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(
+                      "Range:",
+                      style: TextStyle(
+                        color: Colors.grey[700],
+                        fontSize: 15,
+                      ),
+                    ),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0)),
+                      elevation: 4.0,
+                      onPressed: () {
+                        DatePicker.showDatePicker(context,
+                            theme: DatePickerTheme(
+                              itemStyle: TextStyle(color: Colors.blue[800]),
+                              containerHeight: 300.0,
+                            ),
+                            showTitleActions: true,
+                            minTime: DateTime(2015, 1, 1),
+                            maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
+                          print('confirm $date'); //todo: delete
+                          _startDate =
+                              '${date.day}/${date.month}/${date.year}  ';
+                        }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 40.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  child: Row(
+                                    children: <Widget>[
+//                                            Icon(
+//                                              Icons.date_range,
+//                                              size: 18.0,
+//                                              color: Theme.of(context)
+//                                                  .primaryColor,
+//                                            ),
+                                      Text(
+                                        " $_startDate",
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15.0),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      color: Colors.white,
+                    ),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0)),
+                      elevation: 4.0,
+                      color: Colors.white,
+                      onPressed: () {
+                        DatePicker.showDatePicker(context,
+                            theme: DatePickerTheme(
+                              itemStyle: TextStyle(color: Colors.blue[800]),
+                              containerHeight: 300.0,
+                            ),
+                            showTitleActions: true,
+                            minTime: DateTime(2015, 1, 1),
+                            maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
+                          print('confirm $date'); //todo: delete
+                          _endDate = '${date.day}/${date.month}/${date.year}  ';
+                          setState(() {});
+                        }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 40.0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  child: Row(
+                                    children: <Widget>[
+//                                            Icon(
+//                                              Icons.date_range,
+//                                              size: 18.0,
+//                                              color: Theme.of(context)
+//                                                  .primaryColor,
+//                                            ),
+                                      Text(
+                                        " $_endDate",
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15.0),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     print('oorderscreen'); //todo:delete
+
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(Icons.add),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(
@@ -187,160 +303,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
       body: Column(
         children: <Widget>[
-          Form(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15),
-                    topRight: Radius.circular(15)),
-                child: Container(
-//                  color: Theme.of(context).primaryColor,
-                  child: ExpansionTile(
-                    onExpansionChanged: (val) {
-                      val = !val;
-                    },
-                    //                    backgroundColor: Theme.of(context).backgroundColor,
-
-//                    backgroundColor: Theme.of(context).primaryColor,
-                    subtitle: Text("Source:  Destination: "),
-                    title: Text(
-                      "Configure Filtering",
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, bottom: 20),
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'From:',
-                                  //icon: Icon(Icons.place),
-                                ),
-                                keyboardType: TextInputType.text,
-//
-                                onSaved: (value) {
-//                        _authData['email'] = value;
-                                },
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, bottom: 20),
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'To:',
-                                  //icon: Icon(Icons.location_on),
-                                ),
-
-                                keyboardType: TextInputType.text,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
-                                onSaved: (value) {
-//                        _authData['email'] = value;
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          RaisedButton(
-                            color: Colors.white,
-                            child: Text("Start Date",
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                )),
-                            onPressed: () => _selectStartDate(context),
-                          ),
-                          RaisedButton(
-                            color: Colors.white,
-                            child: Text("End Date",
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                )),
-                            onPressed: () => _selectStartDate(context),
-                          ),
-//                          DateTimeField(),
-                          RaisedButton(
-                            color: Theme.of(context).primaryColor,
-
-                            elevation: 8,
-//                            color: Theme.of(context).primaryColor,
-                            child: Text(
-                              "       Search         ",
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                      ),
-                    ],
-                    initiallyExpanded: true,
-                  ),
-                ),
-              ),
-            ),
-          ),
-//          Padding(
-//            padding: const EdgeInsets.all(8),
-//            child: ClipRRect(
-//              borderRadius: BorderRadius.only(
-//                  topLeft: Radius.circular(15), topRight: Radius.circular(15)),
-//              child: GestureDetector(
-//                onTap: () {
-////                  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>{}));
-//                },
-//                child: Container(
-//                  padding: EdgeInsets.all(8),
-//                  height: 45,
-//                  color: Theme.of(context).primaryColor,
-//                  child: Row(
-//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                    children: <Widget>[
-//                      Icon(
-//                        Icons.arrow_drop_down,
-//                        color: Colors.white,
-//                      ),
-//                      Text(
-//                        "Configure Filtering",
-//                        style: TextStyle(
-//                            color: Colors.white,
-//                            fontWeight: FontWeight.bold,
-//                            fontSize: 20),
-//                      ),
-//                      Icon(
-//                        Icons.arrow_drop_down,
-//                        color: Colors.white,
-//                      ),
-//                    ],
-//                  ),
-//                ),
-//              ),
-//            ),
-//          ),
+          filterBar(),
           Expanded(
             child: ListView(
               children: <Widget>[
