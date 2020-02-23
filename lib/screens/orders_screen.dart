@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:optisend/widgets/filter_panel.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
+import 'package:optisend/screens/add_item_screen.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
@@ -288,6 +289,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.pushNamed(context, AddItemScreen.routeName);
+        },
       ),
       appBar: AppBar(
         backgroundColor: Colors.white,

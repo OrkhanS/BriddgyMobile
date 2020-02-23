@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optisend/screens/add_item_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
@@ -155,6 +156,7 @@ class _MyAppState extends State<MyApp> {
             EditProductScreen.routeName: (ctx) => EditProductScreen(),
             ChatWindow.routeName: (ctx) => ChatWindow(),
             ItemScreen.routeName: (ctx) => ItemScreen(),
+            AddItemScreen.routeName: (ctx) => AddItemScreen(),
           },
         );
       }),
