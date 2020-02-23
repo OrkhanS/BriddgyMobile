@@ -258,7 +258,8 @@ class ItemScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
@@ -315,9 +316,6 @@ class ItemScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
-              height: 15,
-            )
           ],
         ),
       ),

@@ -5,6 +5,16 @@ import '../providers/auth.dart';
 import 'splash_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
+  Widget notif() {
+    return ListTile(
+      leading: Icon(Icons.notifications),
+      trailing: Image.network(
+          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg'),
+      title: Text("Notifying you about something somewhere"),
+      subtitle: Text("21:45, 24 April 2020"),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,8 +30,10 @@ class NotificationScreen extends StatelessWidget {
           ),
           elevation: 1,
         ),
-        body: Center(
-          child: Text("This is adding Screen"),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[for (var i = 0; i < 25; i++) notif()],
+          ),
         ));
   }
 }
