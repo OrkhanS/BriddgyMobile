@@ -10,18 +10,16 @@ import 'package:flutter/widgets.dart';
 import 'package:optisend/widgets/filter_panel.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
-import 'package:optisend/screens/add_item_screen.dart';
-
 import 'package:optisend/providers/orders.dart';
 import 'package:flutter/foundation.dart';
 
-class OrdersScreen extends StatefulWidget {
-  static const routeName = '/orders';
+class TripsScreen extends StatefulWidget {
+  static const routeName = '/trip';
   @override
-  _OrdersScreenState createState() => _OrdersScreenState();
+  _TripScreenState createState() => _TripScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> {
+class _TripScreenState extends State<TripsScreen> {
 //  var deviceSize = MediaQuery.of(context).size;
   bool expands = true;
   String _startDate = "Starting from";
@@ -34,10 +32,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.initState();
   }
 
-  List _orders = [];
+  List _trips = [];
 
   Future fetchAndSetOrders() async {
-    const url = "http://briddgy.herokuapp.com/api/orders/";
+    const url = "http://briddgy.herokuapp.com/api/trips/";
     final response = await http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -48,7 +46,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (this.mounted) {
       setState(() {
         final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _orders = dataOrders["results"];
+        _trips = dataOrders["results"];
       });
 
       return "success";
@@ -67,7 +65,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             color: Colors.blue[50],
             child: FilterPanel(
               backgroundColor: Colors.white,
-              initiallyExpanded: false, //todo
+              initiallyExpanded: false, // todo
               onExpansionChanged: (val) {
                 val = !val;
               },
@@ -183,34 +181,29 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     fetchAndSetOrders().then((value) {
       setState(() {
-        _orders.addAll(value);
+        _trips.addAll(value);
       });
     });
 
-    getImageUrl(List a) {
-      String helper = 'https://briddgy.herokuapp.com/media/';
-      imageUrl =
-          'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
-      if (a.isEmpty == false) {
-        imageUrl =
-            'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
+    getImageUrl(String a) {
+      imageUrl = 'https://img.icons8.com/wired/2x/passenger-with-baggage.png';
+      if (a != null) {
+        imageUrl = 'https://briddgy.herokuapp.com/media/' + a + "/";
       }
       return imageUrl;
     }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        onPressed: null,
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.pushNamed(context, AddItemScreen.routeName);
-        },
       ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(
           child: Text(
-            "Orders",
+            "Trips",
             style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.bold),
@@ -225,24 +218,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
             child: ListView.builder(
               itemBuilder: (context, int i) {
                 return InkWell(
-                  onTap: () {
-                    //Navigator.pushNamed(context, ItemScreen.routeName);
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (__) => new ItemScreen(
-                                  id: _orders[i]["id"],
-                                  owner: _orders[i]["owner"],
-                                  title: _orders[i]["title"],
-                                  destination: _orders[i]["destination"],
-                                  source: _orders[i]["source"]["city_ascii"],
-                                  weight: _orders[i]["weight"],
-                                  price: _orders[i]["price"],
-                                  date: _orders[i]["date"],
-                                  description: _orders[i]["description"],
-                                  image: _orders[i]["orderimage"],
-                                )));
-                  },
+                  onTap: () => null
+                  //             //Navigator.pushNamed(context, ItemScreen.routeName);
+                  //             Navigator.push(
+                  // context,
+                  // new MaterialPageRoute(
+                  //     builder: (__) => new ItemScreen(
+                  //                 id:_trips[i]["id"],
+                  //                 owner:_trips[i]["owner"],
+                  //                 title:_trips[i]["title"],
+                  //                 destination: _trips[i]["destination"],
+                  //                 source: _trips[i]["source"]["city_ascii"],
+                  //                 weight: _trips[i]["weight"],
+                  //                 price: _trips[i]["price"],
+                  //                 date: _trips[i]["date"],
+                  //                 description: _trips[i]["description"],
+                  //                 image: _trips[i]["orderimage"],
+                  //              )));
+                  ,
                   child: Container(
                     height: 140,
                     padding: EdgeInsets.symmetric(horizontal: 10),
@@ -253,14 +246,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: FadeInImage(
-                                image: NetworkImage(
-                                    getImageUrl(_orders[i]["orderimage"])),
-                                placeholder: NetworkImage(
-                                    'https://www.swagiggle.com/content/images/thumbs/default-image_450.png'),
+                                image: NetworkImage(getImageUrl(
+                                    _trips[i]["owner"]["avatar_pic"])),
+                                placeholder: NetworkImage(getImageUrl(
+                                    _trips[i]["owner"]["avatar_pic"])),
+                                height: 60,
+                                width: 60,
                               )
 
                               // Image.network(
-                              //         getImageUrl(_orders[i]["orderimage"])
+                              //         getImageUrl(_trips[i]["orderimage"])
                               // ),
                               ),
                           Padding(
@@ -270,7 +265,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  _orders[i]["title"], //Todo: title
+                                  _trips[i]["owner"]["first_name"] +
+                                      " " +
+                                      _trips[i]["owner"]
+                                          ["last_name"], //Todo: title
                                   style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.grey[600],
@@ -284,9 +282,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       color: Colors.blue[200],
                                     ),
                                     Text(
-                                      _orders[i]["source"]["city_ascii"] +
+                                      "  " +
+                                          _trips[i]["source"]["city_ascii"] +
                                           "  -  " +
-                                          _orders[i]["destination"][
+                                          _trips[i]["destination"][
                                               "city_ascii"], //Todo: Source -> Destination
                                       style: TextStyle(
                                           fontSize: 15,
@@ -296,15 +295,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Icon(
                                       Icons.date_range,
                                       color: Colors.blue[200],
                                     ),
                                     Text(
-                                      _orders[i]["date"]
-                                          .toString(), //Todo: date
+                                      "  " +
+                                          _trips[i]["date"]
+                                              .toString(), //Todo: date
                                       style: TextStyle(color: Colors.grey[600]),
                                     ),
                                   ],
@@ -312,13 +311,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 Row(
                                   children: <Widget>[
                                     Icon(
-                                      Icons.attach_money,
+                                      Icons.check_box, //todo: icon
+//                                            (FontAwesome.suitcase),
                                       color: Colors.blue[200],
                                     ),
                                     Text(
-                                      _orders[i]["price"]
-                                          .toString(), //Todo: date
+                                      "  " +
+                                          _trips[i]["weight_limit"]
+                                              .toString(), //Todo: date
                                       style: TextStyle(color: Colors.grey[600]),
+                                    ),
+                                    Text(
+                                        "                                                    Write    "),
+                                    Icon(
+                                      Icons.check_box, //todo: icon
+//                                      (FontAwesome.envelope),
+                                      color: Colors.blue[200],
                                     ),
                                   ],
                                 )
@@ -331,7 +339,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                 );
               },
-              itemCount: _orders == null ? 0 : _orders.length,
+              itemCount: _trips == null ? 0 : _trips.length,
             ),
           )
         ],

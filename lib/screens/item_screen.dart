@@ -1,10 +1,81 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class ItemScreen extends StatelessWidget {
+class ItemScreen extends StatefulWidget {
+  var id, description, image;
+  var title, owner, destination, source, date, weight, price;
+  ItemScreen({
+    this.id,
+    this.date,
+    this.destination,
+    this.weight,
+    this.price,
+    this.owner,
+    this.title,
+    this.description,
+    this.source,
+    this.image,
+  });
+  static const routeName = '/orders';
+  @override
+  _ItemScreenState createState() => _ItemScreenState();
+}
+
+class _ItemScreenState extends State<ItemScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Map<String, dynamic> _orders = {};
+  String imageUrl;
+
+  // Future fetchAndSetAnOrder(String id) async {
+  //   String url = "http://briddgy.herokuapp.com/api/orders/"+id+"/";
+  //   final response = await http.get(
+  //     url,
+  //     headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+  //   );
+  //   final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+
+  //   if (this.mounted){
+  //     setState(() {
+  //       final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+  //       _orders = dataOrders["results"];
+  //   });
+  //   return "success";
+  // }
+  //   }
+
+  //widget.myObject.toString()
   static const routeName = '/orders/item';
   @override
   Widget build(BuildContext context) {
+    getAvatarUrl(String a) {
+      String helper = 'https://briddgy.herokuapp.com/media/';
+      imageUrl =
+          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg';
+      if (a != null) {
+        imageUrl = 'https://briddgy.herokuapp.com/media/' + a.toString() + "/";
+      }
+      return imageUrl;
+    }
+
+    getImageUrl(List a) {
+      String helper = 'https://briddgy.herokuapp.com/media/';
+      imageUrl =
+          'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
+      if (a.isEmpty == false) {
+        imageUrl =
+            'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
+      }
+      return imageUrl;
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -17,7 +88,7 @@ class ItemScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          "Item Screen", //Todo: item name
+          widget.title.toString(), //Todo: item name
           style: TextStyle(
               color: Theme.of(context).primaryColor,
               fontWeight: FontWeight.bold),
@@ -34,26 +105,35 @@ class ItemScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(40)),
-                    child: Image.network(
-                      'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                      height: 250,
-                      width: 250,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
-                                : null,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                      borderRadius: BorderRadius.all(Radius.circular(40)),
+                      child: FadeInImage(
+                        image: NetworkImage(getImageUrl(widget.image)),
+                        placeholder: NetworkImage(
+                            'https://www.swagiggle.com/content/images/thumbs/default-image_450.png'),
+                        height: 250,
+                        width: 250,
+                        fit: BoxFit.cover,
+                      )
+
+                      //Image.network(
+                      //   'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                      //   height: 250,
+                      //   width: 250,
+                      //   fit: BoxFit.cover,
+                      //   loadingBuilder: (BuildContext context, Widget child,
+                      //       ImageChunkEvent loadingProgress) {
+                      //     if (loadingProgress == null) return child;
+                      //     return Center(
+                      //       child: CircularProgressIndicator(
+                      //         value: loadingProgress.expectedTotalBytes != null
+                      //             ? loadingProgress.cumulativeBytesLoaded /
+                      //                 loadingProgress.expectedTotalBytes
+                      //             : null,
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
+                      ),
                 ),
               ],
             ),
@@ -67,11 +147,17 @@ class ItemScreen extends StatelessWidget {
                 children: <Widget>[
                   CircleAvatar(
                     radius: 24.0,
-                    backgroundImage: NetworkImage(
-                        "https://randomuser.me/api/portraits/women/34.jpg"),
+                    child: FadeInImage(
+                      image:
+                          NetworkImage(getAvatarUrl(widget.owner["avatarpic"])),
+                      placeholder: NetworkImage(
+                          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg'),
+                    ),
                   ),
                   Text(
-                    "Kazato Suriname",
+                    widget.owner["first_name"].toString() +
+                        " " +
+                        widget.owner["last_name"].toString(),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -96,7 +182,7 @@ class ItemScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                         Text(
-                          "4.5",
+                          widget.owner["rating"].toString(),
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         )
@@ -152,7 +238,7 @@ class ItemScreen extends StatelessWidget {
                       ),
                     ),
                     trailing: Text(
-                      'Baku', //todo: data
+                      widget.source.toString(), //todo: data
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -166,7 +252,7 @@ class ItemScreen extends StatelessWidget {
                       ),
                     ),
                     trailing: Text(
-                      'Yevlax', //todo: data
+                      widget.destination["city_ascii"].toString(), //todo: data
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -180,7 +266,7 @@ class ItemScreen extends StatelessWidget {
                       ),
                     ),
                     trailing: Text(
-                      '25 Apr 2020', //todo: data
+                      widget.date.toString(), //todo: data
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -194,24 +280,24 @@ class ItemScreen extends StatelessWidget {
                       ),
                     ),
                     trailing: Text(
-                      '800 gr', //todo: data
+                      widget.weight.toString(), //todo: data
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
-                  ListTile(
-                    dense: true,
-                    title: Text(
-                      "Dimensions:",
-                      style: TextStyle(
-                        fontSize: 17,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    trailing: Text(
-                      '25x17x20', //todo: data
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
+                  // ListTile(
+                  //   dense: true,
+                  //   title: Text(
+                  //     "Dimensions:",
+                  //     style: TextStyle(
+                  //       fontSize: 17,
+                  //       color: Colors.grey[600],
+                  //     ),
+                  //   ),
+                  //   trailing: Text(
+                  //     '25x17x20', //todo: data
+                  //     style: TextStyle(fontSize: 18),
+                  //   ),
+                  // ),
                   ListTile(
                     dense: true,
                     title: Text(
@@ -222,7 +308,7 @@ class ItemScreen extends StatelessWidget {
                       ),
                     ),
                     trailing: Text(
-                      '80 \$',
+                      widget.price.toString() + ' \$',
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -249,10 +335,7 @@ class ItemScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
-                  "Salam gagaeadable content of a page when looking at its layout. The "
-                  "point of using Lorem Ipsum is that it has a more-or-les"
-                  "t, and a search for 'lorem ipsum' will uncover many web "
-                  "sites still in their infanc",
+                  widget.description.toString(),
                   style: TextStyle(fontSize: 17),
                 ),
               ),

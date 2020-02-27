@@ -1,42 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:optisend/main.dart';
+import 'package:flutter/foundation.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'dart:convert';
+import 'package:web_socket_channel/status.dart' as status;
 
 class ChatWindow extends StatefulWidget {
+  var messages, user, roomID, alertChannel;
+  ChatWindow({this.messages, this.user, this.roomID, this.alertChannel});
+
   static const routeName = '/chats/chat_window';
   @override
   _ChatWindowState createState() => _ChatWindowState();
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  List<String> _messages;
+  List<String> _messages = [];
 
   TextEditingController textEditingController;
   ScrollController scrollController;
-
+  ObserverList<Function> _listeners = new ObserverList<Function>();
   bool enableButton = false;
+  bool _isOn = false;
+  IOWebSocketChannel _channelRoom;
+  IOWebSocketChannel alertChannel;
 
   @override
   void initState() {
-    _messages = List<String>();
-
-    _messages.add("Hi! How are you?");
-    _messages.add("I'm fine. thanks");
-    _messages.add("This is a multiline message.\nKeep reading!");
-    _messages.add("And this is a very..\nvery..\nlong..\nmessage.");
-    _messages.add("Hi! How are you?");
-    _messages.add("I'm fine. thanks");
-    _messages.add("This is a multiline message.\nKeep reading!");
-    _messages.add("And this is a very..\nvery..\nlong..\nmessage.");
-
     textEditingController = TextEditingController();
-
     scrollController = ScrollController();
-
+    String id = widget.roomID.toString();
+    initCommunication(id);
     super.initState();
   }
 
+  initCommunication(String id) async {
+    reset();
+    try {
+      _channelRoom = new IOWebSocketChannel.connect(
+          'ws://briddgy.herokuapp.com/ws/chatrooms/' +
+              id.toString() +
+              '/?token=40694c366ab5935e997a1002fddc152c9566de90');
+      _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
+      //   alertChannel = new IOWebSocketChannel.connect(
+      //     'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90');
+      //  alertChannel.stream.listen(_onReceptionOfMessageFromServer2);
+      print("Room Connected");
+    } catch (e) {
+      print("Error Occured");
+    }
+  }
+
+  addListener(Function callback) {
+    _listeners.add(callback);
+  }
+
+  removeListener(Function callback) {
+    _listeners.remove(callback);
+  }
+
+  _onReceptionOfMessageFromServer(message) {
+    _isOn = true;
+    print(message);
+    _listeners.forEach((Function callback) {
+      callback(message);
+    });
+  }
+
+  reset() {
+    if (_channelRoom != null) {
+      if (_channelRoom.sink != null) {
+        print("Room Disconnected");
+        _channelRoom.sink.close();
+        _isOn = false;
+      }
+    }
+  }
+
+  // _onReceptionOfMessageFromServer2(message) {
+  //   _isOn = true;
+  //   print(message);
+  //   widget.messages.add(message);
+  //   _listeners.forEach((Function callback) {
+  //     callback(message);
+  //   });
+  // }
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
+    var message = {
+      "message_type": "text",
+      'message': text,
+      "room_id": widget.roomID,
+      "sender": widget.user[0]["id"]
+    };
+
+    if (_channelRoom != null) {
+      if (_channelRoom.sink != null) {
+        _channelRoom.sink.add(jsonEncode(message));
+      }
+    }
+
     setState(() {
       _messages.add(text);
       enableButton = false;
@@ -104,7 +171,7 @@ class _ChatWindowState extends State<ChatWindow> {
           },
         ),
         title: Text(
-          "Name of Partner", //todo: name
+          widget.user["first_name"].toString(), //todo: name
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
       ),
@@ -113,10 +180,9 @@ class _ChatWindowState extends State<ChatWindow> {
           Expanded(
             child: ListView.builder(
               controller: scrollController,
-              itemCount: _messages.length,
+              itemCount: widget.messages.length,
               itemBuilder: (context, index) {
                 bool reverse = false;
-
                 if (index % 2 == 0) {
                   reverse = true;
                 }
@@ -125,7 +191,8 @@ class _ChatWindowState extends State<ChatWindow> {
                   padding:
                       const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
                   child: CircleAvatar(
-                    child: Text("A"),
+                    child: Text(
+                        widget.user["first_name"].toString().substring(0, 1)),
                   ),
                 );
 
@@ -138,7 +205,7 @@ class _ChatWindowState extends State<ChatWindow> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Text(_messages[index]),
+                      child: Text(widget.messages[index]["text"]),
                     ),
                   ),
                 );
