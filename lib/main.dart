@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -16,10 +17,11 @@ import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
 import './screens/auth_screen.dart';
 
-import './screens/profile_screen.dart';
+import './screens/account_screen.dart';
 import './screens/notification_screen.dart';
 import './screens/chats_screen.dart';
 import './screens/chat_window.dart';
+import 'package:optisend/screens/profile_screen.dart';
 import 'package:optisend/screens/item_screen.dart';
 
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -54,8 +56,8 @@ class _MyAppState extends State<MyApp> {
       elevation: 4,
       type: BottomNavigationBarType.fixed,
       currentIndex: _currentIndex,
-      selectedItemColor: Theme.of(context).primaryColor,
-      unselectedItemColor: Colors.grey[500],
+      selectedItemColor: Colors.blue[900],
+      unselectedItemColor: Colors.grey[400],
       unselectedFontSize: 9,
       selectedFontSize: 11,
       onTap: (index) {
@@ -65,31 +67,28 @@ class _MyAppState extends State<MyApp> {
       },
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          title: Text('Orders'),
-          icon: Icon(
-            Icons.markunread_mailbox, //todo: normal icon
-          ),
-        ),
+            title: Text('Items'),
+            icon: Icon(MdiIcons.packageVariantClosed),
+            activeIcon: Icon(MdiIcons.packageVariant)),
         BottomNavigationBarItem(
           title: Text('Trips'),
-          icon: Icon(
-            Icons.flight,
-          ),
-        ),
-        BottomNavigationBarItem(
-          title: Text('Profile'),
-          icon: Icon(Icons.person_outline),
-          activeIcon: Icon(Icons.person),
+          icon: Icon(MdiIcons.roadVariant),
+          activeIcon: Icon(MdiIcons.road),
         ),
         BottomNavigationBarItem(
           title: Text('Chats'),
-          icon: Icon(Icons.chat_bubble_outline),
-          activeIcon: Icon(Icons.chat_bubble),
+          icon: Icon(MdiIcons.forumOutline),
+          activeIcon: Icon(MdiIcons.forum),
         ),
         BottomNavigationBarItem(
           title: Text('Notifications'),
           icon: Icon(Icons.notifications_none),
           activeIcon: Icon(Icons.notifications),
+        ),
+        BottomNavigationBarItem(
+          title: Text('Profile'),
+          icon: Icon(MdiIcons.accountSettingsOutline),
+          activeIcon: Icon(MdiIcons.accountSettings),
         ),
       ],
     );
@@ -125,6 +124,7 @@ class _MyAppState extends State<MyApp> {
           title: 'Optisend',
           theme: ThemeData(
             primarySwatch: Colors.blue,
+            primaryColor: Colors.blue[900],
             accentColor: Colors.pinkAccent,
             fontFamily: 'Lato',
           ),
@@ -139,9 +139,9 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   OrdersScreen(),
                   OrdersScreen(),
-                  ProfileScreen(),
                   ChatsScreen(),
                   NotificationScreen(),
+                  DetailsScreen(),
                 ],
               ),
             ),
@@ -157,6 +157,7 @@ class _MyAppState extends State<MyApp> {
             ChatWindow.routeName: (ctx) => ChatWindow(),
             ItemScreen.routeName: (ctx) => ItemScreen(),
             AddItemScreen.routeName: (ctx) => AddItemScreen(),
+            ProfileScreen.routeName: (ctx) => ProfileScreen(),
           },
         );
       }),

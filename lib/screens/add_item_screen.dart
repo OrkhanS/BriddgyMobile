@@ -91,61 +91,61 @@ class AddItemScreen extends StatelessWidget {
                 },
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              width: deviceWidth * 0.4,
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0)),
-                elevation: 4.0,
-                onPressed: () {
-                  DatePicker.showDatePicker(context,
-                      theme: DatePickerTheme(
-                        itemStyle: TextStyle(color: Colors.blue[800]),
-                        containerHeight: 300.0,
-                      ),
-                      showTitleActions: true,
-                      minTime: DateTime(2015, 1, 1),
-                      maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
-                    print('confirm $date'); //todo: delete
-                    _startDate = '${date.day}/${date.month}/${date.year}  ';
-                  }, currentTime: DateTime.now(), locale: LocaleType.en);
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 40.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            child: Row(
-                              children: <Widget>[
-//                                            Icon(
-//                                              Icons.date_range,
-//                                              size: 18.0,
-//                                              color: Theme.of(context)
-//                                                  .primaryColor,
-//                                            ),
-                                Text(
-                                  " $_startDate",
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15.0),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                color: Colors.white,
-              ),
-            ),
+//            Container(
+//              padding: EdgeInsets.symmetric(vertical: 10),
+//              width: deviceWidth * 0.4,
+//              child: RaisedButton(
+//                shape: RoundedRectangleBorder(
+//                    borderRadius: BorderRadius.circular(5.0)),
+//                elevation: 4.0,
+//                onPressed: () {
+//                  DatePicker.showDatePicker(context,
+//                      theme: DatePickerTheme(
+//                        itemStyle: TextStyle(color: Colors.blue[800]),
+//                        containerHeight: 300.0,
+//                      ),
+//                      showTitleActions: true,
+//                      minTime: DateTime(2015, 1, 1),
+//                      maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
+//                    print('confirm $date'); //todo: delete
+//                    _startDate = '${date.day}/${date.month}/${date.year}  ';
+//                  }, currentTime: DateTime.now(), locale: LocaleType.en);
+//                },
+//                child: Container(
+//                  alignment: Alignment.center,
+//                  height: 40.0,
+//                  child: Row(
+//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                    children: <Widget>[
+//                      Row(
+//                        children: <Widget>[
+//                          Container(
+//                            child: Row(
+//                              children: <Widget>[
+////                                            Icon(
+////                                              Icons.date_range,
+////                                              size: 18.0,
+////                                              color: Theme.of(context)
+////                                                  .primaryColor,
+////                                            ),
+//                                Text(
+//                                  " $_startDate",
+//                                  style: TextStyle(
+//                                      color: Theme.of(context).primaryColor,
+//                                      fontWeight: FontWeight.bold,
+//                                      fontSize: 15.0),
+//                                ),
+//                              ],
+//                            ),
+//                          )
+//                        ],
+//                      ),
+//                    ],
+//                  ),
+//                ),
+//                color: Colors.white,
+//              ),
+//            ),
             Container(
               width: deviceWidth * 0.8,
               child: new ConstrainedBox(
@@ -192,7 +192,7 @@ class AddItemScreen extends StatelessWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Weight:',
-                  icon: Icon(Icons.attach_money),
+                  icon: Icon(Icons.format_size),
                 ),
 
                 keyboardType: TextInputType.number,

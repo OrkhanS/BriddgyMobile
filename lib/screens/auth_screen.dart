@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth.dart';
@@ -25,13 +26,7 @@ class AuthScreen extends StatelessWidget {
           height: deviceSize.height * .88,
           margin: MediaQuery.of(context).padding,
           width: deviceSize.width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              AuthCard(),
-            ],
-          ),
+          child: AuthCard(),
         ),
       ),
     );
@@ -139,19 +134,15 @@ class _AuthCardState extends State<AuthCard> {
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    return Container(
-//      constraints:
-//          BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
-      padding: EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: EdgeInsets.all(10),
+    return Center(
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
-                _authMode == AuthMode.Login ? '      Log In' : '      Sign Up',
+                _authMode == AuthMode.Login ? 'Log In' : 'Sign Up',
                 style: TextStyle(
                   fontSize: 30,
                   color: Theme.of(context).primaryColor,
@@ -204,7 +195,7 @@ class _AuthCardState extends State<AuthCard> {
                     enabled: _authMode == AuthMode.Signup,
                     decoration: InputDecoration(
                       labelText: 'Surname',
-                      icon: Icon(Icons.person_outline),
+                      icon: Icon(MdiIcons.accountTie),
                     ),
                     //validator: _authMode == AuthMode.Signup ? (value) {} : null,
                     onSaved: (value) {

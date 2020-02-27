@@ -40,8 +40,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Image(
-                  image: AssetImage("assets/photos/facebook_logo.png"),
+                child: SizedBox(
+                  width: 100,
+                  child: Image.network(
+                    'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               Padding(
@@ -95,15 +111,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
         child: ClipRRect(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(15), topRight: Radius.circular(15)),
-          child: Container(
+          child: Card(
+            elevation: 5,
+            color: Colors.blue[50],
             child: FilterPanel(
+              backgroundColor: Colors.white,
               initiallyExpanded: expands,
               onExpansionChanged: (val) {
                 val = !val;
               },
               subtitle: Text("Source:  Destination: "),
               title: Text(
-                "Configure Filtering",
+                "Filters:",
                 style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
@@ -119,7 +138,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             left: 20, right: 20, bottom: 20),
                         child: TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'From:',
+                            labelText: 'From',
                             //icon: Icon(Icons.place),
                           ),
                           keyboardType: TextInputType.text,
@@ -136,7 +155,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                             left: 20, right: 20, bottom: 20),
                         child: TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'To:',
+                            labelText: 'To',
                             //icon: Icon(Icons.location_on),
                           ),
 
@@ -158,121 +177,49 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text(
-                      "Range:",
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 15,
-                      ),
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      elevation: 4.0,
-                      onPressed: () {
-                        DatePicker.showDatePicker(context,
-                            theme: DatePickerTheme(
-                              itemStyle: TextStyle(color: Colors.blue[800]),
-                              containerHeight: 300.0,
-                            ),
-                            showTitleActions: true,
-                            minTime: DateTime(2015, 1, 1),
-                            maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
-                          print('confirm $date'); //todo: delete
-                          _startDate =
-                              '${date.day}/${date.month}/${date.year}  ';
-                        }, currentTime: DateTime.now(), locale: LocaleType.en);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 40.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Container(
-                                  child: Row(
-                                    children: <Widget>[
-//                                            Icon(
-//                                              Icons.date_range,
-//                                              size: 18.0,
-//                                              color: Theme.of(context)
-//                                                  .primaryColor,
-//                                            ),
-                                      Text(
-                                        " $_startDate",
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.0),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Weight(max)',
+                            //icon: Icon(Icons.place),
+                          ),
+                          keyboardType: TextInputType.number,
+//
+                          onSaved: (value) {
+//                        _authData['email'] = value;
+                          },
                         ),
                       ),
-                      color: Colors.white,
                     ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                      elevation: 4.0,
-                      color: Colors.white,
-                      onPressed: () {
-                        DatePicker.showDatePicker(context,
-                            theme: DatePickerTheme(
-                              itemStyle: TextStyle(color: Colors.blue[800]),
-                              containerHeight: 300.0,
-                            ),
-                            showTitleActions: true,
-                            minTime: DateTime(2015, 1, 1),
-                            maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
-                          print('confirm $date'); //todo: delete
-                          _endDate = '${date.day}/${date.month}/${date.year}  ';
-                          setState(() {});
-                        }, currentTime: DateTime.now(), locale: LocaleType.en);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: 40.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Container(
-                                  child: Row(
-                                    children: <Widget>[
-//                                            Icon(
-//                                              Icons.date_range,
-//                                              size: 18.0,
-//                                              color: Theme.of(context)
-//                                                  .primaryColor,
-//                                            ),
-                                      Text(
-                                        " $_endDate",
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15.0),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Reward(min)',
+                            //icon: Icon(Icons.location_on),
+                          ),
+
+                          keyboardType: TextInputType.number,
+//                      validator: (value) {
+//                        if (value.isEmpty || !value.contains('@')) {
+//                          return 'Invalid email!';
+//                        } else
+//                          return null; //Todo
+//                      },
+                          onSaved: (value) {
+//                        _authData['email'] = value;
+                          },
                         ),
                       ),
                     ),
                   ],
-                ),
+                )
+//
               ],
             ),
           ),
