@@ -274,7 +274,7 @@ class _MyAppState extends State<MyApp> {
 //          ),
 //        ),
       ],
-      child: Consumer<Messages>(builder: (ctx, messages, _) {
+      child: Consumer<Auth>(builder: (ctx, auth, _) {
 //        fetchAndSetRooms();
         return MaterialApp(
           title: 'Optisend',
