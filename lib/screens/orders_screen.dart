@@ -12,7 +12,6 @@ import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 
-import 'package:optisend/providers/orders.dart';
 import 'package:flutter/foundation.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -38,21 +37,33 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   Future fetchAndSetOrders() async {
     const url = "http://briddgy.herokuapp.com/api/orders/";
-    final response = await http.get(
+    http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
-    );
-    final List<OrderItem> loadedOrders = [];
-    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _orders = dataOrders["results"];
+        },
+      );
+    });
+  }
 
-    if (this.mounted) {
-      setState(() {
-        final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _orders = dataOrders["results"];
-      });
-
-      return "success";
+  @override //todo: check for future
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
     }
+  }
+
+  getImageUrl(List a) {
+    imageUrl =
+        'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
+    if (a.isEmpty == false) {
+      imageUrl = 'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
+    }
+    return imageUrl;
   }
 
   Widget filterBar() {
@@ -180,23 +191,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    fetchAndSetOrders().then((value) {
-      setState(() {
-        _orders.addAll(value);
-      });
-    });
+  void dispose() {
+    super.dispose();
+  }
 
-    getImageUrl(List a) {
-      String helper = 'https://briddgy.herokuapp.com/media/';
-      imageUrl =
-          'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
-      if (a.isEmpty == false) {
-        imageUrl =
-            'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
-      }
-      return imageUrl;
-    }
+  @override
+  Widget build(BuildContext context) {
+    fetchAndSetOrders();
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -226,22 +227,36 @@ class _OrdersScreenState extends State<OrdersScreen> {
               itemBuilder: (context, int i) {
                 return InkWell(
                   onTap: () {
-                    //Navigator.pushNamed(context, ItemScreen.routeName);
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (__) => new ItemScreen(
-                                  id: _orders[i]["id"],
-                                  owner: _orders[i]["owner"],
-                                  title: _orders[i]["title"],
-                                  destination: _orders[i]["destination"],
-                                  source: _orders[i]["source"]["city_ascii"],
-                                  weight: _orders[i]["weight"],
-                                  price: _orders[i]["price"],
-                                  date: _orders[i]["date"],
-                                  description: _orders[i]["description"],
-                                  image: _orders[i]["orderimage"],
-                                )));
+                    Navigator.pushNamed(context, ItemScreen.routeName,
+                        arguments: ItemScreen(
+                          id: _orders[i]["id"],
+                          owner: _orders[i]["owner"],
+                          title: _orders[i]["title"],
+                          destination: _orders[i]["destination"],
+                          source: _orders[i]["source"]["city_ascii"],
+                          weight: _orders[i]["weight"],
+                          price: _orders[i]["price"],
+                          date: _orders[i]["date"],
+                          description: _orders[i]["description"],
+//                          image: _orders[i]["orderimage"],
+                        ));
+//                    Navigator.push(
+//                      context,
+//                      new MaterialPageRoute(
+//                        builder: (__) => new ItemScreen(
+//                          id: _orders[i]["id"],
+//                          owner: _orders[i]["owner"],
+//                          title: _orders[i]["title"],
+//                          destination: _orders[i]["destination"],
+//                          source: _orders[i]["source"]["city_ascii"],
+//                          weight: _orders[i]["weight"],
+//                          price: _orders[i]["price"],
+//                          date: _orders[i]["date"],
+//                          description: _orders[i]["description"],
+//                          image: _orders[i]["orderimage"],
+//                        ),
+//                      ),
+//                    );
                   },
                   child: Container(
                     height: 140,
@@ -250,19 +265,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       elevation: 4,
                       child: Row(
                         children: <Widget>[
-                          Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: FadeInImage(
-                                image: NetworkImage(
-                                    getImageUrl(_orders[i]["orderimage"])),
-                                placeholder: NetworkImage(
-                                    'https://www.swagiggle.com/content/images/thumbs/default-image_450.png'),
-                              )
-
-                              // Image.network(
-                              //         getImageUrl(_orders[i]["orderimage"])
-                              // ),
-                              ),
+//                          Padding(
+//                              padding: const EdgeInsets.all(10.0),
+//                              child: FadeInImage(
+//                                image: NetworkImage(
+//                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+//                                placeholder: NetworkImage(
+//                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+//                                height: 60,
+//                                width: 60,
+//                              )
+//
+//                              // Image.network(
+//                              //         getImageUrl(_orders[i]["orderimage"])
+//                              // ),
+//                              ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Column(

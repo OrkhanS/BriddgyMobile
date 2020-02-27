@@ -69,10 +69,10 @@ class _ItemScreenState extends State<ItemScreen> {
       String helper = 'https://briddgy.herokuapp.com/media/';
       imageUrl =
           'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
-      if (a.isEmpty == false) {
-        imageUrl =
-            'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
-      }
+//      if (a.isEmpty == false) {
+//        imageUrl =
+//            'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
+//      }
       return imageUrl;
     }
 
@@ -102,39 +102,39 @@ class _ItemScreenState extends State<ItemScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(40)),
-                      child: FadeInImage(
-                        image: NetworkImage(getImageUrl(widget.image)),
-                        placeholder: NetworkImage(
-                            'https://www.swagiggle.com/content/images/thumbs/default-image_450.png'),
-                        height: 250,
-                        width: 250,
-                        fit: BoxFit.cover,
-                      )
-
-                      //Image.network(
-                      //   'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                      //   height: 250,
-                      //   width: 250,
-                      //   fit: BoxFit.cover,
-                      //   loadingBuilder: (BuildContext context, Widget child,
-                      //       ImageChunkEvent loadingProgress) {
-                      //     if (loadingProgress == null) return child;
-                      //     return Center(
-                      //       child: CircularProgressIndicator(
-                      //         value: loadingProgress.expectedTotalBytes != null
-                      //             ? loadingProgress.cumulativeBytesLoaded /
-                      //                 loadingProgress.expectedTotalBytes
-                      //             : null,
-                      //       ),
-                      //     );
-                      //   },
-                      // ),
-                      ),
-                ),
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: ClipRRect(
+//                      borderRadius: BorderRadius.all(Radius.circular(40)),
+//                      child: FadeInImage(
+//                        image: NetworkImage(getImageUrl(widget.image)),
+//                        placeholder: NetworkImage(
+//                            'https://www.swagiggle.com/content/images/thumbs/default-image_450.png'),
+//                        height: 250,
+//                        width: 250,
+//                        fit: BoxFit.cover,
+//                      )
+//
+//                      //Image.network(
+//                      //   'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+//                      //   height: 250,
+//                      //   width: 250,
+//                      //   fit: BoxFit.cover,
+//                      //   loadingBuilder: (BuildContext context, Widget child,
+//                      //       ImageChunkEvent loadingProgress) {
+//                      //     if (loadingProgress == null) return child;
+//                      //     return Center(
+//                      //       child: CircularProgressIndicator(
+//                      //         value: loadingProgress.expectedTotalBytes != null
+//                      //             ? loadingProgress.cumulativeBytesLoaded /
+//                      //                 loadingProgress.expectedTotalBytes
+//                      //             : null,
+//                      //       ),
+//                      //     );
+//                      //   },
+//                      // ),
+//                      ),
+//                ),
               ],
             ),
             Padding(
@@ -145,15 +145,15 @@ class _ItemScreenState extends State<ItemScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  CircleAvatar(
-                    radius: 24.0,
-                    child: FadeInImage(
-                      image:
-                          NetworkImage(getAvatarUrl(widget.owner["avatarpic"])),
-                      placeholder: NetworkImage(
-                          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg'),
-                    ),
-                  ),
+//                  CircleAvatar(
+//                    radius: 24.0,
+//                    child: FadeInImage(
+//                      image:
+//                          NetworkImage(getAvatarUrl(widget.owner["avatarpic"])),
+//                      placeholder: NetworkImage(
+//                          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg'),
+//                    ),
+//                  ),
                   Text(
                     widget.owner["first_name"].toString() +
                         " " +

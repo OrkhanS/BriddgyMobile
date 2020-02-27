@@ -10,7 +10,6 @@ import 'package:flutter/widgets.dart';
 import 'package:optisend/widgets/filter_panel.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
-import 'package:optisend/providers/orders.dart';
 import 'package:flutter/foundation.dart';
 
 class TripsScreen extends StatefulWidget {
@@ -36,20 +35,23 @@ class _TripScreenState extends State<TripsScreen> {
 
   Future fetchAndSetOrders() async {
     const url = "http://briddgy.herokuapp.com/api/trips/";
-    final response = await http.get(
+    http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
-    );
-    final List<OrderItem> loadedOrders = [];
-    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _trips = dataOrders["results"];
+        },
+      );
+    });
+  }
 
-    if (this.mounted) {
-      setState(() {
-        final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _trips = dataOrders["results"];
-      });
-
-      return "success";
+  @override //Todo: check
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
     }
   }
 
@@ -177,21 +179,17 @@ class _TripScreenState extends State<TripsScreen> {
     );
   }
 
+  getImageUrl(String a) {
+    imageUrl = 'https://img.icons8.com/wired/2x/passenger-with-baggage.png';
+    if (a != null) {
+      imageUrl = 'https://briddgy.herokuapp.com/media/' + a + "/";
+    }
+    return imageUrl;
+  }
+
   @override
   Widget build(BuildContext context) {
-    fetchAndSetOrders().then((value) {
-      setState(() {
-        _trips.addAll(value);
-      });
-    });
-
-    getImageUrl(String a) {
-      imageUrl = 'https://img.icons8.com/wired/2x/passenger-with-baggage.png';
-      if (a != null) {
-        imageUrl = 'https://briddgy.herokuapp.com/media/' + a + "/";
-      }
-      return imageUrl;
-    }
+    fetchAndSetOrders();
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -243,21 +241,21 @@ class _TripScreenState extends State<TripsScreen> {
                       elevation: 4,
                       child: Row(
                         children: <Widget>[
-                          Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: FadeInImage(
-                                image: NetworkImage(getImageUrl(
-                                    _trips[i]["owner"]["avatar_pic"])),
-                                placeholder: NetworkImage(getImageUrl(
-                                    _trips[i]["owner"]["avatar_pic"])),
-                                height: 60,
-                                width: 60,
-                              )
-
-                              // Image.network(
-                              //         getImageUrl(_trips[i]["orderimage"])
-                              // ),
-                              ),
+//                          Padding(
+//                              padding: const EdgeInsets.all(10.0),
+//                              child: FadeInImage(
+//                                image: NetworkImage(
+//                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+//                                placeholder: NetworkImage(
+//                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+//                                height: 60,
+//                                width: 60,
+//                              )
+//
+//                              // Image.network(
+//                              //         getImageUrl(_trips[i]["orderimage"])
+//                              // ),
+//                              ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Column(

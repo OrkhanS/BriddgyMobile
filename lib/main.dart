@@ -17,7 +17,6 @@ import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
-import './providers/orders.dart';
 import './providers/auth.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
@@ -37,11 +36,16 @@ import 'package:optisend/web_sockets.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
-//import 'package:optisend/providers/messages.dart';
+import 'package:optisend/providers/messages.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
+  final StreamController<String> streamController =
+      StreamController<String>.broadcast();
+  IOWebSocketChannel _channel;
+
+  ObserverList<Function> _listeners = new ObserverList<Function>();
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -50,10 +54,7 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 1;
 
   PageController _pageController;
-  IOWebSocketChannel _channel;
-  final StreamController<String> streamController =
-      StreamController<String>.broadcast();
-  ObserverList<Function> _listeners = new ObserverList<Function>();
+
   bool _isOn = false;
   //List<dynamic> _messages = [];
   List<dynamic> _mesaj = [];
@@ -65,7 +66,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _pageController = PageController(initialPage: 1);
     initCommunication();
-    //fetchAndSetRooms();
+    fetchAndSetRooms();
   }
 
   /// ----------------------------------------------------------
@@ -146,9 +147,9 @@ class _MyAppState extends State<MyApp> {
   initCommunication() async {
     reset();
     try {
-      _channel = new IOWebSocketChannel.connect(
-          'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90');
-      _channel.stream.listen(_onReceptionOfMessageFromServer);
+      widget._channel = new IOWebSocketChannel.connect(
+          'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
+      widget._channel.stream.listen(_onReceptionOfMessageFromServer);
       print("Alert Connected");
     } catch (e) {
       print("Error Occured");
@@ -160,9 +161,9 @@ class _MyAppState extends State<MyApp> {
   /// Closes the WebSocket communication
   /// ----------------------------------------------------------
   reset() {
-    if (_channel != null) {
-      if (_channel.sink != null) {
-        _channel.sink.close();
+    if (widget._channel != null) {
+      if (widget._channel.sink != null) {
+        widget._channel.sink.close();
         _isOn = false;
       }
     }
@@ -173,11 +174,11 @@ class _MyAppState extends State<MyApp> {
   /// notification
   /// ---------------------------------------------------------
   addListener(Function callback) {
-    _listeners.add(callback);
+    widget._listeners.add(callback);
   }
 
   removeListener(Function callback) {
-    _listeners.remove(callback);
+    widget._listeners.remove(callback);
   }
 
   /// ----------------------------------------------------------
@@ -186,15 +187,13 @@ class _MyAppState extends State<MyApp> {
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
     _mesaj = [];
+
     _mesaj.add(json.decode(message));
     // if(_mesaj[0]["id"]){
     // Check if "ID" of image sent before, then check its room ID, search in _room and get message ID and use
     // it in Message Provider, find message, then add the mesaj into that
     // }
     _isOn = true;
-    _listeners.forEach((Function callback) {
-      callback(message);
-    });
   }
 
   @override
@@ -248,14 +247,15 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    print("main build");
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
           value: Auth(),
         ),
-//        ChangeNotifierProvider.value(
-//          value: Messages(),
-//        ),
+        ChangeNotifierProvider.value(
+          value: Messages(),
+        ),
         ChangeNotifierProxyProvider<Auth, Products>(
           builder: (ctx, auth, previousProducts) => Products(
             auth.token,
@@ -266,16 +266,16 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider.value(
           value: Cart(),
         ),
-        ChangeNotifierProxyProvider<Auth, Orders>(
-          builder: (ctx, auth, previousOrders) => Orders(
-            auth.token,
-            auth.userId,
-            previousOrders == null ? [] : previousOrders.orders,
-          ),
-        ),
+//        ChangeNotifierProxyProvider<Auth, Orders>(
+//          builder: (ctx, auth, previousOrders) => Orders(
+//            auth.token,
+//            auth.userId,
+//            previousOrders == null ? [] : previousOrders.orders,
+//          ),
+//        ),
       ],
-      child: Consumer<Auth>(builder: (ctx, auth, _) {
-        fetchAndSetRooms();
+      child: Consumer<Messages>(builder: (ctx, messages, _) {
+//        fetchAndSetRooms();
         return MaterialApp(
           title: 'Optisend',
           theme: ThemeData(
@@ -293,9 +293,17 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
+//                  NotificationScreen(),
+//                  NotificationScreen(),
+//                  NotificationScreen(),
+//                  OrdersScreen(),
+//                  OrdersScreen(),
                   OrdersScreen(),
+
                   TripsScreen(),
-                  ChatsScreen(rooms: _rooms, alertChannel: streamController),
+                  TripsScreen(),
+//                  ChatsScreen(
+//                      rooms: _rooms, alertChannel: widget.streamController),
                   NotificationScreen(),
                   DetailsScreen(),
                 ],
