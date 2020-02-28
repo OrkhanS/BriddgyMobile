@@ -28,6 +28,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _time = "Not set";
   DateTime startDate = DateTime.now();
   String imageUrl;
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -35,6 +36,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   List _orders = [];
 
+  // Todo fetch them in provider
   Future fetchAndSetOrders() async {
     const url = "http://briddgy.herokuapp.com/api/orders/";
     http.get(
@@ -45,6 +47,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         () {
           final dataOrders = json.decode(response.body) as Map<String, dynamic>;
           _orders = dataOrders["results"];
+          isLoading = false;
         },
       );
     });
@@ -55,15 +58,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (mounted) {
       super.setState(fn);
     }
-  }
-
-  getImageUrl(List a) {
-    imageUrl =
-        'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
-    if (a.isEmpty == false) {
-      imageUrl = 'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
-    }
-    return imageUrl;
   }
 
   Widget filterBar() {
@@ -219,140 +213,127 @@ class _OrdersScreenState extends State<OrdersScreen> {
         ),
         elevation: 1,
       ),
-      body: Column(
-        children: <Widget>[
-          filterBar(),
-          Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, int i) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, ItemScreen.routeName,
-                        arguments: ItemScreen(
-                          id: _orders[i]["id"],
-                          owner: _orders[i]["owner"],
-                          title: _orders[i]["title"],
-                          destination: _orders[i]["destination"],
-                          source: _orders[i]["source"]["city_ascii"],
-                          weight: _orders[i]["weight"],
-                          price: _orders[i]["price"],
-                          date: _orders[i]["date"],
-                          description: _orders[i]["description"],
-//                          image: _orders[i]["orderimage"],
-                        ));
-//                    Navigator.push(
-//                      context,
-//                      new MaterialPageRoute(
-//                        builder: (__) => new ItemScreen(
-//                          id: _orders[i]["id"],
-//                          owner: _orders[i]["owner"],
-//                          title: _orders[i]["title"],
-//                          destination: _orders[i]["destination"],
-//                          source: _orders[i]["source"]["city_ascii"],
-//                          weight: _orders[i]["weight"],
-//                          price: _orders[i]["price"],
-//                          date: _orders[i]["date"],
-//                          description: _orders[i]["description"],
-//                          image: _orders[i]["orderimage"],
-//                        ),
-//                      ),
-//                    );
-                  },
-                  child: Container(
-                    height: 140,
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Card(
-                      elevation: 4,
-                      child: Row(
-                        children: <Widget>[
-//                          Padding(
-//                              padding: const EdgeInsets.all(10.0),
-//                              child: FadeInImage(
-//                                image: NetworkImage(
-//                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
-//                                placeholder: NetworkImage(
-//                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
-//                                height: 60,
-//                                width: 60,
-//                              )
-//
-//                              // Image.network(
-//                              //         getImageUrl(_orders[i]["orderimage"])
-//                              // ),
-//                              ),
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              children: <Widget>[
+                filterBar(),
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, int i) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                              builder: (__) => new ItemScreen(
+                                id: _orders[i]["id"],
+                                owner: _orders[i]["owner"],
+                                title: _orders[i]["title"],
+                                destination: _orders[i]["destination"],
+                                source: _orders[i]["source"]["city_ascii"],
+                                weight: _orders[i]["weight"],
+                                price: _orders[i]["price"],
+                                date: _orders[i]["date"],
+                                description: _orders[i]["description"],
+                                image: _orders[i]["orderimage"],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 140,
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Card(
+                            elevation: 4,
+                            child: Row(
                               children: <Widget>[
-                                Text(
-                                  _orders[i]["title"], //Todo: title
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.bold),
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Image(
+                                    image: NetworkImage(
+                                        // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                        "https://picsum.photos/250?image=9"), //Todo,
+                                  ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.location_on,
-                                      color: Colors.blue[200],
-                                    ),
-                                    Text(
-                                      _orders[i]["source"]["city_ascii"] +
-                                          "  -  " +
-                                          _orders[i]["destination"][
-                                              "city_ascii"], //Todo: Source -> Destination
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.grey[600],
-                                          fontWeight: FontWeight.normal),
-                                    ),
-                                  ],
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        _orders[i]["title"], //Todo: title
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.grey[600],
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.location_on,
+                                            color: Colors.blue[200],
+                                          ),
+                                          Text(
+                                            _orders[i]["source"]["city_ascii"] +
+                                                "  -  " +
+                                                _orders[i]["destination"][
+                                                    "city_ascii"], //Todo: Source -> Destination
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.normal),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.date_range,
+                                            color: Colors.blue[200],
+                                          ),
+                                          Text(
+                                            _orders[i]["date"]
+                                                .toString(), //Todo: date
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.attach_money,
+                                            color: Colors.blue[200],
+                                          ),
+                                          Text(
+                                            _orders[i]["price"]
+                                                .toString(), //Todo: date
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.date_range,
-                                      color: Colors.blue[200],
-                                    ),
-                                    Text(
-                                      _orders[i]["date"]
-                                          .toString(), //Todo: date
-                                      style: TextStyle(color: Colors.grey[600]),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.attach_money,
-                                      color: Colors.blue[200],
-                                    ),
-                                    Text(
-                                      _orders[i]["price"]
-                                          .toString(), //Todo: date
-                                      style: TextStyle(color: Colors.grey[600]),
-                                    ),
-                                  ],
-                                )
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
+                    itemCount: _orders == null ? 0 : _orders.length,
                   ),
-                );
-              },
-              itemCount: _orders == null ? 0 : _orders.length,
+                )
+              ],
             ),
-          )
-        ],
-      ),
     );
   }
 }

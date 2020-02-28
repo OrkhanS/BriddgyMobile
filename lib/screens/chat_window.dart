@@ -9,8 +9,8 @@ import 'dart:convert';
 import 'package:web_socket_channel/status.dart' as status;
 
 class ChatWindow extends StatefulWidget {
-  var messages, user, roomID, alertChannel;
-  ChatWindow({this.messages, this.user, this.roomID, this.alertChannel});
+  var messages, user, roomID;
+  ChatWindow({this.messages, this.user, this.roomID});
 
   static const routeName = '/chats/chat_window';
   @override
@@ -45,9 +45,6 @@ class _ChatWindowState extends State<ChatWindow> {
               id.toString() +
               '/?token=40694c366ab5935e997a1002fddc152c9566de90');
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
-      //   alertChannel = new IOWebSocketChannel.connect(
-      //     'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90');
-      //  alertChannel.stream.listen(_onReceptionOfMessageFromServer2);
       print("Room Connected");
     } catch (e) {
       print("Error Occured");
@@ -80,14 +77,7 @@ class _ChatWindowState extends State<ChatWindow> {
     }
   }
 
-  // _onReceptionOfMessageFromServer2(message) {
-  //   _isOn = true;
-  //   print(message);
-  //   widget.messages.add(message);
-  //   _listeners.forEach((Function callback) {
-  //     callback(message);
-  //   });
-  // }
+
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
@@ -171,14 +161,14 @@ class _ChatWindowState extends State<ChatWindow> {
           },
         ),
         title: Text(
-          widget.user["first_name"].toString(), //todo: name
+          widget.user[0]["first_name"].toString(), //todo: name
           style: TextStyle(color: Theme.of(context).primaryColor),
         ),
       ),
       body: Column(
         children: <Widget>[
           Expanded(
-            child: ListView.builder(
+            child: widget.messages == 0 ? Center(child: Text('Empty')) : ListView.builder(
               controller: scrollController,
               itemCount: widget.messages.length,
               itemBuilder: (context, index) {
@@ -192,7 +182,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
                   child: CircleAvatar(
                     child: Text(
-                        widget.user["first_name"].toString().substring(0, 1)),
+                        widget.user[0]["first_name"].toString().substring(0, 1)),
                   ),
                 );
 

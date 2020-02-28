@@ -32,7 +32,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
+    String email, String password, String urlSegment) async {
 //    final url =
 //        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key=AIzaSyC13spCwP_f_SalxEbkB-wjedoF8iYENlQ';
     const url = "http://briddgy.herokuapp.com/api/auth/";

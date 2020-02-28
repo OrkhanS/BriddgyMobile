@@ -26,6 +26,7 @@ class _TripScreenState extends State<TripsScreen> {
   String _time = "Not set";
   DateTime startDate = DateTime.now();
   String imageUrl;
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -43,6 +44,7 @@ class _TripScreenState extends State<TripsScreen> {
         () {
           final dataOrders = json.decode(response.body) as Map<String, dynamic>;
           _trips = dataOrders["results"];
+          isLoading = false;
         },
       );
     });
@@ -209,7 +211,8 @@ class _TripScreenState extends State<TripsScreen> {
         ),
         elevation: 1,
       ),
-      body: Column(
+      body: isLoading ? Center(child : CircularProgressIndicator())
+      :Column(
         children: <Widget>[
           filterBar(),
           Expanded(

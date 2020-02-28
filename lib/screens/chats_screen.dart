@@ -13,10 +13,22 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:optisend/main.dart';
 import 'chat_window.dart';
+import 'package:optisend/web_sockets.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
+import 'package:optisend/providers/messages.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 
 class ChatsScreen extends StatefulWidget {
-  var rooms, messages, alertChannel;
-  ChatsScreen({this.rooms, this.messages, this.alertChannel});
+  final StreamController<String> streamController =
+      StreamController<String>.broadcast();
+  IOWebSocketChannel _channel;
+
+  ObserverList<Function> _listeners = new ObserverList<Function>();
+  var rooms;
+  ChatsScreen({this.rooms});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -27,12 +39,116 @@ class _ChatsScreenState extends State<ChatsScreen> {
   double viewportFraction = 0.75;
   String imageUrl;
   Map _details = {};
-
+  bool _isOn = false;
+  bool _islogged = true;
+  List<dynamic> _messages = [];
+  List<dynamic> _mesaj = [];
+  Future<int> roomLength;
+  List _rooms = [];
   @override
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
     super.initState();
+    fetchMessageCaller();
   }
+
+  fetchMessageCaller() {
+    // if (!Provider.of<Auth>(context, listen: false).isAuth) {
+    //   _islogged = false;
+    //   return 0;
+    // }
+
+    for (var i = 0; i < widget.rooms.length; i++) {
+      fetchAndSetMessages(i);
+    }
+  }
+
+  /// ----------------------------------------------------------
+  /// Fetch Messages Of User
+  /// ----------------------------------------------------------
+  Future fetchAndSetMessages(int i) async {
+    var token = "40694c366ab5935e997a1002fddc152c9566de90";
+    String url = "http://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
+        widget.rooms[i]["id"].toString();
+    final response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + token,
+      },
+    );
+
+    if (this.mounted) {
+      setState(() {
+        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+        _mesaj = [];
+        _mesaj.add(dataOrders["results"]);
+      });
+      _messages.add(_mesaj);
+//      Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
+//    todo: remove comment
+    }
+    return "success";
+  }
+
+  /// ----------------------------------------------------------
+  /// End Fetching Rooms Of User
+  /// ----------------------------------------------------------
+
+  // /// ----------------------------------------------------------
+  // /// Creates the WebSocket communication
+  // /// ----------------------------------------------------------
+  // initCommunication() async {
+  //   reset();
+  //   try {
+  //     widget._channel = new IOWebSocketChannel.connect(
+  //         'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
+  //     widget._channel.stream.listen(_onReceptionOfMessageFromServer);
+  //     print("Alert Connected");
+  //   } catch (e) {
+  //     print("Error Occured");
+  //     reset();
+  //   }
+  // }
+
+  // /// ----------------------------------------------------------
+  // /// Closes the WebSocket communication
+  // /// ----------------------------------------------------------
+  // reset() {
+  //   if (widget._channel != null) {
+  //     if (widget._channel.sink != null) {
+  //       widget._channel.sink.close();
+  //       _isOn = false;
+  //     }
+  //   }
+  // }
+
+  // /// ---------------------------------------------------------
+  // /// Adds a callback to be invoked in case of incoming
+  // /// notification
+  // /// ---------------------------------------------------------
+  // addListener(Function callback) {
+  //   widget._listeners.add(callback);
+  // }
+
+  // removeListener(Function callback) {
+  //   widget._listeners.remove(callback);
+  // }
+
+  // /// ----------------------------------------------------------
+  // /// Callback which is invoked each time that we are receiving
+  // /// a message from the server
+  // /// ----------------------------------------------------------
+  // _onReceptionOfMessageFromServer(message) {
+  //   _mesaj = [];
+
+  //   _mesaj.add(json.decode(message));
+  //   // if(_mesaj[0]["id"]){
+  //   // Check if "ID" of image sent before, then check its room ID, search in _room and get message ID and use
+  //   // it in Message Provider, find message, then add the mesaj into that
+  //   // }
+  //   _isOn = true;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -67,112 +183,70 @@ class _ChatsScreenState extends State<ChatsScreen> {
         elevation: 1,
       ),
       body: Container(
-        child: ListView.builder(
-          itemCount: widget.rooms.length,
-          itemBuilder: (context, int index) {
-            return Column(
-              children: <Widget>[
-                Divider(
-                  height: 12.0,
-                ),
-                ListTile(
-                  leading: CircleAvatar(
-                      radius: 24.0,
-                      child: FadeInImage(
-                        image: NetworkImage(getAvatarUrl(
-                            widget.rooms[index]["members"][0]["avatarpic"])),
-                        placeholder: NetworkImage(
-                            'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpgs'),
-                      )),
-                  title: Row(
+        child: _islogged == true
+            ? Center(child: Text('You do not have chats yet'))
+            : ListView.builder(
+                itemCount: _islogged == true ? widget.rooms.length : 0,
+                itemBuilder: (context, int index) {
+                  return Column(
                     children: <Widget>[
-                      Text(widget.rooms[index]["members"][0]["first_name"]
-                          .toString()),
-                      SizedBox(
-                        width: 16.0,
+                      Divider(
+                        height: 12.0,
                       ),
-                      Text(
-                        widget.rooms[index]["date_modified"]
-                            .toString()
-                            .substring(0, 10),
-                        style: TextStyle(fontSize: 12.0),
+                      ListTile(
+                        leading: CircleAvatar(
+                            radius: 24.0,
+                            child: FadeInImage(
+                              image: NetworkImage(
+                                  'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                              placeholder: NetworkImage(
+                                  'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                            )),
+                        title: Row(
+                          children: <Widget>[
+                            Text(widget.rooms[index]["members"][0]["first_name"]
+                                .toString()),
+                            SizedBox(
+                              width: 16.0,
+                            ),
+                            Text(
+                              widget.rooms[index]["date_modified"]
+                                  .toString()
+                                  .substring(0, 10),
+                              style: TextStyle(fontSize: 12.0),
+                            ),
+                          ],
+                        ),
+                        subtitle: Text(widget.rooms[index]["members"][0]
+                                ["last_name"]
+                            .toString()),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14.0,
+                        ),
+                        onTap: () {
+                          // Navigator.of(context).pushNamed('/chats/chat_window');
+                          Navigator.push(
+                            context,
+                             MaterialPageRoute(
+                                builder: (__) =>  ChatWindow(
+                                    messages: _islogged == true
+                                        ? _messages[index][0]
+                                        : 0,
+                                    roomID: _islogged == true
+                                        ? widget.rooms[index]["id"]
+                                        : 0,
+                                    user: _islogged == true
+                                        ? widget.rooms[index]["members"]
+                                        : 0)),
+                          );
+                        },
                       ),
                     ],
-                  ),
-                  subtitle: Text(widget.rooms[index]["members"][0]["last_name"]
-                      .toString()),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.0,
-                  ),
-                  onTap: () {
-                    // Navigator.of(context).pushNamed('/chats/chat_window');
-                    Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (__) => new ChatWindow(
-                              messages: widget.messages[index],
-                              roomID: widget.rooms[index]["id"],
-                              user: widget.rooms[index]["members"],
-                              alertChannel: widget.alertChannel)),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
-        ),
+                  );
+                },
+              ),
       ),
     );
   }
 }
-
-// class ChatModel {
-//   final String avatarUrl;
-//   final String name;
-//   final String datetime;
-//   final String message;
-
-//   ChatModel({this.avatarUrl, this.name, this.datetime, this.message});
-//   static final List<ChatModel> dummyData = [
-//     for (var member in rooms){
-
-//     }
-//     ChatModel(
-//       avatarUrl: "https://randomuser.me/api/portraits/women/34.jpg",
-//       name: "Laurent",
-//       datetime: "20:18",
-//       message: "How about meeting tomorrow?",
-//     ),
-//     // ChatModel(
-//     //   avatarUrl: "https://randomuser.me/api/portraits/women/49.jpg",
-//     //   name: "Tracy",
-//     //   datetime: "19:22",
-//     //   message: "I love that idea, it's great!",
-//     // ),
-//     // ChatModel(
-//     //   avatarUrl: "https://randomuser.me/api/portraits/women/77.jpg",
-//     //   name: "Claire",
-//     //   datetime: "14:34",
-//     //   message: "I wasn't aware of that. Let me check",
-//     // ),
-//     // ChatModel(
-//     //   avatarUrl: "https://randomuser.me/api/portraits/men/81.jpg",
-//     //   name: "Joe",
-//     //   datetime: "11:05",
-//     //   message: "Flutter just release 1.0 officially. Should I go for it?",
-//     // ),
-//     // ChatModel(
-//     //   avatarUrl: "https://randomuser.me/api/portraits/men/83.jpg",
-//     //   name: "Mark",
-//     //   datetime: "09:46",
-//     //   message: "It totally makes sense to get some extra day-off.",
-//     // ),
-//     // ChatModel(
-//     //   avatarUrl: "https://randomuser.me/api/portraits/men/85.jpg",
-//     //   name: "Williams",
-//     //   datetime: "08:15",
-//     //   message: "It has been re-scheduled to next Saturday 7.30pm",
-//     // ),
-//   ];
-// }
