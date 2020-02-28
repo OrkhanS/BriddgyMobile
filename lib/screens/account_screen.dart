@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/screens/contracts.dart';
+import 'package:optisend/screens/my_items.dart';
+import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 import './auth_screen.dart';
@@ -171,6 +174,9 @@ class DetailsPage extends StatelessWidget {
                             color: Colors.grey[200],
                           ),
                           child: Icon(Icons.navigate_next)),
+                      onTap: () {
+                        Navigator.of(context).pushNamed(MyItems.routeName);
+                      },
                     ),
                     ListTile(
                       leading: Icon(MdiIcons.mapMarkerPath),
@@ -187,6 +193,9 @@ class DetailsPage extends StatelessWidget {
                             color: Colors.grey[200],
                           ),
                           child: Icon(Icons.navigate_next)),
+                      onTap: () {
+                        Navigator.of(context).pushNamed(MyTrips.routeName);
+                      },
                     ),
                     ListTile(
                       leading: Icon(MdiIcons.scriptTextOutline),
@@ -203,6 +212,9 @@ class DetailsPage extends StatelessWidget {
                             color: Colors.grey[200],
                           ),
                           child: Icon(Icons.navigate_next)),
+                      onTap: () {
+                        Navigator.of(context).pushNamed(Contracts.routeName);
+                      },
                     ),
                   ],
                 ),

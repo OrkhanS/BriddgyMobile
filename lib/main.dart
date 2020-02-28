@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/screens/add_item_screen.dart';
+import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/trip_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,8 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
+import 'package:optisend/screens/my_items.dart';
+import 'package:optisend/screens/contracts.dart';
 
 void main() => runApp(MyApp());
 
@@ -285,7 +288,6 @@ class _MyAppState extends State<MyApp> {
             fontFamily: 'Lato',
           ),
           home: Scaffold(
-            //appBar: AppBar(title: Text("Nav Bar")),
             body: SizedBox.expand(
               child: PageView(
                 controller: _pageController,
@@ -293,13 +295,7 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-//                  NotificationScreen(),
-//                  NotificationScreen(),
-//                  NotificationScreen(),
-//                  OrdersScreen(),
-//                  OrdersScreen(),
                   OrdersScreen(),
-
                   TripsScreen(),
                   TripsScreen(),
 //                  ChatsScreen(
@@ -322,6 +318,9 @@ class _MyAppState extends State<MyApp> {
             ItemScreen.routeName: (ctx) => ItemScreen(),
             AddItemScreen.routeName: (ctx) => AddItemScreen(),
             ProfileScreen.routeName: (ctx) => ProfileScreen(),
+            MyItems.routeName: (ctx) => MyItems(),
+            MyTrips.routeName: (ctx) => MyTrips(),
+            Contracts.routeName: (ctx) => Contracts(),
           },
         );
       }),
