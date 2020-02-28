@@ -47,22 +47,21 @@ class MyApp extends StatefulWidget {
   final StreamController<String> streamController =
       StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
-
   ObserverList<Function> _listeners = new ObserverList<Function>();
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  List<dynamic> _rooms;
+  bool _isOn = false;
+  bool _loggedIn = true;
+  List<dynamic> _messages = [];
+  List<dynamic> _mesaj = [];
   int _currentIndex = 1;
-
   PageController _pageController;
 
-  bool _isOn = false;
-  //List<dynamic> _messages = [];
-  List<dynamic> _mesaj = [];
-  List<dynamic> _rooms;
-  Future<int> roomLength;
   @override
   void initState() {
     _currentIndex = 1;
@@ -78,47 +77,15 @@ class _MyAppState extends State<MyApp> {
   Future fetchAndSetRooms() async {
     var token = "40694c366ab5935e997a1002fddc152c9566de90";
 
+    // if(Provider.of<Auth>(context, listen: false).isAuth){
+    //    token =  Provider.of<Auth>(context, listen: false).token;
+    // }
+    // else{
+    //   _loggedIn = false;
+    //   return 0;
+    // }
+
     const url = "http://briddgy.herokuapp.com/api/chats/";
-    final response = http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + token,
-      },
-    );
-
-    response.then((onValue) {
-      final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
-
-      if (this.mounted) {
-        setState(() {
-          final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
-          _rooms = dataOrders["results"];
-        });
-      }
-      fetchMessageCaller(_rooms);
-    });
-
-    return _rooms;
-  }
-
-  /// ----------------------------------------------------------
-  /// End Fetching Rooms Of User
-  /// ----------------------------------------------------------
-
-  fetchMessageCaller(_rooms) {
-    for (var i = 0; i < _rooms.length; i++) {
-      fetchAndSetMessages(_rooms, i);
-    }
-  }
-
-  /// ----------------------------------------------------------
-  /// Fetch Rooms Of User
-  /// ----------------------------------------------------------
-  Future fetchAndSetMessages(_rooms, int i) async {
-    var token = "40694c366ab5935e997a1002fddc152c9566de90";
-    String url = "http://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
-        _rooms[i]["id"].toString();
     final response = await http.get(
       url,
       headers: {
@@ -126,27 +93,19 @@ class _MyAppState extends State<MyApp> {
         "Authorization": "Token " + token,
       },
     );
-    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-
     if (this.mounted) {
       setState(() {
         final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _mesaj = [];
-        _mesaj.add(dataOrders["results"]);
+        _rooms = dataOrders["results"];
       });
-//      Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
-//    todo: remove comment
     }
-    return "success";
+    return _rooms;
   }
 
   /// ----------------------------------------------------------
   /// End Fetching Rooms Of User
   /// ----------------------------------------------------------
 
-  /// ----------------------------------------------------------
-  /// Creates the WebSocket communication
-  /// ----------------------------------------------------------
   initCommunication() async {
     reset();
     try {
@@ -189,13 +148,15 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
-    _mesaj = [];
-
-    _mesaj.add(json.decode(message));
+    //_mesaj = [];
+    //_mesaj.add(json.decode(message));
     // if(_mesaj[0]["id"]){
     // Check if "ID" of image sent before, then check its room ID, search in _room and get message ID and use
     // it in Message Provider, find message, then add the mesaj into that
     // }
+
+    //Here Call a function to notify user that he has a message
+
     _isOn = true;
   }
 
@@ -240,7 +201,7 @@ class _MyAppState extends State<MyApp> {
           activeIcon: Icon(Icons.notifications),
         ),
         BottomNavigationBarItem(
-          title: Text('Profile'),
+          title: Text('Account'),
           icon: Icon(MdiIcons.accountSettingsOutline),
           activeIcon: Icon(MdiIcons.accountSettings),
         ),
@@ -278,13 +239,12 @@ class _MyAppState extends State<MyApp> {
 //        ),
       ],
       child: Consumer<Auth>(builder: (ctx, auth, _) {
-//        fetchAndSetRooms();
         return MaterialApp(
           title: 'Optisend',
           theme: ThemeData(
             primarySwatch: Colors.blue,
             primaryColor: Colors.blue[900],
-            accentColor: Colors.pinkAccent,
+            accentColor: Colors.indigoAccent,
             fontFamily: 'Lato',
           ),
           home: Scaffold(
@@ -297,9 +257,7 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   OrdersScreen(),
                   TripsScreen(),
-                  TripsScreen(),
-//                  ChatsScreen(
-//                      rooms: _rooms, alertChannel: widget.streamController),
+                  ChatsScreen(rooms: _loggedIn == true ? _rooms : 0),
                   NotificationScreen(),
                   DetailsScreen(),
                 ],

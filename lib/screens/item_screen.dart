@@ -32,50 +32,11 @@ class _ItemScreenState extends State<ItemScreen> {
   }
 
   Map<String, dynamic> _orders = {};
-  String imageUrl;
-
-  // Future fetchAndSetAnOrder(String id) async {
-  //   String url = "http://briddgy.herokuapp.com/api/orders/"+id+"/";
-  //   final response = await http.get(
-  //     url,
-  //     headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
-  //   );
-  //   final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-
-  //   if (this.mounted){
-  //     setState(() {
-  //       final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-  //       _orders = dataOrders["results"];
-  //   });
-  //   return "success";
-  // }
-  //   }
 
   //widget.myObject.toString()
   static const routeName = '/orders/item';
   @override
   Widget build(BuildContext context) {
-    getAvatarUrl(String a) {
-      String helper = 'https://briddgy.herokuapp.com/media/';
-      imageUrl =
-          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg';
-      if (a != null) {
-        imageUrl = 'https://briddgy.herokuapp.com/media/' + a.toString() + "/";
-      }
-      return imageUrl;
-    }
-
-    getImageUrl(List a) {
-      String helper = 'https://briddgy.herokuapp.com/media/';
-      imageUrl =
-          'https://www.swagiggle.com/content/images/thumbs/default-image_450.png';
-//      if (a.isEmpty == false) {
-//        imageUrl =
-//            'https://briddgy.herokuapp.com/media/' + a[0].toString() + "/";
-//      }
-      return imageUrl;
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -102,39 +63,31 @@ class _ItemScreenState extends State<ItemScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-//                Padding(
-//                  padding: const EdgeInsets.all(8.0),
-//                  child: ClipRRect(
-//                      borderRadius: BorderRadius.all(Radius.circular(40)),
-//                      child: FadeInImage(
-//                        image: NetworkImage(getImageUrl(widget.image)),
-//                        placeholder: NetworkImage(
-//                            'https://www.swagiggle.com/content/images/thumbs/default-image_450.png'),
-//                        height: 250,
-//                        width: 250,
-//                        fit: BoxFit.cover,
-//                      )
-//
-//                      //Image.network(
-//                      //   'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-//                      //   height: 250,
-//                      //   width: 250,
-//                      //   fit: BoxFit.cover,
-//                      //   loadingBuilder: (BuildContext context, Widget child,
-//                      //       ImageChunkEvent loadingProgress) {
-//                      //     if (loadingProgress == null) return child;
-//                      //     return Center(
-//                      //       child: CircularProgressIndicator(
-//                      //         value: loadingProgress.expectedTotalBytes != null
-//                      //             ? loadingProgress.cumulativeBytesLoaded /
-//                      //                 loadingProgress.expectedTotalBytes
-//                      //             : null,
-//                      //       ),
-//                      //     );
-//                      //   },
-//                      // ),
-//                      ),
-//                ),
+               Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: ClipRRect(
+                     borderRadius: BorderRadius.all(Radius.circular(40)),
+                     child: 
+                     Image.network(
+                       'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                       height: 250,
+                       width: 250,
+                       fit: BoxFit.cover,
+                       loadingBuilder: (BuildContext context, Widget child,
+                           ImageChunkEvent loadingProgress) {
+                         if (loadingProgress == null) return child;
+                         return Center(
+                           child: CircularProgressIndicator(
+                             value: loadingProgress.expectedTotalBytes != null
+                                 ? loadingProgress.cumulativeBytesLoaded /
+                                     loadingProgress.expectedTotalBytes
+                                 : null,
+                           ),
+                         );
+                       },
+                     ),
+                     ),
+               ),
               ],
             ),
             Padding(
@@ -145,15 +98,15 @@ class _ItemScreenState extends State<ItemScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-//                  CircleAvatar(
-//                    radius: 24.0,
-//                    child: FadeInImage(
-//                      image:
-//                          NetworkImage(getAvatarUrl(widget.owner["avatarpic"])),
-//                      placeholder: NetworkImage(
-//                          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg'),
-//                    ),
-//                  ),
+                  CircleAvatar(
+                    radius: 24.0,
+                    child: Image(
+                      image: NetworkImage(
+                          // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                          "https://picsum.photos/250?image=9"), //Todo,
+                    ),
+                  ),
+
                   Text(
                     widget.owner["first_name"].toString() +
                         " " +

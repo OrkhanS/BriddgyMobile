@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
@@ -229,10 +232,27 @@ class AddItemScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // var token = Provider.of<Auth>(context, listen: false).token;
+                    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+
+                    const url = "http://briddgy.herokuapp.com/api/users/me/";
+
+                    http
+                        .post(url,
+                            headers: {
+                              HttpHeaders.CONTENT_TYPE: "application/json",
+                              "Authorization": "Token " + token,
+                            },
+                            body: json.encode({}))
+                        .timeout(const Duration(seconds: 10))
+                        .then(
+                          (response) {},
+                        );
+                  },
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
