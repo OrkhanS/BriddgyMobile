@@ -7,10 +7,12 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/status.dart' as status;
+import 'package:responsive_text_field/responsive_text_field.dart';
+
 
 class ChatWindow extends StatefulWidget {
-  var messages, user, roomID;
-  ChatWindow({this.messages, this.user, this.roomID});
+  var messages, user, room;
+  ChatWindow({this.messages, this.user, this.room});
 
   static const routeName = '/chats/chat_window';
   @override
@@ -18,7 +20,7 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  List<String> _messages = [];
+  List _messages = [];
 
   TextEditingController textEditingController;
   ScrollController scrollController;
@@ -28,13 +30,18 @@ class _ChatWindowState extends State<ChatWindow> {
   IOWebSocketChannel _channelRoom;
   IOWebSocketChannel alertChannel;
 
+
   @override
   void initState() {
     textEditingController = TextEditingController();
     scrollController = ScrollController();
-    String id = widget.roomID.toString();
+    String id = widget.room.toString();
     initCommunication(id);
+    addToMessageList();
     super.initState();
+  }
+  addToMessageList(){
+     _messages.addAll(widget.messages["results"]);
   }
 
   initCommunication(String id) async {
@@ -77,14 +84,13 @@ class _ChatWindowState extends State<ChatWindow> {
     }
   }
 
-
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
     var message = {
       "message_type": "text",
       'message': text,
-      "room_id": widget.roomID,
+      "room_id": widget.room,
       "sender": widget.user[0]["id"]
     };
 
@@ -95,7 +101,7 @@ class _ChatWindowState extends State<ChatWindow> {
     }
 
     setState(() {
-      _messages.add(text);
+      //_messages.add(message);
       enableButton = false;
     });
 
@@ -110,7 +116,7 @@ class _ChatWindowState extends State<ChatWindow> {
   );
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -168,12 +174,17 @@ class _ChatWindowState extends State<ChatWindow> {
       body: Column(
         children: <Widget>[
           Expanded(
-            child: widget.messages == 0 ? Center(child: Text('Empty')) : ListView.builder(
+            child:
+                //widget.messages == 0
+                //  ? Center(child: Text('Empty'))
+                //:
+                ListView.builder(
+                  reverse: true,
               controller: scrollController,
-              itemCount: widget.messages.length,
+              itemCount: _messages.length,
               itemBuilder: (context, index) {
                 bool reverse = false;
-                if (index % 2 == 0) {
+                if (widget.user[0]["id"] != _messages[index]["sender"]) {
                   reverse = true;
                 }
 
@@ -181,8 +192,9 @@ class _ChatWindowState extends State<ChatWindow> {
                   padding:
                       const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
                   child: CircleAvatar(
-                    child: Text(
-                        widget.user[0]["first_name"].toString().substring(0, 1)),
+                    child: Text(widget.user[0]["first_name"]
+                        .toString()
+                        .substring(0, 1)),
                   ),
                 );
 
@@ -195,7 +207,14 @@ class _ChatWindowState extends State<ChatWindow> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Text(widget.messages[index]["text"]),
+                      // Todo
+                      // Warning
+                      // Warning
+                      child: Text(
+                        _messages[index]["text"].toString().length > 20 ? _messages[index]["text"].toString().substring(0, 20): _messages[index]["text"].toString(),
+                        softWrap: true,
+                        
+                      ),
                     ),
                   ),
                 );
@@ -270,3 +289,11 @@ class Triangle extends CustomPainter {
     return true;
   }
 }
+
+
+// ResponsiveTextField(
+//                         availableWidth: MediaQuery.of(context).size.width,
+//                         minLines: 1,
+//                         maxLines: 5,
+//                         style: TextStyle(fontSize: 16),
+//                       ),

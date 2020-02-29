@@ -38,6 +38,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
+import 'package:optisend/providers/orders.dart';
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/contracts.dart';
 
@@ -61,7 +62,8 @@ class _MyAppState extends State<MyApp> {
   List<dynamic> _mesaj = [];
   int _currentIndex = 1;
   PageController _pageController;
-
+  var token;
+  
   @override
   void initState() {
     _currentIndex = 1;
@@ -75,10 +77,20 @@ class _MyAppState extends State<MyApp> {
   /// Fetch Rooms Of User
   /// ----------------------------------------------------------
   Future fetchAndSetRooms() async {
-    var token = "40694c366ab5935e997a1002fddc152c9566de90";
+
+    // if(Provider.of<Orders>(context, listen: true).notLoaded){
+    //   print("Still loading");
+    // }
+    // else{
+    //   print("ALready Loaded");
+    //   print(Provider.of<Orders>(context, listen:false).orders);
+    // }
+
+
+    token = "40694c366ab5935e997a1002fddc152c9566de90";
 
     // if(Provider.of<Auth>(context, listen: false).isAuth){
-    //    token =  Provider.of<Auth>(context, listen: false).token;
+    //   token =  Provider.of<Auth>(context, listen: false).token;
     // }
     // else{
     //   _loggedIn = false;
@@ -217,19 +229,24 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider.value(
           value: Auth(),
         ),
+
         ChangeNotifierProvider.value(
-          value: Messages(),
+          value: Orders(),
         ),
-        ChangeNotifierProxyProvider<Auth, Products>(
-          builder: (ctx, auth, previousProducts) => Products(
-            auth.token,
-            auth.userId,
-            previousProducts == null ? [] : previousProducts.items,
-          ),
-        ),
-        ChangeNotifierProvider.value(
-          value: Cart(),
-        ),
+        
+        // ChangeNotifierProvider.value(
+        //   value: Messages(),
+        // ),
+        // ChangeNotifierProxyProvider<Auth, Products>(
+        //   builder: (ctx, auth, previousProducts) => Products(
+        //     auth.token,
+        //     auth.userId,
+        //     previousProducts == null ? [] : previousProducts.items,
+        //   ),
+        // ),
+        // ChangeNotifierProvider.value(
+        //   value: Cart(),
+        // ),
 //        ChangeNotifierProxyProvider<Auth, Orders>(
 //          builder: (ctx, auth, previousOrders) => Orders(
 //            auth.token,

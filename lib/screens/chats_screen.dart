@@ -20,6 +20,8 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
 
 class ChatsScreen extends StatefulWidget {
   final StreamController<String> streamController =
@@ -42,7 +44,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
   bool _isOn = false;
   bool _islogged = true;
   List<dynamic> _messages = [];
-  List<dynamic> _mesaj = [];
+  Map _mesaj = {};
+  bool isMessagesLoaded = false;
   Future<int> roomLength;
   List _rooms = [];
   @override
@@ -52,43 +55,38 @@ class _ChatsScreenState extends State<ChatsScreen> {
     fetchMessageCaller();
   }
 
-  fetchMessageCaller() {
+  Future fetchMessageCaller() async {
     // if (!Provider.of<Auth>(context, listen: false).isAuth) {
     //   _islogged = false;
     //   return 0;
     // }
 
     for (var i = 0; i < widget.rooms.length; i++) {
-      fetchAndSetMessages(i);
+      await fetchAndSetMessages(i);
     }
   }
 
   /// ----------------------------------------------------------
   /// Fetch Messages Of User
   /// ----------------------------------------------------------
-  Future fetchAndSetMessages(int i) async {
+    Future fetchAndSetMessages(int i) async {
     var token = "40694c366ab5935e997a1002fddc152c9566de90";
-    String url = "http://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
+    String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
         widget.rooms[i]["id"].toString();
-    final response = await http.get(
+    await http.get(
       url,
       headers: {
         HttpHeaders.CONTENT_TYPE: "application/json",
         "Authorization": "Token " + token,
       },
-    );
-
-    if (this.mounted) {
-      setState(() {
-        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _mesaj = [];
-        _mesaj.add(dataOrders["results"]);
-      });
-      _messages.add(_mesaj);
+    ).then((response) {
+      _mesaj = {};
+      var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+      _mesaj.addAll(dataOrders);
+    });
+    _messages.add(_mesaj);
 //      Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
 //    todo: remove comment
-    }
-    return "success";
   }
 
   /// ----------------------------------------------------------
@@ -152,16 +150,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    getAvatarUrl(String a) {
-      String helper = 'https://briddgy.herokuapp.com/media/';
-      imageUrl =
-          'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg';
-      if (a != null) {
-        imageUrl = 'https://briddgy.herokuapp.com/media/' + a.toString() + "/";
-      }
+    // getAvatarUrl(String a) {
+    //   String helper = 'https://briddgy.herokuapp.com/media/';
+    //   imageUrl =
+    //       'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg';
+    //   if (a != null) {
+    //     imageUrl = 'https://briddgy.herokuapp.com/media/' + a.toString() + "/";
+    //   }
 
-      return imageUrl;
-    }
+    //   return imageUrl;
+    // }
 
     List<MaterialColor> colors = [
       Colors.amber,
@@ -183,10 +181,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
         elevation: 1,
       ),
       body: Container(
-        child: _islogged == true
-            ? Center(child: Text('You do not have chats yet'))
-            : ListView.builder(
-                itemCount: _islogged == true ? widget.rooms.length : 0,
+         child:
+        // _islogged == true
+        //     ? Center(child: Text('You do not have chats yet'))
+            //: 
+          // Center(child: CircularProgressIndicator())
+            
+             ListView.builder(
+                itemCount: 
+                // _islogged == true ? 
+                widget.rooms.length, 
+                //: 0,
                 itemBuilder: (context, int index) {
                   return Column(
                     children: <Widget>[
@@ -205,21 +210,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         title: Row(
                           children: <Widget>[
                             Text(widget.rooms[index]["members"][0]["first_name"]
-                                .toString()),
+                                .toString()+" "+widget.rooms[index]["members"][0]["last_name"]
+                                .toString(), style: TextStyle(fontSize: 15.0),),
                             SizedBox(
                               width: 16.0,
                             ),
-                            Text(
-                              widget.rooms[index]["date_modified"]
-                                  .toString()
-                                  .substring(0, 10),
-                              style: TextStyle(fontSize: 12.0),
-                            ),
+                            // Text(
+                            //   widget.rooms[index]["date_modified"]
+                            //       .toString()
+                            //       .substring(0, 10),
+                            //   style: TextStyle(fontSize: 15.0),
+                            // ),
                           ],
                         ),
-                        subtitle: Text(widget.rooms[index]["members"][0]
-                                ["last_name"]
-                            .toString()),
+                        subtitle: Text("Last Message:"+"  "+ timeago.format(DateTime.parse(widget.rooms[index]["date_modified"]
+                                  .toString()
+                                  .substring(0, 10)+" " +widget.rooms[index]["date_modified"]
+                                  .toString()
+                                  .substring(11, 26))).toString(),
+                              style: TextStyle(fontSize: 15.0),
+                          // _messages[index]["results"][0]["text"]
+                          //   .toString().substring(0,15)
+                            ),
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           size: 14.0,
@@ -228,17 +240,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           // Navigator.of(context).pushNamed('/chats/chat_window');
                           Navigator.push(
                             context,
-                             MaterialPageRoute(
-                                builder: (__) =>  ChatWindow(
-                                    messages: _islogged == true
-                                        ? _messages[index][0]
-                                        : 0,
-                                    roomID: _islogged == true
-                                        ? widget.rooms[index]["id"]
-                                        : 0,
-                                    user: _islogged == true
-                                        ? widget.rooms[index]["members"]
-                                        : 0)),
+                            MaterialPageRoute(
+                                builder: (__) => ChatWindow(
+                                    messages: _messages[index],
+                                    room: widget.rooms[index]["id"],
+                                    user: widget.rooms[index]["members"])),
                           );
                         },
                       ),
