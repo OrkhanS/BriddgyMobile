@@ -158,6 +158,7 @@ class _ChatWindowState extends State<ChatWindow> {
     return Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.keyboard_backspace,

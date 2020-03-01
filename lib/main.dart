@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/screens/add_item_screen.dart';
+import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/trip_screen.dart';
 import 'package:provider/provider.dart';
@@ -62,7 +63,6 @@ class _MyAppState extends State<MyApp> {
   List<dynamic> _mesaj = [];
   int _currentIndex = 1;
   PageController _pageController;
-  var token;
   
   @override
   void initState() {
@@ -87,7 +87,7 @@ class _MyAppState extends State<MyApp> {
     // }
 
 
-    token = "40694c366ab5935e997a1002fddc152c9566de90";
+    var token = "40694c366ab5935e997a1002fddc152c9566de90";
 
     // if(Provider.of<Auth>(context, listen: false).isAuth){
     //   token =  Provider.of<Auth>(context, listen: false).token;
@@ -292,6 +292,7 @@ class _MyAppState extends State<MyApp> {
             ChatWindow.routeName: (ctx) => ChatWindow(),
             ItemScreen.routeName: (ctx) => ItemScreen(),
             AddItemScreen.routeName: (ctx) => AddItemScreen(),
+            AddTripScreen.routeName:(ctx)=> AddTripScreen(),
             ProfileScreen.routeName: (ctx) => ProfileScreen(),
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),

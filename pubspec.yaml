@@ -31,6 +31,10 @@ dependencies:
   web_socket_channel: ^1.0.8
   timeago: ^2.0.26
   responsive_text_field: ^0.1.2
+  flutter_typeahead: ^1.8.0
+  dropdown_formfield: ^0.1.1
+  date_range_picker: ^1.0.3
+
 
 
 

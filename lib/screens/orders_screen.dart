@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
@@ -12,8 +13,9 @@ import 'package:optisend/widgets/filter_panel.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
-
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter/foundation.dart';
+import 'package:dropdown_formfield/dropdown_formfield.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
@@ -30,18 +32,111 @@ class _OrdersScreenState extends State<OrdersScreen> {
   DateTime startDate = DateTime.now();
   String imageUrl;
   bool isLoading = true;
+  bool flagFrom = false;
+  bool flagTo = false;
+  bool flagWeight = false;
+  String from, to;
+  String _value = "Sort By";
+  String weight, price;
+  final formKey = new GlobalKey<FormState>();
+
+  List _suggested = [];
+  List _cities = [];
+  final TextEditingController _typeAheadController = TextEditingController();
+  final TextEditingController _typeAheadController2 = TextEditingController();
   @override
   void initState() {
+    fetchAndSetOrders();
     super.initState();
   }
+  String urlFilter="";
+  String _myActivity;
+  String _myActivityResult;
 
   List _orders = [];
 
   // Todo fetch them in provider
   Future fetchAndSetOrders() async {
     const url = "http://briddgy.herokuapp.com/api/orders/";
-    http.get(
+    await http.get(
       url,
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _orders = dataOrders["results"];
+          isLoading = false;
+        },
+      );
+    });
+  }
+
+  Future sortData(value) async {
+    String url = "http://briddgy.herokuapp.com/api/orders/?order_by=";
+    if(urlFilter.isNotEmpty){
+      url = urlFilter+"&order_by=";
+    }
+    if (value.toString().compareTo("WeightLow") == 0) {
+      url = url + "weight";
+    } else if (value.toString().compareTo("WeightMax") == 0) {
+      url = url + "-weight";
+    }
+    else if(value.toString().compareTo("Price")==0){
+      url = url + "-price";
+    }
+    else if(value.toString().compareTo("Ranking")==0){
+      url = url + "-price";
+    }
+    await http.get(
+      url,
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _orders = dataOrders["results"];
+          isLoading = false;
+        },
+      );
+    });
+  }
+
+  _saveForm() {
+    var form = formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      setState(() {
+        _myActivityResult = _myActivity;
+      });
+    }
+  }
+
+  Future filterAndSetOrders(from, to, weight, price) async {
+    urlFilter = "http://briddgy.herokuapp.com/api/orders/?";
+    if (from != null) {
+      urlFilter = urlFilter + "origin=" + from;
+      flagFrom = true;
+    }
+    if (to != null) {
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagTo = true;
+    }
+    if (weight != null) {
+      flagTo == false && flagFrom == false
+          ? urlFilter = urlFilter + "weight=" + weight.toString()
+          : urlFilter = urlFilter + "&weight=" + weight.toString();
+      flagWeight = true;
+    }
+    if (price != null) {
+      flagWeight == false && flagTo == false && flagFrom == false
+          ? urlFilter = urlFilter + "min_price=" + price.toString()
+          : urlFilter = urlFilter + "&min_price=" + price.toString();
+    }
+    await http.get(
+      urlFilter,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
     ).then((response) {
       setState(
@@ -59,6 +154,64 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (mounted) {
       super.setState(fn);
     }
+  }
+
+  FutureOr<Iterable> getSuggestions(String pattern) async {
+    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
+    await http.get(
+      url,
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _suggested = dataOrders["results"];
+          isLoading = false;
+        },
+      );
+    });
+    _cities = [];
+    for (var i = 0; i < _suggested.length; i++) {
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
+    }
+    return _cities;
+  }
+
+  Widget button() {
+    return Padding(
+      padding: const EdgeInsets.all(22.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: RaisedButton(
+          color: Theme.of(context).primaryColor,
+
+          elevation: 2,
+//                            color: Theme.of(context).primaryColor,
+          child: Container(
+            decoration: BoxDecoration(),
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+              child: Text(
+                "SEARCH",
+                style: TextStyle(
+                  fontSize: 19,
+                  color: Colors.white,
+//                                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          onPressed: () {
+            filterAndSetOrders(from, to, weight, price);
+            build(context);
+          },
+        ),
+      ),
+    );
   }
 
   Widget filterBar() {
@@ -88,11 +241,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
                   child: Text(
-                    "Filters:",
-                    style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
+                    "Tokyo - Paris, 25 May",
+                    style: TextStyle(color: Colors.grey[400]
+                        // Theme.of(context).primaryColor,
+                        // fontWeight: FontWeight.bold,
+                        // fontSize: 20
+                        ),
                   ),
                 ),
               ),
@@ -108,16 +262,49 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 20, right: 20, bottom: 20),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'From',
-                            //icon: Icon(Icons.place),
+                        child: TypeAheadFormField(
+                          keepSuggestionsOnLoading: false,
+                          debounceDuration: const Duration(milliseconds: 200),
+                          textFieldConfiguration: TextFieldConfiguration(
+                            onChanged: (value) {
+                              from = null;
+                            },
+                            controller: this._typeAheadController,
+                            decoration: InputDecoration(
+                                labelText: 'From',
+                                icon: Icon(
+                                  Icons.location_on,
+                                  size: 20,
+                                )),
                           ),
-                          keyboardType: TextInputType.text,
-//
-                          onSaved: (value) {
-//                        _authData['email'] = value;
+                          suggestionsCallback: (pattern) {
+                            return getSuggestions(pattern);
                           },
+                          itemBuilder: (context, suggestion) {
+                            return ListTile(
+                              title: Text(suggestion.toString().split(", ")[0] +
+                                  ", " +
+                                  suggestion.toString().split(", ")[1]),
+                            );
+                          },
+                          transitionBuilder:
+                              (context, suggestionsBox, controller) {
+                            return suggestionsBox;
+                          },
+                          onSuggestionSelected: (suggestion) {
+                            this._typeAheadController.text =
+                                suggestion.toString().split(", ")[0] +
+                                    ", " +
+                                    suggestion.toString().split(", ")[1];
+                            from = suggestion.toString().split(", ")[2];
+                          },
+                          validator: (value) {
+                            from = value;
+                            if (value.isEmpty) {
+                              return 'Please select a city';
+                            }
+                          },
+                          onSaved: (value) => from = value,
                         ),
                       ),
                     ),
@@ -125,22 +312,49 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 20, right: 20, bottom: 20),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'To',
-                            //icon: Icon(Icons.location_on),
+                        child: TypeAheadFormField(
+                          keepSuggestionsOnLoading: false,
+                          debounceDuration: const Duration(milliseconds: 200),
+                          textFieldConfiguration: TextFieldConfiguration(
+                            onChanged: (value) {
+                              to = null;
+                            },
+                            controller: this._typeAheadController2,
+                            decoration: InputDecoration(
+                                labelText: 'To',
+                                icon: Icon(
+                                  Icons.location_on,
+                                  size: 20,
+                                )),
                           ),
-
-                          keyboardType: TextInputType.text,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
+                          suggestionsCallback: (pattern) {
+                            return getSuggestions(pattern);
                           },
+                          itemBuilder: (context, suggestion) {
+                            return ListTile(
+                              title: Text(suggestion.toString().split(", ")[0] +
+                                  ", " +
+                                  suggestion.toString().split(", ")[1]),
+                            );
+                          },
+                          transitionBuilder:
+                              (context, suggestionsBox, controller) {
+                            return suggestionsBox;
+                          },
+                          onSuggestionSelected: (suggestion) {
+                            this._typeAheadController2.text =
+                                suggestion.toString().split(", ")[0] +
+                                    ", " +
+                                    suggestion.toString().split(", ")[1];
+                            to = suggestion.toString().split(", ")[2];
+                          },
+                          validator: (value) {
+                            to = value;
+                            if (value.isEmpty) {
+                              return 'Please select a city';
+                            }
+                          },
+                          onSaved: (value) => to = value,
                         ),
                       ),
                     ),
@@ -160,6 +374,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           ),
                           keyboardType: TextInputType.number,
 //
+                          onChanged: (String val) {
+                            weight = val;
+                          },
                           onSaved: (value) {
 //                        _authData['email'] = value;
                           },
@@ -183,6 +400,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                        } else
 //                          return null; //Todo
 //                      },
+                          onChanged: (String val) {
+                            price = val;
+                          },
                           onSaved: (value) {
 //                        _authData['email'] = value;
                           },
@@ -190,7 +410,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                     ),
                   ],
-                )
+                ),
+                button(),
               ],
             ),
           ),
@@ -206,8 +427,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    fetchAndSetOrders();
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -233,6 +452,44 @@ class _OrdersScreenState extends State<OrdersScreen> {
           : Column(
               children: <Widget>[
                 filterBar(),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      DropdownButton(
+                        hint: Text(_value),
+                        items: [
+                          DropdownMenuItem(
+                            value: "Ranking",
+                            child: Text(
+                              "Highest Ranking",
+                            ),
+                          ),
+                          
+                          DropdownMenuItem(
+                            value: "Price",
+                            child: Text(
+                              "Highest Reward",
+                            ),
+                          ),
+                          
+                          DropdownMenuItem(
+                            value: "WeightLow",
+                            child: Text(
+                              "Lowest Weight",
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: "WeightMax",
+                            child: Text(
+                              "Highest Weight",
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          sortData(value);
+                        },
+                      ),
+                    ]),
                 Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, int i) {
@@ -284,7 +541,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        _orders[i]["title"], //Todo: title
+                                        _orders[i]["title"].toString().length >
+                                                20
+                                            ? _orders[i]["title"]
+                                                    .toString()
+                                                    .substring(0, 20) +
+                                                "..."
+                                            : _orders[i]["title"]
+                                                .toString(), //Todo: title
                                         style: TextStyle(
                                           fontSize: 20,
                                           color: Colors.grey[800],
@@ -303,8 +567,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           Text(
                                             _orders[i]["source"]["city_ascii"] +
                                                 "  >  " +
-                                                _orders[i]["destination"][
-                                                    "city_ascii"], //Todo: Source -> Destination
+                                                _orders[i]["destination"]
+                                                    ["city_ascii"] +
+                                                "  " +
+                                                _orders[i]["weight"]
+                                                    .toString() +
+                                                " kg", //Todo: Source -> Destination
                                             style: TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.grey[600],

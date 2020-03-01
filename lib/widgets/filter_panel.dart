@@ -187,37 +187,37 @@ class _FilterPanelState extends State<FilterPanel>
     );
   }
 
-  Widget button() {
-    return Padding(
-      padding: const EdgeInsets.all(22.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: RaisedButton(
-          color: Theme.of(context).primaryColor,
+//   Widget button() {
+//     return Padding(
+//       padding: const EdgeInsets.all(22.0),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(10),
+//         child: RaisedButton(
+//           color: Theme.of(context).primaryColor,
 
-          elevation: 2,
-//                            color: Theme.of(context).primaryColor,
-          child: Container(
-            decoration: BoxDecoration(),
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: Text(
-                "SEARCH",
-                style: TextStyle(
-                  fontSize: 19,
-                  color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          onPressed: () {
-            _handleTap();
-          },
-        ),
-      ),
-    );
-  }
+//           elevation: 2,
+// //                            color: Theme.of(context).primaryColor,
+//           child: Container(
+//             decoration: BoxDecoration(),
+//             width: MediaQuery.of(context).size.width,
+//             child: Center(
+//               child: Text(
+//                 "SEARCH",
+//                 style: TextStyle(
+//                   fontSize: 19,
+//                   color: Colors.white,
+// //                                  fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             ),
+//           ),
+//           onPressed: () {
+//             _handleTap();
+//           },
+//         ),
+//       ),
+//     );
+//   }
 
   @override
   void didChangeDependencies() {
@@ -241,7 +241,7 @@ class _FilterPanelState extends State<FilterPanel>
       builder: _buildChildren,
       child: closed
           ? null
-          : Column(children: [for (var x in widget.children) x, button()]),
+          : Column(children: [for (var x in widget.children) x]),
     );
   }
 }
