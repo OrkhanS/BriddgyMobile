@@ -15,7 +15,7 @@ import 'package:optisend/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class TripsScreen extends StatefulWidget {
   static const routeName = '/trip';
@@ -26,8 +26,8 @@ class TripsScreen extends StatefulWidget {
 class _TripScreenState extends State<TripsScreen> {
 //  var deviceSize = MediaQuery.of(context).size;
   bool expands = true;
-  String _startDate = "Starting from";
-  String _endDate = "Untill";
+  String _startDate = "From";
+  String _endtime = "Until";
   String _time = "Not set";
   DateTime startDate = DateTime.now();
   String imageUrl;
@@ -35,7 +35,9 @@ class _TripScreenState extends State<TripsScreen> {
   List _suggested = [];
   List _cities = [];
   bool flagFrom = false;
-  bool flagTo = false; bool flagWeight = false;
+  bool flagTo = false;
+  bool flagWeight = false;
+  bool flagStart = false;
   String from, to;
   String weight, price;
   final TextEditingController _typeAheadController = TextEditingController();
@@ -49,22 +51,38 @@ class _TripScreenState extends State<TripsScreen> {
 
   List _trips = [];
 
- Future filterAndSetTrips(from, to, weight, price) async {
+  Future filterAndSetTrips(from, to, weight, _startDate, _endtime) async {
     String url = "http://briddgy.herokuapp.com/api/orders/?";
     if (from != null) {
       url = url + "origin=" + from;
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? url = url + "dest=" + to.toString() : url = url + "&dest=" + to.toString();
-      flagTo=true;
+      flagFrom == false
+          ? url = url + "dest=" + to.toString()
+          : url = url + "&dest=" + to.toString();
+      flagTo = true;
     }
-    if(weight!=null){
-      flagTo == false && flagFrom==false ? url = url + "weight=" + weight.toString() : url = url + "&weight=" + weight.toString();
-      flagWeight=true;
+    if (weight != null) {
+      flagTo == false && flagFrom == false
+          ? url = url + "weight=" + weight.toString()
+          : url = url + "&weight=" + weight.toString();
+      flagWeight = true;
     }
-    if(price!=null){
-      flagWeight == false && flagTo == false && flagFrom==false ? url = url + "min_price=" + price.toString() : url = url + "&min_price=" + price.toString();
+    if (_startDate != null) {
+      flagWeight == false && flagTo == false && flagFrom == false
+          ? url = url + "start_date=" + _startDate.toString()
+          : url = url + "&start_date=" + _startDate.toString();
+      flagStart = true;
+    }
+    if (_endtime != null) {
+      flagWeight == false &&
+              flagTo == false &&
+              flagFrom == false &&
+              flagStart == false
+          ? url = url + "end_date=" + _endtime.toString()
+          : url = url + "&end_date=" + _endtime.toString();
+      flagStart = true;
     }
     await http.get(
       url,
@@ -79,7 +97,7 @@ class _TripScreenState extends State<TripsScreen> {
       );
     });
   }
-  
+
   FutureOr<Iterable> getSuggestions(String pattern) async {
     String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
     await http.get(
@@ -128,7 +146,6 @@ class _TripScreenState extends State<TripsScreen> {
     }
   }
 
-
   Widget button() {
     return Padding(
       padding: const EdgeInsets.all(22.0),
@@ -154,7 +171,7 @@ class _TripScreenState extends State<TripsScreen> {
             ),
           ),
           onPressed: () {
-            filterAndSetTrips(from, to, weight, price);
+            filterAndSetTrips(from, to, weight, _startDate, _endtime);
             build(context);
           },
         ),
@@ -315,6 +332,147 @@ class _TripScreenState extends State<TripsScreen> {
                       child: Padding(
                         padding: const EdgeInsets.only(
                             left: 20, right: 20, bottom: 20),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                            elevation: 4.0,
+                            onPressed: () {
+                              DatePicker.showDatePicker(context,
+                                  theme: DatePickerTheme(
+                                    itemStyle:
+                                        TextStyle(color: Colors.blue[800]),
+                                    containerHeight: 300.0,
+                                  ),
+                                  showTitleActions: true,
+                                  minTime: DateTime.now(),
+                                  maxTime: DateTime(2025, 12, 31),
+                                  onConfirm: (date) {
+                                _startDate =
+                                    '${date.day}/${date.month}/${date.year}  ';
+                              },
+                                  currentTime: DateTime.now(),
+                                  locale: LocaleType.en);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 40.0,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.date_range,
+                                              size: 18.0,
+                                              color: Colors.grey,
+                                            ),
+                                            Center(
+                                              child: Text(
+                                                " Date:  $_startDate",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15.0),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                            elevation: 4.0,
+                            onPressed: () {
+                              DatePicker.showDatePicker(context,
+                                  theme: DatePickerTheme(
+                                    itemStyle:
+                                        TextStyle(color: Colors.blue[800]),
+                                    containerHeight: 300.0,
+                                  ),
+                                  showTitleActions: true,
+                                  minTime: DateTime.now(),
+                                  maxTime: DateTime(2025, 12, 31),
+                                  onConfirm: (date) {
+                                _endtime =
+                                    '${date.day}/${date.month}/${date.year}  ';
+                              },
+                                  currentTime: DateTime.now(),
+                                  locale: LocaleType.en);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 40.0,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(
+                                              Icons.date_range,
+                                              size: 18.0,
+                                              color: Colors.grey,
+                                            ),
+                                            Center(
+                                              child: Text(
+                                                " Date:  $_endtime",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15.0),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, bottom: 20),
                         child: TextFormField(
                           decoration: InputDecoration(
                             labelText: 'Weight Limit (min)',
@@ -368,7 +526,6 @@ class _TripScreenState extends State<TripsScreen> {
     );
   }
 
-  
 //   Widget filterBar() {
 //     return Form(
 //       child: Padding(
@@ -521,7 +678,7 @@ class _TripScreenState extends State<TripsScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           Navigator.pushNamed(context, AddTripScreen.routeName);
         },
         backgroundColor: Theme.of(context).primaryColor,
