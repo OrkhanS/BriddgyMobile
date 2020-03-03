@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'my_items_info.dart';
+
 class MyItems extends StatefulWidget {
   static const routeName = '/account/myitems';
 
@@ -22,10 +24,15 @@ class _MyItemsState extends State<MyItems> {
   }
 
   Future fetchAndSetOrders() async {
-    const url = "http://briddgy.herokuapp.com/api/orders/";
+    // var token = Provider.of<Auth>(context, listen: false).token;
+    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+    const url = "http://briddgy.herokuapp.com/api/my/orders/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + token,
+      },
     ).then((response) {
       setState(
         () {
@@ -73,7 +80,7 @@ class _MyItemsState extends State<MyItems> {
               Navigator.push(
                 context,
                 new MaterialPageRoute(
-                  builder: (__) => new ItemScreen(
+                  builder: (__) => new MyItemScreenInfo(
                     id: _orders[i]["id"],
                     owner: _orders[i]["owner"],
                     title: _orders[i]["title"],
@@ -113,7 +120,14 @@ class _MyItemsState extends State<MyItems> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            _orders[i]["title"], //Todo: title
+                            _orders[i]["title"].toString().length >
+                                                20
+                                            ? _orders[i]["title"]
+                                                    .toString()
+                                                    .substring(0, 20) +
+                                                "..."
+                                            : _orders[i]["title"]
+                                                .toString(), //Todo: title
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.grey[800],

@@ -42,6 +42,17 @@ import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/orders.dart';
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/contracts.dart';
+import 'package:background_fetch/background_fetch.dart';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'package:optisend/local_notications_helper.dart';
+
+/// This "Headless Task" is run when app is terminated.
+void backgroundFetchHeadlessTask(String taskId) async {
+  print('[BackgroundFetch] Headless event received.');
+  BackgroundFetch.finish(taskId);
+}
 
 void main() => runApp(MyApp());
 
@@ -56,6 +67,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final notifications = FlutterLocalNotificationsPlugin();
+
   List<dynamic> _rooms;
   bool _isOn = false;
   bool _loggedIn = true;
@@ -63,21 +76,108 @@ class _MyAppState extends State<MyApp> {
   List<dynamic> _mesaj = [];
   int _currentIndex = 1;
   PageController _pageController;
-  
+  bool _enabled = true;
+  int _status = 0;
+  List<DateTime> _events = [];
   @override
   void initState() {
     _currentIndex = 1;
     super.initState();
     _pageController = PageController(initialPage: 1);
+    initPlatformState();
     initCommunication();
     fetchAndSetRooms();
+    final settingsAndroid = AndroidInitializationSettings('app_icon');
+    final settingsIOS = IOSInitializationSettings(
+        onDidReceiveLocalNotification: (id, title, body, payload) =>
+            onSelectNotification(payload));
+
+    notifications.initialize(
+        InitializationSettings(settingsAndroid, settingsIOS),
+        onSelectNotification: onSelectNotification);
+  }
+  Future onSelectNotification(String payload) async => await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => OrdersScreen()),
+      );
+
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch.
+    BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 15,
+            stopOnTerminate: false,
+            enableHeadless: true,
+            requiresBatteryNotLow: false,
+            requiresCharging: false,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            requiredNetworkType: NetworkType.NONE), (String taskId) async {
+      // This is the fetch-event callback.
+      print("[BackgroundFetch] Event received $taskId");
+      setState(() {
+        List temp = [];
+        fetchAndSetRooms().then((onValue) {
+          print(onValue);
+        });
+        _events.insert(0, new DateTime.now());
+      });
+      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+      // for taking too long in the background.
+      BackgroundFetch.finish(taskId);
+    }).then((int status) {
+      print('[BackgroundFetch] configure success: $status');
+      setState(() {
+        _status = status;
+      });
+    }).catchError((e) {
+      print('[BackgroundFetch] configure ERROR: $e');
+      setState(() {
+        _status = e;
+      });
+    });
+
+    // Optionally query the current BackgroundFetch status.
+    int status = await BackgroundFetch.status;
+    setState(() {
+      _status = status;
+    });
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+  }
+
+  void _onClickEnable(enabled) {
+    setState(() {
+      _enabled = enabled;
+    });
+    if (enabled) {
+      BackgroundFetch.start().then((int status) {
+        print('[BackgroundFetch] start success: $status');
+      }).catchError((e) {
+        print('[BackgroundFetch] start FAILURE: $e');
+      });
+    } else {
+      BackgroundFetch.stop().then((int status) {
+        print('[BackgroundFetch] stop success: $status');
+      });
+    }
+  }
+
+  void _onClickStatus() async {
+    int status = await BackgroundFetch.status;
+    print('[BackgroundFetch] status: $status');
+    setState(() {
+      _status = status;
+    });
   }
 
   /// ----------------------------------------------------------
   /// Fetch Rooms Of User
   /// ----------------------------------------------------------
   Future fetchAndSetRooms() async {
-
     // if(Provider.of<Orders>(context, listen: true).notLoaded){
     //   print("Still loading");
     // }
@@ -85,7 +185,6 @@ class _MyAppState extends State<MyApp> {
     //   print("ALready Loaded");
     //   print(Provider.of<Orders>(context, listen:false).orders);
     // }
-
 
     var token = "40694c366ab5935e997a1002fddc152c9566de90";
 
@@ -124,6 +223,8 @@ class _MyAppState extends State<MyApp> {
       widget._channel = new IOWebSocketChannel.connect(
           'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
       widget._channel.stream.listen(_onReceptionOfMessageFromServer);
+      showOngoingNotification(notifications,
+                  title: 'Briddgy', body: 'You have a new message!');
       print("Alert Connected");
     } catch (e) {
       print("Error Occured");
@@ -160,6 +261,8 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
+    showOngoingNotification(notifications,
+                  title: 'Briddgy', body: 'You have a new message!');
     //_mesaj = [];
     //_mesaj.add(json.decode(message));
     // if(_mesaj[0]["id"]){
@@ -233,7 +336,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider.value(
           value: Orders(),
         ),
-        
+
         // ChangeNotifierProvider.value(
         //   value: Messages(),
         // ),
@@ -292,7 +395,7 @@ class _MyAppState extends State<MyApp> {
             ChatWindow.routeName: (ctx) => ChatWindow(),
             ItemScreen.routeName: (ctx) => ItemScreen(),
             AddItemScreen.routeName: (ctx) => AddItemScreen(),
-            AddTripScreen.routeName:(ctx)=> AddTripScreen(),
+            AddTripScreen.routeName: (ctx) => AddTripScreen(),
             ProfileScreen.routeName: (ctx) => ProfileScreen(),
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),

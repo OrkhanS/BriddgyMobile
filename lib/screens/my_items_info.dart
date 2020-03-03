@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class ItemScreen extends StatefulWidget {
+class MyItemScreenInfo extends StatefulWidget {
   var id, description, image;
   var title, owner, destination, source, date, weight, price;
-  ItemScreen({
+  MyItemScreenInfo({
     this.id,
     this.date,
     this.destination,
@@ -22,17 +22,34 @@ class ItemScreen extends StatefulWidget {
   });
   static const routeName = '/orders';
   @override
-  _ItemScreenState createState() => _ItemScreenState();
+  _MyItemScreenInfoState createState() => _MyItemScreenInfoState();
 }
 
-class _ItemScreenState extends State<ItemScreen> {
+class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
   @override
   void initState() {
     super.initState();
   }
-
+  List _sugesstions=[];
+  bool isLoading=false;
   Map<String, dynamic> _orders = {};
 
+
+  Future fetchAndSetSugesstions(id) async {
+    String url = "http://briddgy.herokuapp.com/api/trips/" + id.toString() + "/suggestions/";
+    http.get(
+      url,
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _sugesstions = dataOrders["results"];
+          isLoading = false;
+        },
+      );
+    });
+  }
   //widget.myObject.toString()
   static const routeName = '/orders/item';
   @override
@@ -292,67 +309,9 @@ class _ItemScreenState extends State<ItemScreen> {
                   style: TextStyle(fontSize: 17),
                 ),
               ),
+              
             ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  RaisedButton(
-                    color: Colors.white,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text(
-                          "Message",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Icon(
-                          Icons.chat_bubble_outline,
-                          size: 20,
-                          color: Theme.of(context).primaryColor,
-                        )
-                      ],
-                    ),
-                    onPressed: () {},
-                  ),
-                  RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text(
-                          "To Baggage",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Icon(
-                          Icons.add,
-                          size: 20,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ),
-          ],
+              ],
         ),
       ),
     );

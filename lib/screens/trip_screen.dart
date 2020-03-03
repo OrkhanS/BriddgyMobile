@@ -42,6 +42,9 @@ class _TripScreenState extends State<TripsScreen> {
   String weight, price;
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
+  String _value = "Sort By";
+  final formKey = new GlobalKey<FormState>();
+  String urlFilter="";
 
   bool isLoading = true;
   @override
@@ -51,28 +54,29 @@ class _TripScreenState extends State<TripsScreen> {
 
   List _trips = [];
 
+
   Future filterAndSetTrips(from, to, weight, _startDate, _endtime) async {
-    String url = "http://briddgy.herokuapp.com/api/orders/?";
+    urlFilter = "http://briddgy.herokuapp.com/api/orders/?";
     if (from != null) {
-      url = url + "origin=" + from;
+      urlFilter = urlFilter + "origin=" + from;
       flagFrom = true;
     }
     if (to != null) {
       flagFrom == false
-          ? url = url + "dest=" + to.toString()
-          : url = url + "&dest=" + to.toString();
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
       flagTo == false && flagFrom == false
-          ? url = url + "weight=" + weight.toString()
-          : url = url + "&weight=" + weight.toString();
+          ? urlFilter = urlFilter + "weight=" + weight.toString()
+          : urlFilter = urlFilter + "&weight=" + weight.toString();
       flagWeight = true;
     }
     if (_startDate != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? url = url + "start_date=" + _startDate.toString()
-          : url = url + "&start_date=" + _startDate.toString();
+          ? urlFilter = urlFilter + "start_date=" + _startDate.toString()
+          : urlFilter = urlFilter + "&start_date=" + _startDate.toString();
       flagStart = true;
     }
     if (_endtime != null) {
@@ -80,9 +84,39 @@ class _TripScreenState extends State<TripsScreen> {
               flagTo == false &&
               flagFrom == false &&
               flagStart == false
-          ? url = url + "end_date=" + _endtime.toString()
-          : url = url + "&end_date=" + _endtime.toString();
+          ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
+          : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
       flagStart = true;
+    }
+    await http.get(
+      urlFilter,
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+    ).then((response) {
+      setState(
+        () {
+          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _trips = dataOrders["results"];
+          isLoading = false;
+        },
+      );
+    });
+  }
+
+  Future sortData(value) async {
+    String url = "http://briddgy.herokuapp.com/api/trips/?order_by=";
+    if(urlFilter.isNotEmpty){
+      url = urlFilter+"&order_by=";
+    }
+    if (value.toString().compareTo("WeightLow") == 0) {
+      url = url + "weight";
+    } else if (value.toString().compareTo("WeightMax") == 0) {
+      url = url + "-weight";
+    }
+    else if(value.toString().compareTo("Price")==0){
+      url = url + "-price";
+    }
+    else if(value.toString().compareTo("Ranking")==0){
+      url = url + "-price";
     }
     await http.get(
       url,
@@ -489,33 +523,8 @@ class _TripScreenState extends State<TripsScreen> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Reward(min)',
-                            //icon: Icon(Icons.location_on),
-                          ),
-
-                          keyboardType: TextInputType.number,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
-                          onChanged: (String val) {
-                            price = val;
-                          },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+                    
+                         ],
                 ),
                 button(),
               ],
@@ -524,152 +533,6 @@ class _TripScreenState extends State<TripsScreen> {
         ),
       ),
     );
-  }
-
-//   Widget filterBar() {
-//     return Form(
-//       child: Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-//         child: ClipRRect(
-//           borderRadius: BorderRadius.only(
-//               topLeft: Radius.circular(15), topRight: Radius.circular(15)),
-//           child: Card(
-//             elevation: 5,
-//             color: Theme.of(context).primaryColor,
-//             child: FilterPanel(
-//               backgroundColor: Colors.white,
-//               initiallyExpanded: false, //todo
-//               onExpansionChanged: (val) {
-//                 val = !val;
-//               },
-// //              subtitle: Text("Source:  Destination: "),
-//               title: Container(
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.all(Radius.circular(5)),
-//                   color: Colors.white,
-//                   border: Border(),
-//                 ),
-//                 child: Padding(
-//                   padding:
-//                       const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
-//                   child: Text(
-//                     "Filters:",
-//                     style: TextStyle(
-//                         color: Theme.of(context).primaryColor,
-//                         fontWeight: FontWeight.bold,
-//                         fontSize: 20),
-//                   ),
-//                 ),
-//               ),
-//               trailing: Icon(
-//                 MdiIcons.filterPlusOutline,
-//                 color: Colors.white,
-//               ),
-//               children: <Widget>[
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                   children: <Widget>[
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(
-//                             left: 20, right: 20, bottom: 20),
-//                         child: TextFormField(
-//                           decoration: InputDecoration(
-//                             labelText: 'From',
-//                             //icon: Icon(Icons.place),
-//                           ),
-//                           keyboardType: TextInputType.text,
-// //
-//                           onSaved: (value) {
-// //                        _authData['email'] = value;
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(
-//                             left: 20, right: 20, bottom: 20),
-//                         child: TextFormField(
-//                           decoration: InputDecoration(
-//                             labelText: 'To',
-//                             //icon: Icon(Icons.location_on),
-//                           ),
-
-//                           keyboardType: TextInputType.text,
-// //                      validator: (value) {
-// //                        if (value.isEmpty || !value.contains('@')) {
-// //                          return 'Invalid email!';
-// //                        } else
-// //                          return null; //Todo
-// //                      },
-//                           onSaved: (value) {
-// //                        _authData['email'] = value;
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                   children: <Widget>[
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(
-//                             left: 20, right: 20, bottom: 20),
-//                         child: TextFormField(
-//                           decoration: InputDecoration(
-//                             labelText: 'Weight(max)',
-//                             //icon: Icon(Icons.place),
-//                           ),
-//                           keyboardType: TextInputType.number,
-// //
-//                           onSaved: (value) {
-// //                        _authData['email'] = value;
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(
-//                             left: 20, right: 20, bottom: 20),
-//                         child: TextFormField(
-//                           decoration: InputDecoration(
-//                             labelText: 'Reward(min)',
-//                             //icon: Icon(Icons.location_on),
-//                           ),
-
-//                           keyboardType: TextInputType.number,
-// //                      validator: (value) {
-// //                        if (value.isEmpty || !value.contains('@')) {
-// //                          return 'Invalid email!';
-// //                        } else
-// //                          return null; //Todo
-// //                      },
-//                           onSaved: (value) {
-// //                        _authData['email'] = value;
-//                           },
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 )
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-  getImageUrl(String a) {
-    imageUrl = 'https://img.icons8.com/wired/2x/passenger-with-baggage.png';
-    if (a != null) {
-      imageUrl = 'https://briddgy.herokuapp.com/media/' + a + "/";
-    }
-    return imageUrl;
   }
 
   @override
@@ -696,12 +559,51 @@ class _TripScreenState extends State<TripsScreen> {
         ),
         elevation: 1,
       ),
-      body: isLoading
+      body: 
+        isLoading
           ? Center(child: CircularProgressIndicator())
           : Column(
               children: <Widget>[
                 filterBar(),
-                Expanded(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      DropdownButton(
+                        hint: Text(_value),
+                        items: [
+                          DropdownMenuItem(
+                            value: "Ranking",
+                            child: Text(
+                              "Highest Ranking",
+                            ),
+                          ),
+                          
+                          DropdownMenuItem(
+                            value: "Price",
+                            child: Text(
+                              "Highest Reward",
+                            ),
+                          ),
+                          
+                          DropdownMenuItem(
+                            value: "WeightLow",
+                            child: Text(
+                              "Lowest Weight",
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: "WeightMax",
+                            child: Text(
+                              "Highest Weight",
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          sortData(value);
+                        },
+                      ),
+                    ]),
+           Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, int i) {
                       return InkWell(

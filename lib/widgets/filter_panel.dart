@@ -23,6 +23,7 @@ const Duration _kExpand = Duration(milliseconds: 200);
 ///  * The "Expand/collapse" section of
 ///    <https://material.io/guidelines/components/lists-controls.html>.
 class FilterPanel extends StatefulWidget {
+  
   /// Creates a single-line [ListTile] with a trailing button that expands or collapses
   /// the tile to reveal or hide the [children]. The [initiallyExpanded] property must
   /// be non-null.
@@ -37,6 +38,7 @@ class FilterPanel extends StatefulWidget {
     this.children = const <Widget>[],
     this.trailing,
     this.initiallyExpanded = false,
+
   })  : assert(initiallyExpanded != null),
         super(key: key);
 
@@ -128,7 +130,7 @@ class _FilterPanelState extends State<FilterPanel>
     super.dispose();
   }
 
-  void _handleTap() {
+  void  handleTap() {
     setState(() {
       _isExpanded = !_isExpanded;
       if (_isExpanded) {
@@ -165,7 +167,7 @@ class _FilterPanelState extends State<FilterPanel>
             iconColor: _iconColor.value,
             textColor: _headerColor.value,
             child: ListTile(
-              onTap: _handleTap,
+              onTap: handleTap,
               leading: widget.leading,
               title: widget.title,
               subtitle: widget.subtitle,

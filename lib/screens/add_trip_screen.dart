@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/orders_screen.dart';
 import 'package:optisend/main.dart';
 
@@ -93,65 +94,62 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 ),
               ],
             ),
-            
-           Container(
-             padding: EdgeInsets.symmetric(vertical: 10),
-             width: deviceWidth * 0.8,
-             child: RaisedButton(
-               
-               shape: RoundedRectangleBorder(
-                   borderRadius: BorderRadius.circular(5.0)),
-               elevation: 4.0,
-               onPressed: () {
-                 DatePicker.showDatePicker(context,
-                     theme: DatePickerTheme(
-                       itemStyle: TextStyle(color: Colors.blue[800]),
-                       containerHeight: 300.0,
-                     ),
-                     showTitleActions: true,
-                     minTime: DateTime.now(),
-                     maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
-                   departureDate= '${date.day}/${date.month}/${date.year}  ';
-                 }, currentTime: DateTime.now(), locale: LocaleType.en);
-               },
-               child: Container(
-                 alignment: Alignment.center,
-                 height: 40.0,
-                 child: Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: <Widget>[
-                     Row(
-                       children: <Widget>[
-                         Container(
-                           child: Row(
-                             children: <Widget>[
-                                           Icon(
-                                             Icons.date_range,
-                                             size: 18.0,
-                                             color: Colors.grey,
-                                           ),
-                               Center(
-                                 child: Text(
-                                   " Date:  $departureDate",
-                                   textAlign: TextAlign.center,
-                                   style: TextStyle(
-                                       color: Theme.of(context).primaryColor,
-                                       fontWeight: FontWeight.bold,
-                                       fontSize: 15.0),
-                                 ),
-                               ),
-                             ],
-                           ),
-                         )
-                       ],
-                     ),
-                   ],
-                 ),
-               ),
-               color: Colors.white,
-             ),
-           ),
-          
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              width: deviceWidth * 0.8,
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
+                elevation: 4.0,
+                onPressed: () {
+                  DatePicker.showDatePicker(context,
+                      theme: DatePickerTheme(
+                        itemStyle: TextStyle(color: Colors.blue[800]),
+                        containerHeight: 300.0,
+                      ),
+                      showTitleActions: true,
+                      minTime: DateTime.now(),
+                      maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
+                    departureDate = '${date.day}/${date.month}/${date.year}  ';
+                  }, currentTime: DateTime.now(), locale: LocaleType.en);
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 40.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            child: Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.date_range,
+                                  size: 18.0,
+                                  color: Colors.grey,
+                                ),
+                                Center(
+                                  child: Text(
+                                    " Date:  $departureDate",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                color: Colors.white,
+              ),
+            ),
             Container(
               width: deviceWidth * 0.8,
               child: TypeAheadFormField(
@@ -170,7 +168,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + ", "+
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
                         suggestion.toString().split(", ")[1]),
                   );
                 },
@@ -179,7 +178,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 },
                 onSuggestionSelected: (suggestion) {
                   this._typeAheadController.text =
-                      suggestion.toString().split(", ")[0] + ", "+ 
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
                           suggestion.toString().split(", ")[1];
                   from = suggestion.toString().split(", ")[2];
                 },
@@ -210,7 +210,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + ", "+
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
                         suggestion.toString().split(", ")[1]),
                   );
                 },
@@ -219,7 +220,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 },
                 onSuggestionSelected: (suggestion) {
                   this._typeAheadController2.text =
-                      suggestion.toString().split(", ")[0] + ", "+
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
                           suggestion.toString().split(", ")[1];
                   to = suggestion.toString().split(", ")[2];
                 },
@@ -279,13 +281,10 @@ class _AddTripScreenState extends State<AddTripScreen> {
                         body: json.encode({
                           "source": from,
                           "destination": to,
-                          "date": DateTime.now().toString().substring(0,10),
+                          "date": DateTime.now().toString().substring(0, 10),
                           "weight_limit": weight,
                         }));
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (__) => MyApp()),
-                    );
+                    Navigator.of(context).pushNamed(MyTrips.routeName);
                   },
                 ),
               ),

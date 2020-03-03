@@ -7,6 +7,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:optisend/screens/orders_screen.dart';
 import 'package:optisend/main.dart';
+import 'package:optisend/screens/my_items.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
@@ -47,8 +48,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
     for (var i = 0; i < _suggested.length; i++) {
       _cities.add(_suggested[i]["city_ascii"].toString() +
           ", " +
-          _suggested[i]["country"].toString()+", "+_suggested[i]["id"].toString());
-
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -124,15 +126,20 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0]+suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
+                        suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController.text = suggestion.toString().split(", ")[0]+suggestion.toString().split(", ")[1];
-                  from=suggestion.toString().split(", ")[2];
+                  this._typeAheadController.text =
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1];
+                  from = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
                   from = value;
@@ -162,15 +169,18 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0]+suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController2.text = suggestion.toString().split(", ")[0]+suggestion.toString().split(", ")[1];
-                  to=suggestion.toString().split(", ")[2];
+                  this._typeAheadController2.text =
+                      suggestion.toString().split(", ")[0] +
+                          suggestion.toString().split(", ")[1];
+                  to = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
                   to = value;
@@ -333,21 +343,18 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           "Authorization": "Token " + token,
                         },
                         body: json.encode({
-                          "title":title,
+                          "title": title,
                           "dimensions": 0,
                           "source": from,
                           "destination": to,
-                          "date": DateTime.now().toString().substring(0,10),
+                          "date": DateTime.now().toString().substring(0, 10),
                           "address": "ads",
                           "weight": weight,
                           "price": price,
                           "trip": null,
                           "description": description
                         }));
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (__) => MyApp()),
-                    );
+                    Navigator.of(context).pushNamed(MyItems.routeName);
                   },
                 ),
               ),

@@ -6,7 +6,7 @@ import 'package:optisend/screens/item_screen.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class Contracts extends StatefulWidget {
-  static const routeName = '/account/myitems';
+  static const routeName = '/account/contracts';
 
   @override
   _ContractsState createState() => _ContractsState();
@@ -22,10 +22,13 @@ class _ContractsState extends State<Contracts> {
   }
 
   Future fetchAndSetOrders() async {
-    const url = "http://briddgy.herokuapp.com/api/orders/";
+    // var token = Provider.of<Auth>(context, listen: false).token;
+    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+    const url = "http://briddgy.herokuapp.com/api/contracts/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + token,},
     ).then((response) {
       setState(
         () {

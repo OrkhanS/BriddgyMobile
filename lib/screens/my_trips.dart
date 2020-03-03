@@ -22,10 +22,13 @@ class _MyTripsState extends State<MyTrips> {
   }
 
   Future fetchAndSetOrders() async {
-    const url = "http://briddgy.herokuapp.com/api/trips/";
+    // var token = Provider.of<Auth>(context, listen: false).token;
+    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+    const url = "http://briddgy.herokuapp.com/api/my/trips/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + token,},
     ).then((response) {
       setState(
         () {
