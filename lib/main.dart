@@ -182,6 +182,8 @@ class _MyAppState extends State<MyApp> {
               "6873cbb0-01bb-4e1d-87a8-1945695a2502" +
               '/?token=40694c366ab5935e997a1002fddc152c9566de90');
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
+
+      
       print("Room Connected");
          var message = {
       "message_type": "text",
