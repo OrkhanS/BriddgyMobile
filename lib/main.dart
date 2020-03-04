@@ -78,6 +78,8 @@ class _MyAppState extends State<MyApp> {
   PageController _pageController;
   bool _enabled = true;
   int _status = 0;
+        IOWebSocketChannel _channelRoom;
+
   List<DateTime> _events = [];
   @override
   void initState() {
@@ -116,16 +118,14 @@ class _MyAppState extends State<MyApp> {
       // This is the fetch-event callback.
       print("[BackgroundFetch] Event received $taskId");
       setState(() {
-        List temp = [];
-        fetchAndSetRooms().then((onValue) {
-          print(onValue);
-        });
+        
         _events.insert(0, new DateTime.now());
       });
       // IMPORTANT:  You must signal completion of your task or the OS can punish your app
       // for taking too long in the background.
       BackgroundFetch.finish(taskId);
     }).then((int status) {
+      initCommunication1();
       print('[BackgroundFetch] configure success: $status');
       setState(() {
         _status = status;
@@ -136,6 +136,7 @@ class _MyAppState extends State<MyApp> {
         _status = e;
       });
     });
+    
 
     // Optionally query the current BackgroundFetch status.
     int status = await BackgroundFetch.status;
@@ -172,6 +173,31 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _status = status;
     });
+  }
+  initCommunication1() async {
+    reset();
+    try {
+      _channelRoom = new IOWebSocketChannel.connect(
+          'ws://briddgy.herokuapp.com/ws/chatrooms/' +
+              "6873cbb0-01bb-4e1d-87a8-1945695a2502" +
+              '/?token=40694c366ab5935e997a1002fddc152c9566de90');
+      _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
+      print("Room Connected");
+         var message = {
+      "message_type": "text",
+      'message': "sasa",
+      "room_id": "6873cbb0-01bb-4e1d-87a8-1945695a2502",
+      "sender": 44
+    };
+
+    if (_channelRoom != null) {
+      if (_channelRoom.sink != null) {
+        _channelRoom.sink.add(jsonEncode(message));
+      }
+    }
+    } catch (e) {
+      print("Error Occured");
+    }
   }
 
   /// ----------------------------------------------------------
