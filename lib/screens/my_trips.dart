@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:optisend/screens/item_screen.dart';
@@ -27,8 +28,10 @@ class _MyTripsState extends State<MyTrips> {
     const url = "http://briddgy.herokuapp.com/api/my/trips/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + token,},
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + token,
+      },
     ).then((response) {
       setState(
         () {
@@ -134,16 +137,22 @@ class _MyTripsState extends State<MyTrips> {
                                 Icons.location_on,
                                 color: Theme.of(context).primaryColor,
                               ),
-                              Text(
-                                "  " +
-                                    _trips[i]["source"]["city_ascii"] +
-                                    "  >  " +
-                                    _trips[i]["destination"][
-                                        "city_ascii"], //Todo: Source -> Destination
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.normal),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.35,
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: "  " +
+                                        _trips[i]["source"]["city_ascii"] +
+                                        "  >  " +
+                                        _trips[i]["destination"][
+                                            "city_ascii"], //Todo: Source -> Destination
+
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
