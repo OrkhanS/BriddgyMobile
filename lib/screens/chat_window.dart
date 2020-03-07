@@ -9,7 +9,6 @@ import 'dart:convert';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:responsive_text_field/responsive_text_field.dart';
 
-
 class ChatWindow extends StatefulWidget {
   var messages, user, room;
   ChatWindow({this.messages, this.user, this.room});
@@ -30,7 +29,6 @@ class _ChatWindowState extends State<ChatWindow> {
   IOWebSocketChannel _channelRoom;
   IOWebSocketChannel alertChannel;
 
-
   @override
   void initState() {
     textEditingController = TextEditingController();
@@ -40,8 +38,9 @@ class _ChatWindowState extends State<ChatWindow> {
     addToMessageList();
     super.initState();
   }
-  addToMessageList(){
-     _messages.addAll(widget.messages["results"]);
+
+  addToMessageList() {
+    _messages.addAll(widget.messages["results"]);
   }
 
   initCommunication(String id) async {
@@ -101,10 +100,10 @@ class _ChatWindowState extends State<ChatWindow> {
     }
 
     setState(() {
-      //_messages.add(message);
+      _messages.add(message);
       enableButton = false;
     });
-
+//todo: configure scroll to end
     Future.delayed(Duration(milliseconds: 100), () {
       scrollController.animateTo(scrollController.position.maxScrollExtent,
           curve: Curves.ease, duration: Duration(milliseconds: 500));
@@ -116,7 +115,7 @@ class _ChatWindowState extends State<ChatWindow> {
   );
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -180,7 +179,7 @@ class _ChatWindowState extends State<ChatWindow> {
                 //  ? Center(child: Text('Empty'))
                 //:
                 ListView.builder(
-                  reverse: true,
+//              reverse: true,
               controller: scrollController,
               itemCount: _messages.length,
               itemBuilder: (context, index) {
@@ -212,9 +211,12 @@ class _ChatWindowState extends State<ChatWindow> {
                       // Warning
                       // Warning
                       child: Text(
-                        _messages[index]["text"].toString().length > 20 ? _messages[index]["text"].toString().substring(0, 20): _messages[index]["text"].toString(),
+                        _messages[index]["text"].toString().length > 20
+                            ? _messages[index]["text"]
+                                .toString()
+                                .substring(0, 20)
+                            : _messages[index]["text"].toString(),
                         softWrap: true,
-                        
                       ),
                     ),
                   ),
@@ -290,7 +292,6 @@ class Triangle extends CustomPainter {
     return true;
   }
 }
-
 
 // ResponsiveTextField(
 //                         availableWidth: MediaQuery.of(context).size.width,
