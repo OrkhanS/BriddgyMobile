@@ -1,4 +1,4 @@
-package life.optify.optisend
+package life.optify.Briddgy
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

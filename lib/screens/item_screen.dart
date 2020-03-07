@@ -233,7 +233,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       ),
                     ),
                     trailing: Text(
-                      widget.weight.toString(), //todo: data
+                      widget.weight.toString() + " kg", //todo: data
                       style: TextStyle(fontSize: 18),
                     ),
                   ),

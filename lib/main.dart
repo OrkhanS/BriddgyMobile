@@ -42,17 +42,11 @@ import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/orders.dart';
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/contracts.dart';
-import 'package:background_fetch/background_fetch.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:optisend/local_notications_helper.dart';
 
-/// This "Headless Task" is run when app is terminated.
-void backgroundFetchHeadlessTask(String taskId) async {
-  print('[BackgroundFetch] Headless event received.');
-  BackgroundFetch.finish(taskId);
-}
 
 void main() => runApp(MyApp());
 
@@ -78,7 +72,7 @@ class _MyAppState extends State<MyApp> {
   PageController _pageController;
   bool _enabled = true;
   int _status = 0;
-        IOWebSocketChannel _channelRoom;
+  IOWebSocketChannel _channelRoom;
 
   List<DateTime> _events = [];
   @override
@@ -86,7 +80,6 @@ class _MyAppState extends State<MyApp> {
     _currentIndex = 1;
     super.initState();
     _pageController = PageController(initialPage: 1);
-    initPlatformState();
     initCommunication();
     fetchAndSetRooms();
     final settingsAndroid = AndroidInitializationSettings('app_icon');
@@ -103,104 +96,6 @@ class _MyAppState extends State<MyApp> {
         MaterialPageRoute(builder: (context) => OrdersScreen()),
       );
 
-  Future<void> initPlatformState() async {
-    // Configure BackgroundFetch.
-    BackgroundFetch.configure(
-        BackgroundFetchConfig(
-            minimumFetchInterval: 15,
-            stopOnTerminate: false,
-            enableHeadless: true,
-            requiresBatteryNotLow: false,
-            requiresCharging: false,
-            requiresStorageNotLow: false,
-            requiresDeviceIdle: false,
-            requiredNetworkType: NetworkType.NONE), (String taskId) async {
-      // This is the fetch-event callback.
-      print("[BackgroundFetch] Event received $taskId");
-      setState(() {
-        
-        _events.insert(0, new DateTime.now());
-      });
-      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
-      // for taking too long in the background.
-      BackgroundFetch.finish(taskId);
-    }).then((int status) {
-      initCommunication1();
-      print('[BackgroundFetch] configure success: $status');
-      setState(() {
-        _status = status;
-      });
-    }).catchError((e) {
-      print('[BackgroundFetch] configure ERROR: $e');
-      setState(() {
-        _status = e;
-      });
-    });
-    
-
-    // Optionally query the current BackgroundFetch status.
-    int status = await BackgroundFetch.status;
-    setState(() {
-      _status = status;
-    });
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-  }
-
-  void _onClickEnable(enabled) {
-    setState(() {
-      _enabled = enabled;
-    });
-    if (enabled) {
-      BackgroundFetch.start().then((int status) {
-        print('[BackgroundFetch] start success: $status');
-      }).catchError((e) {
-        print('[BackgroundFetch] start FAILURE: $e');
-      });
-    } else {
-      BackgroundFetch.stop().then((int status) {
-        print('[BackgroundFetch] stop success: $status');
-      });
-    }
-  }
-
-  void _onClickStatus() async {
-    int status = await BackgroundFetch.status;
-    print('[BackgroundFetch] status: $status');
-    setState(() {
-      _status = status;
-    });
-  }
-  initCommunication1() async {
-    reset();
-    try {
-      _channelRoom = new IOWebSocketChannel.connect(
-          'ws://briddgy.herokuapp.com/ws/chatrooms/' +
-              "6873cbb0-01bb-4e1d-87a8-1945695a2502" +
-              '/?token=40694c366ab5935e997a1002fddc152c9566de90');
-      _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
-
-      
-      print("Room Connected");
-         var message = {
-      "message_type": "text",
-      'message': "sasa",
-      "room_id": "6873cbb0-01bb-4e1d-87a8-1945695a2502",
-      "sender": 44
-    };
-
-    if (_channelRoom != null) {
-      if (_channelRoom.sink != null) {
-        _channelRoom.sink.add(jsonEncode(message));
-      }
-    }
-    } catch (e) {
-      print("Error Occured");
-    }
-  }
 
   /// ----------------------------------------------------------
   /// Fetch Rooms Of User
@@ -251,8 +146,6 @@ class _MyAppState extends State<MyApp> {
       widget._channel = new IOWebSocketChannel.connect(
           'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
       widget._channel.stream.listen(_onReceptionOfMessageFromServer);
-      showOngoingNotification(notifications,
-                  title: 'Briddgy', body: 'You have a new message!');
       print("Alert Connected");
     } catch (e) {
       print("Error Occured");
@@ -289,8 +182,8 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
-    showOngoingNotification(notifications,
-                  title: 'Briddgy', body: 'You have a new message!');
+    // showOngoingNotification(notifications,
+    //               title: 'Briddgy', body: 'You have a new message!');
     //_mesaj = [];
     //_mesaj.add(json.decode(message));
     // if(_mesaj[0]["id"]){

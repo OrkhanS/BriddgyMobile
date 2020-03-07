@@ -32,7 +32,7 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> _authenticate(
-    String email, String password, String urlSegment) async {
+      String email, String password, String urlSegment) async {
 //    final url =
 //        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key=AIzaSyC13spCwP_f_SalxEbkB-wjedoF8iYENlQ';
     const url = "http://briddgy.herokuapp.com/api/auth/";
@@ -76,8 +76,8 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> signup(
-      String email, String password, String firstname, String lastname) async {
+  Future<void> signup(String email, String password, String firstname,
+      String lastname, String deviceID) async {
     //return _authenticate(email, password, 'signupNewUser');
 
     const url = "http://briddgy.herokuapp.com/api/users/";
@@ -92,6 +92,7 @@ class Auth with ChangeNotifier {
             'password2': password,
             'first_name': firstname,
             'last_name': lastname,
+            'deviceToken': deviceID,
 //            'returnSecureToken': true,
           },
         ),
@@ -129,7 +130,7 @@ class Auth with ChangeNotifier {
     //return _authenticate(email, password, 'verifyPassword');
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(String email, String password, String deviceID) async {
     const url = "http://briddgy.herokuapp.com/api/auth/";
     try {
       final response = await http.post(
@@ -139,6 +140,7 @@ class Auth with ChangeNotifier {
           {
             'username': email,
             'password': password,
+            'deviceToken': deviceID,
 //            'returnSecureToken': true,
           },
         ),
@@ -198,6 +200,15 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> logout(context) async {
+    print(_token);
+    const url = "http://briddgy.herokuapp.com/api/auth/";
+    http.patch(url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + _token,
+        },
+        body: json.encode({"token": _token}));
+
     _token = null;
 //    _userId = null;
 //    _expiryDate = null;
