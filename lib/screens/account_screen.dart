@@ -12,13 +12,13 @@ import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'splash_screen.dart';
 
-class DetailsScreen extends StatelessWidget {
+class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var auth = Provider.of<Auth>(context, listen: false);
     return Scaffold(
       body: auth.isAuth
-          ? DetailsPage()
+          ? AccountPage()
           : FutureBuilder(
               future: auth.tryAutoLogin(),
               builder: (ctx, authResultSnapshot) =>
@@ -30,12 +30,12 @@ class DetailsScreen extends StatelessWidget {
   }
 }
 
-class DetailsPage extends StatefulWidget {
+class AccountPage extends StatefulWidget {
   @override
-  _DetailsPageState createState() => _DetailsPageState();
+  _AccountPageState createState() => _AccountPageState();
 }
 
-class _DetailsPageState extends State<DetailsPage> {
+class _AccountPageState extends State<AccountPage> {
   Map _user = {};
   bool isLoading = true;
   @override

@@ -27,6 +27,10 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  set token(String tokenlox) {
+    _token = tokenlox;
+  }
+
   String get userId {
     return _userId;
   }
@@ -195,7 +199,6 @@ class Auth with ChangeNotifier {
 //    _expiryDate = expiryDate;
     notifyListeners();
 //    _autoLogout();
-    print("keke");
     return true;
   }
 

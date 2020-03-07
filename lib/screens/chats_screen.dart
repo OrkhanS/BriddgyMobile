@@ -22,7 +22,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
 class ChatsScreen extends StatefulWidget {
   final StreamController<String> streamController =
       StreamController<String>.broadcast();
@@ -69,7 +68,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   /// ----------------------------------------------------------
   /// Fetch Messages Of User
   /// ----------------------------------------------------------
-    Future fetchAndSetMessages(int i) async {
+  Future fetchAndSetMessages(int i) async {
     var token = "40694c366ab5935e997a1002fddc152c9566de90";
     String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
         widget.rooms[i]["id"].toString();
@@ -85,7 +84,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       _mesaj.addAll(dataOrders);
     });
     _messages.add(_mesaj);
-//      Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
+    Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
 //    todo: remove comment
   }
 
@@ -181,77 +180,90 @@ class _ChatsScreenState extends State<ChatsScreen> {
         elevation: 1,
       ),
       body: Container(
-         child:
-        // _islogged == true
-        //     ? Center(child: Text('You do not have chats yet'))
-            //: 
-          // Center(child: CircularProgressIndicator())
-            
-             ListView.builder(
-                itemCount: 
-                // _islogged == true ? 
-                widget.rooms.length, 
-                //: 0,
-                itemBuilder: (context, int index) {
-                  return Column(
+        child:
+            // _islogged == true
+            //     ? Center(child: Text('You do not have chats yet'))
+            //:
+            // Center(child: CircularProgressIndicator())
+
+            ListView.builder(
+          itemCount:
+              // _islogged == true ?
+              widget.rooms.length,
+          //: 0,
+          itemBuilder: (context, int index) {
+            return Column(
+              children: <Widget>[
+                Divider(
+                  height: 12.0,
+                ),
+                ListTile(
+                  leading: CircleAvatar(
+                      radius: 24.0,
+                      child: FadeInImage(
+                        image: NetworkImage(
+                            'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                        placeholder: NetworkImage(
+                            'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                      )),
+                  title: Row(
                     children: <Widget>[
-                      Divider(
-                        height: 12.0,
+                      Text(
+                        widget.rooms[index]["members"][0]["first_name"]
+                                .toString() +
+                            " " +
+                            widget.rooms[index]["members"][0]["last_name"]
+                                .toString(),
+                        style: TextStyle(fontSize: 15.0),
                       ),
-                      ListTile(
-                        leading: CircleAvatar(
-                            radius: 24.0,
-                            child: FadeInImage(
-                              image: NetworkImage(
-                                  'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                              placeholder: NetworkImage(
-                                  'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                            )),
-                        title: Row(
-                          children: <Widget>[
-                            Text(widget.rooms[index]["members"][0]["first_name"]
-                                .toString()+" "+widget.rooms[index]["members"][0]["last_name"]
-                                .toString(), style: TextStyle(fontSize: 15.0),),
-                            SizedBox(
-                              width: 16.0,
-                            ),
-                            // Text(
-                            //   widget.rooms[index]["date_modified"]
-                            //       .toString()
-                            //       .substring(0, 10),
-                            //   style: TextStyle(fontSize: 15.0),
-                            // ),
-                          ],
-                        ),
-                        subtitle: Text("Last Message:"+"  "+ timeago.format(DateTime.parse(widget.rooms[index]["date_modified"]
-                                  .toString()
-                                  .substring(0, 10)+" " +widget.rooms[index]["date_modified"]
-                                  .toString()
-                                  .substring(11, 26))).toString(),
-                              style: TextStyle(fontSize: 15.0),
-                          // _messages[index]["results"][0]["text"]
-                          //   .toString().substring(0,15)
-                            ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 14.0,
-                        ),
-                        onTap: () {
-                          // Navigator.of(context).pushNamed('/chats/chat_window');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (__) => ChatWindow(
-                                    messages: _messages[index],
-                                    room: widget.rooms[index]["id"],
-                                    user: widget.rooms[index]["members"])),
-                          );
-                        },
+                      SizedBox(
+                        width: 16.0,
                       ),
+                      // Text(
+                      //   widget.rooms[index]["date_modified"]
+                      //       .toString()
+                      //       .substring(0, 10),
+                      //   style: TextStyle(fontSize: 15.0),
+                      // ),
                     ],
-                  );
-                },
-              ),
+                  ),
+                  subtitle: Text(
+                    "Last Message:" +
+                        "  " +
+                        timeago
+                            .format(DateTime.parse(widget.rooms[index]
+                                        ["date_modified"]
+                                    .toString()
+                                    .substring(0, 10) +
+                                " " +
+                                widget.rooms[index]["date_modified"]
+                                    .toString()
+                                    .substring(11, 26)))
+                            .toString(),
+                    style: TextStyle(fontSize: 15.0),
+                    // _messages[index]["results"][0]["text"]
+                    //   .toString().substring(0,15)
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 14.0,
+                  ),
+                  onTap: () {
+                    // Navigator.of(context).pushNamed('/chats/chat_window');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (__) => ChatWindow(
+                              messages: _messages[index],
+                              room: widget.rooms[index]["id"],
+                              user: widget.rooms[index]["members"])),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

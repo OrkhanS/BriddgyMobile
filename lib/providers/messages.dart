@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Messages with ChangeNotifier {
-  
-  List<dynamic> _messages = [];
-  
-  void addMessages(List mesaj){
-    _messages.add(mesaj);
+  Map _messages = {};
+
+  void addMessages(Map mesaj) {
+    print(mesaj);
+    _messages.addAll(mesaj);
   }
 
-  List get messages{
-    return _messages;
-  }
+//  List get messages{
+//    return _messages;
+//  }
 }

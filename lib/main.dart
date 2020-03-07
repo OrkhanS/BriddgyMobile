@@ -47,6 +47,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:optisend/local_notications_helper.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
 
@@ -75,13 +76,13 @@ class _MyAppState extends State<MyApp> {
   IOWebSocketChannel _channelRoom;
 
   List<DateTime> _events = [];
+
   @override
   void initState() {
     _currentIndex = 1;
     super.initState();
     _pageController = PageController(initialPage: 1);
-    initCommunication();
-    fetchAndSetRooms();
+
     final settingsAndroid = AndroidInitializationSettings('app_icon');
     final settingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: (id, title, body, payload) =>
@@ -91,62 +92,68 @@ class _MyAppState extends State<MyApp> {
         InitializationSettings(settingsAndroid, settingsIOS),
         onSelectNotification: onSelectNotification);
   }
+
   Future onSelectNotification(String payload) async => await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => OrdersScreen()),
       );
 
-
   /// ----------------------------------------------------------
   /// Fetch Rooms Of User
   /// ----------------------------------------------------------
-  Future fetchAndSetRooms() async {
-    // if(Provider.of<Orders>(context, listen: true).notLoaded){
-    //   print("Still loading");
-    // }
-    // else{
-    //   print("ALready Loaded");
-    //   print(Provider.of<Orders>(context, listen:false).orders);
-    // }
+  Future fetchAndSetRooms(auth) async {
+    var f;
+    auth.removeListener(f);
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
 
-    var token = "40694c366ab5935e997a1002fddc152c9566de90";
+    auth.token = extractedUserData['token'];
 
-    // if(Provider.of<Auth>(context, listen: false).isAuth){
-    //   token =  Provider.of<Auth>(context, listen: false).token;
-    // }
-    // else{
-    //   _loggedIn = false;
-    //   return 0;
-    // }
-
-    const url = "http://briddgy.herokuapp.com/api/chats/";
-    final response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + token,
-      },
-    );
-    if (this.mounted) {
-      setState(() {
-        final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedUserData['token'] != null) {
+      const url = "http://briddgy.herokuapp.com/api/chats/";
+      final response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + extractedUserData['token'],
+        },
+      ).then((value) {
+        final dataOrders = json.decode(value.body) as Map<String, dynamic>;
         _rooms = dataOrders["results"];
       });
+      return _rooms;
     }
-    return _rooms;
+    return null;
   }
 
   /// ----------------------------------------------------------
   /// End Fetching Rooms Of User
   /// ----------------------------------------------------------
 
-  initCommunication() async {
+  initCommunication(auth) async {
     reset();
     try {
-      widget._channel = new IOWebSocketChannel.connect(
-          'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
-      widget._channel.stream.listen(_onReceptionOfMessageFromServer);
-      print("Alert Connected");
+      var f;
+      auth.removeListener(f);
+      final prefs = await SharedPreferences.getInstance();
+      if (!prefs.containsKey('userData')) {
+        return false;
+      }
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+
+      auth.token = extractedUserData['token'];
+
+      if (extractedUserData['token'] != null) {
+        widget._channel = new IOWebSocketChannel.connect(
+            'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
+        widget._channel.stream.listen(_onReceptionOfMessageFromServer);
+        print("Alert Connected");
+      }
     } catch (e) {
       print("Error Occured");
       reset();
@@ -182,6 +189,8 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
+    print(message);
+
     // showOngoingNotification(notifications,
     //               title: 'Briddgy', body: 'You have a new message!');
     //_mesaj = [];
@@ -248,29 +257,31 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print("main build");
+
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-          value: Auth(),
+        ChangeNotifierProvider(
+          builder: (_) => Auth(),
         ),
 
         ChangeNotifierProvider.value(
           value: Orders(),
         ),
 
-        // ChangeNotifierProvider.value(
-        //   value: Messages(),
-        // ),
-        // ChangeNotifierProxyProvider<Auth, Products>(
-        //   builder: (ctx, auth, previousProducts) => Products(
-        //     auth.token,
-        //     auth.userId,
-        //     previousProducts == null ? [] : previousProducts.items,
-        //   ),
-        // ),
-        // ChangeNotifierProvider.value(
-        //   value: Cart(),
-        // ),
+        ChangeNotifierProvider(
+          builder: (_) => Messages(),
+        ),
+
+//         ChangeNotifierProxyProvider<Auth, Products>(
+//           builder: (ctx, auth, previousProducts) => Products(
+//             auth.token,
+//             auth.userId,
+//             previousProducts == null ? [] : previousProducts.items,
+//           ),
+//         ),
+//         ChangeNotifierProvider.value(
+//           value: Cart(),
+//         ),
 //        ChangeNotifierProxyProvider<Auth, Orders>(
 //          builder: (ctx, auth, previousOrders) => Orders(
 //            auth.token,
@@ -279,7 +290,13 @@ class _MyAppState extends State<MyApp> {
 //          ),
 //        ),
       ],
-      child: Consumer<Auth>(builder: (ctx, auth, _) {
+      child: Consumer<Auth>(builder: (
+        ctx,
+        auth,
+        _,
+      ) {
+        fetchAndSetRooms(auth);
+        initCommunication(auth);
         return MaterialApp(
           title: 'Optisend',
           theme: ThemeData(
@@ -300,7 +317,7 @@ class _MyAppState extends State<MyApp> {
                   TripsScreen(),
                   ChatsScreen(rooms: _loggedIn == true ? _rooms : 0),
                   NotificationScreen(),
-                  DetailsScreen(),
+                  AccountScreen(),
                 ],
               ),
             ),
