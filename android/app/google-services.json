@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "824781282420",
+    "firebase_url": "https://briddgy-ff554.firebaseio.com",
+    "project_id": "briddgy-ff554",
+    "storage_bucket": "briddgy-ff554.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824781282420:android:9966ffd1bfdd58325c8521",
+        "android_client_info": {
+          "package_name": "life.optify.Briddgy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824781282420-6jcolft2vpci51qc8pvq8o18toluo951.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWF51rlqOtcUFLAt7rZmNA0yJ-D02wuFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824781282420-6jcolft2vpci51qc8pvq8o18toluo951.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "824781282420-6g2r63fv6r1c6vi2430nf93r04u4gdp6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "life.optify.optisend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

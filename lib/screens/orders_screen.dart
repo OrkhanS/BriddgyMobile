@@ -568,11 +568,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                             _orders[i]["source"]["city_ascii"] +
                                                 "  >  " +
                                                 _orders[i]["destination"]
-                                                    ["city_ascii"] +
-                                                "  " +
-                                                _orders[i]["weight"]
-                                                    .toString() +
-                                                " kg", //Todo: Source -> Destination
+                                                    ["city_ascii"]
+                                                , //Todo: Source -> Destination
                                             style: TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.grey[600],

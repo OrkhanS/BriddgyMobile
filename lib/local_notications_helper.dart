@@ -24,9 +24,9 @@ Future showSilentNotification(
 
 NotificationDetails get _ongoing {
   final androidChannelSpecifics = AndroidNotificationDetails(
-    'your channel id',
-    'your channel name',
-    'your channel description',
+    'Briddgy',
+    'Briddgy',
+    'Briddgy',
     importance: Importance.Max,
     priority: Priority.High,
     ongoing: false,

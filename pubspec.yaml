@@ -35,7 +35,9 @@ dependencies:
   dropdown_formfield: ^0.1.1
   flutter_local_notifications: ^1.2.0+4
   date_range_picker: ^1.0.3
+  firebase_messaging: ^6.0.9
   background_fetch: '^0.5.1'
+
 
 
 

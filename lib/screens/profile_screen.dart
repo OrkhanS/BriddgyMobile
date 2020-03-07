@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future fetchAndSetStatistics() async {
     // var token = Provider.of<Auth>(context, listen: false).token;
-    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+    var token = '5463ec37d6c938ac32d7d300b6641d4df234d941';
 
     const url = "http://briddgy.herokuapp.com/api/users/my/stats/";
     final response = await http.get(

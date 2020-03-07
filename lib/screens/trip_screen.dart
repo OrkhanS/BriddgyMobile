@@ -16,6 +16,7 @@ import 'package:flutter/foundation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:optisend/screens/FirebaseMessaging.dart';
 
 class TripsScreen extends StatefulWidget {
   static const routeName = '/trip';
@@ -562,7 +563,8 @@ class _TripScreenState extends State<TripsScreen> {
       body: 
         isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
+          :
+           Column(
               children: <Widget>[
                 filterBar(),
                   Row(
@@ -768,6 +770,7 @@ class _TripScreenState extends State<TripsScreen> {
                 )
               ],
             ),
-    );
+    
+);
   }
 }
