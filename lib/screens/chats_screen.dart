@@ -30,8 +30,8 @@ class ChatsScreen extends StatefulWidget {
   IOWebSocketChannel _channel;
 
   ObserverList<Function> _listeners = new ObserverList<Function>();
-  var rooms, token;
-  ChatsScreen({this.rooms, this.token});
+  var provider, rooms, token;
+  ChatsScreen({this.provider, this.rooms, this.token});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -42,7 +42,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   double viewportFraction = 0.75;
   String imageUrl;
   Map _details = {};
-  List<dynamic> _messagess=[];
+  List<dynamic> _messagess = [];
   bool _isOn = false;
   bool _islogged = true;
   bool _isloading = true;
@@ -83,14 +83,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
         HttpHeaders.CONTENT_TYPE: "application/json",
         "Authorization": "Token " + token,
       },
-    ).then((response){
-        _mesaj = {};
-        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _mesaj.addAll(dataOrders);
-        _mesaj['room_id'] = widget.rooms[i]["id"];
-        _isloading = false;
-      Provider.of<Messages>(context).allAddMessages = _mesaj;
-      _messagess.add(_mesaj);
+    ).then((response) {
+      _mesaj = {};
+      var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+      _mesaj.addAll(dataOrders);
+      _mesaj['room_id'] = widget.rooms[i]["id"];
+      _isloading = false;
+      Map tmpMessage;
+      tmpMessage = Provider.of<Messages>(context).allAddMessages(_mesaj);
+
+      _messagess.add(tmpMessage);
     });
 
     // Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
@@ -260,7 +262,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => ChatWindow(
-                                      //
+                                        provider: widget.provider,
                                         messages: _messagess[index],
                                         room: widget.rooms[index]["id"],
                                         user: widget.rooms[index]["members"],

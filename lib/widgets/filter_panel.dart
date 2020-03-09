@@ -23,7 +23,6 @@ const Duration _kExpand = Duration(milliseconds: 200);
 ///  * The "Expand/collapse" section of
 ///    <https://material.io/guidelines/components/lists-controls.html>.
 class FilterPanel extends StatefulWidget {
-  
   /// Creates a single-line [ListTile] with a trailing button that expands or collapses
   /// the tile to reveal or hide the [children]. The [initiallyExpanded] property must
   /// be non-null.
@@ -38,7 +37,6 @@ class FilterPanel extends StatefulWidget {
     this.children = const <Widget>[],
     this.trailing,
     this.initiallyExpanded = false,
-
   })  : assert(initiallyExpanded != null),
         super(key: key);
 
@@ -130,7 +128,7 @@ class _FilterPanelState extends State<FilterPanel>
     super.dispose();
   }
 
-  void  handleTap() {
+  void handleTap() {
     setState(() {
       _isExpanded = !_isExpanded;
       if (_isExpanded) {
@@ -189,37 +187,37 @@ class _FilterPanelState extends State<FilterPanel>
     );
   }
 
-//   Widget button() {
-//     return Padding(
-//       padding: const EdgeInsets.all(22.0),
-//       child: ClipRRect(
-//         borderRadius: BorderRadius.circular(10),
-//         child: RaisedButton(
-//           color: Theme.of(context).primaryColor,
+  Widget button() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: RaisedButton(
+          color: Colors.red,
 
-//           elevation: 2,
-// //                            color: Theme.of(context).primaryColor,
-//           child: Container(
-//             decoration: BoxDecoration(),
-//             width: MediaQuery.of(context).size.width,
-//             child: Center(
-//               child: Text(
-//                 "SEARCH",
-//                 style: TextStyle(
-//                   fontSize: 19,
-//                   color: Colors.white,
-// //                                  fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ),
-//           ),
-//           onPressed: () {
-//             _handleTap();
-//           },
-//         ),
-//       ),
-//     );
-//   }
+          elevation: 2,
+//                            color: Theme.of(context).primaryColor,
+          child: Container(
+            decoration: BoxDecoration(),
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+              child: Text(
+                "SEARCH",
+                style: TextStyle(
+                  fontSize: 19,
+                  color: Colors.white,
+//                                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          onPressed: () {
+            handleTap();
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   void didChangeDependencies() {
@@ -243,7 +241,9 @@ class _FilterPanelState extends State<FilterPanel>
       builder: _buildChildren,
       child: closed
           ? null
-          : Column(children: [for (var x in widget.children) x]),
+          : Column(children: [
+              for (var x in widget.children) x,
+            ]),
     );
   }
 }

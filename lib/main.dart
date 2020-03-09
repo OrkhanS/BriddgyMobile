@@ -156,7 +156,8 @@ class _MyAppState extends State<MyApp> {
 
       if (extractedUserData['token'] != null) {
         widget._channel = new IOWebSocketChannel.connect(
-            'ws://briddgy.herokuapp.com/ws/alert/?token='+extractedUserData['token']); //todo
+            'ws://briddgy.herokuapp.com/ws/alert/?token=' +
+                extractedUserData['token']); //todo
         widget._channel.stream.listen(_onReceptionOfMessageFromServer);
         print("Alert Connected");
       }
@@ -195,7 +196,7 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
-    valueMessages=json.decode(message);
+    valueMessages = json.decode(message);
     neWMessage.addMessages = valueMessages;
     print(neWMessage);
 
@@ -328,8 +329,10 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   OrdersScreen(),
                   TripsScreen(),
-                  ChatsScreen(rooms: _loggedIn == true ? _rooms : 0,
-                  token:tokenforROOM),
+                  ChatsScreen(
+                      provider: newmessage,
+                      rooms: _loggedIn == true ? _rooms : 0,
+                      token: tokenforROOM),
                   NotificationScreen(),
                   AccountScreen(),
                 ],

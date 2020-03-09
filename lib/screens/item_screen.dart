@@ -20,7 +20,7 @@ class ItemScreen extends StatefulWidget {
     this.source,
     this.image,
   });
-  static const routeName = '/orders';
+  static const routeName = '/orders/item';
   @override
   _ItemScreenState createState() => _ItemScreenState();
 }
@@ -34,7 +34,6 @@ class _ItemScreenState extends State<ItemScreen> {
   Map<String, dynamic> _orders = {};
 
   //widget.myObject.toString()
-  static const routeName = '/orders/item';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,31 +62,30 @@ class _ItemScreenState extends State<ItemScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-               Padding(
-                 padding: const EdgeInsets.all(8.0),
-                 child: ClipRRect(
-                     borderRadius: BorderRadius.all(Radius.circular(40)),
-                     child: 
-                     Image.network(
-                       'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                       height: 250,
-                       width: 250,
-                       fit: BoxFit.cover,
-                       loadingBuilder: (BuildContext context, Widget child,
-                           ImageChunkEvent loadingProgress) {
-                         if (loadingProgress == null) return child;
-                         return Center(
-                           child: CircularProgressIndicator(
-                             value: loadingProgress.expectedTotalBytes != null
-                                 ? loadingProgress.cumulativeBytesLoaded /
-                                     loadingProgress.expectedTotalBytes
-                                 : null,
-                           ),
-                         );
-                       },
-                     ),
-                     ),
-               ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                    child: Image.network(
+                      'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                      height: 250,
+                      width: 250,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
             Padding(

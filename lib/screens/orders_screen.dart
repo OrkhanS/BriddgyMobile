@@ -25,10 +25,15 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
 //  var deviceSize = MediaQuery.of(context).size;
-  bool expands = true;
+  bool expands = false;
+  var filterColor = Colors.white;
+  var _itemCount = 0;
   String _startDate = "Starting from";
   String _endDate = "Untill";
   String _time = "Not set";
+  String _searchBarFrom = "Anywhere";
+  String _searchBarTo = "Anywhere";
+  String _searchBarWeight = "Any";
   DateTime startDate = DateTime.now();
   String imageUrl;
   bool isLoading = true;
@@ -44,12 +49,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
   List _cities = [];
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
+  final TextEditingController _typeAheadController3 = TextEditingController();
+  final TextEditingController _typeAheadController4 = TextEditingController();
+
   @override
   void initState() {
     fetchAndSetOrders();
     super.initState();
   }
-  String urlFilter="";
+
+  String urlFilter = "";
   String _myActivity;
   String _myActivityResult;
 
@@ -67,6 +76,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           final dataOrders = json.decode(response.body) as Map<String, dynamic>;
           _orders = dataOrders["results"];
           isLoading = false;
+          _itemCount = dataOrders["count"];
         },
       );
     });
@@ -74,18 +84,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   Future sortData(value) async {
     String url = "http://briddgy.herokuapp.com/api/orders/?order_by=";
-    if(urlFilter.isNotEmpty){
-      url = urlFilter+"&order_by=";
+    if (urlFilter.isNotEmpty) {
+      url = urlFilter + "&order_by=";
     }
     if (value.toString().compareTo("WeightLow") == 0) {
       url = url + "weight";
     } else if (value.toString().compareTo("WeightMax") == 0) {
       url = url + "-weight";
-    }
-    else if(value.toString().compareTo("Price")==0){
+    } else if (value.toString().compareTo("Price") == 0) {
       url = url + "-price";
-    }
-    else if(value.toString().compareTo("Ranking")==0){
+    } else if (value.toString().compareTo("Ranking") == 0) {
       url = url + "-price";
     }
     await http.get(
@@ -144,6 +152,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
           final dataOrders = json.decode(response.body) as Map<String, dynamic>;
           _orders = dataOrders["results"];
           isLoading = false;
+          _itemCount = dataOrders["count"];
         },
       );
     });
@@ -183,7 +192,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   Widget button() {
     return Padding(
-      padding: const EdgeInsets.all(22.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: RaisedButton(
@@ -196,7 +205,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             width: MediaQuery.of(context).size.width,
             child: Center(
               child: Text(
-                "SEARCH",
+                "Save",
                 style: TextStyle(
                   fontSize: 19,
                   color: Colors.white,
@@ -207,7 +216,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           onPressed: () {
             filterAndSetOrders(from, to, weight, price);
-            build(context);
           },
         ),
       ),
@@ -226,9 +234,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
             color: Theme.of(context).primaryColor,
             child: FilterPanel(
               backgroundColor: Colors.white,
-              initiallyExpanded: false, //todo
+              initiallyExpanded: expands,
               onExpansionChanged: (val) {
                 val = !val;
+                if (val)
+                  setState(() {
+                    filterColor = Colors.white;
+                  });
+                else
+                  setState(() {
+                    filterColor = Theme.of(context).primaryColor;
+                  });
               },
 //              subtitle: Text("Source:  Destination: "),
               title: Container(
@@ -241,7 +257,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
                   child: Text(
-                    "Tokyo - Paris, 25 May",
+                    _searchBarFrom +
+                        " - " +
+                        _searchBarTo +
+                        " , " +
+                        _searchBarWeight +
+                        " kg ",
                     style: TextStyle(color: Colors.grey[400]
                         // Theme.of(context).primaryColor,
                         // fontWeight: FontWeight.bold,
@@ -250,166 +271,215 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                 ),
               ),
-              trailing: Icon(
-                MdiIcons.filterPlusOutline,
-                color: Colors.white,
-              ),
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TypeAheadFormField(
-                          keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
-                          textFieldConfiguration: TextFieldConfiguration(
-                            onChanged: (value) {
-                              from = null;
-                            },
-                            controller: this._typeAheadController,
-                            decoration: InputDecoration(
-                                labelText: 'From',
-                                icon: Icon(
-                                  Icons.location_on,
-                                  size: 20,
-                                )),
-                          ),
-                          suggestionsCallback: (pattern) {
-                            return getSuggestions(pattern);
-                          },
-                          itemBuilder: (context, suggestion) {
-                            return ListTile(
-                              title: Text(suggestion.toString().split(", ")[0] +
-                                  ", " +
-                                  suggestion.toString().split(", ")[1]),
-                            );
-                          },
-                          transitionBuilder:
-                              (context, suggestionsBox, controller) {
-                            return suggestionsBox;
-                          },
-                          onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text =
-                                suggestion.toString().split(", ")[0] +
-                                    ", " +
-                                    suggestion.toString().split(", ")[1];
-                            from = suggestion.toString().split(", ")[2];
-                          },
-                          validator: (value) {
-                            from = value;
-                            if (value.isEmpty) {
-                              return 'Please select a city';
-                            }
-                          },
-                          onSaved: (value) => from = value,
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                  child: TypeAheadFormField(
+                    keepSuggestionsOnLoading: false,
+                    debounceDuration: const Duration(milliseconds: 200),
+                    textFieldConfiguration: TextFieldConfiguration(
+                      onChanged: (value) {
+                        from = null;
+                      },
+                      controller: this._typeAheadController,
+                      decoration: InputDecoration(
+                        labelText: 'From',
+                        hintText: ' Paris',
+                        hintStyle: TextStyle(color: Colors.grey[300]),
+                        prefixIcon: Icon(
+                          MdiIcons.mapMarkerRightOutline,
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TypeAheadFormField(
-                          keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
-                          textFieldConfiguration: TextFieldConfiguration(
-                            onChanged: (value) {
-                              to = null;
-                            },
-                            controller: this._typeAheadController2,
-                            decoration: InputDecoration(
-                                labelText: 'To',
-                                icon: Icon(
-                                  Icons.location_on,
-                                  size: 20,
-                                )),
+                        suffixIcon: IconButton(
+                          padding: EdgeInsets.only(
+                            top: 5,
                           ),
-                          suggestionsCallback: (pattern) {
-                            return getSuggestions(pattern);
-                          },
-                          itemBuilder: (context, suggestion) {
-                            return ListTile(
-                              title: Text(suggestion.toString().split(", ")[0] +
-                                  ", " +
-                                  suggestion.toString().split(", ")[1]),
-                            );
-                          },
-                          transitionBuilder:
-                              (context, suggestionsBox, controller) {
-                            return suggestionsBox;
-                          },
-                          onSuggestionSelected: (suggestion) {
-                            this._typeAheadController2.text =
-                                suggestion.toString().split(", ")[0] +
-                                    ", " +
-                                    suggestion.toString().split(", ")[1];
-                            to = suggestion.toString().split(", ")[2];
-                          },
-                          validator: (value) {
-                            to = value;
-                            if (value.isEmpty) {
-                              return 'Please select a city';
-                            }
-                          },
-                          onSaved: (value) => to = value,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Weight(max)',
-                            //icon: Icon(Icons.place),
+                          icon: Icon(
+                            Icons.close,
+                            size: 15,
                           ),
-                          keyboardType: TextInputType.number,
-//
-                          onChanged: (String val) {
-                            weight = val;
-                          },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
+                          onPressed: () {
+                            this._typeAheadController.text = '';
+                            from = null;
                           },
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Reward(min)',
-                            //icon: Icon(Icons.location_on),
-                          ),
+                    suggestionsCallback: (pattern) {
+                      return getSuggestions(pattern);
+                    },
+                    itemBuilder: (context, suggestion) {
+                      return ListTile(
+                        title: Text(suggestion.toString().split(", ")[0] +
+                            ", " +
+                            suggestion.toString().split(", ")[1]),
+                      );
+                    },
+                    transitionBuilder: (context, suggestionsBox, controller) {
+                      return suggestionsBox;
+                    },
+                    onSuggestionSelected: (suggestion) {
+                      this._typeAheadController.text =
+                          suggestion.toString().split(", ")[0] +
+                              ", " +
+                              suggestion.toString().split(", ")[1];
+                      from = suggestion.toString().split(", ")[2];
+                      _searchBarFrom = suggestion.toString().split(", ")[0];
+                    },
+                    validator: (value) {
+                      from = value;
 
-                          keyboardType: TextInputType.number,
+                      if (value.isEmpty) {
+                        return 'Please select a city';
+                      }
+                    },
+                    onSaved: (value) {
+                      from = value;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                  child: TypeAheadFormField(
+                    keepSuggestionsOnLoading: false,
+                    debounceDuration: const Duration(milliseconds: 200),
+                    textFieldConfiguration: TextFieldConfiguration(
+                      onChanged: (value) {
+                        to = null;
+                      },
+                      controller: this._typeAheadController2,
+                      decoration: InputDecoration(
+                        labelText: 'To',
+                        hintText: ' Berlin',
+                        hintStyle: TextStyle(color: Colors.grey[300]),
+                        prefixIcon: Icon(
+                          MdiIcons.mapMarkerCheckOutline,
+                        ),
+                        suffixIcon: IconButton(
+                          padding: EdgeInsets.only(
+                            top: 5,
+                          ),
+                          icon: Icon(
+                            Icons.close,
+                            size: 15,
+                          ),
+                          onPressed: () {
+                            this._typeAheadController2.text = '';
+                            to = null;
+                          },
+                        ),
+                      ),
+                    ),
+                    suggestionsCallback: (pattern) {
+                      return getSuggestions(pattern);
+                    },
+                    itemBuilder: (context, suggestion) {
+                      return ListTile(
+                        title: Text(suggestion.toString().split(", ")[0] +
+                            ", " +
+                            suggestion.toString().split(", ")[1]),
+                      );
+                    },
+                    transitionBuilder: (context, suggestionsBox, controller) {
+                      return suggestionsBox;
+                    },
+                    onSuggestionSelected: (suggestion) {
+                      this._typeAheadController2.text =
+                          suggestion.toString().split(", ")[0] +
+                              ", " +
+                              suggestion.toString().split(", ")[1];
+                      to = suggestion.toString().split(", ")[2];
+                      _searchBarTo = suggestion.toString().split(", ")[0];
+                    },
+                    validator: (value) {
+                      to = value;
+                      if (value.isEmpty) {
+                        return 'Please select a city';
+                      }
+                    },
+                    onSaved: (value) => to = value,
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                  child: TextFormField(
+                    controller: _typeAheadController3,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(MdiIcons.weightKilogram),
+                      labelText: 'Weight maximum (in kg):',
+                      hintText: ' 3kg',
+                      hintStyle: TextStyle(color: Colors.grey[300]),
+                      suffixIcon: IconButton(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                        ),
+                        icon: Icon(
+                          Icons.close,
+                          size: 15,
+                        ),
+                        onPressed: () {
+                          this._typeAheadController3.text = '';
+                          weight = null;
+                        },
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+//
+                    onChanged: (String val) {
+                      _searchBarWeight = val;
+                      weight = val;
+                    },
+                    onSaved: (value) {
+//                        _authData['email'] = value;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 30, right: 30, top: 5, bottom: 20),
+                  child: TextFormField(
+                    controller: _typeAheadController4,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        MdiIcons.currencyUsd,
+                      ),
+
+                      labelText: 'Reward minimum (in usd):',
+                      hintText: ' 10\$',
+                      hintStyle: TextStyle(color: Colors.grey[300]),
+
+                      suffixIcon: IconButton(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                        ),
+                        icon: Icon(
+                          Icons.close,
+                          size: 15,
+                        ),
+                        onPressed: () {
+                          this._typeAheadController4.text = '';
+                          price = null;
+                        },
+                      ),
+                      //icon: Icon(Icons.location_on),
+                    ),
+
+                    keyboardType: TextInputType.number,
 //                      validator: (value) {
 //                        if (value.isEmpty || !value.contains('@')) {
 //                          return 'Invalid email!';
 //                        } else
 //                          return null; //Todo
 //                      },
-                          onChanged: (String val) {
-                            price = val;
-                          },
-                          onSaved: (value) {
+                    onChanged: (String val) {
+                      price = val;
+                    },
+                    onSaved: (value) {
 //                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+                    },
+                  ),
                 ),
                 button(),
               ],
@@ -428,6 +498,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: true,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
@@ -449,187 +520,217 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: <Widget>[
-                filterBar(),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+          : GestureDetector(
+              child: SingleChildScrollView(
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
                     children: <Widget>[
-                      DropdownButton(
-                        hint: Text(_value),
-                        items: [
-                          DropdownMenuItem(
-                            value: "Ranking",
-                            child: Text(
-                              "Highest Ranking",
-                            ),
-                          ),
-                          
-                          DropdownMenuItem(
-                            value: "Price",
-                            child: Text(
-                              "Highest Reward",
-                            ),
-                          ),
-                          
-                          DropdownMenuItem(
-                            value: "WeightLow",
-                            child: Text(
-                              "Lowest Weight",
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: "WeightMax",
-                            child: Text(
-                              "Highest Weight",
-                            ),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          sortData(value);
-                        },
-                      ),
-                    ]),
-                Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, int i) {
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                              builder: (__) => new ItemScreen(
-                                id: _orders[i]["id"],
-                                owner: _orders[i]["owner"],
-                                title: _orders[i]["title"],
-                                destination: _orders[i]["destination"],
-                                source: _orders[i]["source"]["city_ascii"],
-                                weight: _orders[i]["weight"],
-                                price: _orders[i]["price"],
-                                date: _orders[i]["date"],
-                                description: _orders[i]["description"],
-                                image: _orders[i]["orderimage"],
+                      filterBar(),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: Text(
+                                "Results: " + _itemCount.toString(),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey[500],
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
-                          );
-                        },
-                        child: Container(
-                          height: 140,
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Card(
-                            elevation: 4,
-                            child: Row(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: ClipRRect(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15)),
-                                    child: Image(
-                                      image: NetworkImage(
-                                          // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                          "https://picsum.photos/250?image=9"), //Todo,
-                                    ),
+                            DropdownButton(
+                              hint: Text(_value),
+                              items: [
+                                DropdownMenuItem(
+                                  value: "Ranking",
+                                  child: Text(
+                                    "Highest Ranking",
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                DropdownMenuItem(
+                                  value: "Price",
+                                  child: Text(
+                                    "Highest Reward",
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "WeightLow",
+                                  child: Text(
+                                    "Lowest Weight",
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "WeightMax",
+                                  child: Text(
+                                    "Highest Weight",
+                                  ),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                sortData(value);
+                              },
+                            ),
+                          ]),
+                      Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (context, int i) {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (__) => new ItemScreen(
+                                      id: _orders[i]["id"],
+                                      owner: _orders[i]["owner"],
+                                      title: _orders[i]["title"],
+                                      destination: _orders[i]["destination"],
+                                      source: _orders[i]["source"]
+                                          ["city_ascii"],
+                                      weight: _orders[i]["weight"],
+                                      price: _orders[i]["price"],
+                                      date: _orders[i]["date"],
+                                      description: _orders[i]["description"],
+                                      image: _orders[i]["orderimage"],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 140,
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Card(
+                                  elevation: 4,
+                                  child: Row(
                                     children: <Widget>[
-                                      Text(
-                                        _orders[i]["title"].toString().length >
-                                                20
-                                            ? _orders[i]["title"]
-                                                    .toString()
-                                                    .substring(0, 20) +
-                                                "..."
-                                            : _orders[i]["title"]
-                                                .toString(), //Todo: title
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15)),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Image(
+                                                image: NetworkImage(
+                                                    // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                                    "https://picsum.photos/250?image=9"), //Todo,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Icon(
-                                            MdiIcons.mapMarkerMultipleOutline,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                          Text(
-                                            _orders[i]["source"]["city_ascii"] +
-                                                "  >  " +
-                                                _orders[i]["destination"]
-                                                    ["city_ascii"]
-                                                , //Todo: Source -> Destination
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.grey[600],
-                                                fontWeight: FontWeight.normal),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
+                                      Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              _orders[i]["title"]
+                                                          .toString()
+                                                          .length >
+                                                      20
+                                                  ? _orders[i]["title"]
+                                                          .toString()
+                                                          .substring(0, 20) +
+                                                      "..."
+                                                  : _orders[i]["title"]
+                                                      .toString(), //Todo: title
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.grey[800],
+//                                          fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: <Widget>[
+                                                Icon(
+                                                  MdiIcons
+                                                      .mapMarkerMultipleOutline,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                Text(
+                                                  _orders[i]["source"]
+                                                          ["city_ascii"] +
+                                                      "  >  " +
+                                                      _orders[i]["destination"]
+                                                          ["city_ascii"],
+                                                  //Todo: Source -> Destination
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.grey[600],
+                                                      fontWeight:
+                                                          FontWeight.normal),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons.calendarRange,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                              Text(
-                                                _orders[i]["date"]
-                                                    .toString(), //Todo: date
-                                                style: TextStyle(
-                                                    color: Colors.grey[600]),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 50,
-                                          ),
-                                          Row(
-                                            children: <Widget>[
-                                              Icon(
-                                                Icons.attach_money,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                              ),
-                                              Text(
-                                                _orders[i]["price"]
-                                                    .toString(), //Todo: date
-                                                style: TextStyle(
-                                                    color: Colors.grey[600]),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: <Widget>[
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      MdiIcons.calendarRange,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    Text(
+                                                      _orders[i]["date"]
+                                                          .toString(),
+                                                      //Todo: date
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 50,
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.attach_money,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    Text(
+                                                      _orders[i]["price"]
+                                                          .toString(),
+                                                      //Todo: date
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
+                          itemCount: _orders == null ? 0 : _orders.length,
                         ),
-                      );
-                    },
-                    itemCount: _orders == null ? 0 : _orders.length,
+                      )
+                    ],
                   ),
-                )
-              ],
+                ),
+              ),
             ),
     );
   }

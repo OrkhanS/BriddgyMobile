@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
-class Messages with ChangeNotifier {
+class Messages extends ChangeNotifier {
   Map _messages = {};
   List<dynamic> mesajlar = [];
   set addMessages(Map mesaj) {
@@ -18,10 +19,10 @@ class Messages with ChangeNotifier {
     notifyListeners();
   }
 
-  set allAddMessages(Map mesaj) {
+  Map allAddMessages(Map mesaj) {
     _messages[mesaj["room_id"]] = mesaj;
-    
     notifyListeners();
+    return _messages;
   }
 
   Map get messages => _messages;
