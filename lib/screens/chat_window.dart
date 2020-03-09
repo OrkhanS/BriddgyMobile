@@ -127,7 +127,7 @@ class _ChatWindowState extends State<ChatWindowChange> {
         "room_id": widget.room,
         "sender": "me",
       };
-      _messages[0].insert(0, message);
+      _messages.insert(0, message);
       enableButton = false;
     });
 //todo: configure scroll to end
@@ -143,10 +143,8 @@ class _ChatWindowState extends State<ChatWindowChange> {
 
   @override
   Widget build(BuildContext context) {
-//    _messages.add(Provider.of<Messages>(context, listen: true)
-//        .messages[widget.room]["results"]);
-    _isloading = false;
-    _messages = widget.messages[widget.room]["results"];
+    widget.provider.addListener;
+    _messages = widget.provider.messages[widget.room]["results"];
 //    print(_messages[0]);
 
     var textInput = Row(
@@ -189,7 +187,7 @@ class _ChatWindowState extends State<ChatWindowChange> {
 
     return Consumer<Messages>(
       builder: (context, mess, child) {
-        print(widget.provider.messages);
+        //print(widget.provider.messages);
 
         return Scaffold(
           resizeToAvoidBottomPadding: true,

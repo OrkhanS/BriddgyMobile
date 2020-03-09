@@ -198,7 +198,6 @@ class _MyAppState extends State<MyApp> {
   _onReceptionOfMessageFromServer(message) {
     valueMessages = json.decode(message);
     neWMessage.addMessages = valueMessages;
-    print(neWMessage);
 
     // showOngoingNotification(notifications,
     //               title: 'Briddgy', body: 'You have a new message!');
@@ -279,6 +278,7 @@ class _MyAppState extends State<MyApp> {
 
         ChangeNotifierProvider(
           builder: (_) => Messages(),
+          
         ),
 
         // ChangeNotifierProvider(

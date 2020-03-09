@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 class Messages extends ChangeNotifier {
   Map _messages = {};
   List<dynamic> mesajlar = [];
+  
   set addMessages(Map mesaj) {
     print(mesaj);
     for (var i = 0; i < _messages.length; i++) {
