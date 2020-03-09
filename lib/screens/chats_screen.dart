@@ -20,6 +20,8 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatsScreen extends StatefulWidget {
@@ -28,8 +30,8 @@ class ChatsScreen extends StatefulWidget {
   IOWebSocketChannel _channel;
 
   ObserverList<Function> _listeners = new ObserverList<Function>();
-  var rooms;
-  ChatsScreen({this.rooms});
+  var rooms, token;
+  ChatsScreen({this.rooms, this.token});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -40,9 +42,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
   double viewportFraction = 0.75;
   String imageUrl;
   Map _details = {};
+  List<dynamic> _messagess=[];
   bool _isOn = false;
   bool _islogged = true;
-  List<dynamic> _messages = [];
+  bool _isloading = true;
+  Map _messages = {};
   Map _mesaj = {};
   bool isMessagesLoaded = false;
   Future<int> roomLength;
@@ -55,13 +59,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Future fetchMessageCaller() async {
-    // if (!Provider.of<Auth>(context, listen: false).isAuth) {
-    //   _islogged = false;
-    //   return 0;
-    // }
+    if (widget.rooms == 0 || widget.rooms == null) {
+      _islogged = false;
 
-    for (var i = 0; i < widget.rooms.length; i++) {
-      await fetchAndSetMessages(i);
+      return 0;
+    } else {
+      for (var i = 0; i < widget.rooms.length; i++) {
+        await fetchAndSetMessages(i);
+      }
     }
   }
 
@@ -69,22 +74,26 @@ class _ChatsScreenState extends State<ChatsScreen> {
   /// Fetch Messages Of User
   /// ----------------------------------------------------------
   Future fetchAndSetMessages(int i) async {
-    var token = "40694c366ab5935e997a1002fddc152c9566de90";
+    var token = widget.token;
     String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
         widget.rooms[i]["id"].toString();
-    await http.get(
+    final response = await http.get(
       url,
       headers: {
         HttpHeaders.CONTENT_TYPE: "application/json",
         "Authorization": "Token " + token,
       },
-    ).then((response) {
-      _mesaj = {};
-      var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-      _mesaj.addAll(dataOrders);
+    ).then((response){
+        _mesaj = {};
+        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+        _mesaj.addAll(dataOrders);
+        _mesaj['room_id'] = widget.rooms[i]["id"];
+        _isloading = false;
+      Provider.of<Messages>(context).allAddMessages = _mesaj;
+      _messagess.add(_mesaj);
     });
-    _messages.add(_mesaj);
-    Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
+
+    // Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
 //    todo: remove comment
   }
 
@@ -180,90 +189,89 @@ class _ChatsScreenState extends State<ChatsScreen> {
         elevation: 1,
       ),
       body: Container(
-        child:
-            // _islogged == true
-            //     ? Center(child: Text('You do not have chats yet'))
-            //:
-            // Center(child: CircularProgressIndicator())
-
-            ListView.builder(
-          itemCount:
-              // _islogged == true ?
-              widget.rooms.length,
-          //: 0,
-          itemBuilder: (context, int index) {
-            return Column(
-              children: <Widget>[
-                Divider(
-                  height: 12.0,
-                ),
-                ListTile(
-                  leading: CircleAvatar(
-                      radius: 24.0,
-                      child: FadeInImage(
-                        image: NetworkImage(
-                            'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                        placeholder: NetworkImage(
-                            'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                      )),
-                  title: Row(
-                    children: <Widget>[
-                      Text(
-                        widget.rooms[index]["members"][0]["first_name"]
-                                .toString() +
-                            " " +
-                            widget.rooms[index]["members"][0]["last_name"]
-                                .toString(),
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                      SizedBox(
-                        width: 16.0,
-                      ),
-                      // Text(
-                      //   widget.rooms[index]["date_modified"]
-                      //       .toString()
-                      //       .substring(0, 10),
-                      //   style: TextStyle(fontSize: 15.0),
-                      // ),
-                    ],
+        child: _islogged != true
+            ? Center(child: Text('You do not have chats yet'))
+            : _isloading == true
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: widget.rooms.length,
+                    itemBuilder: (context, int index) {
+                      return Column(
+                        children: <Widget>[
+                          Divider(
+                            height: 12.0,
+                          ),
+                          ListTile(
+                            leading: CircleAvatar(
+                                radius: 24.0,
+                                child: FadeInImage(
+                                  image: NetworkImage(
+                                      'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                                  placeholder: NetworkImage(
+                                      'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                                )),
+                            title: Row(
+                              children: <Widget>[
+                                Text(
+                                  widget.rooms[index]["members"][0]
+                                              ["first_name"]
+                                          .toString() +
+                                      " " +
+                                      widget.rooms[index]["members"][0]
+                                              ["last_name"]
+                                          .toString(),
+                                  style: TextStyle(fontSize: 15.0),
+                                ),
+                                SizedBox(
+                                  width: 16.0,
+                                ),
+                                // Text(
+                                //   widget.rooms[index]["date_modified"]
+                                //       .toString()
+                                //       .substring(0, 10),
+                                //   style: TextStyle(fontSize: 15.0),
+                                // ),
+                              ],
+                            ),
+                            subtitle: Text(
+                              "Last Message:" +
+                                  "  " +
+                                  timeago
+                                      .format(DateTime.parse(widget.rooms[index]
+                                                  ["date_modified"]
+                                              .toString()
+                                              .substring(0, 10) +
+                                          " " +
+                                          widget.rooms[index]["date_modified"]
+                                              .toString()
+                                              .substring(11, 26)))
+                                      .toString(),
+                              style: TextStyle(fontSize: 15.0),
+                              // _messages[index]["results"][0]["text"]
+                              //   .toString().substring(0,15)
+                            ),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14.0,
+                            ),
+                            onTap: () {
+                              // Navigator.of(context).pushNamed('/chats/chat_window');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => ChatWindow(
+                                      //
+                                        messages: _messagess[index],
+                                        room: widget.rooms[index]["id"],
+                                        user: widget.rooms[index]["members"],
+                                        token: widget.token)),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                  subtitle: Text(
-                    "Last Message:" +
-                        "  " +
-                        timeago
-                            .format(DateTime.parse(widget.rooms[index]
-                                        ["date_modified"]
-                                    .toString()
-                                    .substring(0, 10) +
-                                " " +
-                                widget.rooms[index]["date_modified"]
-                                    .toString()
-                                    .substring(11, 26)))
-                            .toString(),
-                    style: TextStyle(fontSize: 15.0),
-                    // _messages[index]["results"][0]["text"]
-                    //   .toString().substring(0,15)
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 14.0,
-                  ),
-                  onTap: () {
-                    // Navigator.of(context).pushNamed('/chats/chat_window');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (__) => ChatWindow(
-                              messages: _messages[index],
-                              room: widget.rooms[index]["id"],
-                              user: widget.rooms[index]["members"])),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
-        ),
       ),
     );
   }

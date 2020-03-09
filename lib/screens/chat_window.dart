@@ -5,20 +5,38 @@ import 'package:optisend/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:provider/provider.dart';
+import 'package:optisend/providers/messages.dart';
+
 import 'dart:convert';
+
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:responsive_text_field/responsive_text_field.dart';
 
-class ChatWindow extends StatefulWidget {
-  var messages, user, room;
-  ChatWindow({this.messages, this.user, this.room});
-
+class ChatWindow extends StatelessWidget {
+  var messages, user, room, token;
+  ChatWindow({this.messages, this.user, this.room, this.token});
   static const routeName = '/chats/chat_window';
+
+  @override
+  Widget build(BuildContext context) {
+    print('state build called');
+    return ChangeNotifierProvider(
+      builder: (_) => Messages(),
+      child: ChatWindowChange(
+          messages: messages, room: room, user: user, token: token),
+    );
+  }
+}
+
+class ChatWindowChange extends StatefulWidget {
+  var messages, user, room, token;
+  ChatWindowChange({this.messages, this.user, this.room, this.token});
   @override
   _ChatWindowState createState() => _ChatWindowState();
 }
 
-class _ChatWindowState extends State<ChatWindow> {
+class _ChatWindowState extends State<ChatWindowChange> {
   List _messages = [];
 
   TextEditingController textEditingController;
@@ -28,19 +46,15 @@ class _ChatWindowState extends State<ChatWindow> {
   bool _isOn = false;
   IOWebSocketChannel _channelRoom;
   IOWebSocketChannel alertChannel;
-
+  bool _isloading=true;
+  bool newMessageMe = false;
   @override
   void initState() {
     textEditingController = TextEditingController();
     scrollController = ScrollController();
     String id = widget.room.toString();
     initCommunication(id);
-    addToMessageList();
     super.initState();
-  }
-
-  addToMessageList() {
-    _messages.addAll(widget.messages["results"]);
   }
 
   initCommunication(String id) async {
@@ -49,7 +63,8 @@ class _ChatWindowState extends State<ChatWindow> {
       _channelRoom = new IOWebSocketChannel.connect(
           'ws://briddgy.herokuapp.com/ws/chatrooms/' +
               id.toString() +
-              '/?token=40694c366ab5935e997a1002fddc152c9566de90');
+              '/?token=' +
+              widget.token);
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Connected");
     } catch (e) {
@@ -100,14 +115,20 @@ class _ChatWindowState extends State<ChatWindow> {
     }
 
     setState(() {
-      _messages.add(message);
+      message = {
+        "message_type": "text",
+        'text': text,
+        "room_id": widget.room,
+        "sender": "me",
+      };
+      _messages[0].insert(0, message);
       enableButton = false;
     });
 //todo: configure scroll to end
-    Future.delayed(Duration(milliseconds: 100), () {
-      scrollController.animateTo(scrollController.position.maxScrollExtent,
-          curve: Curves.ease, duration: Duration(milliseconds: 500));
-    });
+    // Future.delayed(Duration(milliseconds: 100), () {
+    //   scrollController.animateTo(scrollController.position.maxScrollExtent,
+    //       curve: Curves.ease, duration: Duration(milliseconds: 500));
+    // });
   }
 
   var triangle = CustomPaint(
@@ -116,6 +137,13 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
+   
+      _messages
+        .add(Provider.of<Messages>(context,listen: true).messages[widget.room]["results"]);
+        _isloading=false;
+      print(_messages);
+    
+
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -154,7 +182,9 @@ class _ChatWindowState extends State<ChatWindow> {
       ],
     );
 
-    return Scaffold(
+    return _isloading == true
+                ? Center(child: CircularProgressIndicator())
+                : Scaffold(
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(
         centerTitle: true,
@@ -179,12 +209,14 @@ class _ChatWindowState extends State<ChatWindow> {
                 //  ? Center(child: Text('Empty'))
                 //:
                 ListView.builder(
-//              reverse: true,
+              reverse: true,
               controller: scrollController,
-              itemCount: _messages.length,
+              itemCount: _messages[0].length,
               itemBuilder: (context, index) {
                 bool reverse = false;
-                if (widget.user[0]["id"] != _messages[index]["sender"]) {
+                if (widget.user[0]["id"] != _messages[0][index]["sender"] ||
+                    _messages[0][index]["sender"] == "me") {
+                  newMessageMe = false;
                   reverse = true;
                 }
 
@@ -211,11 +243,11 @@ class _ChatWindowState extends State<ChatWindow> {
                       // Warning
                       // Warning
                       child: Text(
-                        _messages[index]["text"].toString().length > 20
-                            ? _messages[index]["text"]
+                        _messages[0][index]["text"].toString().length > 20
+                            ? _messages[0][index]["text"]
                                 .toString()
                                 .substring(0, 20)
-                            : _messages[index]["text"].toString(),
+                            : _messages[0][index]["text"].toString(),
                         softWrap: true,
                       ),
                     ),

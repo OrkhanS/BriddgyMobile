@@ -39,6 +39,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
+import 'package:optisend/providers/userDetails.dart';
 import 'package:optisend/providers/orders.dart';
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/contracts.dart';
@@ -74,8 +75,11 @@ class _MyAppState extends State<MyApp> {
   bool _enabled = true;
   int _status = 0;
   IOWebSocketChannel _channelRoom;
-
+  String tokenforROOM;
   List<DateTime> _events = [];
+  Map valueMessages = {};
+
+  var neWMessage;
 
   @override
   void initState() {
@@ -112,7 +116,7 @@ class _MyAppState extends State<MyApp> {
         json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     auth.token = extractedUserData['token'];
-
+    tokenforROOM = extractedUserData['token'];
     if (extractedUserData['token'] != null) {
       const url = "http://briddgy.herokuapp.com/api/chats/";
       final response = await http.get(
@@ -134,11 +138,13 @@ class _MyAppState extends State<MyApp> {
   /// End Fetching Rooms Of User
   /// ----------------------------------------------------------
 
-  initCommunication(auth) async {
+  initCommunication(auth, newmessage) async {
     reset();
     try {
-      var f;
+      var f, d;
       auth.removeListener(f);
+      newmessage.removeListener(d);
+      neWMessage = newmessage;
       final prefs = await SharedPreferences.getInstance();
       if (!prefs.containsKey('userData')) {
         return false;
@@ -150,7 +156,7 @@ class _MyAppState extends State<MyApp> {
 
       if (extractedUserData['token'] != null) {
         widget._channel = new IOWebSocketChannel.connect(
-            'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
+            'ws://briddgy.herokuapp.com/ws/alert/?token='+extractedUserData['token']); //todo
         widget._channel.stream.listen(_onReceptionOfMessageFromServer);
         print("Alert Connected");
       }
@@ -189,7 +195,9 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
-    print(message);
+    valueMessages=json.decode(message);
+    neWMessage.addMessages = valueMessages;
+    print(neWMessage);
 
     // showOngoingNotification(notifications,
     //               title: 'Briddgy', body: 'You have a new message!');
@@ -272,6 +280,10 @@ class _MyAppState extends State<MyApp> {
           builder: (_) => Messages(),
         ),
 
+        // ChangeNotifierProvider(
+        //   builder: (_) => UserDetails(),
+        // ),
+
 //         ChangeNotifierProxyProvider<Auth, Products>(
 //           builder: (ctx, auth, previousProducts) => Products(
 //             auth.token,
@@ -290,13 +302,14 @@ class _MyAppState extends State<MyApp> {
 //          ),
 //        ),
       ],
-      child: Consumer<Auth>(builder: (
+      child: Consumer2<Auth, Messages>(builder: (
         ctx,
         auth,
+        newmessage,
         _,
       ) {
         fetchAndSetRooms(auth);
-        initCommunication(auth);
+        initCommunication(auth, newmessage);
         return MaterialApp(
           title: 'Optisend',
           theme: ThemeData(
@@ -315,7 +328,8 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   OrdersScreen(),
                   TripsScreen(),
-                  ChatsScreen(rooms: _loggedIn == true ? _rooms : 0),
+                  ChatsScreen(rooms: _loggedIn == true ? _rooms : 0,
+                  token:tokenforROOM),
                   NotificationScreen(),
                   AccountScreen(),
                 ],

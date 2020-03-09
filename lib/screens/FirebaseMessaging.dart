@@ -28,8 +28,8 @@ _configureFirebaseListerners(){
     onMessage: (Map<String, dynamic> message) async {
       print('onMessage: $message[\'notification\'][\'title\']');
       
-      showOngoingNotification(notifications,
-                  title: message['notification']['title'], body: message['notification']['body']);
+      // showOngoingNotification(notifications,
+      //             title: message['notification']['title'], body: message['notification']['body']);
     },
     onLaunch: (Map<String, dynamic> message) async {
       print('onLaunch: $message');
