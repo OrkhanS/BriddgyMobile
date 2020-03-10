@@ -523,57 +523,56 @@ class _OrdersScreenState extends State<OrdersScreen> {
           : GestureDetector(
               child: SingleChildScrollView(
                 child: Container(
-                  height: MediaQuery.of(context).size.height,
+                  height: MediaQuery.of(context).size.height * .83,
                   child: Column(
                     children: <Widget>[
                       filterBar(),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: Text(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
                                 "Results: " + _itemCount.toString(),
                                 style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.grey[500],
                                     fontWeight: FontWeight.bold),
                               ),
-                            ),
-                            DropdownButton(
-                              hint: Text(_value),
-                              items: [
-                                DropdownMenuItem(
-                                  value: "Ranking",
-                                  child: Text(
-                                    "Highest Ranking",
+                              DropdownButton(
+                                hint: Text(_value),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: "Ranking",
+                                    child: Text(
+                                      "Highest Ranking",
+                                    ),
                                   ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "Price",
-                                  child: Text(
-                                    "Highest Reward",
+                                  DropdownMenuItem(
+                                    value: "Price",
+                                    child: Text(
+                                      "Highest Reward",
+                                    ),
                                   ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "WeightLow",
-                                  child: Text(
-                                    "Lowest Weight",
+                                  DropdownMenuItem(
+                                    value: "WeightLow",
+                                    child: Text(
+                                      "Lowest Weight",
+                                    ),
                                   ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "WeightMax",
-                                  child: Text(
-                                    "Highest Weight",
+                                  DropdownMenuItem(
+                                    value: "WeightMax",
+                                    child: Text(
+                                      "Highest Weight",
+                                    ),
                                   ),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                sortData(value);
-                              },
-                            ),
-                          ]),
+                                ],
+                                onChanged: (value) {
+                                  sortData(value);
+                                },
+                              ),
+                            ]),
+                      ),
                       Expanded(
                         child: ListView.builder(
                           itemBuilder: (context, int i) {
