@@ -88,11 +88,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
       var dataOrders = json.decode(response.body) as Map<String, dynamic>;
       _mesaj.addAll(dataOrders);
       _mesaj['room_id'] = widget.rooms[i]["id"];
-      _isloading = false;
       Map tmpMessage;
       tmpMessage = Provider.of<Messages>(context).allAddMessages(_mesaj);
-
       _messagess.add(tmpMessage);
+      _isloading = false;
     });
 
     // Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
@@ -198,6 +197,19 @@ class _ChatsScreenState extends State<ChatsScreen> {
                 : ListView.builder(
                     itemCount: widget.rooms.length,
                     itemBuilder: (context, int index) {
+                      String last_message;
+                      try {
+                        last_message = _messagess[index]
+                                    [widget.rooms[index]["id"]]["results"][0]
+                                ["text"]
+                            .toString();
+                        if (last_message.length > 20) {
+                          last_message = last_message.substring(0, 20);
+                        }
+                      } catch (e) {
+                        last_message = "No Message";
+                        print("chal");
+                      }
                       return Column(
                         children: <Widget>[
                           Divider(
@@ -238,16 +250,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             subtitle: Text(
                               "Last Message:" +
                                   "  " +
-                                  timeago
-                                      .format(DateTime.parse(widget.rooms[index]
-                                                  ["date_modified"]
-                                              .toString()
-                                              .substring(0, 10) +
-                                          " " +
-                                          widget.rooms[index]["date_modified"]
-                                              .toString()
-                                              .substring(11, 26)))
-                                      .toString(),
+                                  // timeago
+                                  //     .format(DateTime.parse(widget.rooms[index]
+                                  //                 ["date_modified"]
+                                  //             .toString()
+                                  //             .substring(0, 10) +
+                                  //         " " +
+                                  //         widget.rooms[index]["date_modified"]
+                                  //             .toString()
+                                  //             .substring(11, 26)))
+                                  //     .toString()
+                                  last_message.toString(),
                               style: TextStyle(fontSize: 15.0),
                               // _messages[index]["results"][0]["text"]
                               //   .toString().substring(0,15)

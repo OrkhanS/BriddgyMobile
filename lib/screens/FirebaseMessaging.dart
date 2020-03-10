@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:optisend/local_notications_helper.dart';
+import 'package:optisend/screens/chats_screen.dart';
 
 import 'orders_screen.dart';
 
@@ -26,15 +27,20 @@ class FirebaseMessagingState extends State<FirebaseMessagingDemo>{
 _configureFirebaseListerners(){
   _firebaseMessaging.configure(
     onMessage: (Map<String, dynamic> message) async {
+      print("I AM HERE");
       print('onMessage: $message[\'notification\'][\'title\']');
       
       // showOngoingNotification(notifications,
-      //             title: message['notification']['title'], body: message['notification']['body']);
+      //             title: "ELAVE", body: "TEST");
     },
     onLaunch: (Map<String, dynamic> message) async {
+      // showOngoingNotification(notifications,
+      //             title: "ELAVE", body: "TEST1");
       print('onLaunch: $message');
     },
     onResume: (Map<String, dynamic> message) async {
+      // showOngoingNotification(notifications,
+      //             title: "ELAVE", body: "TEST1");
       print('onResume: $message');
     },
   );
@@ -56,7 +62,7 @@ _configureFirebaseListerners(){
   }
   Future onSelectNotification(String payload) async => await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => OrdersScreen()),
+        MaterialPageRoute(builder: (context) => ChatsScreen()),
       );
   @override
   Widget build(BuildContext context){

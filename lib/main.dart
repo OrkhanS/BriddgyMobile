@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
   String tokenforROOM;
   List<DateTime> _events = [];
   Map valueMessages = {};
-
+  bool socketConnected = false;
   var neWMessage;
 
   @override
@@ -105,6 +105,7 @@ class _MyAppState extends State<MyApp> {
   /// ----------------------------------------------------------
   /// Fetch Rooms Of User
   /// ----------------------------------------------------------
+
   Future fetchAndSetRooms(auth) async {
     var f;
     auth.removeListener(f);
@@ -139,6 +140,7 @@ class _MyAppState extends State<MyApp> {
   /// ----------------------------------------------------------
 
   initCommunication(auth, newmessage) async {
+    if(socketConnected == false){ socketConnected=true;
     reset();
     try {
       var f, d;
@@ -164,6 +166,9 @@ class _MyAppState extends State<MyApp> {
     } catch (e) {
       print("Error Occured");
       reset();
+    }}
+    else{
+      return;
     }
   }
 

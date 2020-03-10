@@ -7,16 +7,17 @@ import 'package:http/http.dart' as http;
 
 class Messages extends ChangeNotifier {
   Map _messages = {};
-  List<dynamic> mesajlar = [];
-  
+  Map tmp = {};
+  int tmpIDofMessage = 0;
+
   set addMessages(Map mesaj) {
-    print(mesaj);
     for (var i = 0; i < _messages.length; i++) {
       if (_messages[mesaj["room_id"]].length > 0) {
-        _messages[mesaj["room_id"]]["results"].add(mesaj);
+        if(_messages[mesaj["room_id"]]["results"][0]["id"] != mesaj["id"]){ 
+        _messages[mesaj["room_id"]]["results"].insert(0, mesaj);
+        }
       }
     }
-    print(_messages);
     notifyListeners();
   }
 

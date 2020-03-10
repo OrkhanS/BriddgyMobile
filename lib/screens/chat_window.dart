@@ -141,10 +141,19 @@ class _ChatWindowState extends State<ChatWindowChange> {
     painter: Triangle(),
   );
 
+
   @override
   Widget build(BuildContext context) {
     widget.provider.addListener;
-    _messages = widget.provider.messages[widget.room]["results"];
+    bool messageLoader = false;
+    try {
+      _messages = widget.provider.messages[widget.room]["results"]; 
+      messageLoader=true;
+    } catch (e) {
+      messageLoader=false;
+    }
+    
+    
 //    print(_messages[0]);
 
     var textInput = Row(
@@ -210,9 +219,9 @@ class _ChatWindowState extends State<ChatWindowChange> {
             children: <Widget>[
               Expanded(
                 child:
-                    //widget.messages == 0
-                    //  ? Center(child: Text('Empty'))
-                    //:
+                    messageLoader == false
+                     ? Center(child: CircularProgressIndicator())
+                    :
                     ListView.builder(
                   reverse: true,
                   controller: scrollController,
