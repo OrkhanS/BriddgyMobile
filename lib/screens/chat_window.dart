@@ -127,7 +127,7 @@ class _ChatWindowState extends State<ChatWindowChange> {
         "room_id": widget.room,
         "sender": "me",
       };
-      _messages[0].insert(0, message);
+      _messages.insert(0, message);
       enableButton = false;
     });
 //todo: configure scroll to end
@@ -141,12 +141,19 @@ class _ChatWindowState extends State<ChatWindowChange> {
     painter: Triangle(),
   );
 
+
   @override
   Widget build(BuildContext context) {
-//    _messages.add(Provider.of<Messages>(context, listen: true)
-//        .messages[widget.room]["results"]);
-    _isloading = false;
-    _messages = widget.messages[widget.room]["results"];
+    widget.provider.addListener;
+    bool messageLoader = false;
+    try {
+      _messages = widget.provider.messages[widget.room]["results"]; 
+      messageLoader=true;
+    } catch (e) {
+      messageLoader=false;
+    }
+    
+    
 //    print(_messages[0]);
 
     var textInput = Row(
@@ -189,7 +196,7 @@ class _ChatWindowState extends State<ChatWindowChange> {
 
     return Consumer<Messages>(
       builder: (context, mess, child) {
-        print(widget.provider.messages);
+        //print(widget.provider.messages);
 
         return Scaffold(
           resizeToAvoidBottomPadding: true,
@@ -212,9 +219,9 @@ class _ChatWindowState extends State<ChatWindowChange> {
             children: <Widget>[
               Expanded(
                 child:
-                    //widget.messages == 0
-                    //  ? Center(child: Text('Empty'))
-                    //:
+                    messageLoader == false
+                     ? Center(child: CircularProgressIndicator())
+                    :
                     ListView.builder(
                   reverse: true,
                   controller: scrollController,
