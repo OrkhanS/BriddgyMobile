@@ -13,36 +13,17 @@ import 'dart:convert';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:responsive_text_field/responsive_text_field.dart';
 
-class ChatWindow extends StatelessWidget {
-  var provider, messages, user, room, token;
-  ChatWindow({this.provider, this.messages, this.user, this.room, this.token});
-  static const routeName = '/chats/chat_window';
-
-  @override
-  Widget build(BuildContext context) {
-    print('state build called');
-    return ChangeNotifierProvider(
-      builder: (_) => Messages(),
-      child: ChatWindowChange(
-          provider: provider,
-          messages: messages,
-          room: room,
-          user: user,
-          token: token),
-    );
-  }
-}
-
-class ChatWindowChange extends StatefulWidget {
-  var provider, messages, user, room, token;
-  ChatWindowChange(
-      {this.provider, this.messages, this.user, this.room, this.token});
+class ChatWindow extends StatefulWidget {
+  var provider, user, room, token;
+  ChatWindow(
+      {this.provider, this.user, this.room, this.token});
+    static const routeName = '/chats/chat_window';
 
   @override
   _ChatWindowState createState() => _ChatWindowState();
 }
 
-class _ChatWindowState extends State<ChatWindowChange> {
+class _ChatWindowState extends State<ChatWindow> {
   List _messages = [];
 
   TextEditingController textEditingController;
@@ -146,10 +127,10 @@ class _ChatWindowState extends State<ChatWindowChange> {
   Widget build(BuildContext context) {
     widget.provider.addListener;
     bool messageLoader = false;
-    try {
+    if(widget.provider.messages[widget.room]!=null)  {
       _messages = widget.provider.messages[widget.room]["results"]; 
       messageLoader=true;
-    } catch (e) {
+    } else{
       messageLoader=false;
     }
     

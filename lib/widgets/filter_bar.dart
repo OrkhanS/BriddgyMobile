@@ -8,9 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import 'package:optisend/providers/orders.dart';
+
 class FilterBar extends StatefulWidget {
-  var from, to, weight, price, orders;
-  FilterBar({this.from, this.to, this.weight, this.price, this.orders});
+  var from, to, weight, price;
+  OrdersProvider ordersProvider;
+  FilterBar({this.ordersProvider,this.from, this.to, this.weight, this.price});
   @override
   _FilterBarState createState() => _FilterBarState();
 }
@@ -35,28 +38,28 @@ class _FilterBarState extends State<FilterBar> {
   String urlFilter = "";
   var _expanded = false;
 
-  Future filterAndSetOrders(from, to, weight, price) async {
+  Future filterAndSetOrders() async {
     urlFilter = "http://briddgy.herokuapp.com/api/orders/?";
-    if (from != null) {
-      urlFilter = urlFilter + "origin=" + from;
+    if (widget.from != null) {
+      urlFilter = urlFilter + "origin=" + widget.from;
       flagFrom = true;
     }
-    if (to != null) {
+    if (widget.to != null) {
       flagFrom == false
-          ? urlFilter = urlFilter + "dest=" + to.toString()
-          : urlFilter = urlFilter + "&dest=" + to.toString();
+          ? urlFilter = urlFilter + "dest=" + widget.to.toString()
+          : urlFilter = urlFilter + "&dest=" + widget.to.toString();
       flagTo = true;
     }
-    if (weight != null) {
+    if (widget.weight != null) {
       flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "weight=" + weight.toString()
-          : urlFilter = urlFilter + "&weight=" + weight.toString();
+          ? urlFilter = urlFilter + "weight=" + widget.weight.toString()
+          : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
       flagWeight = true;
     }
-    if (price != null) {
+    if (widget.price != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "min_price=" + price.toString()
-          : urlFilter = urlFilter + "&min_price=" + price.toString();
+          ? urlFilter = urlFilter + "min_price=" + widget.price.toString()
+          : urlFilter = urlFilter + "&min_price=" + widget.price.toString();
     }
     await http.get(
       urlFilter,
@@ -65,7 +68,8 @@ class _FilterBarState extends State<FilterBar> {
       setState(
         () {
           final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          widget.orders = dataOrders["results"];isLoading = false;
+          widget.ordersProvider.orders = dataOrders["results"] ;
+          isLoading = false;
           //itemCount = dataOrders["count"];
         },
       );
@@ -140,7 +144,7 @@ class _FilterBarState extends State<FilterBar> {
                 ),
                 trailing: IconButton(
                   icon: Icon(
-                      _expanded ? MdiIcons.filterVariantPlus : Icons.filter),
+                      MdiIcons.filterPlusOutline),
                   onPressed: () {
                     setState(() {
                       _expanded = !_expanded;
@@ -404,6 +408,7 @@ class _FilterBarState extends State<FilterBar> {
                                 ),
                               ),
                               onPressed: () {
+                                filterAndSetOrders();
                                 setState(() {
                                   _expanded = !_expanded;
                                 });

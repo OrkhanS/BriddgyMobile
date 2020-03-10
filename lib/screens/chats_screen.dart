@@ -276,7 +276,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                 MaterialPageRoute(
                                     builder: (__) => ChatWindow(
                                         provider: widget.provider,
-                                        messages: _messagess[index],
                                         room: widget.rooms[index]["id"],
                                         user: widget.rooms[index]["members"],
                                         token: widget.token)),

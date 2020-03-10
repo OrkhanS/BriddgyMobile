@@ -5,9 +5,10 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-class Orders with ChangeNotifier {
+
+class OrdersProvider with ChangeNotifier {
   
-  List<dynamic> _orders = [];
+  List _orders = [];
   bool isLoading = true;
   // void addOrders(List mesaj){
   //   _orders.add(mesaj);
@@ -21,9 +22,28 @@ class Orders with ChangeNotifier {
     return _orders;
   }
 
+  set orders(List temporders){
+    _orders = temporders;
+    notifyListeners();
+  }
+
    Future fetchAndSetOrders() async {
     const url = "http://briddgy.herokuapp.com/api/orders/";
-    final response = http.get(
+    http.get(
+      url,
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+    ).then((onValue){
+      final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
+          orders = dataOrders["results"];
+          isLoading = false;
+    });
+   
+    //notifyListeners();
+    return _orders;
+  } 
+  Future firstFetchAndSetOrders() async {
+    const url = "http://briddgy.herokuapp.com/api/orders/";
+    http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
     ).then((onValue){
@@ -31,8 +51,7 @@ class Orders with ChangeNotifier {
           _orders = dataOrders["results"];
           isLoading = false;
     });
-   
+    return _orders;
   }
-
-
+  
 }

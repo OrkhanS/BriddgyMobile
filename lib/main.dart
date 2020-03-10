@@ -277,8 +277,8 @@ class _MyAppState extends State<MyApp> {
           builder: (_) => Auth(),
         ),
 
-        ChangeNotifierProvider.value(
-          value: Orders(),
+        ChangeNotifierProvider(
+          builder: (_) => OrdersProvider(),
         ),
 
         ChangeNotifierProvider(
@@ -308,10 +308,11 @@ class _MyAppState extends State<MyApp> {
 //          ),
 //        ),
       ],
-      child: Consumer2<Auth, Messages>(builder: (
+      child: Consumer3<Auth, Messages, OrdersProvider>(builder: (
         ctx,
         auth,
         newmessage,
+        ordersProvider,
         _,
       ) {
         fetchAndSetRooms(auth);
@@ -332,7 +333,7 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  OrdersScreen(),
+                  OrdersScreen(ordersProvider: ordersProvider),
                   TripsScreen(),
                   ChatsScreen(
                       provider: newmessage,
