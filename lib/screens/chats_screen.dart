@@ -10,17 +10,11 @@ import '../providers/auth.dart';
 import 'splash_screen.dart';
 
 import 'package:flutter/material.dart';
-import 'dart:math';
-import 'package:optisend/main.dart';
 import 'chat_window.dart';
-import 'package:optisend/web_sockets.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -55,16 +49,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
     super.initState();
+    setRoomsInProvider(widget.provider, widget.rooms);
+  }
+
+  setRoomsInProvider(provider, rooms) {
+    _rooms = provider.allAddChats(rooms);
     fetchMessageCaller();
   }
 
   Future fetchMessageCaller() async {
-    if (widget.rooms == 0 || widget.rooms == null) {
+    if (_rooms == null) {
       _islogged = false;
-
       return 0;
     } else {
-      for (var i = 0; i < widget.rooms.length; i++) {
+      for (var i = 0; i < _rooms.length; i++) {
         await fetchAndSetMessages(i);
       }
     }
@@ -76,7 +74,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   Future fetchAndSetMessages(int i) async {
     var token = widget.token;
     String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
-        widget.rooms[i]["id"].toString();
+        _rooms[i]["id"].toString();
     final response = await http.get(
       url,
       headers: {
@@ -87,7 +85,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
       _mesaj = {};
       var dataOrders = json.decode(response.body) as Map<String, dynamic>;
       _mesaj.addAll(dataOrders);
-      _mesaj['room_id'] = widget.rooms[i]["id"];
+      _mesaj['room_id'] = _rooms[i]["id"];
       Map tmpMessage;
       tmpMessage = Provider.of<Messages>(context).allAddMessages(_mesaj);
       _messagess.add(tmpMessage);
@@ -195,20 +193,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
             : _isloading == true
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
-                    itemCount: widget.rooms.length,
+                    itemCount: _rooms.length,
                     itemBuilder: (context, int index) {
                       String last_message;
                       try {
-                        last_message = _messagess[index]
-                                    [widget.rooms[index]["id"]]["results"][0]
-                                ["text"]
+                        last_message = _messagess[index][_rooms[index]["id"]]
+                                ["results"][0]["text"]
                             .toString();
                         if (last_message.length > 20) {
                           last_message = last_message.substring(0, 20);
                         }
                       } catch (e) {
                         last_message = "No Message";
-                        print("chal");
                       }
                       return Column(
                         children: <Widget>[
@@ -227,12 +223,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             title: Row(
                               children: <Widget>[
                                 Text(
-                                  widget.rooms[index]["members"][0]
-                                              ["first_name"]
+                                  _rooms[index]["members"][0]["first_name"]
                                           .toString() +
                                       " " +
-                                      widget.rooms[index]["members"][0]
-                                              ["last_name"]
+                                      _rooms[index]["members"][0]["last_name"]
                                           .toString(),
                                   style: TextStyle(fontSize: 15.0),
                                 ),
@@ -240,7 +234,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                   width: 16.0,
                                 ),
                                 // Text(
-                                //   widget.rooms[index]["date_modified"]
+                                //   _rooms[index]["date_modified"]
                                 //       .toString()
                                 //       .substring(0, 10),
                                 //   style: TextStyle(fontSize: 15.0),
@@ -250,17 +244,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             subtitle: Text(
                               "Last Message:" +
                                   "  " +
-                                  // timeago
-                                  //     .format(DateTime.parse(widget.rooms[index]
-                                  //                 ["date_modified"]
-                                  //             .toString()
-                                  //             .substring(0, 10) +
-                                  //         " " +
-                                  //         widget.rooms[index]["date_modified"]
-                                  //             .toString()
-                                  //             .substring(11, 26)))
-                                  //     .toString()
-                                  last_message.toString(),
+                                  timeago
+                                      .format(DateTime.parse(_rooms[index]
+                                                  ["date_modified"]
+                                              .toString()
+                                              .substring(0, 10) +
+                                          " " +
+                                          _rooms[index]["date_modified"]
+                                              .toString()
+                                              .substring(11, 26)))
+                                      .toString(),
                               style: TextStyle(fontSize: 15.0),
                               // _messages[index]["results"][0]["text"]
                               //   .toString().substring(0,15)
@@ -276,8 +269,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                 MaterialPageRoute(
                                     builder: (__) => ChatWindow(
                                         provider: widget.provider,
-                                        room: widget.rooms[index]["id"],
-                                        user: widget.rooms[index]["members"],
+                                        room: _rooms[index]["id"],
+                                        user: _rooms[index]["members"],
                                         token: widget.token)),
                               );
                             },

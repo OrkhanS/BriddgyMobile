@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 class Messages extends ChangeNotifier {
   Map _messages = {};
+  List _chatRooms = [];
   Map tmp = {};
   int tmpIDofMessage = 0;
 
@@ -28,4 +29,20 @@ class Messages extends ChangeNotifier {
   }
 
   Map get messages => _messages;
+
+
+  //______________________________________________________________________________________
+  set addChats(Map mesaj) {
+    //here goes new room
+    notifyListeners();
+  }
+
+  List allAddChats(List rooms) {
+    _chatRooms = rooms;
+    //notifyListeners();
+    return _chatRooms;
+  }
+
+  List get chats => _chatRooms;
+
 }

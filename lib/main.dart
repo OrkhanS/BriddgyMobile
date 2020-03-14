@@ -64,6 +64,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final notifications = FlutterLocalNotificationsPlugin();
+ final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
 
   List<dynamic> _rooms;
   bool _isOn = false;
@@ -86,7 +88,7 @@ class _MyAppState extends State<MyApp> {
     _currentIndex = 1;
     super.initState();
     _pageController = PageController(initialPage: 1);
-
+    //_configureFirebaseListerners();
     final settingsAndroid = AndroidInitializationSettings('app_icon');
     final settingsIOS = IOSInitializationSettings(
         onDidReceiveLocalNotification: (id, title, body, payload) =>
@@ -96,7 +98,28 @@ class _MyAppState extends State<MyApp> {
         InitializationSettings(settingsAndroid, settingsIOS),
         onSelectNotification: onSelectNotification);
   }
-
+   _configureFirebaseListerners(newmessage) {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        neWMessage.addMessages = message;
+        print('onMessage: $message[\'notification\'][\'title\']');
+        
+        // showOngoingNotification(notifications,
+        //             title: "ELAVE", body: "TEST");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        // showOngoingNotification(notifications,
+        //             title: "ELAVE", body: "TEST1");
+        //print('onLaunch: $message');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        neWMessage.addMessages = message;
+        // showOngoingNotification(notifications,
+        //             title: "ELAVE", body: "TEST1");
+        print('onResume: $message');
+      },
+    );
+  }
   Future onSelectNotification(String payload) async => await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => OrdersScreen()),
@@ -317,6 +340,7 @@ class _MyAppState extends State<MyApp> {
       ) {
         fetchAndSetRooms(auth);
         initCommunication(auth, newmessage);
+        _configureFirebaseListerners(newmessage);
         return MaterialApp(
           title: 'Optisend',
           theme: ThemeData(

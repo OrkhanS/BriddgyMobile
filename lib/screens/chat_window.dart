@@ -15,9 +15,8 @@ import 'package:responsive_text_field/responsive_text_field.dart';
 
 class ChatWindow extends StatefulWidget {
   var provider, user, room, token;
-  ChatWindow(
-      {this.provider, this.user, this.room, this.token});
-    static const routeName = '/chats/chat_window';
+  ChatWindow({this.provider, this.user, this.room, this.token});
+  static const routeName = '/chats/chat_window';
 
   @override
   _ChatWindowState createState() => _ChatWindowState();
@@ -122,19 +121,17 @@ class _ChatWindowState extends State<ChatWindow> {
     painter: Triangle(),
   );
 
-
   @override
   Widget build(BuildContext context) {
     widget.provider.addListener;
     bool messageLoader = false;
-    if(widget.provider.messages[widget.room]!=null)  {
-      _messages = widget.provider.messages[widget.room]["results"]; 
-      messageLoader=true;
-    } else{
-      messageLoader=false;
+    if (widget.provider.messages[widget.room] != null) {
+      _messages = widget.provider.messages[widget.room]["results"];
+      messageLoader = true;
+    } else {
+      messageLoader = false;
     }
-    
-    
+
 //    print(_messages[0]);
 
     var textInput = Row(
@@ -177,8 +174,6 @@ class _ChatWindowState extends State<ChatWindow> {
 
     return Consumer<Messages>(
       builder: (context, mess, child) {
-        //print(widget.provider.messages);
-
         return Scaffold(
           resizeToAvoidBottomPadding: true,
           appBar: AppBar(
@@ -199,100 +194,108 @@ class _ChatWindowState extends State<ChatWindow> {
           body: Column(
             children: <Widget>[
               Expanded(
-                child:
-                    messageLoader == false
-                     ? Center(child: CircularProgressIndicator())
-                    :
-                    ListView.builder(
-                  reverse: true,
-                  controller: scrollController,
-                  itemCount: _messages.length,
-                  itemBuilder: (context, index) {
-                    bool reverse = false;
-                    if (widget.user[0]["id"] != _messages[index]["sender"] ||
-                        _messages[index]["sender"] == "me") {
-                      newMessageMe = false;
-                      reverse = true;
-                    }
-
-                    var avatar = Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8.0, bottom: 8.0, right: 8.0),
-                      child: CircleAvatar(
-                        child: Text(widget.user[0]["first_name"]
-                            .toString()
-                            .substring(0, 1)),
-                      ),
-                    );
-
-                    var messagebody = DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.blue[100],
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          // Todo
-                          // Warning
-                          // Warning
-                          child: Text(
-                            _messages[index]["text"].toString().length > 20
-                                ? _messages[index]["text"]
-                                    .toString()
-                                    .substring(0, 20)
-                                : _messages[index]["text"].toString(),
-                            softWrap: true,
-                          ),
+                child: messageLoader == false
+                    ? Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[CircularProgressIndicator(strokeWidth: 3,)],
                         ),
+                    )
+                    : ListView.builder(
+                        reverse: true,
+                        controller: scrollController,
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          bool reverse = false;
+                          if (widget.user[0]["id"] !=
+                                  _messages[index]["sender"] ||
+                              _messages[index]["sender"] == "me") {
+                            newMessageMe = false;
+                            reverse = true;
+                          }
+
+                          var avatar = Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, bottom: 8.0, right: 8.0),
+                            child: CircleAvatar(
+                              child: Text(widget.user[0]["first_name"]
+                                  .toString()
+                                  .substring(0, 1)),
+                            ),
+                          );
+
+                          var messagebody = DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.blue[100],
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                // Todo
+                                // Warning
+                                // Warning
+                                child: Text(
+                                  _messages[index]["text"].toString().length >
+                                          20
+                                      ? _messages[index]["text"]
+                                          .toString()
+                                          .substring(0, 20)
+                                      : _messages[index]["text"].toString(),
+                                  softWrap: true,
+                                ),
+                              ),
+                            ),
+                          );
+
+                          Widget message;
+
+                          if (reverse) {
+                            message = Stack(
+                              children: <Widget>[
+                                messagebody,
+                                Positioned(
+                                    right: 0, bottom: 0, child: triangle),
+                              ],
+                            );
+                          } else {
+                            message = Stack(
+                              children: <Widget>[
+                                Positioned(left: 0, bottom: 0, child: triangle),
+                                messagebody,
+                              ],
+                            );
+                          }
+
+                          if (reverse) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: message,
+                                ),
+                                avatar,
+                              ],
+                            );
+                          } else {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                avatar,
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: message,
+                                ),
+                              ],
+                            );
+                          }
+                        },
                       ),
-                    );
-
-                    Widget message;
-
-                    if (reverse) {
-                      message = Stack(
-                        children: <Widget>[
-                          messagebody,
-                          Positioned(right: 0, bottom: 0, child: triangle),
-                        ],
-                      );
-                    } else {
-                      message = Stack(
-                        children: <Widget>[
-                          Positioned(left: 0, bottom: 0, child: triangle),
-                          messagebody,
-                        ],
-                      );
-                    }
-
-                    if (reverse) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: message,
-                          ),
-                          avatar,
-                        ],
-                      );
-                    } else {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          avatar,
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: message,
-                          ),
-                        ],
-                      );
-                    }
-                  },
-                ),
               ),
               Divider(height: 2.0),
               textInput
