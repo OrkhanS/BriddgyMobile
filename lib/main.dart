@@ -40,7 +40,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/userDetails.dart';
-import 'package:optisend/providers/orders.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
+
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/contracts.dart';
 
@@ -57,7 +58,7 @@ class MyApp extends StatefulWidget {
       StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
   ObserverList<Function> _listeners = new ObserverList<Function>();
-
+  var button = ChatsScreen();
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -301,7 +302,7 @@ class _MyAppState extends State<MyApp> {
         ),
 
         ChangeNotifierProvider(
-          builder: (_) => OrdersProvider(),
+          builder: (_) => OrdersTripsProvider(),
         ),
 
         ChangeNotifierProvider(
@@ -331,14 +332,14 @@ class _MyAppState extends State<MyApp> {
 //          ),
 //        ),
       ],
-      child: Consumer3<Auth, Messages, OrdersProvider>(builder: (
+      child: Consumer3<Auth, Messages, OrdersTripsProvider>(builder: (
         ctx,
         auth,
         newmessage,
-        ordersProvider,
+        orderstripsProvider,
         _,
       ) {
-        fetchAndSetRooms(auth);
+         fetchAndSetRooms(auth);
         initCommunication(auth, newmessage);
         _configureFirebaseListerners(newmessage);
         return MaterialApp(
@@ -357,14 +358,14 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  OrdersScreen(ordersProvider: ordersProvider),
-                  TripsScreen(),
+                  OrdersScreen(orderstripsProvider: orderstripsProvider, token:tokenforROOM),
+                  TripsScreen(orderstripsProvider: orderstripsProvider,token:tokenforROOM),
                   ChatsScreen(
                       provider: newmessage,
                       rooms: _loggedIn == true ? _rooms : 0,
                       token: tokenforROOM),
                   NotificationScreen(),
-                  AccountScreen(),
+                  AccountScreen(token:tokenforROOM, orderstripsProvider: orderstripsProvider),
                 ],
               ),
             ),
@@ -385,6 +386,7 @@ class _MyAppState extends State<MyApp> {
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),
+            AccountScreen.routeName: (ctx) => AccountScreen(token:tokenforROOM, orderstripsProvider: orderstripsProvider),
           },
         );
       }),

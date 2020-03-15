@@ -5,11 +5,18 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:optisend/screens/account_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/orders_screen.dart';
 import 'package:optisend/main.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:provider/provider.dart';
+
 
 class AddTripScreen extends StatefulWidget {
+  OrdersTripsProvider orderstripsProvider;
+  var token;
+  AddTripScreen({this.orderstripsProvider, this.token});
   static const routeName = '/trip/add_trip';
 
   @override
@@ -271,7 +278,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   ),
                   onPressed: () {
                     //var token = Provider.of<Auth>(context, listen: false).token;
-                    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+                    var token = widget.token;
                     const url = "http://briddgy.herokuapp.com/api/trips/";
                     http.post(url,
                         headers: {
@@ -284,7 +291,10 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           "date": DateTime.now().toString().substring(0, 10),
                           "weight_limit": weight,
                         }));
-                    Navigator.of(context).pushNamed(MyTrips.routeName);
+                        //widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+                    //Todo // Navigator.of(context).pushNamed(AccountScreen.routeName);
+                        Navigator.pop(context);
+                     
                   },
                 ),
               ),

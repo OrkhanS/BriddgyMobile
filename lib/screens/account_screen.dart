@@ -11,14 +11,21 @@ import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'splash_screen.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
 
 class AccountScreen extends StatelessWidget {
+  static const routeName = '/accountscreen';
+  var token, orderstripsProvider;
+  AccountScreen({this.token, this.orderstripsProvider});
   @override
   Widget build(BuildContext context) {
     var auth = Provider.of<Auth>(context, listen: false);
     return Scaffold(
       body: auth.isAuth
-          ? AccountPage()
+          ? AccountPage(
+              token: token,
+              provider: orderstripsProvider,
+            )
           : FutureBuilder(
               future: auth.tryAutoLogin(),
               builder: (ctx, authResultSnapshot) =>
@@ -31,6 +38,8 @@ class AccountScreen extends StatelessWidget {
 }
 
 class AccountPage extends StatefulWidget {
+  var token, provider;
+  AccountPage({this.token, this.provider});
   @override
   _AccountPageState createState() => _AccountPageState();
 }
@@ -45,7 +54,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Future fetchAndSetUserDetails() async {
     // var token = Provider.of<Auth>(context, listen: false).token;
-    var token = '5463ec37d6c938ac32d7d300b6641d4df234d941';
+    var token = widget.token;
 
     const url = "http://briddgy.herokuapp.com/api/users/me/";
     final response = await http.get(
@@ -226,8 +235,14 @@ class _AccountPageState extends State<AccountPage> {
                                 ),
                                 child: Icon(Icons.navigate_next)),
                             onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(MyItems.routeName);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => MyItems(
+                                          token: widget.token,
+                                          orderstripsProvider: widget.provider,
+                                        )),
+                              );
                             },
                           ),
                           ListTile(
@@ -247,8 +262,14 @@ class _AccountPageState extends State<AccountPage> {
                                 ),
                                 child: Icon(Icons.navigate_next)),
                             onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(MyTrips.routeName);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => MyTrips(
+                                          token: widget.token,
+                                          orderstripsProvider: widget.provider,
+                                        )),
+                              );
                             },
                           ),
                           ListTile(

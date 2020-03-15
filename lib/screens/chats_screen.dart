@@ -75,7 +75,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
     var token = widget.token;
     String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
         _rooms[i]["id"].toString();
-    final response = await http.get(
+    try {
+      await http.get(
       url,
       headers: {
         HttpHeaders.CONTENT_TYPE: "application/json",
@@ -91,6 +92,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
       _messagess.add(tmpMessage);
       _isloading = false;
     });
+    } catch (e) {
+      print("Some Error");
+    }
 
     // Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
 //    todo: remove comment

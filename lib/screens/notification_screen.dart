@@ -50,7 +50,7 @@ class NotificationScreen extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: <Widget>[for (var i = 0; i < 25; i++) notif()],
+            children: <Widget>[for (var i = 0; i < 0; i++) notif()],
           ),
         ));
   }

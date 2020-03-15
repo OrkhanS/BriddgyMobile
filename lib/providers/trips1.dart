@@ -33,8 +33,8 @@ class TripsProvider with ChangeNotifier {
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
     ).then((response) {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          trips = dataOrders["results"];
+          final dataTrips = json.decode(response.body) as Map<String, dynamic>;
+          trips = dataTrips["results"];
           isLoading = false;
         },
       );

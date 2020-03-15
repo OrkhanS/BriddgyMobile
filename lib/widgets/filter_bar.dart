@@ -8,11 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'package:optisend/providers/orders.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
 
 class FilterBar extends StatefulWidget {
   var from, to, weight, price;
-  OrdersProvider ordersProvider;
+  OrdersTripsProvider ordersProvider;
   FilterBar({this.ordersProvider,this.from, this.to, this.weight, this.price});
   @override
   _FilterBarState createState() => _FilterBarState();

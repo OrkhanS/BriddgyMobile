@@ -7,11 +7,16 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:optisend/screens/orders_screen.dart';
 import 'package:optisend/main.dart';
+import 'package:optisend/screens/account_screen.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:provider/provider.dart';
 import 'package:optisend/screens/my_items.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
-
+  OrdersTripsProvider orderstripsProvider;
+  var token;
+  AddItemScreen({this.orderstripsProvider, this.token});
   @override
   _AddItemScreenState createState() => _AddItemScreenState();
 }
@@ -169,7 +174,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] +
+                    title: Text(suggestion.toString().split(", ")[0] + 
+                        ", " +
                         suggestion.toString().split(", ")[1]),
                   );
                 },
@@ -178,7 +184,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 },
                 onSuggestionSelected: (suggestion) {
                   this._typeAheadController2.text =
-                      suggestion.toString().split(", ")[0] +
+                      suggestion.toString().split(", ")[0] + 
+                        ", " +
                           suggestion.toString().split(", ")[1];
                   to = suggestion.toString().split(", ")[2];
                 },
@@ -335,7 +342,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   onPressed: () {
                     //var token = Provider.of<Auth>(context, listen: false).token;
-                    var token = '40694c366ab5935e997a1002fddc152c9566de90';
+                    var token = widget.token;
                     const url = "http://briddgy.herokuapp.com/api/orders/";
                     http.post(url,
                         headers: {
@@ -354,8 +361,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           "trip": null,
                           "description": description
                         }));
-                    Navigator.of(context).pushNamed(MyItems.routeName);
-                  },
+                        Navigator.pop(context);
+                    },
                 ),
               ),
             )

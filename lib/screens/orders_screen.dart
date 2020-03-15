@@ -20,12 +20,13 @@ import 'package:provider/provider.dart';
 
 import 'package:optisend/widgets/filter_bar.dart';
 
-import 'package:optisend/providers/orders.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
-  OrdersProvider ordersProvider;
-  OrdersScreen({this.ordersProvider});
+  OrdersTripsProvider orderstripsProvider;
+  var token;
+  OrdersScreen({this.orderstripsProvider, this.token});
 
   @override
   _OrdersScreenState createState() => _OrdersScreenState();
@@ -61,7 +62,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   void initState() {
-    widget.ordersProvider.fetchAndSetOrders();
+    widget.orderstripsProvider.fetchAndSetOrders();
     super.initState();
   }
 
@@ -69,7 +70,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _myActivity;
   String _myActivityResult;
 
-  // Todo fetch them in provider
   // Future fetchAndSetOrders() async {
   //   const url = "http://briddgy.herokuapp.com/api/orders/";
   //   await http.get(
@@ -87,7 +87,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   //   });
   // }
 
-  Future sortData(value, OrdersProvider provider) async {
+  Future sortData(value, OrdersTripsProvider provider) async {
     String url = "http://briddgy.herokuapp.com/api/orders/?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
@@ -99,7 +99,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     } else if (value.toString().compareTo("Price") == 0) {
       url = url + "-price";
     } else if (value.toString().compareTo("Ranking") == 0) {
-      url = url + "-price";
+      url = url + "-ranking";
     }
     await http.get(
       url,
@@ -203,9 +203,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //print(widget.ordersProvider.orders);
-    return Consumer<OrdersProvider>(
-      builder: (context, ordersProvider, child) {
+    //print(widget.orderstripsProvider.orders);
+    return Consumer<OrdersTripsProvider>(
+      builder: (context, orderstripsProvider, child) {
         //print(widget.provider.messages);
 
         return Scaffold(
@@ -214,7 +214,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
             backgroundColor: Theme.of(context).primaryColor,
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.pushNamed(context, AddItemScreen.routeName);
+              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => AddItemScreen(
+                                          token: widget.token,
+                                          orderstripsProvider: widget.orderstripsProvider,
+                                        )),
+                              );
             },
           ),
           appBar: AppBar(
@@ -236,7 +243,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 child: Column(
                   children: <Widget>[
                     FilterBar(
-                        ordersProvider: ordersProvider,
+                        ordersProvider: orderstripsProvider,
                         from: from,
                         to: to,
                         weight: weight,
@@ -248,7 +255,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           children: <Widget>[
                             Text(
                               "Results: " +
-                                  ordersProvider.orders.length.toString(),
+                                  orderstripsProvider.orders.length.toString(),
                               style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.grey[500],
@@ -283,13 +290,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 ),
                               ],
                               onChanged: (value) {
-                                sortData(value, ordersProvider);
+                                sortData(value, orderstripsProvider);
                               },
                             ),
                           ]),
                     ),
                     Expanded(
-                      child: ordersProvider.isLoading
+                      child: orderstripsProvider.notLoadingOrders
                           ? Center(child: CircularProgressIndicator())
                           : ListView.builder(
                               itemBuilder: (context, int i) {
@@ -299,24 +306,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (__) => new ItemScreen(
-                                          id: ordersProvider.orders[i]["id"],
-                                          owner: ordersProvider.orders[i]
+                                          id: orderstripsProvider.orders[i]["id"],
+                                          owner: orderstripsProvider.orders[i]
                                               ["owner"],
-                                          title: ordersProvider.orders[i]
+                                          title: orderstripsProvider.orders[i]
                                               ["title"],
-                                          destination: ordersProvider.orders[i]
+                                          destination: orderstripsProvider.orders[i]
                                               ["destination"],
-                                          source: ordersProvider.orders[i]
+                                          source: orderstripsProvider.orders[i]
                                               ["source"]["city_ascii"],
-                                          weight: ordersProvider.orders[i]
+                                          weight: orderstripsProvider.orders[i]
                                               ["weight"],
-                                          price: ordersProvider.orders[i]
+                                          price: orderstripsProvider.orders[i]
                                               ["price"],
-                                          date: ordersProvider.orders[i]
+                                          date: orderstripsProvider.orders[i]
                                               ["date"],
-                                          description: ordersProvider.orders[i]
+                                          description: orderstripsProvider.orders[i]
                                               ["description"],
-                                          image: ordersProvider.orders[i]
+                                          image: orderstripsProvider.orders[i]
                                               ["orderimage"],
                                         ),
                                       ),
@@ -355,18 +362,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  ordersProvider.orders[i]
+                                                  orderstripsProvider.orders[i]
                                                                   ["title"]
                                                               .toString()
                                                               .length >
                                                           20
-                                                      ? ordersProvider.orders[i]
+                                                      ? orderstripsProvider.orders[i]
                                                                   ["title"]
                                                               .toString()
                                                               .substring(
                                                                   0, 20) +
                                                           "..."
-                                                      : ordersProvider.orders[i]
+                                                      : orderstripsProvider.orders[i]
                                                               ["title"]
                                                           .toString(), //Todo: title
                                                   style: TextStyle(
@@ -386,11 +393,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                           .primaryColor,
                                                     ),
                                                     Text(
-                                                      ordersProvider.orders[i]
+                                                      orderstripsProvider.orders[i]
                                                                   ["source"]
                                                               ["city_ascii"] +
                                                           "  >  " +
-                                                          ordersProvider
+                                                          orderstripsProvider
                                                                       .orders[i]
                                                                   [
                                                                   "destination"]
@@ -421,7 +428,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                                   .primaryColor,
                                                         ),
                                                         Text(
-                                                          ordersProvider
+                                                          orderstripsProvider
                                                               .orders[i]["date"]
                                                               .toString(),
                                                           //Todo: date
@@ -443,7 +450,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                                   .primaryColor,
                                                         ),
                                                         Text(
-                                                          ordersProvider
+                                                          orderstripsProvider
                                                               .orders[i]
                                                                   ["price"]
                                                               .toString(),
@@ -465,7 +472,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                   ),
                                 );
                               },
-                              itemCount: ordersProvider.orders.length,
+                              itemCount: orderstripsProvider.orders.length,
                             ),
                     )
                   ],

@@ -240,10 +240,10 @@ class _ChatWindowState extends State<ChatWindow> {
                                 // Warning
                                 child: Text(
                                   _messages[index]["text"].toString().length >
-                                          20
+                                          30
                                       ? _messages[index]["text"]
                                           .toString()
-                                          .substring(0, 20)
+                                          .substring(0, 30)
                                       : _messages[index]["text"].toString(),
                                   softWrap: true,
                                 ),
