@@ -62,30 +62,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   void initState() {
-    widget.orderstripsProvider.fetchAndSetOrders();
+    if (widget.orderstripsProvider.myorders.isEmpty) {
+      widget.orderstripsProvider.fetchAndSetOrders();
+    }
+
     super.initState();
   }
 
   String urlFilter = "";
   String _myActivity;
   String _myActivityResult;
-
-  // Future fetchAndSetOrders() async {
-  //   const url = "http://briddgy.herokuapp.com/api/orders/";
-  //   await http.get(
-  //     url,
-  //     headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
-  //   ).then((response) {
-  //     setState(
-  //       () {
-  //         final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-  //         _orders = dataOrders["results"];
-  //         isLoading = false;
-  //         _itemCount = dataOrders["count"];
-  //       },
-  //     );
-  //   });
-  // }
 
   Future sortData(value, OrdersTripsProvider provider) async {
     String url = "http://briddgy.herokuapp.com/api/orders/?order_by=";
@@ -215,13 +201,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
             child: Icon(Icons.add),
             onPressed: () {
               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (__) => AddItemScreen(
-                                          token: widget.token,
-                                          orderstripsProvider: widget.orderstripsProvider,
-                                        )),
-                              );
+                context,
+                MaterialPageRoute(
+                    builder: (__) => AddItemScreen(
+                          token: widget.token,
+                          orderstripsProvider: widget.orderstripsProvider,
+                        )),
+              );
             },
           ),
           appBar: AppBar(
@@ -306,13 +292,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (__) => new ItemScreen(
-                                          id: orderstripsProvider.orders[i]["id"],
+                                          id: orderstripsProvider.orders[i]
+                                              ["id"],
                                           owner: orderstripsProvider.orders[i]
                                               ["owner"],
                                           title: orderstripsProvider.orders[i]
                                               ["title"],
-                                          destination: orderstripsProvider.orders[i]
-                                              ["destination"],
+                                          destination: orderstripsProvider
+                                              .orders[i]["destination"],
                                           source: orderstripsProvider.orders[i]
                                               ["source"]["city_ascii"],
                                           weight: orderstripsProvider.orders[i]
@@ -321,10 +308,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                               ["price"],
                                           date: orderstripsProvider.orders[i]
                                               ["date"],
-                                          description: orderstripsProvider.orders[i]
-                                              ["description"],
+                                          description: orderstripsProvider
+                                              .orders[i]["description"],
                                           image: orderstripsProvider.orders[i]
                                               ["orderimage"],
+                                          token: widget.token,
                                         ),
                                       ),
                                     );
@@ -367,14 +355,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                               .toString()
                                                               .length >
                                                           20
-                                                      ? orderstripsProvider.orders[i]
+                                                      ? orderstripsProvider
+                                                              .orders[i]
                                                                   ["title"]
                                                               .toString()
                                                               .substring(
                                                                   0, 20) +
                                                           "..."
-                                                      : orderstripsProvider.orders[i]
-                                                              ["title"]
+                                                      : orderstripsProvider
+                                                          .orders[i]["title"]
                                                           .toString(), //Todo: title
                                                   style: TextStyle(
                                                     fontSize: 20,
@@ -393,7 +382,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                           .primaryColor,
                                                     ),
                                                     Text(
-                                                      orderstripsProvider.orders[i]
+                                                      orderstripsProvider
+                                                                      .orders[i]
                                                                   ["source"]
                                                               ["city_ascii"] +
                                                           "  >  " +

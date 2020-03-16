@@ -5,8 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+import '../main.dart';
+
 class ItemScreen extends StatefulWidget {
-  var id, description, image;
+  var id, description, image, token;
   var title, owner, destination, source, date, weight, price;
   ItemScreen({
     this.id,
@@ -19,6 +21,7 @@ class ItemScreen extends StatefulWidget {
     this.description,
     this.source,
     this.image,
+    this.token,
   });
   static const routeName = '/orders/item';
   @override
@@ -29,6 +32,22 @@ class _ItemScreenState extends State<ItemScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  Future createRooms() async {
+    String tokenforROOM = widget.token;
+    if (tokenforROOM != null) {
+      String url =
+          "http://briddgy.herokuapp.com/api/chat/" + widget.owner["id"].toString();
+      final response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + tokenforROOM,
+        },
+      );
+    }
+    return null;
   }
 
   Map<String, dynamic> _orders = {};
@@ -171,7 +190,7 @@ class _ItemScreenState extends State<ItemScreen> {
               ),
             ),
             Card(
-              margin: EdgeInsets.symmetric(horizontal: 40),
+              margin: EdgeInsets.symmetric(horizontal: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
@@ -281,7 +300,7 @@ class _ItemScreenState extends State<ItemScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
-              margin: EdgeInsets.symmetric(horizontal: 40),
+              margin: EdgeInsets.symmetric(horizontal: 10),
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -298,37 +317,12 @@ class _ItemScreenState extends State<ItemScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   RaisedButton(
-                    color: Colors.white,
+                    color: Colors.green[400],
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Text(
                           "Message",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Icon(
-                          Icons.chat_bubble_outline,
-                          size: 20,
-                          color: Theme.of(context).primaryColor,
-                        )
-                      ],
-                    ),
-                    onPressed: () {},
-                  ),
-                  RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text(
-                          "To Baggage",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -339,14 +333,47 @@ class _ItemScreenState extends State<ItemScreen> {
                           width: 10,
                         ),
                         Icon(
-                          Icons.add,
+                          Icons.chat_bubble_outline,
                           size: 20,
                           color: Colors.white,
                         )
                       ],
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      createRooms();
+
+                      //Todo Toast message that Conversation has been started
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()),
+                      );
+                    },
                   ),
+                  // RaisedButton(
+                  //   color: Theme.of(context).primaryColor,
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //     children: <Widget>[
+                  //       Text(
+                  //         "To Baggage",
+                  //         style: TextStyle(
+                  //           fontSize: 20,
+                  //           fontWeight: FontWeight.bold,
+                  //           color: Colors.white,
+                  //         ),
+                  //       ),
+                  //       SizedBox(
+                  //         width: 10,
+                  //       ),
+                  //       Icon(
+                  //         Icons.add,
+                  //         size: 20,
+                  //         color: Colors.white,
+                  //       )
+                  //     ],
+                  //   ),
+                  //   onPressed: () {},
+                  // ),
                 ],
               ),
             ),

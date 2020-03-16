@@ -103,6 +103,7 @@ class _MyAppState extends State<MyApp> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message;
+        
         print('onMessage: $message[\'notification\'][\'title\']');
         
         // showOngoingNotification(notifications,

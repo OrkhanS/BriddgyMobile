@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -12,13 +13,13 @@ class OrdersTripsProvider with ChangeNotifier {
   List _trips = [];
   List _mytrips = [];
   bool isLoadingOrders = true;
-  bool isLoading = true;
-  // void addOrders(List mesaj){
-  //   _orders.add(mesaj);
-  // }
+  bool isLoading;
+  String token;
+  
   bool get notLoadingOrders {
     return isLoadingOrders;
   }
+
   bool get notLoaded {
     return isLoading;
   }
@@ -42,10 +43,18 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 
   Future fetchAndSetOrders() async {
+     final prefs = await SharedPreferences.getInstance();
+      if (!prefs.containsKey('userData')) {
+        return false;
+      }
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+    token = extractedUserData['token'];
     const url = "http://briddgy.herokuapp.com/api/orders/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + token,},
     ).then((onValue) {
       final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
       orders = dataOrders["results"];
@@ -93,10 +102,18 @@ class OrdersTripsProvider with ChangeNotifier {
 
 
   Future fetchAndSetTrips() async {
+    final prefs = await SharedPreferences.getInstance();
+      if (!prefs.containsKey('userData')) {
+        return false;
+      }
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+    token = extractedUserData['token'];
     const url = "http://briddgy.herokuapp.com/api/trips/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
+       "Authorization": "Token " + token,},
     ).then(
       (response) {
         final dataTrips = json.decode(response.body) as Map<String, dynamic>;

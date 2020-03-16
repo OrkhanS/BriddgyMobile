@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:optisend/screens/chats_screen.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -55,7 +56,9 @@ class _TripScreenState extends State<TripsScreen> {
   bool isLoading = true;
   @override
   void initState() {
-    widget.orderstripsProvider.fetchAndSetTrips();
+    if(widget.orderstripsProvider.mytrips.isEmpty){
+      widget.orderstripsProvider.fetchAndSetTrips();
+    }
     super.initState();
   }
 
@@ -611,7 +614,7 @@ class _TripScreenState extends State<TripsScreen> {
                 ),
               ]),
               Expanded(
-                child: tripsProvider.notLoaded
+                child: tripsProvider.notLoaded != false
                     ? Center(child: CircularProgressIndicator())
                     : ListView.builder(
                         itemBuilder: (context, int i) {
@@ -748,11 +751,13 @@ class _TripScreenState extends State<TripsScreen> {
                                         onPressed: () {
                                           createRooms(tripsProvider.trips[i]
                                               ["owner"]["id"]);
-                                          // Navigator.push(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //       builder: (context) => MyApp()),
-                                          // );
+
+                                          //Todo Toast message that Conversation has been started
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => MyApp()),
+                                          );
                                           //Navigator.pop(context);
                                         },
                                         child: Padding(
