@@ -23,8 +23,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TripsScreen extends StatefulWidget {
   OrdersTripsProvider orderstripsProvider;
-  var token;
-  TripsScreen({this.orderstripsProvider, this.token});
+  var token, room, auth;
+  TripsScreen({this.orderstripsProvider, this.token, this.room, this.auth});
   static const routeName = '/trip';
   @override
   _TripScreenState createState() => _TripScreenState();
@@ -178,6 +178,8 @@ class _TripScreenState extends State<TripsScreen> {
           "Authorization": "Token " + tokenforROOM,
         },
       );
+       widget.room.fetchAndSetRooms(widget.auth);
+
     }
     return null;
   }
@@ -753,11 +755,11 @@ class _TripScreenState extends State<TripsScreen> {
                                               ["owner"]["id"]);
 
                                           //Todo Toast message that Conversation has been started
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => MyApp()),
-                                          );
+                                          // Navigator.push(
+                                          //   context,
+                                          //   MaterialPageRoute(
+                                          //       builder: (context) => MyApp()),
+                                          // );
                                           //Navigator.pop(context);
                                         },
                                         child: Padding(

@@ -25,8 +25,8 @@ import 'package:optisend/providers/ordersandtrips.dart';
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
   OrdersTripsProvider orderstripsProvider;
-  var token;
-  OrdersScreen({this.orderstripsProvider, this.token});
+  var token, room, auth;
+  OrdersScreen({this.orderstripsProvider, this.token, this.auth, this.room});
 
   @override
   _OrdersScreenState createState() => _OrdersScreenState();
@@ -313,6 +313,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           image: orderstripsProvider.orders[i]
                                               ["orderimage"],
                                           token: widget.token,
+                                          room: widget.room,
+                                          auth: widget.auth,
                                         ),
                                       ),
                                     );

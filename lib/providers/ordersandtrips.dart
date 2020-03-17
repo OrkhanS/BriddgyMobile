@@ -15,7 +15,7 @@ class OrdersTripsProvider with ChangeNotifier {
   bool isLoadingOrders = true;
   bool isLoading;
   String token;
-  
+
   bool get notLoadingOrders {
     return isLoadingOrders;
   }
@@ -43,23 +43,36 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 
   Future fetchAndSetOrders() async {
-     final prefs = await SharedPreferences.getInstance();
-      if (!prefs.containsKey('userData')) {
-        return false;
-      }
+    const url = "http://briddgy.herokuapp.com/api/orders/";
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+        },
+      ).then((onValue) {
+        final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
+        orders = dataOrders["results"];
+        isLoadingOrders = false;
+      });
+    } else {
       final extractedUserData =
           json.decode(prefs.getString('userData')) as Map<String, Object>;
-    token = extractedUserData['token'];
-    const url = "http://briddgy.herokuapp.com/api/orders/";
-    http.get(
-      url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + token,},
-    ).then((onValue) {
-      final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
-      orders = dataOrders["results"];
-      isLoadingOrders = false;
-    });
+      token = extractedUserData['token'];
+
+      http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + token,
+        },
+      ).then((onValue) {
+        final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
+        orders = dataOrders["results"];
+        isLoadingOrders = false;
+      });
+    }
 
     //notifyListeners();
     return _orders;
@@ -100,27 +113,43 @@ class OrdersTripsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   Future fetchAndSetTrips() async {
+    const url = "http://briddgy.herokuapp.com/api/trips/";
     final prefs = await SharedPreferences.getInstance();
-      if (!prefs.containsKey('userData')) {
-        return false;
-      }
+    if (!prefs.containsKey('userData')) {
+      http.get(
+        url,
+        headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      ).then(
+        (response) {
+          final dataTrips = json.decode(response.body) as Map<String, dynamic>;
+          trips = dataTrips["results"];
+          isLoading = false;
+          return;
+        },
+      );
+    } else {
       final extractedUserData =
           json.decode(prefs.getString('userData')) as Map<String, Object>;
-    token = extractedUserData['token'];
-    const url = "http://briddgy.herokuapp.com/api/trips/";
-    http.get(
-      url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json",
-       "Authorization": "Token " + token,},
-    ).then(
-      (response) {
-        final dataTrips = json.decode(response.body) as Map<String, dynamic>;
-        trips = dataTrips["results"];
-        isLoading = false;
-      },
-    );
+      token = extractedUserData['token'];
+
+      if (token != null) {
+        http.get(
+          url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + token,
+          },
+        ).then(
+          (response) {
+            final dataTrips =
+                json.decode(response.body) as Map<String, dynamic>;
+            trips = dataTrips["results"];
+            isLoading = false;
+          },
+        );
+      }
+    }
   }
 
   Future fetchAndSetMyTrips(myToken) async {

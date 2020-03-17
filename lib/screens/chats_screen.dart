@@ -15,7 +15,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:optisend/providers/messages.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-
+import 'package:badges/badges.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatsScreen extends StatefulWidget {
@@ -24,8 +24,8 @@ class ChatsScreen extends StatefulWidget {
   IOWebSocketChannel _channel;
 
   ObserverList<Function> _listeners = new ObserverList<Function>();
-  var provider, rooms, token;
-  ChatsScreen({this.provider, this.rooms, this.token});
+  var provider, token;
+  ChatsScreen({this.provider, this.token});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -49,114 +49,35 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
     super.initState();
-    setRoomsInProvider(widget.provider, widget.rooms);
-  }
-
-  setRoomsInProvider(provider, rooms) {
-    _rooms = provider.allAddChats(rooms);
-    fetchMessageCaller();
-  }
-
-  Future fetchMessageCaller() async {
-    if (_rooms == null) {
-      _islogged = false;
-      return 0;
-    } else {
-      for (var i = 0; i < _rooms.length; i++) {
-        await fetchAndSetMessages(i);
-      }
-    }
   }
 
   /// ----------------------------------------------------------
   /// Fetch Messages Of User
   /// ----------------------------------------------------------
-  Future fetchAndSetMessages(int i) async {
-    var token = widget.token;
-    String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
-        _rooms[i]["id"].toString();
-    try {
-      await http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + token,
-      },
-    ).then((response) {
-      _mesaj = {};
-      var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-      _mesaj.addAll(dataOrders);
-      _mesaj['room_id'] = _rooms[i]["id"];
-      Map tmpMessage;
-      tmpMessage = Provider.of<Messages>(context).allAddMessages(_mesaj);
-      _messagess.add(tmpMessage);
-      _isloading = false;
-    });
-    } catch (e) {
-      print("Some Error");
-    }
-
-    // Provider.of<Messages>(context, listen: false).addMessages(_mesaj);
-//    todo: remove comment
-  }
-
-  /// ----------------------------------------------------------
-  /// End Fetching Rooms Of User
-  /// ----------------------------------------------------------
-
-  // /// ----------------------------------------------------------
-  // /// Creates the WebSocket communication
-  // /// ----------------------------------------------------------
-  // initCommunication() async {
-  //   reset();
+  // Future fetchAndSetMessages(int i) async {
+  //   var token = widget.token;
+  //   String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
+  //       _rooms[i]["id"].toString();
   //   try {
-  //     widget._channel = new IOWebSocketChannel.connect(
-  //         'ws://briddgy.herokuapp.com/ws/alert/?token=40694c366ab5935e997a1002fddc152c9566de90'); //todo
-  //     widget._channel.stream.listen(_onReceptionOfMessageFromServer);
-  //     print("Alert Connected");
+  //     await http.get(
+  //       url,
+  //       headers: {
+  //         HttpHeaders.CONTENT_TYPE: "application/json",
+  //         "Authorization": "Token " + token,
+  //       },
+  //     ).then((response) {
+  //       _mesaj = {};
+  //       var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+  //       _mesaj.addAll(dataOrders);
+  //       _mesaj['room_id'] = _rooms[i]["id"];
+  //       Map tmpMessage;
+  //       tmpMessage = Provider.of<Messages>(context).allAddMessages(_mesaj);
+  //       _messagess.add(tmpMessage);
+  //       _isloading = false;
+  //     });
   //   } catch (e) {
-  //     print("Error Occured");
-  //     reset();
+  //     print("Some Error");
   //   }
-  // }
-
-  // /// ----------------------------------------------------------
-  // /// Closes the WebSocket communication
-  // /// ----------------------------------------------------------
-  // reset() {
-  //   if (widget._channel != null) {
-  //     if (widget._channel.sink != null) {
-  //       widget._channel.sink.close();
-  //       _isOn = false;
-  //     }
-  //   }
-  // }
-
-  // /// ---------------------------------------------------------
-  // /// Adds a callback to be invoked in case of incoming
-  // /// notification
-  // /// ---------------------------------------------------------
-  // addListener(Function callback) {
-  //   widget._listeners.add(callback);
-  // }
-
-  // removeListener(Function callback) {
-  //   widget._listeners.remove(callback);
-  // }
-
-  // /// ----------------------------------------------------------
-  // /// Callback which is invoked each time that we are receiving
-  // /// a message from the server
-  // /// ----------------------------------------------------------
-  // _onReceptionOfMessageFromServer(message) {
-  //   _mesaj = [];
-
-  //   _mesaj.add(json.decode(message));
-  //   // if(_mesaj[0]["id"]){
-  //   // Check if "ID" of image sent before, then check its room ID, search in _room and get message ID and use
-  //   // it in Message Provider, find message, then add the mesaj into that
-  //   // }
-  //   _isOn = true;
   // }
 
   @override
@@ -178,112 +99,123 @@ class _ChatsScreenState extends State<ChatsScreen> {
       Colors.green,
       Colors.lightBlue,
     ];
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            "Chats",
-            style: TextStyle(
-                color: (Theme.of(context).primaryColor),
-                fontWeight: FontWeight.bold),
+    return Consumer<Messages>(
+      builder: (context, provider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: Center(
+              child: Text(
+                "Chats",
+                style: TextStyle(
+                    color: (Theme.of(context).primaryColor),
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            elevation: 1,
           ),
-        ),
-        elevation: 1,
-      ),
-      body: Container(
-        child: _islogged != true
-            ? Center(child: Text('You do not have chats yet'))
-            : _isloading == true
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: _rooms.length,
-                    itemBuilder: (context, int index) {
-                      String last_message;
-                      try {
-                        last_message = _messagess[index][_rooms[index]["id"]]
-                                ["results"][0]["text"]
-                            .toString();
-                        if (last_message.length > 20) {
-                          last_message = last_message.substring(0, 20);
-                        }
-                      } catch (e) {
-                        last_message = "No Message";
-                      }
-                      return Column(
-                        children: <Widget>[
-                          Divider(
-                            height: 12.0,
-                          ),
-                          ListTile(
-                            leading: CircleAvatar(
-                                radius: 24.0,
-                                child: FadeInImage(
-                                  image: NetworkImage(
-                                      'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                                  placeholder: NetworkImage(
-                                      'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                                )),
-                            title: Row(
-                              children: <Widget>[
-                                Text(
-                                  _rooms[index]["members"][0]["first_name"]
-                                          .toString() +
-                                      " " +
-                                      _rooms[index]["members"][0]["last_name"]
+          body: Container(
+            child: widget.provider.userNotLogged == true ||
+                    widget.provider.chats == null
+                ? Center(child: Text('You do not have chats yet'))
+                : widget.provider.chatsNotLoaded == true
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: widget.provider.chats.length,
+                        itemBuilder: (context, int index) {
+                          return Column(
+                            children: <Widget>[
+                              Divider(
+                                height: 12.0,
+                              ),
+                              ListTile(
+                                leading: CircleAvatar(
+                                    radius: 24.0,
+                                    child: FadeInImage(
+                                      image: NetworkImage(
+                                          'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                                      placeholder: NetworkImage(
+                                          'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                                    )),
+                                title: Row(
+                                  children: <Widget>[
+                                    Text(
+                                      widget
+                                              .provider
+                                              .chats[index]["members"][0]
+                                                  ["first_name"]
+                                              .toString() +
+                                          " " +
+                                          widget
+                                              .provider
+                                              .chats[index]["members"][0]
+                                                  ["last_name"]
+                                              .toString(),
+                                      style: TextStyle(fontSize: 15.0),
+                                    ),
+                                    SizedBox(
+                                      width: 16.0,
+                                    ),
+                                    // Text(
+                                    //   widget.provider.chats[index]["date_modified"]
+                                    //       .toString()
+                                    //       .substring(0, 10),
+                                    //   style: TextStyle(fontSize: 15.0),
+                                    // ),
+                                  ],
+                                ),
+                                subtitle: Text(
+                                  "Last Message:" +
+                                      "  " +
+                                      timeago
+                                          .format(DateTime.parse(widget.provider
+                                                  .chats[index]["date_modified"]
+                                                  .toString()
+                                                  .substring(0, 10) +
+                                              " " +
+                                              widget.provider
+                                                  .chats[index]["date_modified"]
+                                                  .toString()
+                                                  .substring(11, 26)))
                                           .toString(),
                                   style: TextStyle(fontSize: 15.0),
+                                  // _messages[index]["results"][0]["text"]
+                                  //   .toString().substring(0,15)
                                 ),
-                                SizedBox(
-                                  width: 16.0,
-                                ),
-                                // Text(
-                                //   _rooms[index]["date_modified"]
-                                //       .toString()
-                                //       .substring(0, 10),
-                                //   style: TextStyle(fontSize: 15.0),
-                                // ),
-                              ],
-                            ),
-                            subtitle: Text(
-                              "Last Message:" +
-                                  "  " +
-                                  timeago
-                                      .format(DateTime.parse(_rooms[index]
-                                                  ["date_modified"]
-                                              .toString()
-                                              .substring(0, 10) +
-                                          " " +
-                                          _rooms[index]["date_modified"]
-                                              .toString()
-                                              .substring(11, 26)))
-                                      .toString(),
-                              style: TextStyle(fontSize: 15.0),
-                              // _messages[index]["results"][0]["text"]
-                              //   .toString().substring(0,15)
-                            ),
-                            trailing: Icon(
-                              Icons.arrow_forward_ios,
-                              size: 14.0,
-                            ),
-                            onTap: () {
-                              // Navigator.of(context).pushNamed('/chats/chat_window');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (__) => ChatWindow(
-                                        provider: widget.provider,
-                                        room: _rooms[index]["id"],
-                                        user: _rooms[index]["members"],
-                                        token: widget.token)),
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-      ),
+                                trailing:
+                                widget.provider.newMessages[widget.provider.chats[index]["id"]].toString() != "null" ?
+                                    Badge(
+                                  badgeContent: Text(widget.provider.newMessages[widget.provider.chats[index]["id"]].toString()),
+                                  child: Icon(Icons.arrow_forward_ios),
+                                )
+                                : 
+                                Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 14.0,
+                                    ),
+                                onTap: () {
+                                  widget.provider.readMessages(widget.provider.chats[index]["id"]);
+                                  widget.provider.fetchAndSetMessages(index);
+                                  // Navigator.of(context).pushNamed('/chats/chat_window');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (__) => ChatWindow(
+                                            provider: widget.provider,
+                                            room: widget.provider.chats[index]["id"],
+                                            user: widget.provider.chats[index]
+                                                ["members"],
+                                            token: widget.token)),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+          ),
+        );
+      },
     );
   }
 }

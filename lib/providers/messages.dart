@@ -9,16 +9,96 @@ class Messages extends ChangeNotifier {
   Map _messages = {};
   List _chatRooms = [];
   Map tmp = {};
+  Map newMessage = {};
+  int newMessageCount;
   int tmpIDofMessage = 0;
+  String tokenforROOM;
+  bool isUserlogged = true;
+  bool isChatsLoading = true;
+  bool _isloadingMessages = true;
+  bool ismessagesAdded = false;
+  List lastMessageID = [];
+
+  String get getToken {
+    return tokenforROOM;
+  }
+
+  Future fetchAndSetMessages(int i) async {
+    var token = tokenforROOM;
+    String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
+        _chatRooms[i]["id"].toString();
+    try {
+      await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + token,
+        },
+      ).then((response) {
+        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+        _messages[_chatRooms[i]["id"]] = dataOrders;
+        _isloadingMessages = false;
+        notifyListeners();
+      });
+    } catch (e) {
+      print("Some Error");
+    }
+  }
+
+  bool get messagesNotLoaded {
+    return _isloadingMessages;
+  }
+
+  Map get newMessages {
+    return newMessage;
+  }
 
   set addMessages(Map mesaj) {
+    ismessagesAdded = false;
+    var room =
+        mesaj["data"] == null ? mesaj["room_id"] : mesaj["data"]["room_id"];
     for (var i = 0; i < _messages.length; i++) {
-      if (_messages[mesaj["room_id"]].length > 0) {
-        if(_messages[mesaj["room_id"]]["results"][0]["id"] != mesaj["id"]){ 
-        _messages[mesaj["room_id"]]["results"].insert(0, mesaj);
+      if (_messages[room] != null) {
+        if (_messages[room]["results"][0]["id"] != mesaj["id"]) {
+          lastMessageID
+              .add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
+          _messages[room]["results"].insert(0, mesaj);
+          changeChatRoomPlace(room);
         }
+        ismessagesAdded = true;
       }
     }
+    if (ismessagesAdded == false) {
+      ismessagesAdded = true;
+      bool okay = changeChatRoomPlace(room);
+      if (!okay) {
+        _chatRooms.insert(0, mesaj);
+      }
+      lastMessageID
+          .add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
+    }
+    if (ismessagesAdded == true) {
+      var lastindex = lastMessageID.lastIndexOf(lastMessageID.last);
+      var flag = false;
+      bool testforLastMessage;
+      try {
+        testforLastMessage = lastMessageID.last != lastMessageID[lastindex - 1];
+      } catch (e) {
+        flag = true;
+      }
+      if (testforLastMessage == true || flag == true) {
+        testforLastMessage = false;
+        if (newMessage[room] == null) {
+          newMessageCount = 1;
+          newMessage[room] = newMessageCount;
+        } else {
+          newMessage[room] = newMessage[room] + 1;
+        }
+      } else {
+        lastMessageID = [];
+      }
+    }
+
     notifyListeners();
   }
 
@@ -30,8 +110,55 @@ class Messages extends ChangeNotifier {
 
   Map get messages => _messages;
 
+  void readMessages(id) {
+    newMessage.remove(id);
+  }
 
   //______________________________________________________________________________________
+
+  bool changeChatRoomPlace(id) {
+    for (var i = 0; i < _chatRooms.length; i++) {
+      if (_chatRooms[i]["id"] == id) {
+        _chatRooms.insert(0, _chatRooms.removeAt(i));
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future fetchAndSetRooms(auth) async {
+    var f;
+    auth.removeListener(f);
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
+
+    auth.token = extractedUserData['token'];
+    tokenforROOM = extractedUserData['token'];
+    if (extractedUserData['token'] != null) {
+      const url = "http://briddgy.herokuapp.com/api/chats/";
+      final response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + extractedUserData['token'],
+        },
+      ).then((value) {
+        final dataOrders = json.decode(value.body) as Map<String, dynamic>;
+        _chatRooms = dataOrders["results"];
+        isChatsLoading = false;
+        isUserlogged = false;
+      });
+      return _chatRooms;
+    } else {
+      isUserlogged = true;
+      return null;
+    }
+  }
+
   set addChats(Map mesaj) {
     //here goes new room
     notifyListeners();
@@ -43,6 +170,13 @@ class Messages extends ChangeNotifier {
     return _chatRooms;
   }
 
-  List get chats => _chatRooms;
+  bool get userNotLogged {
+    return isUserlogged;
+  }
 
+  bool get chatsNotLoaded {
+    return isChatsLoading;
+  }
+
+  List get chats => _chatRooms;
 }

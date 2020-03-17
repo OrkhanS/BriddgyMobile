@@ -48,7 +48,7 @@ import 'package:optisend/screens/contracts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:optisend/local_notications_helper.dart';
-
+import 'package:badges/badges.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
@@ -65,8 +65,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final notifications = FlutterLocalNotificationsPlugin();
- final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   List<dynamic> _rooms;
   bool _isOn = false;
@@ -88,111 +87,79 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     _currentIndex = 1;
     super.initState();
+    getToken();
     _pageController = PageController(initialPage: 1);
     //_configureFirebaseListerners();
-    final settingsAndroid = AndroidInitializationSettings('app_icon');
-    final settingsIOS = IOSInitializationSettings(
-        onDidReceiveLocalNotification: (id, title, body, payload) =>
-            onSelectNotification(payload));
+    // final settingsAndroid = AndroidInitializationSettings('app_icon');
+    // final settingsIOS = IOSInitializationSettings(
+    //     onDidReceiveLocalNotification: (id, title, body, payload) =>
+    //         onSelectNotification(payload));
 
-    notifications.initialize(
-        InitializationSettings(settingsAndroid, settingsIOS),
-        onSelectNotification: onSelectNotification);
+    // notifications.initialize(
+    //     InitializationSettings(settingsAndroid, settingsIOS),
+    //     onSelectNotification: onSelectNotification,
+    //     );
   }
-   _configureFirebaseListerners(newmessage) {
+
+  _configureFirebaseListerners(newmessage) {
     _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        neWMessage.addMessages = message;
-        
-        print('onMessage: $message[\'notification\'][\'title\']');
-        
-        // showOngoingNotification(notifications,
-        //             title: "ELAVE", body: "TEST");
-      },
+      // onMessage: (Map<String, dynamic> message) async {
+      //   neWMessage.addMessages = message;
+      // },
       onLaunch: (Map<String, dynamic> message) async {
-        // showOngoingNotification(notifications,
-        //             title: "ELAVE", body: "TEST1");
-        //print('onLaunch: $message');
+        neWMessage.addMessages = message;
       },
       onResume: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message;
-        // showOngoingNotification(notifications,
-        //             title: "ELAVE", body: "TEST1");
-        print('onResume: $message');
       },
     );
   }
-  Future onSelectNotification(String payload) async => await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => OrdersScreen()),
-      );
 
-  /// ----------------------------------------------------------
-  /// Fetch Rooms Of User
-  /// ----------------------------------------------------------
-
-  Future fetchAndSetRooms(auth) async {
-    var f;
-    auth.removeListener(f);
+  Future getToken() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       return false;
     }
     final extractedUserData =
         json.decode(prefs.getString('userData')) as Map<String, Object>;
-
-    auth.token = extractedUserData['token'];
     tokenforROOM = extractedUserData['token'];
-    if (extractedUserData['token'] != null) {
-      const url = "http://briddgy.herokuapp.com/api/chats/";
-      final response = await http.get(
-        url,
-        headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
-          "Authorization": "Token " + extractedUserData['token'],
-        },
-      ).then((value) {
-        final dataOrders = json.decode(value.body) as Map<String, dynamic>;
-        _rooms = dataOrders["results"];
-      });
-      return _rooms;
-    }
-    return null;
   }
 
-  /// ----------------------------------------------------------
-  /// End Fetching Rooms Of User
-  /// ----------------------------------------------------------
+  Future onSelectNotification(String payload) async => await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ChatsScreen()),
+      );
 
   initCommunication(auth, newmessage) async {
-    if(socketConnected == false){ socketConnected=true;
-    reset();
-    try {
-      var f, d;
-      auth.removeListener(f);
-      newmessage.removeListener(d);
-      neWMessage = newmessage;
-      final prefs = await SharedPreferences.getInstance();
-      if (!prefs.containsKey('userData')) {
-        return false;
-      }
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
-
-      auth.token = extractedUserData['token'];
-
-      if (extractedUserData['token'] != null) {
-        widget._channel = new IOWebSocketChannel.connect(
-            'ws://briddgy.herokuapp.com/ws/alert/?token=' +
-                extractedUserData['token']); //todo
-        widget._channel.stream.listen(_onReceptionOfMessageFromServer);
-        print("Alert Connected");
-      }
-    } catch (e) {
-      print("Error Occured");
+    if (socketConnected == false) {
+      socketConnected = true;
       reset();
-    }}
-    else{
+      try {
+        var f, d;
+        auth.removeListener(f);
+        newmessage.removeListener(d);
+        neWMessage = newmessage;
+        final prefs = await SharedPreferences.getInstance();
+        if (!prefs.containsKey('userData')) {
+          return false;
+        }
+        final extractedUserData =
+            json.decode(prefs.getString('userData')) as Map<String, Object>;
+
+        auth.token = extractedUserData['token'];
+
+        if (extractedUserData['token'] != null) {
+          widget._channel = new IOWebSocketChannel.connect(
+              'ws://briddgy.herokuapp.com/ws/alert/?token=' +
+                  extractedUserData['token']); //todo
+          widget._channel.stream.listen(_onReceptionOfMessageFromServer);
+          print("Alert Connected");
+        }
+      } catch (e) {
+        print("Error Occured");
+        reset();
+      }
+    } else {
       return;
     }
   }
@@ -228,19 +195,6 @@ class _MyAppState extends State<MyApp> {
   _onReceptionOfMessageFromServer(message) {
     valueMessages = json.decode(message);
     neWMessage.addMessages = valueMessages;
-
-    // showOngoingNotification(notifications,
-    //               title: 'Briddgy', body: 'You have a new message!');
-    //_mesaj = [];
-    //_mesaj.add(json.decode(message));
-    // if(_mesaj[0]["id"]){
-    // Check if "ID" of image sent before, then check its room ID, search in _room and get message ID and use
-    // it in Message Provider, find message, then add the mesaj into that
-    // }
-
-    //Here Call a function to notify user that he has a message
-
-    _isOn = true;
   }
 
   @override
@@ -249,7 +203,7 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Widget navbar() {
+  Widget navbar(newmessage) {
     return BottomNavigationBar(
       elevation: 4,
       type: BottomNavigationBarType.fixed,
@@ -275,7 +229,15 @@ class _MyAppState extends State<MyApp> {
         ),
         BottomNavigationBarItem(
           title: Text('Chats'),
-          icon: Icon(MdiIcons.forumOutline),
+          icon: newmessage.newMessages.toString() != "null"
+              ? newmessage.newMessage.length.toString() == '0'
+                  ? Icon(MdiIcons.forumOutline)
+                  : Badge(
+                      badgeContent:
+                          Text(newmessage.newMessage.length.toString()),
+                      child: Icon(MdiIcons.forumOutline),
+                    )
+              : Icon(MdiIcons.forumOutline),
           activeIcon: Icon(MdiIcons.forum),
         ),
         BottomNavigationBarItem(
@@ -294,8 +256,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    print("main build");
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -308,7 +268,6 @@ class _MyAppState extends State<MyApp> {
 
         ChangeNotifierProvider(
           builder: (_) => Messages(),
-          
         ),
 
         // ChangeNotifierProvider(
@@ -340,7 +299,7 @@ class _MyAppState extends State<MyApp> {
         orderstripsProvider,
         _,
       ) {
-         fetchAndSetRooms(auth);
+        newmessage.fetchAndSetRooms(auth);
         initCommunication(auth, newmessage);
         _configureFirebaseListerners(newmessage);
         return MaterialApp(
@@ -359,18 +318,28 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  OrdersScreen(orderstripsProvider: orderstripsProvider, token:tokenforROOM),
-                  TripsScreen(orderstripsProvider: orderstripsProvider,token:tokenforROOM),
+                  OrdersScreen(
+                      orderstripsProvider: orderstripsProvider,
+                      room: newmessage,
+                      auth: auth,
+                      token: tokenforROOM),
+                  TripsScreen(
+                      orderstripsProvider: orderstripsProvider,
+                      room: newmessage,
+                      auth: auth,
+                      token: tokenforROOM),
                   ChatsScreen(
                       provider: newmessage,
-                      rooms: _loggedIn == true ? _rooms : 0,
+                      //rooms: _loggedIn == true ? _rooms : 0,
                       token: tokenforROOM),
                   NotificationScreen(),
-                  AccountScreen(token:tokenforROOM, orderstripsProvider: orderstripsProvider),
+                  AccountScreen(
+                      token: tokenforROOM,
+                      orderstripsProvider: orderstripsProvider),
                 ],
               ),
             ),
-            bottomNavigationBar: navbar(),
+            bottomNavigationBar: navbar(newmessage),
           ),
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
@@ -387,7 +356,8 @@ class _MyAppState extends State<MyApp> {
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),
-            AccountScreen.routeName: (ctx) => AccountScreen(token:tokenforROOM, orderstripsProvider: orderstripsProvider),
+            AccountScreen.routeName: (ctx) => AccountScreen(
+                token: tokenforROOM, orderstripsProvider: orderstripsProvider),
           },
         );
       }),

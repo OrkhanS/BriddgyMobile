@@ -34,11 +34,12 @@ class _ChatWindowState extends State<ChatWindow> {
   IOWebSocketChannel alertChannel;
   bool _isloading = true;
   bool newMessageMe = false;
+  String id;
   @override
   void initState() {
     textEditingController = TextEditingController();
     scrollController = ScrollController();
-    String id = widget.room.toString();
+    id = widget.room.toString();
     initCommunication(id);
     super.initState();
   }
@@ -50,7 +51,7 @@ class _ChatWindowState extends State<ChatWindow> {
           'ws://briddgy.herokuapp.com/ws/chatrooms/' +
               id.toString() +
               '/?token=' +
-              widget.token);
+              widget.provider.getToken);
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Connected");
     } catch (e) {
@@ -93,6 +94,7 @@ class _ChatWindowState extends State<ChatWindow> {
       "room_id": widget.room,
       "sender": widget.user[0]["id"]
     };
+    widget.provider.changeChatRoomPlace(widget.room);
 
     if (_channelRoom != null) {
       if (_channelRoom.sink != null) {
@@ -123,17 +125,6 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    widget.provider.addListener;
-    bool messageLoader = false;
-    if (widget.provider.messages[widget.room] != null) {
-      _messages = widget.provider.messages[widget.room]["results"];
-      messageLoader = true;
-    } else {
-      messageLoader = false;
-    }
-
-//    print(_messages[0]);
-
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -173,7 +164,14 @@ class _ChatWindowState extends State<ChatWindow> {
     );
 
     return Consumer<Messages>(
-      builder: (context, mess, child) {
+      builder: (context, provider, child) {
+        bool messageLoader = true;
+        if (widget.provider.messages[widget.room] != null) {
+          _messages = widget.provider.messages[widget.room]["results"];
+          messageLoader = false;
+        } else {
+          messageLoader = true;
+        }
         return Scaffold(
           resizeToAvoidBottomPadding: true,
           appBar: AppBar(
@@ -194,15 +192,19 @@ class _ChatWindowState extends State<ChatWindow> {
           body: Column(
             children: <Widget>[
               Expanded(
-                child: messageLoader == false
+                child: messageLoader
                     ? Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[CircularProgressIndicator(strokeWidth: 3,)],
+                          children: <Widget>[
+                            CircularProgressIndicator(
+                              strokeWidth: 3,
+                            )
+                          ],
                         ),
-                    )
+                      )
                     : ListView.builder(
                         reverse: true,
                         controller: scrollController,

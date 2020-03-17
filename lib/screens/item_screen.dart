@@ -8,7 +8,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../main.dart';
 
 class ItemScreen extends StatefulWidget {
-  var id, description, image, token;
+  var id, description, image, token, room, auth;
   var title, owner, destination, source, date, weight, price;
   ItemScreen({
     this.id,
@@ -22,6 +22,8 @@ class ItemScreen extends StatefulWidget {
     this.source,
     this.image,
     this.token,
+    this.room,
+    this.auth,
   });
   static const routeName = '/orders/item';
   @override
@@ -37,8 +39,8 @@ class _ItemScreenState extends State<ItemScreen> {
   Future createRooms() async {
     String tokenforROOM = widget.token;
     if (tokenforROOM != null) {
-      String url =
-          "http://briddgy.herokuapp.com/api/chat/" + widget.owner["id"].toString();
+      String url = "http://briddgy.herokuapp.com/api/chat/" +
+          widget.owner["id"].toString();
       final response = await http.get(
         url,
         headers: {
@@ -46,6 +48,7 @@ class _ItemScreenState extends State<ItemScreen> {
           "Authorization": "Token " + tokenforROOM,
         },
       );
+      widget.room.fetchAndSetRooms(widget.auth);
     }
     return null;
   }
