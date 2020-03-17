@@ -55,7 +55,6 @@ class _ItemScreenState extends State<ItemScreen> {
 
   Map<String, dynamic> _orders = {};
 
-  //widget.myObject.toString()
   @override
   Widget build(BuildContext context) {
     return Scaffold(
