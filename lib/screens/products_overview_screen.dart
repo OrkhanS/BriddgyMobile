@@ -5,7 +5,6 @@ import '../widgets/app_drawer.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
 import '../providers/cart.dart';
-import './cart_screen.dart';
 import '../providers/products.dart';
 
 enum FilterOptions {
@@ -99,7 +98,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 Icons.shopping_cart,
               ),
               onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.routeName);
               },
             ),
           ),

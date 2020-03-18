@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import './screens/splash_screen.dart';
-import './screens/cart_screen.dart';
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products.dart';
@@ -335,6 +334,7 @@ class _MyAppState extends State<MyApp> {
                   NotificationScreen(),
                   AccountScreen(
                       token: tokenforROOM,
+                      auth: auth,
                       orderstripsProvider: orderstripsProvider),
                 ],
               ),
@@ -343,7 +343,6 @@ class _MyAppState extends State<MyApp> {
           ),
           routes: {
             ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
-            CartScreen.routeName: (ctx) => CartScreen(),
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             TripsScreen.routeName: (ctx) => TripsScreen(),
             UserProductsScreen.routeName: (ctx) => UserProductsScreen(),

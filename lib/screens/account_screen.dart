@@ -11,12 +11,13 @@ import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'splash_screen.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:share/share.dart';
+import 'package:optisend/screens/customer_support.dart';
 
 class AccountScreen extends StatelessWidget {
   static const routeName = '/accountscreen';
-  var token, orderstripsProvider;
-  AccountScreen({this.token, this.orderstripsProvider});
+  var token, orderstripsProvider, auth;
+  AccountScreen({this.token, this.orderstripsProvider, this.auth});
   @override
   Widget build(BuildContext context) {
     var auth = Provider.of<Auth>(context, listen: false);
@@ -24,6 +25,7 @@ class AccountScreen extends StatelessWidget {
       body: auth.isAuth
           ? AccountPage(
               token: token,
+              auth: auth,
               provider: orderstripsProvider,
             )
           : FutureBuilder(
@@ -38,8 +40,8 @@ class AccountScreen extends StatelessWidget {
 }
 
 class AccountPage extends StatefulWidget {
-  var token, provider;
-  AccountPage({this.token, this.provider});
+  var token, provider, auth;
+  AccountPage({this.token, this.provider, this.auth});
   @override
   _AccountPageState createState() => _AccountPageState();
 }
@@ -52,32 +54,32 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
   }
 
-  Future fetchAndSetUserDetails() async {
-    // var token = Provider.of<Auth>(context, listen: false).token;
-    var token = widget.token;
+  // Future fetchAndSetUserDetails() async {
+  //   // var token = Provider.of<Auth>(context, listen: false).token;
+  //   var token = widget.token;
 
-    const url = "http://briddgy.herokuapp.com/api/users/me/";
-    final response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + token,
-      },
-    );
+  //   const url = "http://briddgy.herokuapp.com/api/users/me/";
+  //   final response = await http.get(
+  //     url,
+  //     headers: {
+  //       HttpHeaders.CONTENT_TYPE: "application/json",
+  //       "Authorization": "Token " + token,
+  //     },
+  //   );
 
-    if (this.mounted) {
-      setState(() {
-        final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _user = dataOrders;
-        isLoading = false;
-      });
-    }
-    return _user;
-  }
+  //   if (this.mounted) {
+  //     setState(() {
+  //       final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+  //       _user = dataOrders;
+  //       isLoading = false;
+  //     });
+  //   }
+  //   return _user;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    fetchAndSetUserDetails();
+    widget.auth.fetchAndSetUserDetails();
 
     List<ListTile> choices = <ListTile>[
       ListTile(
@@ -125,7 +127,7 @@ class _AccountPageState extends State<AccountPage> {
 //          )
 //        ],
       ),
-      body: isLoading
+      body: widget.auth.isNotLoading
           ? Center(child: CircularProgressIndicator())
           : Center(
               child: SingleChildScrollView(
@@ -136,7 +138,8 @@ class _AccountPageState extends State<AccountPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (__) => ProfileScreen(user: _user)),
+                              builder: (__) =>
+                                  ProfileScreen(user: widget.auth.userdetail)),
                         );
                       },
                       child: Padding(
@@ -173,15 +176,17 @@ class _AccountPageState extends State<AccountPage> {
                             Column(
                               children: <Widget>[
                                 Text(
-                                  _user["first_name"].toString() +
+                                  widget.auth.userdetail["first_name"]
+                                          .toString() +
                                       " " +
-                                      _user["last_name"].toString(),
+                                      widget.auth.userdetail["last_name"]
+                                          .toString(),
                                   style: TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.w700,
                                       color: Theme.of(context).primaryColor),
                                 ),
-                                Text(_user["email"].toString(),
+                                Text(widget.auth.userdetail["email"].toString(),
                                     style: TextStyle(fontSize: 15)),
                               ],
                             ),
@@ -221,7 +226,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.mailboxOpenOutline),
                             title: Text(
-                              "Your Items",
+                              "My Items",
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -248,7 +253,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.mapMarkerPath),
                             title: Text(
-                              "Your Trips",
+                              "My Trips",
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -289,8 +294,13 @@ class _AccountPageState extends State<AccountPage> {
                                 ),
                                 child: Icon(Icons.navigate_next)),
                             onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed(Contracts.routeName);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => Contracts(
+                                          token: widget.token,
+                                        )),
+                              );
                             },
                           ),
                         ],
@@ -322,6 +332,10 @@ class _AccountPageState extends State<AccountPage> {
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Share.share(
+                                  "Join to the Briddgy Family https://briddgy.com");
+                            },
                           ),
                           ListTile(
                             leading: Icon(MdiIcons.faceAgent),
@@ -339,6 +353,13 @@ class _AccountPageState extends State<AccountPage> {
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => CustomerSupport()),
+                              );
+                            },
                           ),
                           ListTile(
                             leading: Icon(Icons.star_border),

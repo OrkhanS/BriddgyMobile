@@ -138,24 +138,28 @@ class Messages extends ChangeNotifier {
 
     auth.token = extractedUserData['token'];
     tokenforROOM = extractedUserData['token'];
-    if (extractedUserData['token'] != null) {
-      const url = "http://briddgy.herokuapp.com/api/chats/";
-      final response = await http.get(
-        url,
-        headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
-          "Authorization": "Token " + extractedUserData['token'],
-        },
-      ).then((value) {
-        final dataOrders = json.decode(value.body) as Map<String, dynamic>;
-        _chatRooms = dataOrders["results"];
-        isChatsLoading = false;
-        isUserlogged = false;
-      });
-      return _chatRooms;
-    } else {
-      isUserlogged = true;
-      return null;
+    try {
+      if (extractedUserData['token'] != null) {
+        const url = "http://briddgy.herokuapp.com/api/chats/";
+        final response = await http.get(
+          url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + extractedUserData['token'],
+          },
+        ).then((value) {
+          final dataOrders = json.decode(value.body) as Map<String, dynamic>;
+          _chatRooms = dataOrders["results"];
+          isChatsLoading = false;
+          isUserlogged = false;
+        });
+        return _chatRooms;
+      } else {
+        isUserlogged = true;
+        return null;
+      }
+    } catch (e) {
+      return;
     }
   }
 

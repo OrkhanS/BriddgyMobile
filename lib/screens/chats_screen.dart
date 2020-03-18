@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:menu/menu.dart';
 import 'package:optisend/screens/chat_window.dart';
+import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/screens/report_user_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'splash_screen.dart';
@@ -128,86 +133,204 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               Divider(
                                 height: 12.0,
                               ),
-                              ListTile(
-                                leading: CircleAvatar(
-                                    radius: 24.0,
-                                    child: FadeInImage(
-                                      image: NetworkImage(
-                                          'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                                      placeholder: NetworkImage(
-                                          'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
-                                    )),
-                                title: Row(
-                                  children: <Widget>[
-                                    Text(
-                                      widget
-                                              .provider
-                                              .chats[index]["members"][0]
-                                                  ["first_name"]
-                                              .toString() +
-                                          " " +
-                                          widget
-                                              .provider
-                                              .chats[index]["members"][0]
-                                                  ["last_name"]
-                                              .toString(),
-                                      style: TextStyle(fontSize: 15.0),
+                              Menu(
+                                child: Container(
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      // Todo
+                                      // Warning
+                                      // Warning
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                            radius: 24.0,
+                                            child: FadeInImage(
+                                              image: NetworkImage(
+                                                  'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                                              placeholder: NetworkImage(
+                                                  'https://toppng.com/uploads/preview/person-icon-white-icon-11553393970jgwtmsc59i.png'),
+                                            )),
+                                        title: Row(
+                                          children: <Widget>[
+                                            Text(
+                                              widget
+                                                      .provider
+                                                      .chats[index]["members"]
+                                                          [0]["first_name"]
+                                                      .toString() +
+                                                  " " +
+                                                  widget
+                                                      .provider
+                                                      .chats[index]["members"]
+                                                          [0]["last_name"]
+                                                      .toString(),
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                            SizedBox(
+                                              width: 16.0,
+                                            ),
+                                            // Text(
+                                            //   widget.provider.chats[index]["date_modified"]
+                                            //       .toString()
+                                            //       .substring(0, 10),
+                                            //   style: TextStyle(fontSize: 15.0),
+                                            // ),
+                                          ],
+                                        ),
+                                        subtitle: Text(
+                                          "Last Message:" +
+                                              "  " +
+                                              timeago
+                                                  .format(DateTime.parse(widget
+                                                          .provider
+                                                          .chats[index]
+                                                              ["date_modified"]
+                                                          .toString()
+                                                          .substring(0, 10) +
+                                                      " " +
+                                                      widget
+                                                          .provider
+                                                          .chats[index]
+                                                              ["date_modified"]
+                                                          .toString()
+                                                          .substring(11, 26)))
+                                                  .toString(),
+                                          style: TextStyle(fontSize: 15.0),
+                                          // _messages[index]["results"][0]["text"]
+                                          //   .toString().substring(0,15)
+                                        ),
+                                        trailing: widget
+                                                    .provider
+                                                    .newMessages[widget.provider
+                                                        .chats[index]["id"]]
+                                                    .toString() !=
+                                                "null"
+                                            ? Badge(
+                                                badgeContent: Text(widget
+                                                    .provider
+                                                    .newMessages[widget.provider
+                                                        .chats[index]["id"]]
+                                                    .toString()),
+                                                child: Icon(
+                                                    Icons.arrow_forward_ios),
+                                              )
+                                            : Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 14.0,
+                                              ),
+                                        onTap: () {
+                                          widget.provider.readMessages(widget
+                                              .provider.chats[index]["id"]);
+                                          widget.provider
+                                              .fetchAndSetMessages(index);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (__) => ChatWindow(
+                                                    provider: widget.provider,
+                                                    room: widget.provider
+                                                        .chats[index]["id"],
+                                                    user: widget.provider
+                                                            .chats[index]
+                                                        ["members"],
+                                                    token: widget.token)),
+                                          );
+                                        },
+                                      ),
                                     ),
-                                    SizedBox(
-                                      width: 16.0,
-                                    ),
-                                    // Text(
-                                    //   widget.provider.chats[index]["date_modified"]
-                                    //       .toString()
-                                    //       .substring(0, 10),
-                                    //   style: TextStyle(fontSize: 15.0),
-                                    // ),
-                                  ],
+                                  ),
                                 ),
-                                subtitle: Text(
-                                  "Last Message:" +
-                                      "  " +
-                                      timeago
-                                          .format(DateTime.parse(widget.provider
-                                                  .chats[index]["date_modified"]
-                                                  .toString()
-                                                  .substring(0, 10) +
+                                items: [
+                                  MenuItem(
+                                    "Copy Name",
+                                    () {
+                                      ClipboardManager.copyToClipBoard(widget
+                                                  .provider
+                                                  .chats[index]["members"][0]
+                                                      ["first_name"]
+                                                  .toString() +
                                               " " +
-                                              widget.provider
-                                                  .chats[index]["date_modified"]
-                                                  .toString()
-                                                  .substring(11, 26)))
-                                          .toString(),
-                                  style: TextStyle(fontSize: 15.0),
-                                  // _messages[index]["results"][0]["text"]
-                                  //   .toString().substring(0,15)
-                                ),
-                                trailing:
-                                widget.provider.newMessages[widget.provider.chats[index]["id"]].toString() != "null" ?
-                                    Badge(
-                                  badgeContent: Text(widget.provider.newMessages[widget.provider.chats[index]["id"]].toString()),
-                                  child: Icon(Icons.arrow_forward_ios),
-                                )
-                                : 
-                                Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 14.0,
-                                    ),
-                                onTap: () {
-                                  widget.provider.readMessages(widget.provider.chats[index]["id"]);
-                                  widget.provider.fetchAndSetMessages(index);
-                                  // Navigator.of(context).pushNamed('/chats/chat_window');
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (__) => ChatWindow(
-                                            provider: widget.provider,
-                                            room: widget.provider.chats[index]["id"],
-                                            user: widget.provider.chats[index]
-                                                ["members"],
-                                            token: widget.token)),
-                                  );
-                                },
+                                              widget
+                                                  .provider
+                                                  .chats[index]["members"][0]
+                                                      ["last_name"]
+                                                  .toString())
+                                          .then((result) {
+                                        final snackBar = SnackBar(
+                                          content: Text('Copied to Clipboard'),
+                                        );
+                                        Scaffold.of(context)
+                                            .showSnackBar(snackBar);
+                                      });
+                                    },
+                                  ),
+                                  MenuItem(
+                                    "Profile",
+                                    () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (__) =>
+                                                ProfileScreenAnother(
+                                                    user: widget.provider
+                                                            .chats[index]
+                                                        ["members"][0])),
+                                      );
+                                    },
+                                  ),
+                                  MenuItem("Info", () {
+                                    Alert(
+                                      context: context,
+                                      type: AlertType.info,
+                                      title: "Conversation started on:  " +
+                                          widget.provider
+                                              .chats[index]["date_created"]
+                                              .toString()
+                                              .substring(0, 10) +
+                                          "\n",
+                                      buttons: [
+                                        DialogButton(
+                                          child: Text(
+                                            "Back",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          color:
+                                              Color.fromRGBO(0, 179, 134, 1.0),
+                                        ),
+                                        DialogButton(
+                                          child: Text(
+                                            "Report",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                          onPressed: () => {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (__) => ReportUser(
+                                                        user: widget.provider
+                                                                .chats[index]
+                                                            ["members"],
+                                                        message: null,
+                                                      )),
+                                            ),
+                                          },
+                                          color:
+                                              Color.fromRGBO(0, 179, 134, 1.0),
+                                        )
+                                      ],
+                                      content: Text(
+                                          "To keep our community more secure and as mentioned in our Privacy&Policy, you cannot remove chats.\n"),
+                                    ).show();
+                                  }),
+                                ],
+                                decoration: MenuDecoration(),
                               ),
                             ],
                           );

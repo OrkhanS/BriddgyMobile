@@ -170,34 +170,34 @@ class _MyTripsState extends State<MyTrips> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: RaisedButton(
-                          color: Colors.white,
-                          onPressed: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Icon(
-                                  MdiIcons.messageArrowRightOutline,
-                                  color: Theme.of(context).primaryColor,
-                                  size: 30,
-                                ),
-                                Text(
-                                  "Message",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      //   child: RaisedButton(
+                      //     color: Colors.white,
+                      //     onPressed: () {},
+                      //     child: Padding(
+                      //       padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      //       child: Column(
+                      //         mainAxisSize: MainAxisSize.max,
+                      //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      //         children: <Widget>[
+                      //           Icon(
+                      //             MdiIcons.messageArrowRightOutline,
+                      //             color: Theme.of(context).primaryColor,
+                      //             size: 30,
+                      //           ),
+                      //           Text(
+                      //             "Message",
+                      //             style: TextStyle(
+                      //               fontWeight: FontWeight.bold,
+                      //               color: Theme.of(context).primaryColor,
+                      //             ),
+                      //           )
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

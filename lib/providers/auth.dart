@@ -13,6 +13,8 @@ class Auth with ChangeNotifier {
   DateTime _expiryDate;
   String _userId;
   Timer _authTimer;
+  Map user = {};
+  bool isLoadingUser = true;
 
   bool get isAuth {
     return _token != null;
@@ -33,6 +35,41 @@ class Auth with ChangeNotifier {
 
   String get userId {
     return _userId;
+  }
+
+  Map get userdetail {
+    return user;
+  }
+
+  bool get isNotLoading {
+    return isLoadingUser;
+  }
+
+  Future fetchAndSetUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
+
+    const url = "http://briddgy.herokuapp.com/api/users/me/";
+    try {
+      final response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + extractedUserData['token'],
+      },
+    ).then((response) {
+      final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+      user = dataOrders;
+      isLoadingUser = false;
+      notifyListeners();
+    });
+    } catch (e) {
+      return;
+    }
   }
 
   Future<void> _authenticate(

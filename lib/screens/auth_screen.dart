@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../models/http_exception.dart';
 
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+//import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 import 'FirebaseMessaging.dart';
 

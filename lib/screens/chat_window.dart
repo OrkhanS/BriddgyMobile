@@ -7,9 +7,10 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/messages.dart';
-
+import 'package:menu/menu.dart';
+import 'package:clipboard_manager/clipboard_manager.dart';
 import 'dart:convert';
-
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:responsive_text_field/responsive_text_field.dart';
 
@@ -228,29 +229,91 @@ class _ChatWindowState extends State<ChatWindow> {
                             ),
                           );
 
-                          var messagebody = DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.blue[100],
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                // Todo
-                                // Warning
-                                // Warning
-                                child: Text(
-                                  _messages[index]["text"].toString().length >
-                                          30
-                                      ? _messages[index]["text"]
+                          var messagebody = Menu(
+                            child: Container(
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue[100],
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      // Todo
+                                      // Warning
+                                      // Warning
+                                      child: Text(
+                                        _messages[index]["text"]
+                                                    .toString()
+                                                    .length >
+                                                30
+                                            ? _messages[index]["text"]
+                                                .toString()
+                                                .substring(0, 30)
+                                            : _messages[index]["text"]
+                                                .toString(),
+                                        softWrap: true,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                            items: [
+                              
+                              
+                              MenuItem("Copy", () {
+                                ClipboardManager.copyToClipBoard(
+                                        _messages[index]["text"].toString())
+                                    .then((result) {
+                                  final snackBar = SnackBar(
+                                    content: Text('Copied to Clipboard'),
+                                    // action: SnackBarAction(
+                                    //   label: 'Undo',
+                                    //   onPressed: () {},
+                                    // ),
+                                  );
+                                  Scaffold.of(context).showSnackBar(snackBar);
+                                });
+                              }),
+                              MenuItem("Info", () {
+                                Alert(
+                                  context: context,
+                                  type: AlertType.info,
+                                  title: "Sent on:  " +
+                                      _messages[index]["date_created"]
                                           .toString()
-                                          .substring(0, 30)
-                                      : _messages[index]["text"].toString(),
-                                  softWrap: true,
-                                ),
-                              ),
-                            ),
+                                          .substring(0, 10) +
+                                      ",  " +
+                                      _messages[index]["date_created"]
+                                          .toString()
+                                          .substring(11, 16) +
+                                      "\n",
+                                  buttons: [
+                                    DialogButton(
+                                      child: Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
+                                      onPressed: () => Navigator.pop(context),
+                                      color: Color.fromRGBO(0, 179, 134, 1.0),
+                                    ),
+                                    DialogButton(
+                                      child: Text(
+                                        "Report",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
+                                      onPressed: () => {},
+                                      color: Color.fromRGBO(0, 179, 134, 1.0),
+                                    )
+                                  ],
+                                  content: Text(
+                                      "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                ).show();
+                              }),
+                            ],
+                            decoration: MenuDecoration(),
                           );
 
                           Widget message;
