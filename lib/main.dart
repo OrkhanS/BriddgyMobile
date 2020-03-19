@@ -32,7 +32,7 @@ import './screens/chat_window.dart';
 import 'package:optisend/screens/profile_screen.dart';
 import 'package:optisend/screens/item_screen.dart';
 
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+//import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:optisend/web_sockets.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';

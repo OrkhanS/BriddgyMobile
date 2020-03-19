@@ -10,15 +10,15 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import 'package:optisend/providers/ordersandtrips.dart';
 
-class FilterBar extends StatefulWidget {
-  var from, to, weight, price;
+class FilterBarOrder extends StatefulWidget {
+  var from, to, weight, date;
   OrdersTripsProvider ordersProvider;
-  FilterBar({this.ordersProvider,this.from, this.to, this.weight, this.price});
+  FilterBarOrder({this.ordersProvider,this.from, this.to, this.weight, this.date});
   @override
-  _FilterBarState createState() => _FilterBarState();
+  _FilterBarStateOrder createState() => _FilterBarStateOrder();
 }
 
-class _FilterBarState extends State<FilterBar> {
+class _FilterBarStateOrder extends State<FilterBarOrder> {
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
   final TextEditingController _typeAheadController3 = TextEditingController();
@@ -26,7 +26,7 @@ class _FilterBarState extends State<FilterBar> {
 
   String _searchBarFrom = "Anywhere";
   String _searchBarTo = "Anywhere";
-  String _searchBarWeight = "Any";
+  String _searchBarDate = "Any";
 
   List _suggested = [];
   List _cities = [];
@@ -38,7 +38,7 @@ class _FilterBarState extends State<FilterBar> {
   String urlFilter = "";
   var _expanded = false;
 
-  Future filterAndSetOrders() async {
+  Future filterAndSetTrips() async {
     urlFilter = "http://briddgy.herokuapp.com/api/orders/?";
     if (widget.from != null) {
       urlFilter = urlFilter + "origin=" + widget.from;
@@ -56,10 +56,10 @@ class _FilterBarState extends State<FilterBar> {
           : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
       flagWeight = true;
     }
-    if (widget.price != null) {
+    if (widget.date != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "min_price=" + widget.price.toString()
-          : urlFilter = urlFilter + "&min_price=" + widget.price.toString();
+          ? urlFilter = urlFilter + "min_price=" + widget.date.toString()
+          : urlFilter = urlFilter + "&min_price=" + widget.date.toString();
     }
     await http.get(
       urlFilter,
@@ -132,8 +132,8 @@ class _FilterBarState extends State<FilterBar> {
                           " - " +
                           _searchBarTo +
                           " , " +
-                          _searchBarWeight +
-                          " kg ",
+                          _searchBarDate +
+                          " date ",
                       style: TextStyle(color: Colors.blue[800]
                           // Theme.of(context).primaryColor,
                           // fontWeight: FontWeight.bold,
@@ -307,6 +307,54 @@ class _FilterBarState extends State<FilterBar> {
                             ),
                           ),
                         ),
+                         Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 30, right: 30, top: 5, bottom: 20),
+                            child: TextFormField(
+                              controller: _typeAheadController4,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                  MdiIcons.currencyUsd,
+                                ),
+
+                                labelText: 'Last Date:',
+                                hintText: '2020-10-05',
+                                hintStyle: TextStyle(color: Colors.grey[300]),
+
+                                suffixIcon: IconButton(
+                                  padding: EdgeInsets.only(
+                                    top: 5,
+                                  ),
+                                  icon: Icon(
+                                    Icons.close,
+                                    size: 15,
+                                  ),
+                                  onPressed: () {
+                                    this._typeAheadController4.text = '';
+                                    widget.date = null;
+                                  },
+                                ),
+                                //icon: Icon(Icons.location_on),
+                              ),
+
+                              keyboardType: TextInputType.number,
+//                      validator: (value) {
+//                        if (value.isEmpty || !value.contains('@')) {
+//                          return 'Invalid email!';
+//                        } else
+//                          return null; //Todo
+//                      },
+                              onChanged: (String val) {
+                                widget.date = val;
+                              },
+                              onSaved: (value) {
+//                        _authData['email'] = value;
+                              },
+                            ),
+                          ),
+                        ),
+                    
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -335,7 +383,7 @@ class _FilterBarState extends State<FilterBar> {
                               keyboardType: TextInputType.number,
 //
                               onChanged: (String val) {
-                                _searchBarWeight = val;
+                                _searchBarDate = val;
                                 widget.weight = val;
                               },
                               onSaved: (value) {
@@ -344,54 +392,7 @@ class _FilterBarState extends State<FilterBar> {
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 30, right: 30, top: 5, bottom: 20),
-                            child: TextFormField(
-                              controller: _typeAheadController4,
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                  MdiIcons.currencyUsd,
-                                ),
-
-                                labelText: 'Reward minimum (in usd):',
-                                hintText: ' 10\$',
-                                hintStyle: TextStyle(color: Colors.grey[300]),
-
-                                suffixIcon: IconButton(
-                                  padding: EdgeInsets.only(
-                                    top: 5,
-                                  ),
-                                  icon: Icon(
-                                    Icons.close,
-                                    size: 15,
-                                  ),
-                                  onPressed: () {
-                                    this._typeAheadController4.text = '';
-                                    widget.price = null;
-                                  },
-                                ),
-                                //icon: Icon(Icons.location_on),
-                              ),
-
-                              keyboardType: TextInputType.number,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
-                              onChanged: (String val) {
-                                widget.price = val;
-                              },
-                              onSaved: (value) {
-//                        _authData['email'] = value;
-                              },
-                            ),
-                          ),
-                        ),
-                        Expanded(
+                           Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 15),
@@ -417,7 +418,7 @@ class _FilterBarState extends State<FilterBar> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  filterAndSetOrders();
+                                  filterAndSetTrips();
                                   setState(() {
                                     _expanded = !_expanded;
                                   });

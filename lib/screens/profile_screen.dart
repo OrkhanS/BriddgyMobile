@@ -80,6 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     fetchAndSetReviews();
+    _reviews = [];
 //    Widget review() {
 //      return Container(
 //        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),

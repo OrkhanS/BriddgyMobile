@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:optisend/screens/chats_screen.dart';
+import 'package:optisend/widgets/filter_bar_trips.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -33,7 +34,6 @@ class TripsScreen extends StatefulWidget {
 class _TripScreenState extends State<TripsScreen> {
 //  var deviceSize = MediaQuery.of(context).size;
   bool expands = true;
-  String _startDate = "From";
   String _endtime = "Until";
   String _time = "Not set";
   DateTime startDate = DateTime.now();
@@ -56,17 +56,19 @@ class _TripScreenState extends State<TripsScreen> {
   bool isLoading = true;
   @override
   void initState() {
-    if(widget.orderstripsProvider.mytrips.isEmpty){
+    if (widget.orderstripsProvider.mytrips.isEmpty) {
       widget.orderstripsProvider.fetchAndSetTrips();
+    }
+    if (widget.orderstripsProvider.myorders.isEmpty) {
+      widget.orderstripsProvider.fetchAndSetOrders();
     }
     super.initState();
   }
 
   List _trips = [];
 
-  Future filterAndSetTrips(from, to, weight, _startDate, _endtime) async {
+  Future filterAndSetTrips(from, to, weight, _endtime) async {
     var provider = widget.orderstripsProvider;
-    _startDate = null;
     _endtime = null;
     urlFilter = "http://briddgy.herokuapp.com/api/trips/?";
     if (from != null) {
@@ -85,12 +87,7 @@ class _TripScreenState extends State<TripsScreen> {
           : urlFilter = urlFilter + "&weight=" + weight.toString();
       flagWeight = true;
     }
-    if (_startDate != null) {
-      flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "start_date=" + _startDate.toString()
-          : urlFilter = urlFilter + "&start_date=" + _startDate.toString();
-      flagStart = true;
-    }
+    
     if (_endtime != null) {
       flagWeight == false &&
               flagTo == false &&
@@ -178,8 +175,7 @@ class _TripScreenState extends State<TripsScreen> {
           "Authorization": "Token " + tokenforROOM,
         },
       );
-       widget.room.fetchAndSetRooms(widget.auth);
-
+      widget.room.fetchAndSetRooms(widget.auth);
     }
     return null;
   }
@@ -216,332 +212,9 @@ class _TripScreenState extends State<TripsScreen> {
             ),
           ),
           onPressed: () {
-            filterAndSetTrips(from, to, weight, _startDate, _endtime);
+            filterAndSetTrips(from, to, weight, _endtime);
             build(context);
           },
-        ),
-      ),
-    );
-  }
-
-  Widget filterBar() {
-    return Form(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(15), topRight: Radius.circular(15)),
-          child: Card(
-            elevation: 5,
-            color: Theme.of(context).primaryColor,
-            child: FilterPanel(
-              backgroundColor: Colors.white,
-              initiallyExpanded: false, //todo
-              onExpansionChanged: (val) {
-                val = !val;
-              },
-//              subtitle: Text("Source:  Destination: "),
-              title: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  color: Colors.white,
-                  border: Border(),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
-                  child: Text(
-                    "Tokyo - Paris, 25 May",
-                    style: TextStyle(color: Colors.grey[400]
-                        // Theme.of(context).primaryColor,
-                        // fontWeight: FontWeight.bold,
-                        // fontSize: 20
-                        ),
-                  ),
-                ),
-              ),
-              trailing: Icon(
-                MdiIcons.filterPlusOutline,
-                color: Colors.white,
-              ),
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TypeAheadFormField(
-                          keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
-                          textFieldConfiguration: TextFieldConfiguration(
-                            onChanged: (value) {
-                              from = null;
-                            },
-                            controller: this._typeAheadController,
-                            decoration: InputDecoration(
-                                labelText: 'From',
-                                icon: Icon(
-                                  Icons.location_on,
-                                  size: 20,
-                                )),
-                          ),
-                          suggestionsCallback: (pattern) {
-                            return getSuggestions(pattern);
-                          },
-                          itemBuilder: (context, suggestion) {
-                            return ListTile(
-                              title: Text(suggestion.toString().split(", ")[0] +
-                                  ", " +
-                                  suggestion.toString().split(", ")[1]),
-                            );
-                          },
-                          transitionBuilder:
-                              (context, suggestionsBox, controller) {
-                            return suggestionsBox;
-                          },
-                          onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text =
-                                suggestion.toString().split(", ")[0] +
-                                    ", " +
-                                    suggestion.toString().split(", ")[1];
-                            from = suggestion.toString().split(", ")[2];
-                          },
-                          validator: (value) {
-                            from = value;
-                            if (value.isEmpty) {
-                              return 'Please select a city';
-                            }
-                          },
-                          onSaved: (value) => from = value,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TypeAheadFormField(
-                          keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
-                          textFieldConfiguration: TextFieldConfiguration(
-                            onChanged: (value) {
-                              to = null;
-                            },
-                            controller: this._typeAheadController2,
-                            decoration: InputDecoration(
-                                labelText: 'To',
-                                icon: Icon(
-                                  Icons.location_on,
-                                  size: 20,
-                                )),
-                          ),
-                          suggestionsCallback: (pattern) {
-                            return getSuggestions(pattern);
-                          },
-                          itemBuilder: (context, suggestion) {
-                            return ListTile(
-                              title: Text(suggestion.toString().split(", ")[0] +
-                                  ", " +
-                                  suggestion.toString().split(", ")[1]),
-                            );
-                          },
-                          transitionBuilder:
-                              (context, suggestionsBox, controller) {
-                            return suggestionsBox;
-                          },
-                          onSuggestionSelected: (suggestion) {
-                            this._typeAheadController2.text =
-                                suggestion.toString().split(", ")[0] +
-                                    ", " +
-                                    suggestion.toString().split(", ")[1];
-                            to = suggestion.toString().split(", ")[2];
-                          },
-                          validator: (value) {
-                            to = value;
-                            if (value.isEmpty) {
-                              return 'Please select a city';
-                            }
-                          },
-                          onSaved: (value) => to = value,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0)),
-                            elevation: 4.0,
-                            onPressed: () {
-                              DatePicker.showDatePicker(context,
-                                  theme: DatePickerTheme(
-                                    itemStyle:
-                                        TextStyle(color: Colors.blue[800]),
-                                    containerHeight: 300.0,
-                                  ),
-                                  showTitleActions: true,
-                                  minTime: DateTime.now(),
-                                  maxTime: DateTime(2025, 12, 31),
-                                  onConfirm: (date) {
-                                // _startDate =
-                                //     '${date.day}/${date.month}/${date.year}  ';
-                                _startDate = null;
-                              },
-                                  currentTime: DateTime.now(),
-                                  locale: LocaleType.en);
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 40.0,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.date_range,
-                                              size: 18.0,
-                                              color: Colors.grey,
-                                            ),
-                                            Center(
-                                              child: Text(
-                                                " Date:  $_startDate",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15.0),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0)),
-                            elevation: 4.0,
-                            onPressed: () {
-                              DatePicker.showDatePicker(context,
-                                  theme: DatePickerTheme(
-                                    itemStyle:
-                                        TextStyle(color: Colors.blue[800]),
-                                    containerHeight: 300.0,
-                                  ),
-                                  showTitleActions: true,
-                                  minTime: DateTime.now(),
-                                  maxTime: DateTime(2025, 12, 31),
-                                  onConfirm: (date) {
-                                // _endtime =
-                                //     '${date.day}/${date.month}/${date.year}  ';
-                                _endtime = null;
-                              },
-                                  currentTime: DateTime.now(),
-                                  locale: LocaleType.en);
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 40.0,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.date_range,
-                                              size: 18.0,
-                                              color: Colors.grey,
-                                            ),
-                                            Center(
-                                              child: Text(
-                                                " Date:  $_endtime",
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15.0),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, bottom: 20),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Weight Limit (min)',
-                            //icon: Icon(Icons.place),
-                          ),
-                          keyboardType: TextInputType.number,
-//
-                          onChanged: (String val) {
-                            weight = val;
-                          },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                button(),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -580,7 +253,12 @@ class _TripScreenState extends State<TripsScreen> {
           ),
           body: Column(
             children: <Widget>[
-              filterBar(),
+              FilterBarOrder(
+                  ordersProvider: widget.orderstripsProvider,
+                  from: from,
+                  to: to,
+                  weight: weight,
+                  date: _endtime),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
                 DropdownButton(
                   hint: Text(_value),
