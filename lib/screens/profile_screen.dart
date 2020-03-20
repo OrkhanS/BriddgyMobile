@@ -79,7 +79,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    fetchAndSetReviews();
+    //fetchAndSetReviews();
+      //  fetchAndSetStatistics();
+
     _reviews = [];
 //    Widget review() {
 //      return Container(
@@ -125,9 +127,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         centerTitle: true,
         elevation: 1,
       ),
-      body: reviewsNotReady || statsNotReady
-          ? Center(child: CircularProgressIndicator())
-          : Center(
+      body: 
+          // ? Center(child: CircularProgressIndicator())
+          // :
+           Center(
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
@@ -221,7 +224,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   trailing: Text(
-                                    _stats[0]["totalorders"].toString(),
+                                    // _stats[0]["totalorders"].toString()
+                                    "2",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.grey[600],
@@ -238,7 +242,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   trailing: Text(
-                                    _stats[0]["totaltrips"].toString(),
+                                    //_stats[0]["totaltrips"].toString()
+                                    
+                                    "4",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.grey[600],
@@ -255,8 +261,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   ),
                                   trailing: Text(
-                                    _stats[0]["totalearnings"].toString() +
-                                        " \$",
+                                    // _stats[0]["totalearnings"].toString()
+                                     
+                                        " 5\$",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.grey[600],
@@ -277,71 +284,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: _reviews.length,
-                      itemBuilder: (context, int index) {
-                        return Column(
-                          children: <Widget>[
-                            ListTile(
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 20),
-                              isThreeLine: false,
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage: NetworkImage(
-                                    'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg'), //Todo: UserPic
-                              ),
-                              title: Row(
-                                children: <Widget>[
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.4,
-                                    child: Text(
-                                      _reviews[index]["author"]["first_name"]
-                                              .toString() +
-                                          " " +
-                                          _reviews[index]["author"]["last_name"]
-                                              .toString(), //Todo: Name
-                                      softWrap: false,
+                    Center(child: Text("\n\nYou don't have reviews yet."),) , 
+                  //   ListView.builder(
+                  //     physics: const NeverScrollableScrollPhysics(),
+                  //     shrinkWrap: true,
+                  //     itemCount: _reviews.length,
+                  //     itemBuilder: (context, int index) {
+                  //       return Column(
+                  //         children: <Widget>[
+                  //           ListTile(
+                  //             contentPadding:
+                  //                 EdgeInsets.symmetric(horizontal: 20),
+                  //             isThreeLine: false,
+                  //             leading: CircleAvatar(
+                  //               radius: 30,
+                  //               backgroundImage: NetworkImage(
+                  //                   'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg'), //Todo: UserPic
+                  //             ),
+                  //             title: Row(
+                  //               children: <Widget>[
+                  //                 Container(
+                  //                   width:
+                  //                       MediaQuery.of(context).size.width * 0.4,
+                  //                   child: Text(
+                  //                     _reviews[index]["author"]["first_name"]
+                  //                             .toString() +
+                  //                         " " +
+                  //                         _reviews[index]["author"]["last_name"]
+                  //                             .toString(), //Todo: Name
+                  //                     softWrap: false,
 
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    MdiIcons.star,
-                                    color: Colors.orange,
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    // Review and Ranking can be given separately
-                                    "5  ", //Todo: Rating
+                  //                     style: TextStyle(
+                  //                       fontSize: 15,
+                  //                       color: Theme.of(context).primaryColor,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //                 Icon(
+                  //                   MdiIcons.star,
+                  //                   color: Colors.orange,
+                  //                   size: 15,
+                  //                 ),
+                  //                 Text(
+                  //                   // Review and Ranking can be given separately
+                  //                   "5  ", //Todo: Rating
 
-                                    style: TextStyle(
-                                      color: Colors.orange,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  Text(
-                                    " 10 Dec 2019", //Todo: Date
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              subtitle:
-                                  Text(_reviews[index]["comment"].toString()),
-                            ),
-                          ],
-                        );
-                      },
-                    )
+                  //                   style: TextStyle(
+                  //                     color: Colors.orange,
+                  //                     fontSize: 15,
+                  //                   ),
+                  //                 ),
+                  //                 Text(
+                  //                   " 10 Dec 2019", //Todo: Date
+                  //                   style: TextStyle(
+                  //                     fontSize: 13,
+                  //                     color: Colors.grey[500],
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //             subtitle:
+                  //                 Text(_reviews[index]["comment"].toString()),
+                  //           ),
+                  //         ],
+                  //       );
+                  //     },
+                  //   )
+                  // 
                   ],
                 ),
               ),
