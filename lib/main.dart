@@ -192,6 +192,7 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
+    
     valueMessages = json.decode(message);
     neWMessage.addMessages = valueMessages;
   }
