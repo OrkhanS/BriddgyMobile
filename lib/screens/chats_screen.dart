@@ -154,16 +154,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         title: Row(
                                           children: <Widget>[
                                             Text(
-                                              widget
-                                                      .provider
-                                                      .chats[index]["members"]
-                                                          [0]["first_name"]
+                                             widget.provider.chats[0]["members"][0]["user"]["first_name"]
                                                       .toString() +
                                                   " " +
-                                                  widget
-                                                      .provider
-                                                      .chats[index]["members"]
-                                                          [0]["last_name"]
+                                                 widget.provider.chats[0]["members"][0]["user"]["last_name"]
                                                       .toString(),
                                               style: TextStyle(fontSize: 15.0),
                                             ),
