@@ -18,6 +18,7 @@ class Messages extends ChangeNotifier {
   bool _isloadingMessages = true;
   bool ismessagesAdded = false;
   List lastMessageID = [];
+  Map userdetail = {};
 
   String get getToken {
     return tokenforROOM;
@@ -111,7 +112,27 @@ class Messages extends ChangeNotifier {
   Map get messages => _messages;
 
   void readMessages(id) {
+    readLastMessages(id);
     newMessage.remove(id);
+    notifyListeners();
+  }
+
+  Future readLastMessages(id) async {
+    var token = tokenforROOM;
+    try {
+      const url = "http://briddgy.herokuapp.com/api/chat/readlast/";
+
+      http.post(url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + token,
+          },
+          body: json.encode({
+            "room_id": id,
+          }));
+    } catch (error) {
+      throw error;
+    }
   }
 
   //______________________________________________________________________________________
@@ -127,6 +148,7 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth) async {
+    fetchAndSetUserDetails(auth);
     var f;
     auth.removeListener(f);
     final prefs = await SharedPreferences.getInstance();
@@ -152,6 +174,10 @@ class Messages extends ChangeNotifier {
           _chatRooms = dataOrders["results"];
           isChatsLoading = false;
           isUserlogged = false;
+          for (var i = 0; i < _chatRooms.length; i++) {
+            newMessage[_chatRooms[i]["id"]] =
+                _chatRooms[i]["members"][1]["unread_count"];
+          }
         });
         return _chatRooms;
       } else {
@@ -183,4 +209,43 @@ class Messages extends ChangeNotifier {
   }
 
   List get chats => _chatRooms;
+
+//---------------------------------------------------------------------------------------------
+  List<dynamic> _users = [];
+
+  Map user_detail = {};
+
+  Map get userDetails {
+    return user_detail;
+  }
+
+  Future fetchAndSetUserDetails(auth) async {
+    var f;
+    auth.removeListener(f);
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
+
+    auth.token = extractedUserData['token'];
+    var token = extractedUserData['token'];
+    try {
+      const url = "http://briddgy.herokuapp.com/api/users/me/";
+
+      final response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + token,
+        },
+      ).then((response) {
+        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+        user_detail = dataOrders;
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }

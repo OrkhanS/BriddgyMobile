@@ -192,7 +192,6 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
-    
     valueMessages = json.decode(message);
     neWMessage.addMessages = valueMessages;
   }
@@ -330,7 +329,7 @@ class _MyAppState extends State<MyApp> {
                       token: tokenforROOM),
                   ChatsScreen(
                       provider: newmessage,
-                      //rooms: _loggedIn == true ? _rooms : 0,
+                      auth: auth,
                       token: tokenforROOM),
                   NotificationScreen(),
                   AccountScreen(

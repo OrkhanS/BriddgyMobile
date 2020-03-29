@@ -29,8 +29,8 @@ class ChatsScreen extends StatefulWidget {
   IOWebSocketChannel _channel;
 
   ObserverList<Function> _listeners = new ObserverList<Function>();
-  var provider, token;
-  ChatsScreen({this.provider, this.token});
+  var provider, token, auth;
+  ChatsScreen({this.provider, this.token, this.auth});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -50,6 +50,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   bool isMessagesLoaded = false;
   Future<int> roomLength;
   List _rooms = [];
+  String myid;
   @override
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
@@ -87,6 +88,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    myid = widget.provider.userDetails["id"].toString();
     // getAvatarUrl(String a) {
     //   String helper = 'https://briddgy.herokuapp.com/media/';
     //   imageUrl =
@@ -154,10 +156,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         title: Row(
                                           children: <Widget>[
                                             Text(
-                                             widget.provider.chats[0]["members"][0]["user"]["first_name"]
+                                             widget.provider.chats[index]["members"][1]["user"]["id"]
+                                                      .toString() != myid ? widget.provider.chats[index]["members"][1]["user"]["first_name"]
+                                                      .toString() +" " +
+                                                 widget.provider.chats[index]["members"][1]["user"]["last_name"]
+                                                      .toString(): widget.provider.chats[index]["members"][0]["user"]["first_name"]
                                                       .toString() +
                                                   " " +
-                                                 widget.provider.chats[0]["members"][0]["user"]["last_name"]
+                                                 widget.provider.chats[index]["members"][0]["user"]["last_name"]
                                                       .toString(),
                                               style: TextStyle(fontSize: 15.0),
                                             ),
@@ -199,7 +205,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                     .newMessages[widget.provider
                                                         .chats[index]["id"]]
                                                     .toString() !=
-                                                "null"
+                                                "null" || widget
+                                                    .provider
+                                                    .newMessages[widget.provider
+                                                        .chats[index]["id"]]
+                                                    .toString() !=
+                                                0
                                             ? Badge(
                                                 badgeContent: Text(widget
                                                     .provider
@@ -225,9 +236,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                     provider: widget.provider,
                                                     room: widget.provider
                                                         .chats[index]["id"],
-                                                    user: widget.provider
-                                                            .chats[index]
-                                                        ["members"],
+                                                    user:widget.provider.chats[index]["members"][1]["user"]["id"]
+                                                      .toString() != myid ? widget.provider.chats[index]["members"][1]["user"] : widget.provider.chats[index]["members"][0]["user"],
                                                     token: widget.token)),
                                           );
                                         },

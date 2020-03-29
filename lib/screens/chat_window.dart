@@ -93,7 +93,7 @@ class _ChatWindowState extends State<ChatWindow> {
       "message_type": "text",
       'message': text,
       "room_id": widget.room,
-      "sender": widget.user[0]["id"]
+      "sender": widget.user["id"]
     };
     widget.provider.changeChatRoomPlace(widget.room);
 
@@ -186,7 +186,7 @@ class _ChatWindowState extends State<ChatWindow> {
               },
             ),
             title: Text(
-              widget.user[0]["first_name"].toString(), //todo: name
+              widget.user["first_name"].toString(), //todo: name
               style: TextStyle(color: Theme.of(context).primaryColor),
             ),
           ),
@@ -212,7 +212,7 @@ class _ChatWindowState extends State<ChatWindow> {
                         itemCount: _messages.length,
                         itemBuilder: (context, index) {
                           bool reverse = false;
-                          if (widget.user[0]["id"] !=
+                          if (widget.user["id"] !=
                                   _messages[index]["sender"] ||
                               _messages[index]["sender"] == "me") {
                             newMessageMe = false;
@@ -223,7 +223,7 @@ class _ChatWindowState extends State<ChatWindow> {
                             padding: const EdgeInsets.only(
                                 left: 8.0, bottom: 8.0, right: 8.0),
                             child: CircleAvatar(
-                              child: Text(widget.user[0]["first_name"]
+                              child: Text(widget.user["first_name"]
                                   .toString()
                                   .substring(0, 1)),
                             ),
