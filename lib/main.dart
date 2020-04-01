@@ -228,12 +228,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BottomNavigationBarItem(
           title: Text('Chats'),
-          icon: newmessage.newMessages.toString() != "null"
-              ? newmessage.newMessage.length.toString() == '0'
-                  ? Icon(MdiIcons.forumOutline)
-                  : Badge(
-                      badgeContent:
-                          Text(newmessage.newMessage.length.toString()),
+          icon: newmessage.arethereNewMessage == true
+              ? 
+                Badge(
                       child: Icon(MdiIcons.forumOutline),
                     )
               : Icon(MdiIcons.forumOutline),

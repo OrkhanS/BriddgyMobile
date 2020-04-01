@@ -8,7 +8,6 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/messages.dart';
 import 'package:menu/menu.dart';
-import 'package:clipboard_manager/clipboard_manager.dart';
 import 'dart:convert';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -259,23 +258,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                   ),
                                 )),
                             items: [
-                              
-                              
-                              MenuItem("Copy", () {
-                                ClipboardManager.copyToClipBoard(
-                                        _messages[index]["text"].toString())
-                                    .then((result) {
-                                  final snackBar = SnackBar(
-                                    content: Text('Copied to Clipboard'),
-                                    // action: SnackBarAction(
-                                    //   label: 'Undo',
-                                    //   onPressed: () {},
-                                    // ),
-                                  );
-                                  Scaffold.of(context).showSnackBar(snackBar);
-                                });
-                              }),
-                              MenuItem("Info", () {
+                                MenuItem("Info", () {
                                 Alert(
                                   context: context,
                                   type: AlertType.info,

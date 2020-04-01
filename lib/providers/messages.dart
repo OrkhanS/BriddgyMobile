@@ -99,7 +99,6 @@ class Messages extends ChangeNotifier {
         lastMessageID = [];
       }
     }
-
     notifyListeners();
   }
 
@@ -113,8 +112,18 @@ class Messages extends ChangeNotifier {
 
   void readMessages(id) {
     readLastMessages(id);
-    newMessage.remove(id);
-    notifyListeners();
+    newMessage[id] = 0;
+    //newMessage.remove(id);
+  }
+
+  bool get arethereNewMessage {
+    var key = newMessage.keys
+        .firstWhere((k) => newMessage[k] != 0, orElse: () => null);
+    if (key != null) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future readLastMessages(id) async {
@@ -138,12 +147,15 @@ class Messages extends ChangeNotifier {
   //______________________________________________________________________________________
 
   bool changeChatRoomPlace(id) {
+    newMessage[id] = 0;
     for (var i = 0; i < _chatRooms.length; i++) {
       if (_chatRooms[i]["id"] == id) {
         _chatRooms.insert(0, _chatRooms.removeAt(i));
+        newMessage[id] = 0;
         return true;
       }
     }
+    newMessage[id] = 0;
     return false;
   }
 
@@ -172,12 +184,14 @@ class Messages extends ChangeNotifier {
         ).then((value) {
           final dataOrders = json.decode(value.body) as Map<String, dynamic>;
           _chatRooms = dataOrders["results"];
+          if (_chatRooms.length == 0) {
+            for (var i = 0; i < _chatRooms.length; i++) {
+              newMessage[_chatRooms[i]["id"]] =
+                  _chatRooms[i]["members"][1]["unread_count"];
+            }
+          }
           isChatsLoading = false;
           isUserlogged = false;
-          for (var i = 0; i < _chatRooms.length; i++) {
-            newMessage[_chatRooms[i]["id"]] =
-                _chatRooms[i]["members"][1]["unread_count"];
-          }
         });
         return _chatRooms;
       } else {

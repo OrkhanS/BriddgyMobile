@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:clipboard_manager/clipboard_manager.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -200,17 +199,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                           // _messages[index]["results"][0]["text"]
                                           //   .toString().substring(0,15)
                                         ),
-                                        trailing: widget
+                                        trailing:  widget
                                                     .provider
                                                     .newMessages[widget.provider
                                                         .chats[index]["id"]]
                                                     .toString() !=
-                                                "null" || widget
-                                                    .provider
-                                                    .newMessages[widget.provider
-                                                        .chats[index]["id"]]
-                                                    .toString() !=
-                                                0
+                                                "0" && widget.provider.newMessages[widget.provider.chats[index]["id"]].toString() != "null"
                                             ? Badge(
                                                 badgeContent: Text(widget
                                                     .provider
@@ -227,6 +221,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         onTap: () {
                                           widget.provider.readMessages(widget
                                               .provider.chats[index]["id"]);
+                                          Provider.of<Messages>(context).newMessage[widget
+                                              .provider.chats[index]["id"]] = 0; 
                                           widget.provider
                                               .fetchAndSetMessages(index);
                                           Navigator.push(
@@ -246,30 +242,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                   ),
                                 ),
                                 items: [
-                                  MenuItem(
-                                    "Copy Name",
-                                    () {
-                                      ClipboardManager.copyToClipBoard(widget
-                                                  .provider
-                                                  .chats[index]["members"][0]
-                                                      ["first_name"]
-                                                  .toString() +
-                                              " " +
-                                              widget
-                                                  .provider
-                                                  .chats[index]["members"][0]
-                                                      ["last_name"]
-                                                  .toString())
-                                          .then((result) {
-                                        final snackBar = SnackBar(
-                                          content: Text('Copied to Clipboard'),
-                                        );
-                                        Scaffold.of(context)
-                                            .showSnackBar(snackBar);
-                                      });
-                                    },
-                                  ),
-                                  MenuItem(
+                                   MenuItem(
                                     "Profile",
                                     () {
                                       Navigator.push(
