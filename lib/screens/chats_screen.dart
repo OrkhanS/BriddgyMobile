@@ -155,15 +155,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         title: Row(
                                           children: <Widget>[
                                             Text(
-                                             widget.provider.chats[index]["members"][1]["user"]["id"]
-                                                      .toString() != myid ? widget.provider.chats[index]["members"][1]["user"]["first_name"]
-                                                      .toString() +" " +
-                                                 widget.provider.chats[index]["members"][1]["user"]["last_name"]
-                                                      .toString(): widget.provider.chats[index]["members"][0]["user"]["first_name"]
-                                                      .toString() +
-                                                  " " +
-                                                 widget.provider.chats[index]["members"][0]["user"]["last_name"]
-                                                      .toString(),
+                                              widget.provider.chats[index]["members"][1]["user"]["id"].toString() != myid
+                                                  ? widget.provider.chats[index]["members"][1]["user"]["first_name"].toString() +
+                                                      " " +
+                                                      widget
+                                                          .provider
+                                                          .chats[index]["members"]
+                                                              [1]["user"]
+                                                              ["last_name"]
+                                                          .toString()
+                                                  : widget
+                                                          .provider
+                                                          .chats[index]["members"]
+                                                              [0]["user"]
+                                                              ["first_name"]
+                                                          .toString() +
+                                                      " " +
+                                                      widget
+                                                          .provider
+                                                          .chats[index]["members"]
+                                                              [0]["user"]
+                                                              ["last_name"]
+                                                          .toString(),
                                               style: TextStyle(fontSize: 15.0),
                                             ),
                                             SizedBox(
@@ -177,52 +190,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                             // ),
                                           ],
                                         ),
-                                        subtitle:
-                                          Row(
-                                            children: <Widget>[
+                                        subtitle: Row(
+                                          children: <Widget>[
                                             Text(
-                                              "Last Message:" +
-                                                  "  ",
+                                              "Last Message:" + "  ",
                                               style: TextStyle(fontSize: 15.0),
                                               // _messages[index]["results"][0]["text"]
                                               //   .toString().substring(0,15)
                                             ),
                                             Text(
-                                                  timeago
+                                              timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) == "3" ||
+                                                      timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) ==
+                                                          "2"
+                                                  ? "Recently"
+                                                  : timeago
                                                       .format(DateTime.parse(widget
                                                               .provider
-                                                              .chats[index]
-                                                                  ["date_modified"]
+                                                              .chats[index][
+                                                                  "date_modified"]
                                                               .toString()
-                                                              .substring(0, 10) +
-                                                          " " +
-                                                          widget
-                                                              .provider
-                                                              .chats[index]
-                                                                  ["date_modified"]
-                                                              .toString()
-                                                              .substring(11, 26)))
-                                                      .toString().substring(0,1) == "3" ||  timeago
-                                                      .format(DateTime.parse(widget
-                                                              .provider
-                                                              .chats[index]
-                                                                  ["date_modified"]
-                                                              .toString()
-                                                              .substring(0, 10) +
-                                                          " " +
-                                                          widget
-                                                              .provider
-                                                              .chats[index]
-                                                                  ["date_modified"]
-                                                              .toString()
-                                                              .substring(11, 26)))
-                                                      .toString().substring(0,1) == "2" ? "Recently": timeago
-                                                      .format(DateTime.parse(widget
-                                                              .provider
-                                                              .chats[index]
-                                                                  ["date_modified"]
-                                                              .toString()
-                                                              .substring(0, 10) +
+                                                              .substring(
+                                                                  0, 10) +
                                                           " " +
                                                           widget
                                                               .provider
@@ -232,17 +220,23 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                               .substring(11, 26)))
                                                       .toString(),
                                               style: TextStyle(fontSize: 15.0),
-
                                             )
-                                            ],
-                                          ),
-                                         
-                                        trailing:  widget
-                                                    .provider
-                                                    .newMessages[widget.provider
-                                                        .chats[index]["id"]]
-                                                    .toString() !=
-                                                "0" && widget.provider.newMessages[widget.provider.chats[index]["id"]].toString() != "null"
+                                          ],
+                                        ),
+                                        trailing: widget
+                                                        .provider
+                                                        .newMessages[widget
+                                                            .provider
+                                                            .chats[index]["id"]]
+                                                        .toString() !=
+                                                    "0" &&
+                                                widget
+                                                        .provider
+                                                        .newMessages[widget
+                                                            .provider
+                                                            .chats[index]["id"]]
+                                                        .toString() !=
+                                                    "null"
                                             ? Badge(
                                                 badgeContent: Text(widget
                                                     .provider
@@ -259,8 +253,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         onTap: () {
                                           widget.provider.readMessages(widget
                                               .provider.chats[index]["id"]);
-                                          Provider.of<Messages>(context).newMessage[widget
-                                              .provider.chats[index]["id"]] = 0; 
+                                          Provider.of<Messages>(context)
+                                                  .newMessage[
+                                              widget.provider.chats[index]
+                                                  ["id"]] = 0;
                                           widget.provider
                                               .fetchAndSetMessages(index);
                                           Navigator.push(
@@ -268,10 +264,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                             MaterialPageRoute(
                                                 builder: (__) => ChatWindow(
                                                     provider: widget.provider,
-                                                    room: widget.provider
-                                                        .chats[index]["id"],
-                                                    user:widget.provider.chats[index]["members"][1]["user"]["id"]
-                                                      .toString() != myid ? widget.provider.chats[index]["members"][1]["user"] : widget.provider.chats[index]["members"][0]["user"],
+                                                    room: widget.provider.chats[index]
+                                                        ["id"],
+                                                    user: widget
+                                                                .provider
+                                                                .chats[index]["members"]
+                                                                    [1]["user"]
+                                                                    ["id"]
+                                                                .toString() !=
+                                                            myid
+                                                        ? widget.provider.chats[index]
+                                                                ["members"][1]
+                                                            ["user"]
+                                                        : widget.provider.chats[index]
+                                                            ["members"][0]["user"],
                                                     token: widget.token)),
                                           );
                                         },
@@ -280,7 +286,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                   ),
                                 ),
                                 items: [
-                                   MenuItem(
+                                  MenuItem(
                                     "Profile",
                                     () {
                                       Navigator.push(
@@ -288,9 +294,21 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         MaterialPageRoute(
                                             builder: (__) =>
                                                 ProfileScreenAnother(
-                                                    user: widget.provider
-                                                            .chats[index]
-                                                        ["members"][0])),
+                                                  user: widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["members"][1]
+                                                                  ["user"]["id"]
+                                                              .toString() !=
+                                                          myid
+                                                      ? widget.provider
+                                                              .chats[index]
+                                                          ["members"][1]["user"]
+                                                      : widget.provider
+                                                                  .chats[index]
+                                                              ["members"][0]
+                                                          ["user"],
+                                                )),
                                       );
                                     },
                                   ),
