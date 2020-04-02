@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
   bool _loggedIn = true;
   List<dynamic> _messages = [];
   List<dynamic> _mesaj = [];
-  int _currentIndex = 1;
+  int _currentIndex =0;
   PageController _pageController;
   bool _enabled = true;
   int _status = 0;
@@ -84,10 +84,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    _currentIndex = 1;
+    _currentIndex = 0;
     super.initState();
     getToken();
-    _pageController = PageController(initialPage: 1);
+    _pageController = PageController(initialPage: 0);
     //_configureFirebaseListerners();
     // final settingsAndroid = AndroidInitializationSettings('app_icon');
     // final settingsIOS = IOSInitializationSettings(
