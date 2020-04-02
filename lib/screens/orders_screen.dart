@@ -85,11 +85,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     } else if (value.toString().compareTo("Price") == 0) {
       url = url + "-price";
     } else if (value.toString().compareTo("Ranking") == 0) {
-      url = url + "-ranking";
+      url = url + "-owner";
     }
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json", "Authorization": "Token " + widget.token,},
     ).then((response) {
       setState(
         () {

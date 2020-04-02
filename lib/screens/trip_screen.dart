@@ -116,18 +116,14 @@ class _TripScreenState extends State<TripsScreen> {
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if (value.toString().compareTo("WeightLow") == 0) {
-      url = url + "weight";
-    } else if (value.toString().compareTo("WeightMax") == 0) {
-      url = url + "-weight";
-    } else if (value.toString().compareTo("Price") == 0) {
-      url = url + "-price";
+    if (value.toString().compareTo("WeightMax") == 0) {
+      url = url + "-weight_limit";
     } else if (value.toString().compareTo("Ranking") == 0) {
-      url = url + "-price";
+      url = url + "-owner";
     }
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json", "Authorization": "Token " + widget.token,},
     ).then((response) {
       setState(
         () {
@@ -266,25 +262,14 @@ class _TripScreenState extends State<TripsScreen> {
                     DropdownMenuItem(
                       value: "Ranking",
                       child: Text(
-                        "Highest Ranking",
+                        "Ranking",
                       ),
                     ),
-                    DropdownMenuItem(
-                      value: "Price",
-                      child: Text(
-                        "Highest Reward",
-                      ),
-                    ),
-                    DropdownMenuItem(
-                      value: "WeightLow",
-                      child: Text(
-                        "Lowest Weight",
-                      ),
-                    ),
+                    
                     DropdownMenuItem(
                       value: "WeightMax",
                       child: Text(
-                        "Highest Weight",
+                        "Weight Limit",
                       ),
                     ),
                   ],

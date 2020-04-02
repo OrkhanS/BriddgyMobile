@@ -177,28 +177,66 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                             // ),
                                           ],
                                         ),
-                                        subtitle: Text(
-                                          "Last Message:" +
-                                              "  " +
-                                              timeago
-                                                  .format(DateTime.parse(widget
-                                                          .provider
-                                                          .chats[index]
-                                                              ["date_modified"]
-                                                          .toString()
-                                                          .substring(0, 10) +
-                                                      " " +
-                                                      widget
-                                                          .provider
-                                                          .chats[index]
-                                                              ["date_modified"]
-                                                          .toString()
-                                                          .substring(11, 26)))
-                                                  .toString(),
-                                          style: TextStyle(fontSize: 15.0),
-                                          // _messages[index]["results"][0]["text"]
-                                          //   .toString().substring(0,15)
-                                        ),
+                                        subtitle:
+                                          Row(
+                                            children: <Widget>[
+                                            Text(
+                                              "Last Message:" +
+                                                  "  ",
+                                              style: TextStyle(fontSize: 15.0),
+                                              // _messages[index]["results"][0]["text"]
+                                              //   .toString().substring(0,15)
+                                            ),
+                                            Text(
+                                                  timeago
+                                                      .format(DateTime.parse(widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["date_modified"]
+                                                              .toString()
+                                                              .substring(0, 10) +
+                                                          " " +
+                                                          widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["date_modified"]
+                                                              .toString()
+                                                              .substring(11, 26)))
+                                                      .toString().substring(0,1) == "3" ||  timeago
+                                                      .format(DateTime.parse(widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["date_modified"]
+                                                              .toString()
+                                                              .substring(0, 10) +
+                                                          " " +
+                                                          widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["date_modified"]
+                                                              .toString()
+                                                              .substring(11, 26)))
+                                                      .toString().substring(0,1) == "2" ? "Recently": timeago
+                                                      .format(DateTime.parse(widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["date_modified"]
+                                                              .toString()
+                                                              .substring(0, 10) +
+                                                          " " +
+                                                          widget
+                                                              .provider
+                                                              .chats[index]
+                                                                  ["date_modified"]
+                                                              .toString()
+                                                              .substring(11, 26)))
+                                                      .toString(),
+                                              style: TextStyle(fontSize: 15.0),
+
+                                            )
+                                            ],
+                                          ),
+                                         
                                         trailing:  widget
                                                     .provider
                                                     .newMessages[widget.provider

@@ -102,9 +102,9 @@ class _MyAppState extends State<MyApp> {
 
   _configureFirebaseListerners(newmessage) {
     _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        neWMessage.addMessages = message;
-      },
+      // onMessage: (Map<String, dynamic> message) async {
+      //   neWMessage.addMessages = message;
+      // },
       onLaunch: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message;
       },
