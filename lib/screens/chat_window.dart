@@ -12,6 +12,8 @@ import 'dart:convert';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:responsive_text_field/responsive_text_field.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
 
 class ChatWindow extends StatefulWidget {
   var provider, user, room, token;
@@ -24,7 +26,6 @@ class ChatWindow extends StatefulWidget {
 
 class _ChatWindowState extends State<ChatWindow> {
   List _messages = [];
-
   TextEditingController textEditingController;
   ScrollController scrollController;
   ObserverList<Function> _listeners = new ObserverList<Function>();
@@ -32,9 +33,12 @@ class _ChatWindowState extends State<ChatWindow> {
   bool _isOn = false;
   IOWebSocketChannel _channelRoom;
   IOWebSocketChannel alertChannel;
-  bool _isloading = true;
+  bool _isloading = false;
   bool newMessageMe = false;
   String id;
+  var file;
+  final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php'; //todo delete
+  final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
   void initState() {
     textEditingController = TextEditingController();
@@ -47,11 +51,8 @@ class _ChatWindowState extends State<ChatWindow> {
   initCommunication(String id) async {
     reset();
     try {
-      _channelRoom = new IOWebSocketChannel.connect(
-          'ws://briddgy.herokuapp.com/ws/chatrooms/' +
-              id.toString() +
-              '/?token=' +
-              widget.provider.getToken);
+      _channelRoom =
+          new IOWebSocketChannel.connect('ws://briddgy.herokuapp.com/ws/chatrooms/' + id.toString() + '/?token=' + widget.provider.getToken);
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Connected");
     } catch (e) {
@@ -88,12 +89,7 @@ class _ChatWindowState extends State<ChatWindow> {
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
-    var message = {
-      "message_type": "text",
-      'message': text,
-      "room_id": widget.room,
-      "sender": widget.user["id"]
-    };
+    var message = {"message_type": "text", 'message': text, "room_id": widget.room, "sender": widget.user["id"]};
     widget.provider.changeChatRoomPlace(widget.room);
 
     if (_channelRoom != null) {
@@ -123,10 +119,36 @@ class _ChatWindowState extends State<ChatWindow> {
     painter: Triangle(),
   );
 
+  void _choose() async {
+    file = await ImagePicker.pickImage(source: ImageSource.camera);
+// file = await ImagePicker.pickImage(source: ImageSource.gallery);
+  }
+
+  void _upload() {
+    if (file == null) return;
+    String base64Image = base64Encode(file.readAsBytesSync());
+    String fileName = file.path.split("/").last;
+
+//    http.post(phpEndPoint, body: {
+//      "image": base64Image,
+//      "name": fileName,
+//    }).then((res) {
+//      print(res.statusCode);
+//    }).catchError((err) {
+//      print(err);
+//    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var textInput = Row(
       children: <Widget>[
+        IconButton(
+          icon: Icon(Icons.camera_alt),
+          onPressed: () {
+            _choose();
+          },
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -163,6 +185,18 @@ class _ChatWindowState extends State<ChatWindow> {
       ],
     );
 
+    Future _loadData() async {
+      // perform fetching data delay
+      await Future.delayed(new Duration(seconds: 1)); //todo: fetch orxan
+      print("load more");
+      // update data and loading status
+      setState(() {
+//        items.addAll( ['item 1']);
+//        print('items: '+ items.toString());
+        _isloading = false;
+      });
+    }
+
     return Consumer<Messages>(
       builder: (context, provider, child) {
         bool messageLoader = true;
@@ -178,8 +212,7 @@ class _ChatWindowState extends State<ChatWindow> {
             centerTitle: true,
             backgroundColor: Colors.white,
             leading: IconButton(
-              icon: Icon(Icons.keyboard_backspace,
-                  color: Theme.of(context).primaryColor),
+              icon: Icon(Icons.keyboard_backspace, color: Theme.of(context).primaryColor),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -191,6 +224,13 @@ class _ChatWindowState extends State<ChatWindow> {
           ),
           body: Column(
             children: <Widget>[
+              Container(
+                height: _isloading ? 50.0 : 0.0,
+                color: Colors.transparent,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
               Expanded(
                 child: messageLoader
                     ? Padding(
@@ -205,144 +245,137 @@ class _ChatWindowState extends State<ChatWindow> {
                           ],
                         ),
                       )
-                    : ListView.builder(
-                        reverse: true,
-                        controller: scrollController,
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) {
-                          bool reverse = false;
-                          if (widget.user["id"] !=
-                                  _messages[index]["sender"] ||
-                              _messages[index]["sender"] == "me") {
-                            newMessageMe = false;
-                            reverse = true;
-                          }
-
-                          var avatar = Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, bottom: 8.0, right: 8.0),
-                            child: CircleAvatar(
-                              child: Text(widget.user["first_name"]
-                                  .toString()
-                                  .substring(0, 1)),
-                            ),
-                          );
-
-                          var messagebody = Menu(
-                            child: Container(
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue[100],
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      // Todo
-                                      // Warning
-                                      // Warning
-                                      child: Text(
-                                        _messages[index]["text"]
-                                                    .toString()
-                                                    .length >
-                                                30
-                                            ? _messages[index]["text"]
-                                                .toString()
-                                                .substring(0, 30)
-                                            : _messages[index]["text"]
-                                                .toString(),
-                                        softWrap: true,
-                                      ),
-                                    ),
-                                  ),
-                                )),
-                            items: [
-                                MenuItem("Info", () {
-                                Alert(
-                                  context: context,
-                                  type: AlertType.info,
-                                  title: "Sent on:  " +
-                                      _messages[index]["date_created"]
-                                          .toString()
-                                          .substring(0, 10) +
-                                      ",  " +
-                                      _messages[index]["date_created"]
-                                          .toString()
-                                          .substring(11, 16) +
-                                      "\n",
-                                  buttons: [
-                                    DialogButton(
-                                      child: Text(
-                                        "Back",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
-                                      onPressed: () => Navigator.pop(context),
-                                      color: Color.fromRGBO(0, 179, 134, 1.0),
-                                    ),
-                                    DialogButton(
-                                      child: Text(
-                                        "Report",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
-                                      onPressed: () => {},
-                                      color: Color.fromRGBO(0, 179, 134, 1.0),
-                                    )
-                                  ],
-                                  content: Text(
-                                      "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
-                                ).show();
-                              }),
-                            ],
-                            decoration: MenuDecoration(),
-                          );
-
-                          Widget message;
-
-                          if (reverse) {
-                            message = Stack(
-                              children: <Widget>[
-                                messagebody,
-                                Positioned(
-                                    right: 0, bottom: 0, child: triangle),
-                              ],
-                            );
-                          } else {
-                            message = Stack(
-                              children: <Widget>[
-                                Positioned(left: 0, bottom: 0, child: triangle),
-                                messagebody,
-                              ],
-                            );
-                          }
-
-                          if (reverse) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: message,
-                                ),
-                                avatar,
-                              ],
-                            );
-                          } else {
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                avatar,
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: message,
-                                ),
-                              ],
-                            );
+                    : NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            // start loading data
+                            setState(() {
+                              _isloading = true;
+                            });
+                            _loadData();
                           }
                         },
+                        child: ListView.builder(
+                          reverse: true,
+                          controller: scrollController,
+                          itemCount: _messages.length,
+                          itemBuilder: (context, index) {
+                            bool reverse = false;
+                            if (widget.user["id"] != _messages[index]["sender"] || _messages[index]["sender"] == "me") {
+                              newMessageMe = false;
+                              reverse = true;
+                            }
+
+                            var avatar = Padding(
+                              padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
+                              child: CircleAvatar(
+                                child: Text(widget.user["first_name"].toString().substring(0, 1)),
+                              ),
+                            );
+
+                            var messagebody = Menu(
+                              child: Container(
+                                  child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[100],
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    // Todo
+                                    // Warning
+                                    // Warning
+                                    child: Text(
+                                      _messages[index]["text"].toString().length > 30
+                                          ? _messages[index]["text"].toString().substring(0, 30)
+                                          : _messages[index]["text"].toString(),
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                ),
+                              )),
+                              items: [
+                                MenuItem("Info", () {
+                                  Alert(
+                                    context: context,
+                                    type: AlertType.info,
+                                    title: "Sent on:  " +
+                                        _messages[index]["date_created"].toString().substring(0, 10) +
+                                        ",  " +
+                                        _messages[index]["date_created"].toString().substring(11, 16) +
+                                        "\n",
+                                    buttons: [
+                                      DialogButton(
+                                        child: Text(
+                                          "Back",
+                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                        ),
+                                        onPressed: () => Navigator.pop(context),
+                                        color: Color.fromRGBO(0, 179, 134, 1.0),
+                                      ),
+                                      DialogButton(
+                                        child: Text(
+                                          "Report",
+                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                        ),
+                                        onPressed: () => {},
+                                        color: Color.fromRGBO(0, 179, 134, 1.0),
+                                      )
+                                    ],
+                                    content:
+                                        Text("To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                  ).show();
+                                }),
+                              ],
+                              decoration: MenuDecoration(),
+                            );
+
+                            Widget message;
+
+                            if (reverse) {
+                              message = Stack(
+                                children: <Widget>[
+                                  messagebody,
+                                  Positioned(right: 0, bottom: 0, child: triangle),
+                                ],
+                              );
+                            } else {
+                              message = Stack(
+                                children: <Widget>[
+                                  Positioned(left: 0, bottom: 0, child: triangle),
+                                  messagebody,
+                                ],
+                              );
+                            }
+
+                            if (reverse) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: message,
+                                  ),
+                                  avatar,
+                                ],
+                              );
+                            } else {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  avatar,
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: message,
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
                       ),
               ),
               Divider(height: 2.0),
@@ -372,10 +405,3 @@ class Triangle extends CustomPainter {
     return true;
   }
 }
-
-// ResponsiveTextField(
-//                         availableWidth: MediaQuery.of(context).size.width,
-//                         minLines: 1,
-//                         maxLines: 5,
-//                         style: TextStyle(fontSize: 16),
-//                       ),
