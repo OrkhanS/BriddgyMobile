@@ -199,11 +199,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                               //   .toString().substring(0,15)
                                             ),
                                             Text(
-                                              timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) == "3" ||
-                                                      timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) ==
-                                                          "2"
-                                                  ? "Recently"
-                                                  : timeago
+                                              // timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) == "3" ||
+                                              //         timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) ==
+                                              //             "2"
+                                              //     ? "Recently"
+                                              //     :
+                                                   timeago
                                                       .format(DateTime.parse(widget
                                                               .provider
                                                               .chats[index][
