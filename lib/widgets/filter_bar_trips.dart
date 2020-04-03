@@ -39,7 +39,7 @@ class _FilterBarStateOrder extends State<FilterBarOrder> {
   var _expanded = false;
 
   Future filterAndSetTrips() async {
-    urlFilter = "http://briddgy.herokuapp.com/api/orders/?";
+    urlFilter = "http://briddgy.herokuapp.com/api/trips/?";
     if (widget.from != null) {
       urlFilter = urlFilter + "origin=" + widget.from;
       flagFrom = true;
@@ -57,9 +57,9 @@ class _FilterBarStateOrder extends State<FilterBarOrder> {
       flagWeight = true;
     }
     if (widget.date != null) {
-      flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "min_price=" + widget.date.toString()
-          : urlFilter = urlFilter + "&min_price=" + widget.date.toString();
+      // flagWeight == false && flagTo == false && flagFrom == false
+      //     ? urlFilter = urlFilter + "min_price=" + widget.date.toString()
+      //     : urlFilter = urlFilter + "&min_price=" + widget.date.toString();
     }
     await http.get(
       urlFilter,

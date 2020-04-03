@@ -123,7 +123,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
           body: Container(
             child: widget.provider.userNotLogged == true ||
                     widget.provider.chats == null
-                ? Center(child: Text('You do not have chats yet'))
+                ? Center(child: Text('No Chats'))
                 : widget.provider.chatsNotLoaded == true
                     ? Center(child: CircularProgressIndicator())
                     : ListView.builder(

@@ -14,6 +14,8 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:responsive_text_field/responsive_text_field.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class ChatWindow extends StatefulWidget {
   var provider, user, room, token;
@@ -36,8 +38,10 @@ class _ChatWindowState extends State<ChatWindow> {
   bool _isloading = false;
   bool newMessageMe = false;
   String id;
+  String nextMessagesURL="FirstCall";
   var file;
-  final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php'; //todo delete
+  final String phpEndPoint =
+      'http://192.168.43.171/phpAPI/image.php'; //todo delete
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
   void initState() {
@@ -51,8 +55,11 @@ class _ChatWindowState extends State<ChatWindow> {
   initCommunication(String id) async {
     reset();
     try {
-      _channelRoom =
-          new IOWebSocketChannel.connect('ws://briddgy.herokuapp.com/ws/chatrooms/' + id.toString() + '/?token=' + widget.provider.getToken);
+      _channelRoom = new IOWebSocketChannel.connect(
+          'ws://briddgy.herokuapp.com/ws/chatrooms/' +
+              id.toString() +
+              '/?token=' +
+              widget.provider.getToken);
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Connected");
     } catch (e) {
@@ -89,7 +96,12 @@ class _ChatWindowState extends State<ChatWindow> {
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
-    var message = {"message_type": "text", 'message': text, "room_id": widget.room, "sender": widget.user["id"]};
+    var message = {
+      "message_type": "text",
+      'message': text,
+      "room_id": widget.room,
+      "sender": widget.user["id"]
+    };
     widget.provider.changeChatRoomPlace(widget.room);
 
     if (_channelRoom != null) {
@@ -186,15 +198,34 @@ class _ChatWindowState extends State<ChatWindow> {
     );
 
     Future _loadData() async {
-      // perform fetching data delay
-      await Future.delayed(new Duration(seconds: 1)); //todo: fetch orxan
-      print("load more");
-      // update data and loading status
+      if(nextMessagesURL.toString() != "null"){
+         String url = nextMessagesURL;
+      try {
+        await http.get(
+          url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + widget.token,
+          },
+        ).then((response) {
+          var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _messages.addAll(dataOrders["results"]);
+          nextMessagesURL = dataOrders["next"];
+        });
+      } catch (e) {
+        print("Some Error");
+      }
       setState(() {
 //        items.addAll( ['item 1']);
 //        print('items: '+ items.toString());
         _isloading = false;
       });
+    }
+    else{
+        _isloading = false;
+    }
+      
+     
     }
 
     return Consumer<Messages>(
@@ -202,6 +233,9 @@ class _ChatWindowState extends State<ChatWindow> {
         bool messageLoader = true;
         if (widget.provider.messages[widget.room] != null) {
           _messages = widget.provider.messages[widget.room]["results"];
+          if(nextMessagesURL == "FirstCall"){
+            nextMessagesURL = widget.provider.messages[widget.room]["next"];
+          }
           messageLoader = false;
         } else {
           messageLoader = true;
@@ -212,7 +246,8 @@ class _ChatWindowState extends State<ChatWindow> {
             centerTitle: true,
             backgroundColor: Colors.white,
             leading: IconButton(
-              icon: Icon(Icons.keyboard_backspace, color: Theme.of(context).primaryColor),
+              icon: Icon(Icons.keyboard_backspace,
+                  color: Theme.of(context).primaryColor),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -247,7 +282,9 @@ class _ChatWindowState extends State<ChatWindow> {
                       )
                     : NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
-                          if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                          if (!_isloading &&
+                              scrollInfo.metrics.pixels ==
+                                  scrollInfo.metrics.maxScrollExtent) {
                             // start loading data
                             setState(() {
                               _isloading = true;
@@ -265,11 +302,24 @@ class _ChatWindowState extends State<ChatWindow> {
                               newMessageMe = false;
                               reverse = true;
                             }
-
-                            var avatar = Padding(
-                              padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
+                          
+                            var avatar = 
+                            
+                            widget.user["id"] != _messages[index]["sender"] || _messages[index]["sender"] == "me" ? Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 8.0, bottom: 8.0, right: 8.0),
                               child: CircleAvatar(
-                                child: Text(widget.user["first_name"].toString().substring(0, 1)),
+                                child: Text(widget.user["first_name"]
+                                    .toString()
+                                    .substring(0, 1)),
+                              ),
+                            ) :  Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 8.0, bottom: 8.0, right: 8.0),
+                              child: CircleAvatar(
+                                child: Text(_messages[index]["sender"]
+                                    .toString()
+                                    .substring(0, 1)),
                               ),
                             );
 
@@ -288,8 +338,13 @@ class _ChatWindowState extends State<ChatWindow> {
                                     // Warning
                                     // Warning
                                     child: Text(
-                                      _messages[index]["text"].toString().length > 30
-                                          ? _messages[index]["text"].toString().substring(0, 30)
+                                      _messages[index]["text"]
+                                                  .toString()
+                                                  .length >
+                                              30
+                                          ? _messages[index]["text"]
+                                              .toString()
+                                              .substring(0, 30)
                                           : _messages[index]["text"].toString(),
                                       softWrap: true,
                                     ),
@@ -302,15 +357,21 @@ class _ChatWindowState extends State<ChatWindow> {
                                     context: context,
                                     type: AlertType.info,
                                     title: "Sent on:  " +
-                                        _messages[index]["date_created"].toString().substring(0, 10) +
+                                        _messages[index]["date_created"]
+                                            .toString()
+                                            .substring(0, 10) +
                                         ",  " +
-                                        _messages[index]["date_created"].toString().substring(11, 16) +
+                                        _messages[index]["date_created"]
+                                            .toString()
+                                            .substring(11, 16) +
                                         "\n",
                                     buttons: [
                                       DialogButton(
                                         child: Text(
                                           "Back",
-                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
                                         ),
                                         onPressed: () => Navigator.pop(context),
                                         color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -318,14 +379,16 @@ class _ChatWindowState extends State<ChatWindow> {
                                       DialogButton(
                                         child: Text(
                                           "Report",
-                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
                                         ),
                                         onPressed: () => {},
                                         color: Color.fromRGBO(0, 179, 134, 1.0),
                                       )
                                     ],
-                                    content:
-                                        Text("To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                    content: Text(
+                                        "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
                                   ).show();
                                 }),
                               ],
@@ -338,13 +401,15 @@ class _ChatWindowState extends State<ChatWindow> {
                               message = Stack(
                                 children: <Widget>[
                                   messagebody,
-                                  Positioned(right: 0, bottom: 0, child: triangle),
+                                  Positioned(
+                                      right: 0, bottom: 0, child: triangle),
                                 ],
                               );
                             } else {
                               message = Stack(
                                 children: <Widget>[
-                                  Positioned(left: 0, bottom: 0, child: triangle),
+                                  Positioned(
+                                      left: 0, bottom: 0, child: triangle),
                                   messagebody,
                                 ],
                               );
