@@ -39,8 +39,7 @@ class _ItemScreenState extends State<ItemScreen> {
   Future createRooms() async {
     String tokenforROOM = widget.token;
     if (tokenforROOM != null) {
-      String url = "http://briddgy.herokuapp.com/api/chat/" +
-          widget.owner["id"].toString();
+      String url = "http://briddgy.herokuapp.com/api/chat/" + widget.owner["id"].toString();
       final response = await http.get(
         url,
         headers: {
@@ -70,9 +69,7 @@ class _ItemScreenState extends State<ItemScreen> {
         ),
         title: Text(
           widget.title.toString(), //Todo: item name
-          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -92,14 +89,12 @@ class _ItemScreenState extends State<ItemScreen> {
                       height: 250,
                       width: 250,
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
                                 : null,
                           ),
                         );
@@ -110,8 +105,7 @@ class _ItemScreenState extends State<ItemScreen> {
               ],
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,9 +121,7 @@ class _ItemScreenState extends State<ItemScreen> {
                   ),
 
                   Text(
-                    widget.owner["first_name"].toString() +
-                        " " +
-                        widget.owner["last_name"].toString(),
+                    widget.owner["first_name"].toString() + " " + widget.owner["last_name"].toString(),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -155,8 +147,7 @@ class _ItemScreenState extends State<ItemScreen> {
                         ),
                         Text(
                           widget.owner["rating"].toString(),
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
@@ -181,8 +172,7 @@ class _ItemScreenState extends State<ItemScreen> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Item Details",
                 style: TextStyle(
@@ -288,8 +278,7 @@ class _ItemScreenState extends State<ItemScreen> {
               ),
             ), //
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Description",
                 style: TextStyle(
@@ -306,15 +295,16 @@ class _ItemScreenState extends State<ItemScreen> {
               elevation: 3,
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Text(
-                  widget.description.toString(),
-                  style: TextStyle(fontSize: 17),
+                child: Center(
+                  child: Text(
+                    widget.description.toString(),
+                    style: TextStyle(fontSize: 17),
+                  ),
                 ),
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[

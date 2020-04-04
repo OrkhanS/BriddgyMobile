@@ -20,6 +20,7 @@ class MyItems extends StatefulWidget {
 class _MyItemsState extends State<MyItems> {
   List _orders = [];
   bool isLoading = true;
+  bool _isfetchingnew = false;
 
   @override
   void initState() {
@@ -72,157 +73,151 @@ class _MyItemsState extends State<MyItems> {
             ),
             title: Text(
               "My Items",
-              style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
             ),
             elevation: 1,
           ),
           body: orderstripsProvider.notLoaded
               ? Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  itemBuilder: (context, int i) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                            builder: (__) => new MyItemScreenInfo(
-                              id: orderstripsProvider.myorders[i]["id"],
-                              owner: orderstripsProvider.myorders[i]["owner"],
-                              title: orderstripsProvider.myorders[i]["title"],
-                              destination: orderstripsProvider.myorders[i]
-                                  ["destination"],
-                              source: orderstripsProvider.myorders[i]["source"]
-                                  ["city_ascii"],
-                              weight: orderstripsProvider.myorders[i]["weight"],
-                              price: orderstripsProvider.myorders[i]["price"],
-                              date: orderstripsProvider.myorders[i]["date"],
-                              description: orderstripsProvider.myorders[i]
-                                  ["description"],
-                              image: orderstripsProvider.myorders[i]["orderimage"],
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 140,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Card(
-                          elevation: 4,
-                          child: Row(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                  child: Image(
-                                    image: NetworkImage(
-                                        // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                        "https://picsum.photos/250?image=9"), //Todo,
+              : NotificationListener<ScrollNotification>(
+                  onNotification: (ScrollNotification scrollInfo) {
+                    if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                      // start loading data
+                      setState(() {
+                        _isfetchingnew = true;
+                        print("load order");
+                      });
+                      //_loadData(); todo: orxan
+                    }
+                  },
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (context, int i) {
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                    builder: (__) => new MyItemScreenInfo(
+                                      id: orderstripsProvider.myorders[i]["id"],
+                                      owner: orderstripsProvider.myorders[i]["owner"],
+                                      title: orderstripsProvider.myorders[i]["title"],
+                                      destination: orderstripsProvider.myorders[i]["destination"],
+                                      source: orderstripsProvider.myorders[i]["source"]["city_ascii"],
+                                      weight: orderstripsProvider.myorders[i]["weight"],
+                                      price: orderstripsProvider.myorders[i]["price"],
+                                      date: orderstripsProvider.myorders[i]["date"],
+                                      description: orderstripsProvider.myorders[i]["description"],
+                                      image: orderstripsProvider.myorders[i]["orderimage"],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                height: 140,
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: Card(
+                                  elevation: 4,
+                                  child: Row(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                          child: Image(
+                                            image: NetworkImage(
+                                                // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                                "https://picsum.photos/250?image=9"), //Todo,
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              orderstripsProvider.myorders[i]["title"].toString().length > 20
+                                                  ? orderstripsProvider.myorders[i]["title"].toString().substring(0, 20) + "..."
+                                                  : orderstripsProvider.myorders[i]["title"].toString(), //Todo: title
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.grey[800],
+//                                          fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: <Widget>[
+                                                Icon(
+                                                  MdiIcons.mapMarkerMultipleOutline,
+                                                  color: Theme.of(context).primaryColor,
+                                                ),
+                                                Text(
+                                                  orderstripsProvider.myorders[i]["source"]["city_ascii"] +
+                                                      "  >  " +
+                                                      orderstripsProvider.myorders[i]["destination"]["city_ascii"], //Todo: Source -> Destination
+                                                  style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+//                                        mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                              children: <Widget>[
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      MdiIcons.calendarRange,
+                                                      color: Theme.of(context).primaryColor,
+                                                    ),
+                                                    Text(
+                                                      orderstripsProvider.myorders[i]["date"].toString(), //Todo: date
+                                                      style: TextStyle(color: Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 50,
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.attach_money,
+                                                      color: Theme.of(context).primaryColor,
+                                                    ),
+                                                    Text(
+                                                      orderstripsProvider.myorders[i]["price"].toString(), //Todo: date
+                                                      style: TextStyle(color: Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      orderstripsProvider.myorders[i]["title"]
-                                                  .toString()
-                                                  .length >
-                                              20
-                                          ? orderstripsProvider.myorders[i]["title"]
-                                                  .toString()
-                                                  .substring(0, 20) +
-                                              "..."
-                                          : orderstripsProvider.myorders[i]["title"]
-                                              .toString(), //Todo: title
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Icon(
-                                          MdiIcons.mapMarkerMultipleOutline,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                        Text(
-                                          orderstripsProvider.myorders[i]["source"]
-                                                  ["city_ascii"] +
-                                              "  >  " +
-                                              orderstripsProvider.myorders[i]
-                                                      ["destination"][
-                                                  "city_ascii"], //Todo: Source -> Destination
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.grey[600],
-                                              fontWeight: FontWeight.normal),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-//                                        mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              MdiIcons.calendarRange,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            Text(
-                                              orderstripsProvider.myorders[i]["date"]
-                                                  .toString(), //Todo: date
-                                              style: TextStyle(
-                                                  color: Colors.grey[600]),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 50,
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.attach_money,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                            Text(
-                                              orderstripsProvider.myorders[i]
-                                                      ["price"]
-                                                  .toString(), //Todo: date
-                                              style: TextStyle(
-                                                  color: Colors.grey[600]),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
+                          itemCount: orderstripsProvider.myorders == null ? 0 : orderstripsProvider.myorders.length,
                         ),
                       ),
-                    );
-                  },
-                  itemCount: orderstripsProvider.myorders == null
-                      ? 0
-                      : orderstripsProvider.myorders.length,
+                      Container(
+                        height: _isfetchingnew ? 100.0 : 0.0,
+                        color: Colors.transparent,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
         );
       },

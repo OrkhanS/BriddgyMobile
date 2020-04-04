@@ -54,6 +54,7 @@ class _TripScreenState extends State<TripsScreen> {
   String urlFilter = "";
 
   bool isLoading = true;
+  bool _isfetchingnew = false;
   @override
   void initState() {
     if (widget.orderstripsProvider.mytrips.isEmpty) {
@@ -271,150 +272,169 @@ class _TripScreenState extends State<TripsScreen> {
                   Expanded(
                     child: tripsProvider.notLoaded != false
                         ? Center(child: CircularProgressIndicator())
-                        : ListView.builder(
-                            itemBuilder: (context, int i) {
-                              return InkWell(
-                                onTap: () => null
-                                //             //Navigator.pushNamed(context, ItemScreen.routeName);
-                                //             Navigator.push(
-                                // context,
-                                // new MaterialPageRoute(
-                                //     builder: (__) => new ItemScreen(
-                                //                 id:_trips[i]["id"],
-                                //                 owner:_trips[i]["owner"],
-                                //                 title:_trips[i]["title"],
-                                //                 destination: _trips[i]["destination"],
-                                //                 source: _trips[i]["source"]["city_ascii"],
-                                //                 weight: _trips[i]["weight"],
-                                //                 price: _trips[i]["price"],
-                                //                 date: _trips[i]["date"],
-                                //                 description: _trips[i]["description"],
-                                //                 image: _trips[i]["orderimage"],
-                                //              )));
-                                ,
-                                child: Container(
-                                  height: 140,
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Card(
-                                    elevation: 4,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: <Widget>[
-                                        Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Image(
-                                              image: NetworkImage("https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
-                                              height: 60,
-                                              width: 60,
-                                            )
-
-                                            // Image.network(
-                                            //         getImageUrl(_trips[i]["orderimage"])
-                                            // ),
-                                            ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                tripsProvider.trips[i]["owner"]["first_name"] +
-                                                    " " +
-                                                    tripsProvider.trips[i]["owner"]["last_name"], //Todo: title
-                                                style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Theme.of(context).primaryColor,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        tripsProvider.trips[i]["source"]["city_ascii"] +
-                                                        "  >  " +
-                                                        tripsProvider.trips[i]["destination"]["city_ascii"], //Todo: Source -> Destination
-                                                    style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.date_range,
-                                                    color: Theme.of(context).primaryColor,
-                                                  ),
-                                                  Text(
-                                                    "  " + tripsProvider.trips[i]["date"].toString(), //Todo: date
-                                                    style: TextStyle(color: Colors.grey[600]),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    MdiIcons.weightKilogram, //todo: icon
-//                                            (FontAwesome.suitcase),
-                                                    color: Theme.of(context).primaryColor,
-                                                  ),
-                                                  Text(
-                                                    "  " + tripsProvider.trips[i]["weight_limit"].toString(),
-                                                    style: TextStyle(color: Colors.grey[600]),
-                                                  ),
-                                                ],
+                        : NotificationListener<ScrollNotification>(
+                            onNotification: (ScrollNotification scrollInfo) {
+                              if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                // start loading data
+                                setState(() {
+                                  _isfetchingnew = true;
+                                  print("load trip");
+                                });
+                                //_loadData(); todo: orxan
+                              }
+                            },
+                            child: ListView.builder(
+                              itemBuilder: (context, int i) {
+                                return InkWell(
+                                  onTap: () => null
+                                  //             //Navigator.pushNamed(context, ItemScreen.routeName);
+                                  //             Navigator.push(
+                                  // context,
+                                  // new MaterialPageRoute(
+                                  //     builder: (__) => new ItemScreen(
+                                  //                 id:_trips[i]["id"],
+                                  //                 owner:_trips[i]["owner"],
+                                  //                 title:_trips[i]["title"],
+                                  //                 destination: _trips[i]["destination"],
+                                  //                 source: _trips[i]["source"]["city_ascii"],
+                                  //                 weight: _trips[i]["weight"],
+                                  //                 price: _trips[i]["price"],
+                                  //                 date: _trips[i]["date"],
+                                  //                 description: _trips[i]["description"],
+                                  //                 image: _trips[i]["orderimage"],
+                                  //              )));
+                                  ,
+                                  child: Container(
+                                    height: 140,
+                                    padding: EdgeInsets.symmetric(horizontal: 10),
+                                    child: Card(
+                                      elevation: 4,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: <Widget>[
+                                          Padding(
+                                              padding: const EdgeInsets.all(10.0),
+                                              child: Image(
+                                                image: NetworkImage("https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+                                                height: 60,
+                                                width: 60,
                                               )
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                          child: RaisedButton(
-                                            color: Colors.white,
-                                            onPressed: () {
-                                              createRooms(tripsProvider.trips[i]["owner"]["id"]);
 
-                                              //Todo Toast message that Conversation has been started
-                                              // Navigator.push(
-                                              //   context,
-                                              //   MaterialPageRoute(
-                                              //       builder: (context) => MyApp()),
-                                              // );
-                                              //Navigator.pop(context);
-                                            },
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 20.0),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    MdiIcons.messageArrowRightOutline,
-                                                    color: Theme.of(context).primaryColor,
-                                                    size: 30,
-                                                  ),
-                                                  Text(
-                                                    "Message",
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                              // Image.network(
+                                              //         getImageUrl(_trips[i]["orderimage"])
+                                              // ),
+                                              ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  tripsProvider.trips[i]["owner"]["first_name"] +
+                                                      " " +
+                                                      tripsProvider.trips[i]["owner"]["last_name"], //Todo: title
+                                                  style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.location_on,
                                                       color: Theme.of(context).primaryColor,
                                                     ),
-                                                  )
-                                                ],
+                                                    Text(
+                                                      "  " +
+                                                          tripsProvider.trips[i]["source"]["city_ascii"] +
+                                                          "  >  " +
+                                                          tripsProvider.trips[i]["destination"]["city_ascii"], //Todo: Source -> Destination
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.date_range,
+                                                      color: Theme.of(context).primaryColor,
+                                                    ),
+                                                    Text(
+                                                      "  " + tripsProvider.trips[i]["date"].toString(), //Todo: date
+                                                      style: TextStyle(color: Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      MdiIcons.weightKilogram, //todo: icon
+//                                            (FontAwesome.suitcase),
+                                                      color: Theme.of(context).primaryColor,
+                                                    ),
+                                                    Text(
+                                                      "  " + tripsProvider.trips[i]["weight_limit"].toString(),
+                                                      style: TextStyle(color: Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                            child: RaisedButton(
+                                              color: Colors.white,
+                                              onPressed: () {
+                                                createRooms(tripsProvider.trips[i]["owner"]["id"]);
+
+                                                //Todo Toast message that Conversation has been started
+                                                // Navigator.push(
+                                                //   context,
+                                                //   MaterialPageRoute(
+                                                //       builder: (context) => MyApp()),
+                                                // );
+                                                //Navigator.pop(context);
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.max,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      MdiIcons.messageArrowRightOutline,
+                                                      color: Theme.of(context).primaryColor,
+                                                      size: 30,
+                                                    ),
+                                                    Text(
+                                                      "Message",
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Theme.of(context).primaryColor,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                            itemCount: tripsProvider.trips == null ? 0 : tripsProvider.trips.length,
+                                );
+                              },
+                              itemCount: tripsProvider.trips == null ? 0 : tripsProvider.trips.length,
+                            ),
                           ),
-                  )
+                  ),
+                  Container(
+                    height: _isfetchingnew ? 50.0 : 0.0,
+                    color: Colors.transparent,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
                 ],
               ),
             ),

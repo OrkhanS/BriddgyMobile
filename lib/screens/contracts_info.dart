@@ -10,7 +10,7 @@ class ContractsScreenInfo extends StatefulWidget {
   ContractsScreenInfo({
     this.contract,
   });
-  static const routeName = '/orders';
+  static const routeName = '/orders'; //todo fix
   @override
   _ContractsScreenInfoState createState() => _ContractsScreenInfoState();
 }
@@ -26,9 +26,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
   Map<String, dynamic> _orders = {};
 
   Future fetchAndSetSugesstions(id) async {
-    String url = "http://briddgy.herokuapp.com/api/trips/" +
-        id.toString() +
-        "/suggestions/";
+    String url = "http://briddgy.herokuapp.com/api/trips/" + id.toString() + "/suggestions/";
     http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -44,7 +42,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
   }
 
   //widget.myObject.toString()
-  static const routeName = '/orders/item';
+  static const routeName = '/orders/item'; // todo fix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,9 +57,8 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
           },
         ),
         title: Text(
-"",          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
+          "",
+          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -81,14 +78,12 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                       height: 250,
                       width: 250,
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent loadingProgress) {
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
                                 : null,
                           ),
                         );
@@ -99,8 +94,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
               ],
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,7 +109,6 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                     ),
                   ),
 
-                 
                   Container(
                     width: 50,
                     height: 25,
@@ -136,8 +129,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                         ),
                         Text(
                           "widget.owner[].toString()",
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
@@ -162,8 +154,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Item Details",
                 style: TextStyle(
@@ -190,7 +181,6 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                         color: Colors.grey[600],
                       ),
                     ),
-                    
                   ),
                   ListTile(
                     dense: true,
@@ -201,7 +191,6 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                         color: Colors.grey[600],
                       ),
                     ),
-                   
                   ),
                   ListTile(
                     dense: true,
@@ -263,8 +252,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
               ),
             ), //
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Description",
                 style: TextStyle(
@@ -282,7 +270,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
-                 ' widget.description.toString()',
+                  ' widget.description.toString()',
                   style: TextStyle(fontSize: 17),
                 ),
               ),

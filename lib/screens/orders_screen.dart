@@ -51,6 +51,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String from, to;
   String _value = "Sort By";
   String weight, price;
+  bool _isfetchingnew = false;
   final formKey = new GlobalKey<FormState>();
 
   List _suggested = [];
@@ -268,132 +269,155 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     Expanded(
                       child: orderstripsProvider.notLoadingOrders
                           ? Center(child: CircularProgressIndicator())
-                          : ListView.builder(
-                              itemBuilder: (context, int i) {
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (__) => new ItemScreen(
-                                          id: orderstripsProvider.orders[i]["id"],
-                                          owner: orderstripsProvider.orders[i]["owner"],
-                                          title: orderstripsProvider.orders[i]["title"],
-                                          destination: orderstripsProvider.orders[i]["destination"],
-                                          source: orderstripsProvider.orders[i]["source"]["city_ascii"],
-                                          weight: orderstripsProvider.orders[i]["weight"],
-                                          price: orderstripsProvider.orders[i]["price"],
-                                          date: orderstripsProvider.orders[i]["date"],
-                                          description: orderstripsProvider.orders[i]["description"],
-                                          image: orderstripsProvider.orders[i]["orderimage"],
-                                          token: widget.token,
-                                          room: widget.room,
-                                          auth: widget.auth,
+                          : NotificationListener<ScrollNotification>(
+                              onNotification: (ScrollNotification scrollInfo) {
+                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                  // start loading data
+                                  setState(() {
+                                    _isfetchingnew = true;
+                                    print("load order");
+                                  });
+                                  //_loadData(); todo: orxan
+                                }
+                              },
+                              child: ListView.builder(
+                                itemBuilder: (context, int i) {
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (__) => new ItemScreen(
+                                            id: orderstripsProvider.orders[i]["id"],
+                                            owner: orderstripsProvider.orders[i]["owner"],
+                                            title: orderstripsProvider.orders[i]["title"],
+                                            destination: orderstripsProvider.orders[i]["destination"],
+                                            source: orderstripsProvider.orders[i]["source"]["city_ascii"],
+                                            weight: orderstripsProvider.orders[i]["weight"],
+                                            price: orderstripsProvider.orders[i]["price"],
+                                            date: orderstripsProvider.orders[i]["date"],
+                                            description: orderstripsProvider.orders[i]["description"],
+                                            image: orderstripsProvider.orders[i]["orderimage"],
+                                            token: widget.token,
+                                            room: widget.room,
+                                            auth: widget.auth,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    height: 140,
-                                    padding: EdgeInsets.symmetric(horizontal: 10),
-                                    child: Card(
-                                      elevation: 4,
-                                      child: Row(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                                              child: Stack(
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 140,
+                                      padding: EdgeInsets.symmetric(horizontal: 10),
+                                      child: Card(
+                                        elevation: 4,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(10.0),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                child: Stack(
+                                                  children: <Widget>[
+                                                    Image(
+                                                      image: NetworkImage(
+                                                          // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                                          "https://picsum.photos/250?image=9"), //Todo,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(12.0),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: <Widget>[
-                                                  Image(
-                                                    image: NetworkImage(
-                                                        // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                                        "https://picsum.photos/250?image=9"), //Todo,
+                                                  Flexible(
+                                                    child: Text(
+//                                                    orderstripsProvider.orders[i]["title"].toString().length > 20
+//                                                        ? orderstripsProvider.orders[i]["title"].toString().substring(0, 20) + "..."
+//                                                        :
+                                                      orderstripsProvider.orders[i]["title"].toString(), //Todo: title
+                                                      overflow: TextOverflow.clip,
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.grey[800],
+//                                          fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: <Widget>[
+                                                      Icon(
+                                                        MdiIcons.mapMarkerMultipleOutline,
+                                                        color: Theme.of(context).primaryColor,
+                                                      ),
+                                                      Text(
+                                                        orderstripsProvider.orders[i]["source"]["city_ascii"] +
+                                                            "  >  " +
+                                                            orderstripsProvider.orders[i]["destination"]["city_ascii"],
+                                                        //Todo: Source -> Destination
+                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Row(
+//                                        mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                    children: <Widget>[
+                                                      Row(
+                                                        children: <Widget>[
+                                                          Icon(
+                                                            MdiIcons.calendarRange,
+                                                            color: Theme.of(context).primaryColor,
+                                                          ),
+                                                          Text(
+                                                            orderstripsProvider.orders[i]["date"].toString(),
+                                                            //Todo: date
+                                                            style: TextStyle(color: Colors.grey[600]),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        width: 50,
+                                                      ),
+                                                      Row(
+                                                        children: <Widget>[
+                                                          Icon(
+                                                            Icons.attach_money,
+                                                            color: Theme.of(context).primaryColor,
+                                                          ),
+                                                          Text(
+                                                            orderstripsProvider.orders[i]["price"].toString(),
+                                                            //Todo: date
+                                                            style: TextStyle(color: Colors.grey[600]),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(12.0),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Text(
-                                                  orderstripsProvider.orders[i]["title"].toString().length > 20
-                                                      ? orderstripsProvider.orders[i]["title"].toString().substring(0, 20) + "..."
-                                                      : orderstripsProvider.orders[i]["title"].toString(), //Todo: title
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Icon(
-                                                      MdiIcons.mapMarkerMultipleOutline,
-                                                      color: Theme.of(context).primaryColor,
-                                                    ),
-                                                    Text(
-                                                      orderstripsProvider.orders[i]["source"]["city_ascii"] +
-                                                          "  >  " +
-                                                          orderstripsProvider.orders[i]["destination"]["city_ascii"],
-                                                      //Todo: Source -> Destination
-                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-//                                        mainAxisSize: MainAxisSize.max,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                  children: <Widget>[
-                                                    Row(
-                                                      children: <Widget>[
-                                                        Icon(
-                                                          MdiIcons.calendarRange,
-                                                          color: Theme.of(context).primaryColor,
-                                                        ),
-                                                        Text(
-                                                          orderstripsProvider.orders[i]["date"].toString(),
-                                                          //Todo: date
-                                                          style: TextStyle(color: Colors.grey[600]),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      width: 50,
-                                                    ),
-                                                    Row(
-                                                      children: <Widget>[
-                                                        Icon(
-                                                          Icons.attach_money,
-                                                          color: Theme.of(context).primaryColor,
-                                                        ),
-                                                        Text(
-                                                          orderstripsProvider.orders[i]["price"].toString(),
-                                                          //Todo: date
-                                                          style: TextStyle(color: Colors.grey[600]),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                              itemCount: orderstripsProvider.orders.length,
+                                  );
+                                },
+                                itemCount: orderstripsProvider.orders.length,
+                              ),
                             ),
-                    )
+                    ),
+                    Container(
+                      height: _isfetchingnew ? 50.0 : 0.0,
+                      color: Colors.transparent,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
                   ],
                 ),
               ),
