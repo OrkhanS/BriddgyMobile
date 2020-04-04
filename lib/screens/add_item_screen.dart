@@ -11,6 +11,7 @@ import 'package:optisend/screens/account_screen.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/screens/my_items.dart';
+import 'package:flushbar/flushbar.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
@@ -51,11 +52,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() +
-          ", " +
-          _suggested[i]["country"].toString() +
-          ", " +
-          _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -76,9 +73,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         ),
         title: Text(
           "Add Item", //Todo: item name
-          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -90,12 +85,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
+                  padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
                   child: Text(
                     "Item Information",
-                    style: TextStyle(
-                        fontSize: 25, color: Theme.of(context).primaryColor),
+                    style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
                   ),
                 ),
               ],
@@ -123,27 +116,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     from = val;
                   },
                   controller: this._typeAheadController,
-                  decoration: InputDecoration(
-                      labelText: 'From', icon: Icon(Icons.location_on)),
+                  decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
                 ),
                 suggestionsCallback: (pattern) {
                   return getSuggestions(pattern);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] +
-                        ", " +
-                        suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController.text =
-                      suggestion.toString().split(", ")[0] +
-                          ", " +
-                          suggestion.toString().split(", ")[1];
+                  this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
                   from = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
@@ -166,27 +153,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     to = val;
                   },
                   controller: this._typeAheadController2,
-                  decoration: InputDecoration(
-                      labelText: 'To', icon: Icon(Icons.location_on)),
+                  decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
                 ),
                 suggestionsCallback: (pattern) {
                   return getSuggestions(pattern);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + 
-                        ", " +
-                        suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController2.text =
-                      suggestion.toString().split(", ")[0] + 
-                        ", " +
-                          suggestion.toString().split(", ")[1];
+                  this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
                   to = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
@@ -361,8 +342,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           "trip": null,
                           "description": description
                         }));
-                        Navigator.pop(context);
-                    },
+                    Navigator.pop(context);
+                    Flushbar(
+                      title: "Item added",
+                      message: "You can see all of your items in My Items section of Account",
+                      aroundPadding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      duration: Duration(seconds: 5),
+                    )..show(context);
+                  },
                 ),
               ),
             )

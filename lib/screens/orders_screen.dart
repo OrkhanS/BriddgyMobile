@@ -188,7 +188,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
-     Future _loadData() async {
+    Future _loadData() async {
       if (nextOrderURL.toString() != "null") {
         String url = nextOrderURL;
         try {
@@ -219,14 +219,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
     //print(widget.orderstripsProvider.orders);
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-         if (orderstripsProvider.orders.length != 0) {
+        if (orderstripsProvider.orders.length != 0) {
           _orders = orderstripsProvider.orders;
-          if(nextOrderURL == "FirstCall"){
+          if (nextOrderURL == "FirstCall") {
             nextOrderURL = orderstripsProvider.detailsOrder["next"];
           }
           //messageLoader = false;
         } else {
-
           //messageLoader = true;
         }
 
@@ -344,7 +343,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                       );
                                     },
                                     child: Container(
-                                      height: 140,
+                                      height: 130,
                                       padding: EdgeInsets.symmetric(horizontal: 10),
                                       child: Card(
                                         elevation: 4,
@@ -354,14 +353,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                               padding: const EdgeInsets.all(10.0),
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.all(Radius.circular(15)),
-                                                child: Stack(
-                                                  children: <Widget>[
-                                                    Image(
-                                                      image: NetworkImage(
-                                                          // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                                          "https://picsum.photos/250?image=9"), //Todo,
-                                                    ),
-                                                  ],
+                                                child: Image(
+                                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                                                    if (loadingProgress == null) return child;
+                                                    return Center(
+                                                      child: CircularProgressIndicator(
+                                                        value: loadingProgress.expectedTotalBytes != null
+                                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                                            : null,
+                                                      ),
+                                                    );
+                                                  },
+
+                                                  image: NetworkImage(
+                                                      // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                                      "https://picsum.photos/250?image=9"), //Todo,
                                                 ),
                                               ),
                                             ),
@@ -371,13 +377,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: <Widget>[
-                                                  Flexible(
+                                                  SizedBox(
+                                                    width: 200,
                                                     child: Text(
 //                                                    _orders[i]["title"].toString().length > 20
 //                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
 //                                                        :
                                                       _orders[i]["title"].toString(), //Todo: title
-                                                      overflow: TextOverflow.clip,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 1,
                                                       style: TextStyle(
                                                         fontSize: 20,
                                                         color: Colors.grey[800],
@@ -392,12 +400,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                         MdiIcons.mapMarkerMultipleOutline,
                                                         color: Theme.of(context).primaryColor,
                                                       ),
-                                                      Text(
-                                                        _orders[i]["source"]["city_ascii"] +
-                                                            "  >  " +
-                                                            _orders[i]["destination"]["city_ascii"],
-                                                        //Todo: Source -> Destination
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                      SizedBox(
+                                                        width: 200,
+                                                        child: Text(
+                                                          _orders[i]["source"]["city_ascii"] + "  >  " + _orders[i]["destination"]["city_ascii"],
+                                                          //Todo: Source -> Destination
+                                                          maxLines: 1,
+                                                          style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -427,10 +437,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                             Icons.attach_money,
                                                             color: Theme.of(context).primaryColor,
                                                           ),
-                                                          Text(
-                                                            _orders[i]["price"].toString(),
-                                                            //Todo: date
-                                                            style: TextStyle(color: Colors.grey[600]),
+                                                          SizedBox(
+                                                            width: 50,
+                                                            child: Text(
+                                                              _orders[i]["price"].toString(),
+                                                              //Todo: date
+                                                              maxLines: 1,
+                                                              style: TextStyle(color: Colors.grey[600]),
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
