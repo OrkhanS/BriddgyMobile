@@ -21,33 +21,12 @@ class _MyItemsState extends State<MyItems> {
   List _orders = [];
   bool isLoading = true;
   bool _isfetchingnew = false;
-
+  String nextOrderURL = "FirstCall";
   @override
   void initState() {
     widget.orderstripsProvider.fetchAndSetMyOrders(widget.token);
     super.initState();
   }
-
-  // Future fetchAndSetOrders() async {
-  //   // var token = Provider.of<Auth>(context, listen: false).token;
-  //   var token = '40694c366ab5935e997a1002fddc152c9566de90';
-  //   const url = "http://briddgy.herokuapp.com/api/my/orders/";
-  //   http.get(
-  //     url,
-  //     headers: {
-  //       HttpHeaders.CONTENT_TYPE: "application/json",
-  //       "Authorization": "Token " + token,
-  //     },
-  //   ).then((response) {
-  //     setState(
-  //       () {
-  //         final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-  //         _orders = dataOrders["results"];
-  //         isLoading = false;
-  //       },
-  //     );
-  //   });
-  // }
 
   @override //todo: check for future
   void setState(fn) {
@@ -58,8 +37,42 @@ class _MyItemsState extends State<MyItems> {
 
   @override
   Widget build(BuildContext context) {
+    Future _loadData() async {
+      if (nextOrderURL.toString() != "null") {
+        String url = nextOrderURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + widget.token,
+            },
+          ).then((response) {
+            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+            _orders.addAll(dataOrders["results"]);
+            nextOrderURL = dataOrders["next"];
+          });
+        } catch (e) {}
+        setState(() {
+          _isfetchingnew = false;
+        });
+      } else {
+        _isfetchingnew = false;
+      }
+    }
+
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
+         if (orderstripsProvider.trips.length != 0) {
+          _orders = orderstripsProvider.trips;
+          if(nextOrderURL == "FirstCall"){
+            nextOrderURL = orderstripsProvider.detailsMyOrder["next"];
+          }
+          //messageLoader = false;
+        } else {
+
+          //messageLoader = true;
+        }
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -73,7 +86,9 @@ class _MyItemsState extends State<MyItems> {
             ),
             title: Text(
               "My Items",
-              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold),
             ),
             elevation: 1,
           ),
@@ -81,13 +96,14 @@ class _MyItemsState extends State<MyItems> {
               ? Center(child: CircularProgressIndicator())
               : NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {
-                    if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                    if (!_isfetchingnew &&
+                        scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent) {
                       // start loading data
                       setState(() {
                         _isfetchingnew = true;
-                        print("load order");
                       });
-                      //_loadData(); todo: orxan
+                      _loadData();
                     }
                   },
                   child: Column(
@@ -101,16 +117,25 @@ class _MyItemsState extends State<MyItems> {
                                   context,
                                   new MaterialPageRoute(
                                     builder: (__) => new MyItemScreenInfo(
-                                      id: orderstripsProvider.myorders[i]["id"],
-                                      owner: orderstripsProvider.myorders[i]["owner"],
-                                      title: orderstripsProvider.myorders[i]["title"],
-                                      destination: orderstripsProvider.myorders[i]["destination"],
-                                      source: orderstripsProvider.myorders[i]["source"]["city_ascii"],
-                                      weight: orderstripsProvider.myorders[i]["weight"],
-                                      price: orderstripsProvider.myorders[i]["price"],
-                                      date: orderstripsProvider.myorders[i]["date"],
-                                      description: orderstripsProvider.myorders[i]["description"],
-                                      image: orderstripsProvider.myorders[i]["orderimage"],
+                                      id: _orders[i]["id"],
+                                      owner: _orders[i]
+                                          ["owner"],
+                                      title: _orders[i]
+                                          ["title"],
+                                      destination: orderstripsProvider
+                                          .myorders[i]["destination"],
+                                      source: _orders[i]
+                                          ["source"]["city_ascii"],
+                                      weight: _orders[i]
+                                          ["weight"],
+                                      price: _orders[i]
+                                          ["price"],
+                                      date: _orders[i]
+                                          ["date"],
+                                      description: orderstripsProvider
+                                          .myorders[i]["description"],
+                                      image: _orders[i]
+                                          ["orderimage"],
                                     ),
                                   ),
                                 );
@@ -125,7 +150,8 @@ class _MyItemsState extends State<MyItems> {
                                       Padding(
                                         padding: const EdgeInsets.all(10.0),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15)),
                                           child: Image(
                                             image: NetworkImage(
                                                 // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
@@ -136,13 +162,25 @@ class _MyItemsState extends State<MyItems> {
                                       Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                              orderstripsProvider.myorders[i]["title"].toString().length > 20
-                                                  ? orderstripsProvider.myorders[i]["title"].toString().substring(0, 20) + "..."
-                                                  : orderstripsProvider.myorders[i]["title"].toString(), //Todo: title
+                                              _orders[i]
+                                                              ["title"]
+                                                          .toString()
+                                                          .length >
+                                                      20
+                                                  ? orderstripsProvider
+                                                          .myorders[i]["title"]
+                                                          .toString()
+                                                          .substring(0, 20) +
+                                                      "..."
+                                                  : orderstripsProvider
+                                                      .myorders[i]["title"]
+                                                      .toString(), //Todo: title
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 color: Colors.grey[800],
@@ -150,33 +188,52 @@ class _MyItemsState extends State<MyItems> {
                                               ),
                                             ),
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
                                               children: <Widget>[
                                                 Icon(
-                                                  MdiIcons.mapMarkerMultipleOutline,
-                                                  color: Theme.of(context).primaryColor,
+                                                  MdiIcons
+                                                      .mapMarkerMultipleOutline,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
                                                 ),
                                                 Text(
-                                                  orderstripsProvider.myorders[i]["source"]["city_ascii"] +
+                                                  orderstripsProvider
+                                                                  .myorders[i]
+                                                              ["source"]
+                                                          ["city_ascii"] +
                                                       "  >  " +
-                                                      orderstripsProvider.myorders[i]["destination"]["city_ascii"], //Todo: Source -> Destination
-                                                  style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                      orderstripsProvider
+                                                                  .myorders[i]
+                                                              ["destination"][
+                                                          "city_ascii"], //Todo: Source -> Destination
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.grey[600],
+                                                      fontWeight:
+                                                          FontWeight.normal),
                                                 ),
                                               ],
                                             ),
                                             Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
                                               children: <Widget>[
                                                 Row(
                                                   children: <Widget>[
                                                     Icon(
                                                       MdiIcons.calendarRange,
-                                                      color: Theme.of(context).primaryColor,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
                                                     Text(
-                                                      orderstripsProvider.myorders[i]["date"].toString(), //Todo: date
-                                                      style: TextStyle(color: Colors.grey[600]),
+                                                      orderstripsProvider
+                                                          .myorders[i]["date"]
+                                                          .toString(), //Todo: date
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
                                                     ),
                                                   ],
                                                 ),
@@ -187,11 +244,16 @@ class _MyItemsState extends State<MyItems> {
                                                   children: <Widget>[
                                                     Icon(
                                                       Icons.attach_money,
-                                                      color: Theme.of(context).primaryColor,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
                                                     Text(
-                                                      orderstripsProvider.myorders[i]["price"].toString(), //Todo: date
-                                                      style: TextStyle(color: Colors.grey[600]),
+                                                      orderstripsProvider
+                                                          .myorders[i]["price"]
+                                                          .toString(), //Todo: date
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
                                                     ),
                                                   ],
                                                 ),
@@ -206,7 +268,9 @@ class _MyItemsState extends State<MyItems> {
                               ),
                             );
                           },
-                          itemCount: orderstripsProvider.myorders == null ? 0 : orderstripsProvider.myorders.length,
+                          itemCount: _orders == null
+                              ? 0
+                              : _orders.length,
                         ),
                       ),
                       Container(

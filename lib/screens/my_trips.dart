@@ -21,6 +21,7 @@ class _MyTripsState extends State<MyTrips> {
   List _trips = [];
   bool isLoading = true;
   bool _isfetchingnew = false;
+  String nextTripURL = "FristCall";
 
   @override
   void initState() {
@@ -37,8 +38,43 @@ class _MyTripsState extends State<MyTrips> {
 
   @override
   Widget build(BuildContext context) {
+        Future _loadData() async {
+      if (nextTripURL.toString() != "null") {
+        String url = nextTripURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + widget.token,
+            },
+          ).then((response) {
+            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+            _trips.addAll(dataOrders["results"]);
+            nextTripURL = dataOrders["next"];
+          });
+        } catch (e) {
+        }
+        setState(() {
+          _isfetchingnew = false;
+        });
+      } else {
+        _isfetchingnew = false;
+      }
+    }
+
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
+         if (orderstripsProvider.trips.length != 0) {
+          _trips = orderstripsProvider.trips;
+          if(nextTripURL == "FirstCall"){
+            nextTripURL = orderstripsProvider.detailsMyTrip["next"];
+          }
+          //messageLoader = false;
+        } else {
+
+          //messageLoader = true;
+        }
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -73,24 +109,7 @@ class _MyTripsState extends State<MyTrips> {
                   child: ListView.builder(
                     itemBuilder: (context, int i) {
                       return InkWell(
-                        onTap: () => null
-                        //             //Navigator.pushNamed(context, ItemScreen.routeName);
-                        //             Navigator.push(
-                        // context,
-                        // new MaterialPageRoute(
-                        //     builder: (__) => new ItemScreen(
-                        //                 id:_trips[i]["id"],
-                        //                 owner:_trips[i]["owner"],
-                        //                 title:_trips[i]["title"],
-                        //                 destination: _trips[i]["destination"],
-                        //                 source: _trips[i]["source"]["city_ascii"],
-                        //                 weight: _trips[i]["weight"],
-                        //                 price: _trips[i]["price"],
-                        //                 date: _trips[i]["date"],
-                        //                 description: _trips[i]["description"],
-                        //                 image: _trips[i]["orderimage"],
-                        //              )));
-                        ,
+                        onTap: () => null,
                         child: Container(
                           height: 140,
                           padding: EdgeInsets.symmetric(horizontal: 10),
@@ -118,9 +137,9 @@ class _MyTripsState extends State<MyTrips> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        orderstripsProvider.mytrips[i]["owner"]["first_name"] +
+                                        _trips[i]["owner"]["first_name"] +
                                             " " +
-                                            orderstripsProvider.mytrips[i]["owner"]["last_name"], //Todo: title
+                                            _trips[i]["owner"]["last_name"], //Todo: title
                                         style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
                                       ),
                                       Row(
@@ -135,9 +154,9 @@ class _MyTripsState extends State<MyTrips> {
                                             child: RichText(
                                               text: TextSpan(
                                                 text: "  " +
-                                                    orderstripsProvider.mytrips[i]["source"]["city_ascii"] +
+                                                    _trips[i]["source"]["city_ascii"] +
                                                     "  >  " +
-                                                    orderstripsProvider.mytrips[i]["destination"]["city_ascii"], //Todo: Source -> Destination
+                                                    _trips[i]["destination"]["city_ascii"], //Todo: Source -> Destination
 
                                                 style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                                               ),
@@ -152,7 +171,7 @@ class _MyTripsState extends State<MyTrips> {
                                             color: Theme.of(context).primaryColor,
                                           ),
                                           Text(
-                                            "  " + orderstripsProvider.mytrips[i]["date"].toString(), //Todo: date
+                                            "  " + _trips[i]["date"].toString(), //Todo: date
                                             style: TextStyle(color: Colors.grey[600]),
                                           ),
                                         ],
@@ -165,7 +184,7 @@ class _MyTripsState extends State<MyTrips> {
                                             color: Theme.of(context).primaryColor,
                                           ),
                                           Text(
-                                            "  " + orderstripsProvider.mytrips[i]["weight_limit"].toString(),
+                                            "  " + _trips[i]["weight_limit"].toString(),
                                             style: TextStyle(color: Colors.grey[600]),
                                           ),
                                         ],
@@ -207,7 +226,7 @@ class _MyTripsState extends State<MyTrips> {
                         ),
                       );
                     },
-                    itemCount: orderstripsProvider.mytrips == null ? 0 : orderstripsProvider.mytrips.length,
+                    itemCount: _trips == null ? 0 : _trips.length,
                   ),
                 ),
                 Container(

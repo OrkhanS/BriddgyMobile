@@ -17,6 +17,8 @@ class OrdersTripsProvider with ChangeNotifier {
   String token;
   Map allTripsDetails = {};
   Map allOrdersDetails = {};
+  Map allMyOrderDetails = {};
+  Map allMyTripsDetails = {};
 
   bool get notLoadingOrders {
     return isLoadingOrders;
@@ -35,6 +37,9 @@ class OrdersTripsProvider with ChangeNotifier {
   }
   Map get detailsOrder {
     return allOrdersDetails;
+  }
+  Map get detailsMyOrder {
+    return allMyOrderDetails;
   }
 
   set orders(List temporders) {
@@ -98,6 +103,7 @@ class OrdersTripsProvider with ChangeNotifier {
     ).then((onValue) {
       final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
       myorders = dataOrders["results"];
+      allMyOrderDetails = dataOrders;
       isLoadingOrders = false;
     });
   }
@@ -117,6 +123,9 @@ class OrdersTripsProvider with ChangeNotifier {
   }
   Map get detailsTrip {
     return allTripsDetails;
+  }
+  Map get detailsMyTrip {
+    return allMyTripsDetails;
   }
 
   set mytrips(List temporders) {
@@ -177,6 +186,7 @@ class OrdersTripsProvider with ChangeNotifier {
     ).then((onValue) {
       final dataTrips = json.decode(onValue.body) as Map<String, dynamic>;
       mytrips = dataTrips["results"];
+      allMyTripsDetails = dataTrips;
       isLoading = false;
     });
   }
