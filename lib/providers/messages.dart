@@ -19,6 +19,7 @@ class Messages extends ChangeNotifier {
   bool ismessagesAdded = false;
   List lastMessageID = [];
   Map userdetail = {};
+  Map allChatRoomDetails = {};
 
   String get getToken {
     return tokenforROOM;
@@ -42,7 +43,6 @@ class Messages extends ChangeNotifier {
         notifyListeners();
       });
     } catch (e) {
-      print("Some Error");
     }
   }
 
@@ -183,6 +183,7 @@ class Messages extends ChangeNotifier {
           },
         ).then((value) {
           final dataOrders = json.decode(value.body) as Map<String, dynamic>;
+          allChatRoomDetails = dataOrders;
           _chatRooms = dataOrders["results"];
           if (_chatRooms.length == 0) {
             for (var i = 0; i < _chatRooms.length; i++) {
@@ -223,6 +224,7 @@ class Messages extends ChangeNotifier {
   }
 
   List get chats => _chatRooms;
+  Map get chatDetails => allChatRoomDetails;
 
 //---------------------------------------------------------------------------------------------
   List<dynamic> _users = [];
@@ -259,7 +261,7 @@ class Messages extends ChangeNotifier {
         user_detail = dataOrders;
       });
     } catch (error) {
-      throw error;
+      
     }
   }
 }

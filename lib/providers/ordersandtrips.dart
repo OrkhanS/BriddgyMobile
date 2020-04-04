@@ -15,6 +15,8 @@ class OrdersTripsProvider with ChangeNotifier {
   bool isLoadingOrders = true;
   bool isLoading;
   String token;
+  Map allTripsDetails = {};
+  Map allOrdersDetails = {};
 
   bool get notLoadingOrders {
     return isLoadingOrders;
@@ -31,6 +33,9 @@ class OrdersTripsProvider with ChangeNotifier {
   List get myorders {
     return _myorders;
   }
+  Map get detailsOrder {
+    return allOrdersDetails;
+  }
 
   set orders(List temporders) {
     _orders = temporders;
@@ -41,6 +46,7 @@ class OrdersTripsProvider with ChangeNotifier {
     _myorders = temporders;
     notifyListeners();
   }
+
 
   Future fetchAndSetOrders() async {
     const url = "http://briddgy.herokuapp.com/api/orders/";
@@ -54,6 +60,7 @@ class OrdersTripsProvider with ChangeNotifier {
       ).then((onValue) {
         final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
         orders = dataOrders["results"];
+        allOrdersDetails = dataOrders;
         isLoadingOrders = false;
       });
     } else {
@@ -70,6 +77,7 @@ class OrdersTripsProvider with ChangeNotifier {
       ).then((onValue) {
         final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
         orders = dataOrders["results"];
+        allOrdersDetails = dataOrders;
         isLoadingOrders = false;
       });
     }
@@ -107,6 +115,9 @@ class OrdersTripsProvider with ChangeNotifier {
   List get mytrips {
     return _mytrips;
   }
+  Map get detailsTrip {
+    return allTripsDetails;
+  }
 
   set mytrips(List temporders) {
     _mytrips = temporders;
@@ -124,6 +135,7 @@ class OrdersTripsProvider with ChangeNotifier {
         (response) {
           final dataTrips = json.decode(response.body) as Map<String, dynamic>;
           trips = dataTrips["results"];
+          allTripsDetails = dataTrips;
           isLoading = false;
           return;
         },
@@ -145,6 +157,7 @@ class OrdersTripsProvider with ChangeNotifier {
             final dataTrips =
                 json.decode(response.body) as Map<String, dynamic>;
             trips = dataTrips["results"];
+            allTripsDetails = dataTrips;
             isLoading = false;
           },
         );

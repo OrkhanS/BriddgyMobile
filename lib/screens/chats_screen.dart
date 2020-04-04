@@ -50,40 +50,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
   List _rooms = [];
   String myid;
   bool _isfetchingnew = false;
+  String nextMessagesURL="FirstCall";
+
   @override
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
     super.initState();
   }
 
-  /// ----------------------------------------------------------
-  /// Fetch Messages Of User
-  /// ----------------------------------------------------------
-  // Future fetchAndSetMessages(int i) async {
-  //   var token = widget.token;
-  //   String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
-  //       _rooms[i]["id"].toString();
-  //   try {
-  //     await http.get(
-  //       url,
-  //       headers: {
-  //         HttpHeaders.CONTENT_TYPE: "application/json",
-  //         "Authorization": "Token " + token,
-  //       },
-  //     ).then((response) {
-  //       _mesaj = {};
-  //       var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-  //       _mesaj.addAll(dataOrders);
-  //       _mesaj['room_id'] = _rooms[i]["id"];
-  //       Map tmpMessage;
-  //       tmpMessage = Provider.of<Messages>(context).allAddMessages(_mesaj);
-  //       _messagess.add(tmpMessage);
-  //       _isloading = false;
-  //     });
-  //   } catch (e) {
-  //     print("Some Error");
-  //   }
-  // }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +80,51 @@ class _ChatsScreenState extends State<ChatsScreen> {
       Colors.green,
       Colors.lightBlue,
     ];
+
+    
+    Future _loadData() async {
+      if(nextMessagesURL.toString() != "null"){
+         String url = nextMessagesURL;
+      try {
+        await http.get(
+          url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + widget.token,
+          },
+        ).then((response) {
+          var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+          _rooms.addAll(dataOrders["results"]);
+          nextMessagesURL = dataOrders["next"];
+        });
+      } catch (e) {
+        print("Some Error");
+      }
+      setState(() {
+//        items.addAll( ['item 1']);
+//        print('items: '+ items.toString());
+        _isfetchingnew = false;
+      });
+    }
+    else{
+        _isfetchingnew = false;
+    }
+      
+     
+    }
+
     return Consumer<Messages>(
       builder: (context, provider, child) {
+         if (widget.provider.chats.length != 0) {
+          _rooms = widget.provider.chatDetails["results"];
+          if(nextMessagesURL == "FirstCall"){
+            nextMessagesURL = widget.provider.chatDetails["next"];
+          }
+          //messageLoader = false;
+        } else {
+
+          //messageLoader = true;
+        }
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -131,14 +149,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               _isfetchingnew = true;
                               print("load order");
                             });
-                            //_loadData(); todo: orxan
+                            _loadData();
                           }
                         },
                         child: Column(
                           children: <Widget>[
                             Expanded(
                               child: ListView.builder(
-                                itemCount: widget.provider.chats.length,
+                                itemCount: _rooms.length,
                                 itemBuilder: (context, int index) {
                                   return Column(
                                     children: <Widget>[
@@ -166,20 +184,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 title: Row(
                                                   children: <Widget>[
                                                     Text(
-                                                      widget.provider.chats[index]["members"][1]["user"]["id"].toString() != myid
-                                                          ? widget.provider.chats[index]["members"][1]["user"]["first_name"].toString() +
+                                                      _rooms[index]["members"][1]["user"]["id"].toString() != myid
+                                                          ? _rooms[index]["members"][1]["user"]["first_name"].toString() +
                                                               " " +
-                                                              widget.provider.chats[index]["members"][1]["user"]["last_name"].toString()
-                                                          : widget.provider.chats[index]["members"][0]["user"]["first_name"].toString() +
+                                                              _rooms[index]["members"][1]["user"]["last_name"].toString()
+                                                          : _rooms[index]["members"][0]["user"]["first_name"].toString() +
                                                               " " +
-                                                              widget.provider.chats[index]["members"][0]["user"]["last_name"].toString(),
+                                                              _rooms[index]["members"][0]["user"]["last_name"].toString(),
                                                       style: TextStyle(fontSize: 15.0),
                                                     ),
                                                     SizedBox(
                                                       width: 16.0,
                                                     ),
                                                     // Text(
-                                                    //   widget.provider.chats[index]["date_modified"]
+                                                    //   _rooms[index]["date_modified"]
                                                     //       .toString()
                                                     //       .substring(0, 10),
                                                     //   style: TextStyle(fontSize: 15.0),
@@ -195,26 +213,26 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                       //   .toString().substring(0,15)
                                                     ),
                                                     Text(
-                                                      // timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) == "3" ||
-                                                      //         timeago.format(DateTime.parse(widget.provider.chats[index]["date_modified"].toString().substring(0, 10) + " " + widget.provider.chats[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) ==
+                                                      // timeago.format(DateTime.parse(_rooms[index]["date_modified"].toString().substring(0, 10) + " " + _rooms[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) == "3" ||
+                                                      //         timeago.format(DateTime.parse(_rooms[index]["date_modified"].toString().substring(0, 10) + " " + _rooms[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) ==
                                                       //             "2"
                                                       //     ? "Recently"
                                                       //     :
                                                       timeago
                                                           .format(DateTime.parse(
-                                                              widget.provider.chats[index]["date_modified"].toString().substring(0, 10) +
+                                                              _rooms[index]["date_modified"].toString().substring(0, 10) +
                                                                   " " +
-                                                                  widget.provider.chats[index]["date_modified"].toString().substring(11, 26)))
+                                                                  _rooms[index]["date_modified"].toString().substring(11, 26)))
                                                           .toString(),
                                                       style: TextStyle(fontSize: 15.0),
                                                     )
                                                   ],
                                                 ),
-                                                trailing: widget.provider.newMessages[widget.provider.chats[index]["id"]].toString() != "0" &&
-                                                        widget.provider.newMessages[widget.provider.chats[index]["id"]].toString() != "null"
+                                                trailing: widget.provider.newMessages[_rooms[index]["id"]].toString() != "0" &&
+                                                        widget.provider.newMessages[_rooms[index]["id"]].toString() != "null"
                                                     ? Badge(
                                                         badgeContent:
-                                                            Text(widget.provider.newMessages[widget.provider.chats[index]["id"]].toString()),
+                                                            Text(widget.provider.newMessages[_rooms[index]["id"]].toString()),
                                                         child: Icon(Icons.arrow_forward_ios),
                                                       )
                                                     : Icon(
@@ -222,18 +240,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                         size: 14.0,
                                                       ),
                                                 onTap: () {
-                                                  widget.provider.readMessages(widget.provider.chats[index]["id"]);
-                                                  Provider.of<Messages>(context).newMessage[widget.provider.chats[index]["id"]] = 0;
+                                                  widget.provider.readMessages(_rooms[index]["id"]);
+                                                  Provider.of<Messages>(context).newMessage[_rooms[index]["id"]] = 0;
                                                   widget.provider.fetchAndSetMessages(index);
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (__) => ChatWindow(
                                                             provider: widget.provider,
-                                                            room: widget.provider.chats[index]["id"],
-                                                            user: widget.provider.chats[index]["members"][1]["user"]["id"].toString() != myid
-                                                                ? widget.provider.chats[index]["members"][1]["user"]
-                                                                : widget.provider.chats[index]["members"][0]["user"],
+                                                            room: _rooms[index]["id"],
+                                                            user: _rooms[index]["members"][1]["user"]["id"].toString() != myid
+                                                                ? _rooms[index]["members"][1]["user"]
+                                                                : _rooms[index]["members"][0]["user"],
                                                             token: widget.token)),
                                                   );
                                                 },
@@ -249,9 +267,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (__) => ProfileScreenAnother(
-                                                          user: widget.provider.chats[index]["members"][1]["user"]["id"].toString() != myid
-                                                              ? widget.provider.chats[index]["members"][1]["user"]
-                                                              : widget.provider.chats[index]["members"][0]["user"],
+                                                          user: _rooms[index]["members"][1]["user"]["id"].toString() != myid
+                                                              ? _rooms[index]["members"][1]["user"]
+                                                              : _rooms[index]["members"][0]["user"],
                                                         )),
                                               );
                                             },
@@ -261,7 +279,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                               context: context,
                                               type: AlertType.info,
                                               title: "Conversation started on:  " +
-                                                  widget.provider.chats[index]["date_created"].toString().substring(0, 10) +
+                                                  _rooms[index]["date_created"].toString().substring(0, 10) +
                                                   "\n",
                                               buttons: [
                                                 DialogButton(
@@ -282,7 +300,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (__) => ReportUser(
-                                                                user: widget.provider.chats[index]["members"],
+                                                                user: _rooms[index]["members"],
                                                                 message: null,
                                                               )),
                                                     ),

@@ -53,9 +53,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String weight, price;
   bool _isfetchingnew = false;
   final formKey = new GlobalKey<FormState>();
-
+  String nextOrderURL;
   List _suggested = [];
   List _cities = [];
+  List _orders = [];
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
   final TextEditingController _typeAheadController3 = TextEditingController();
@@ -187,10 +188,47 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   Widget build(BuildContext context) {
+     Future _loadData() async {
+      if (nextOrderURL.toString() != "null") {
+        String url = nextOrderURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + widget.token,
+            },
+          ).then((response) {
+            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+            _orders.addAll(dataOrders["results"]);
+            nextOrderURL = dataOrders["next"];
+          });
+        } catch (e) {
+          print("Some Error");
+        }
+        setState(() {
+//        items.addAll( ['item 1']);
+//        print('items: '+ items.toString());
+          _isfetchingnew = false;
+        });
+      } else {
+        _isfetchingnew = false;
+      }
+    }
+
     //print(widget.orderstripsProvider.orders);
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-        //print(widget.provider.messages);
+         if (orderstripsProvider.orders.length != 0) {
+          _orders = orderstripsProvider.orders;
+          if(nextOrderURL == "FirstCall"){
+            nextOrderURL = orderstripsProvider.detailsOrder["next"];
+          }
+          //messageLoader = false;
+        } else {
+
+          //messageLoader = true;
+        }
 
         return Scaffold(
           resizeToAvoidBottomPadding: true,
@@ -277,7 +315,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     _isfetchingnew = true;
                                     print("load order");
                                   });
-                                  //_loadData(); todo: orxan
+                                  _loadData();
                                 }
                               },
                               child: ListView.builder(
@@ -288,16 +326,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (__) => new ItemScreen(
-                                            id: orderstripsProvider.orders[i]["id"],
-                                            owner: orderstripsProvider.orders[i]["owner"],
-                                            title: orderstripsProvider.orders[i]["title"],
-                                            destination: orderstripsProvider.orders[i]["destination"],
-                                            source: orderstripsProvider.orders[i]["source"]["city_ascii"],
-                                            weight: orderstripsProvider.orders[i]["weight"],
-                                            price: orderstripsProvider.orders[i]["price"],
-                                            date: orderstripsProvider.orders[i]["date"],
-                                            description: orderstripsProvider.orders[i]["description"],
-                                            image: orderstripsProvider.orders[i]["orderimage"],
+                                            id: _orders[i]["id"],
+                                            owner: _orders[i]["owner"],
+                                            title: _orders[i]["title"],
+                                            destination: _orders[i]["destination"],
+                                            source: _orders[i]["source"]["city_ascii"],
+                                            weight: _orders[i]["weight"],
+                                            price: _orders[i]["price"],
+                                            date: _orders[i]["date"],
+                                            description: _orders[i]["description"],
+                                            image: _orders[i]["orderimage"],
                                             token: widget.token,
                                             room: widget.room,
                                             auth: widget.auth,
@@ -335,10 +373,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                 children: <Widget>[
                                                   Flexible(
                                                     child: Text(
-//                                                    orderstripsProvider.orders[i]["title"].toString().length > 20
-//                                                        ? orderstripsProvider.orders[i]["title"].toString().substring(0, 20) + "..."
+//                                                    _orders[i]["title"].toString().length > 20
+//                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
 //                                                        :
-                                                      orderstripsProvider.orders[i]["title"].toString(), //Todo: title
+                                                      _orders[i]["title"].toString(), //Todo: title
                                                       overflow: TextOverflow.clip,
                                                       style: TextStyle(
                                                         fontSize: 20,
@@ -355,9 +393,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                         color: Theme.of(context).primaryColor,
                                                       ),
                                                       Text(
-                                                        orderstripsProvider.orders[i]["source"]["city_ascii"] +
+                                                        _orders[i]["source"]["city_ascii"] +
                                                             "  >  " +
-                                                            orderstripsProvider.orders[i]["destination"]["city_ascii"],
+                                                            _orders[i]["destination"]["city_ascii"],
                                                         //Todo: Source -> Destination
                                                         style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                                                       ),
@@ -374,7 +412,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                             color: Theme.of(context).primaryColor,
                                                           ),
                                                           Text(
-                                                            orderstripsProvider.orders[i]["date"].toString(),
+                                                            _orders[i]["date"].toString(),
                                                             //Todo: date
                                                             style: TextStyle(color: Colors.grey[600]),
                                                           ),
@@ -390,7 +428,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                             color: Theme.of(context).primaryColor,
                                                           ),
                                                           Text(
-                                                            orderstripsProvider.orders[i]["price"].toString(),
+                                                            _orders[i]["price"].toString(),
                                                             //Todo: date
                                                             style: TextStyle(color: Colors.grey[600]),
                                                           ),
@@ -407,7 +445,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     ),
                                   );
                                 },
-                                itemCount: orderstripsProvider.orders.length,
+                                itemCount: _orders.length,
                               ),
                             ),
                     ),

@@ -61,9 +61,7 @@ class _ChatWindowState extends State<ChatWindow> {
               '/?token=' +
               widget.provider.getToken);
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
-      print("Room Connected");
     } catch (e) {
-      print("Error Occured");
     }
   }
 
@@ -77,7 +75,6 @@ class _ChatWindowState extends State<ChatWindow> {
 
   _onReceptionOfMessageFromServer(message) {
     _isOn = true;
-    print(message);
     _listeners.forEach((Function callback) {
       callback(message);
     });
@@ -86,7 +83,6 @@ class _ChatWindowState extends State<ChatWindow> {
   reset() {
     if (_channelRoom != null) {
       if (_channelRoom.sink != null) {
-        print("Room Disconnected");
         _channelRoom.sink.close();
         _isOn = false;
       }
@@ -213,7 +209,6 @@ class _ChatWindowState extends State<ChatWindow> {
           nextMessagesURL = dataOrders["next"];
         });
       } catch (e) {
-        print("Some Error");
       }
       setState(() {
 //        items.addAll( ['item 1']);
@@ -224,8 +219,6 @@ class _ChatWindowState extends State<ChatWindow> {
     else{
         _isloading = false;
     }
-      
-     
     }
 
     return Consumer<Messages>(
@@ -305,21 +298,19 @@ class _ChatWindowState extends State<ChatWindow> {
                           
                             var avatar = 
                             
-                            widget.user["id"] != _messages[index]["sender"] || _messages[index]["sender"] == "me" ? Padding(
+                            reverse == false ? Padding(
+                              
                               padding: const EdgeInsets.only(
                                   left: 8.0, bottom: 8.0, right: 8.0),
                               child: CircleAvatar(
-                                child: Text(widget.user["first_name"]
-                                    .toString()
-                                    .substring(0, 1)),
+                                backgroundColor: Colors.teal,
+                                child: Text(widget.user["first_name"].toString().substring(0,1),style: TextStyle(color: Colors.white),),
                               ),
                             ) :  Padding(
                               padding: const EdgeInsets.only(
                                   left: 8.0, bottom: 8.0, right: 8.0),
                               child: CircleAvatar(
-                                child: Text(_messages[index]["sender"]
-                                    .toString()
-                                    .substring(0, 1)),
+                                child: Text(widget.provider.userDetails["first_name"].toString().substring(0,1)),
                               ),
                             );
 

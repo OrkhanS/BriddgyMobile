@@ -38,7 +38,7 @@ class _TripScreenState extends State<TripsScreen> {
   String _time = "Not set";
   DateTime startDate = DateTime.now();
   String imageUrl;
-
+  String nextTripURL = "FirstCall";
   List _suggested = [];
   List _cities = [];
   bool flagFrom = false;
@@ -77,7 +77,9 @@ class _TripScreenState extends State<TripsScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -88,7 +90,10 @@ class _TripScreenState extends State<TripsScreen> {
     }
 
     if (_endtime != null) {
-      flagWeight == false && flagTo == false && flagFrom == false && flagStart == false
+      flagWeight == false &&
+              flagTo == false &&
+              flagFrom == false &&
+              flagStart == false
           ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
           : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
       flagStart = true;
@@ -150,7 +155,11 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -213,9 +222,45 @@ class _TripScreenState extends State<TripsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future _loadData() async {
+      if (nextTripURL.toString() != "null") {
+        String url = nextTripURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + widget.token,
+            },
+          ).then((response) {
+            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+            _trips.addAll(dataOrders["results"]);
+            nextTripURL = dataOrders["next"];
+          });
+        } catch (e) {
+        }
+        setState(() {
+          _isfetchingnew = false;
+        });
+      } else {
+        _isfetchingnew = false;
+      }
+    }
+
     return Consumer<OrdersTripsProvider>(
       builder: (context, tripsProvider, child) {
+        if (tripsProvider.trips.length != 0) {
+          _trips = tripsProvider.trips;
+          if(nextTripURL == "FirstCall"){
+            nextTripURL = tripsProvider.detailsTrip["next"];
+          }
+          //messageLoader = false;
+        } else {
+
+          //messageLoader = true;
+        }
         return Scaffold(
+          
           resizeToAvoidBottomPadding: true,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -236,7 +281,9 @@ class _TripScreenState extends State<TripsScreen> {
             title: Center(
               child: Text(
                 "Trips",
-                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             elevation: 1,
@@ -246,41 +293,60 @@ class _TripScreenState extends State<TripsScreen> {
               height: MediaQuery.of(context).size.height * .83,
               child: Column(
                 children: <Widget>[
-                  FilterBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                    DropdownButton(
-                      hint: Text(_value),
-                      items: [
-                        DropdownMenuItem(
-                          value: "Ranking",
-                          child: Text(
-                            "Ranking",
+                  FilterBar(
+                      ordersProvider: widget.orderstripsProvider,
+                      from: from,
+                      to: to,
+                      weight: weight),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            "Results: " +
+                                _trips.length
+                                    .toString(),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey[500],
+                                fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        DropdownMenuItem(
-                          value: "WeightMax",
-                          child: Text(
-                            "Weight Limit",
+                          DropdownButton(
+                            hint: Text(_value),
+                            items: [
+                              DropdownMenuItem(
+                                value: "Ranking",
+                                child: Text(
+                                  "Ranking",
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: "WeightMax",
+                                child: Text(
+                                  "Weight Limit",
+                                ),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              sortData(value, tripsProvider);
+                            },
                           ),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        sortData(value, tripsProvider);
-                      },
-                    ),
-                  ]),
+                        ]),
+                  ),
                   Expanded(
                     child: tripsProvider.notLoaded != false
                         ? Center(child: CircularProgressIndicator())
                         : NotificationListener<ScrollNotification>(
                             onNotification: (ScrollNotification scrollInfo) {
-                              if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                              if (!_isfetchingnew &&
+                                  scrollInfo.metrics.pixels ==
+                                      scrollInfo.metrics.maxScrollExtent) {
                                 // start loading data
                                 setState(() {
                                   _isfetchingnew = true;
-                                  print("load trip");
                                 });
-                                //_loadData(); todo: orxan
+                                _loadData();
                               }
                             },
                             child: ListView.builder(
@@ -306,16 +372,20 @@ class _TripScreenState extends State<TripsScreen> {
                                   ,
                                   child: Container(
                                     height: 140,
-                                    padding: EdgeInsets.symmetric(horizontal: 10),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
                                     child: Card(
                                       elevation: 4,
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
                                         children: <Widget>[
                                           Padding(
-                                              padding: const EdgeInsets.all(10.0),
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
                                               child: Image(
-                                                image: NetworkImage("https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+                                                image: NetworkImage(
+                                                    "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
                                                 height: 60,
                                                 width: 60,
                                               )
@@ -327,28 +397,52 @@ class _TripScreenState extends State<TripsScreen> {
                                           Padding(
                                             padding: const EdgeInsets.all(12.0),
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  tripsProvider.trips[i]["owner"]["first_name"] +
+                                                  _trips[i]
+                                                              ["owner"]
+                                                          ["first_name"] +
                                                       " " +
-                                                      tripsProvider.trips[i]["owner"]["last_name"], //Todo: title
-                                                  style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                                      _trips[i]
+                                                              ["owner"][
+                                                          "last_name"], //Todo: title
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.grey[600],
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                   children: <Widget>[
                                                     Icon(
                                                       Icons.location_on,
-                                                      color: Theme.of(context).primaryColor,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
                                                     Text(
                                                       "  " +
-                                                          tripsProvider.trips[i]["source"]["city_ascii"] +
+                                                          _trips[i]
+                                                                  ["source"]
+                                                              ["city_ascii"] +
                                                           "  >  " +
-                                                          tripsProvider.trips[i]["destination"]["city_ascii"], //Todo: Source -> Destination
-                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                          _trips[i]
+                                                                  [
+                                                                  "destination"]
+                                                              [
+                                                              "city_ascii"], //Todo: Source -> Destination
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight: FontWeight
+                                                              .normal),
                                                     ),
                                                   ],
                                                 ),
@@ -356,24 +450,38 @@ class _TripScreenState extends State<TripsScreen> {
                                                   children: <Widget>[
                                                     Icon(
                                                       Icons.date_range,
-                                                      color: Theme.of(context).primaryColor,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
                                                     Text(
-                                                      "  " + tripsProvider.trips[i]["date"].toString(), //Todo: date
-                                                      style: TextStyle(color: Colors.grey[600]),
+                                                      "  " +
+                                                          _trips[i]
+                                                                  ["date"]
+                                                              .toString(), //Todo: date
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
                                                     ),
                                                   ],
                                                 ),
                                                 Row(
                                                   children: <Widget>[
                                                     Icon(
-                                                      MdiIcons.weightKilogram, //todo: icon
+                                                      MdiIcons
+                                                          .weightKilogram, //todo: icon
 //                                            (FontAwesome.suitcase),
-                                                      color: Theme.of(context).primaryColor,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
                                                     Text(
-                                                      "  " + tripsProvider.trips[i]["weight_limit"].toString(),
-                                                      style: TextStyle(color: Colors.grey[600]),
+                                                      "  " +
+                                                          _trips[i]
+                                                                  [
+                                                                  "weight_limit"]
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
                                                     ),
                                                   ],
                                                 )
@@ -381,11 +489,13 @@ class _TripScreenState extends State<TripsScreen> {
                                             ),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10.0),
                                             child: RaisedButton(
                                               color: Colors.white,
                                               onPressed: () {
-                                                createRooms(tripsProvider.trips[i]["owner"]["id"]);
+                                                createRooms(tripsProvider
+                                                    .trips[i]["owner"]["id"]);
 
                                                 //Todo Toast message that Conversation has been started
                                                 // Navigator.push(
@@ -396,21 +506,30 @@ class _TripScreenState extends State<TripsScreen> {
                                                 //Navigator.pop(context);
                                               },
                                               child: Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 20.0),
                                                 child: Column(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
                                                   children: <Widget>[
                                                     Icon(
-                                                      MdiIcons.messageArrowRightOutline,
-                                                      color: Theme.of(context).primaryColor,
+                                                      MdiIcons
+                                                          .messageArrowRightOutline,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                       size: 30,
                                                     ),
                                                     Text(
                                                       "Message",
                                                       style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Theme.of(context).primaryColor,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
                                                       ),
                                                     )
                                                   ],
@@ -424,7 +543,9 @@ class _TripScreenState extends State<TripsScreen> {
                                   ),
                                 );
                               },
-                              itemCount: tripsProvider.trips == null ? 0 : tripsProvider.trips.length,
+                              itemCount: _trips == null
+                                  ? 0
+                                  : _trips.length,
                             ),
                           ),
                   ),
