@@ -14,6 +14,7 @@ class OrdersTripsProvider with ChangeNotifier {
   List _mytrips = [];
   bool isLoadingOrders = true;
   bool isLoading;
+  bool isLoadingMyOrders = true;
   String token;
   Map allTripsDetails = {};
   Map allOrdersDetails = {};
@@ -23,11 +24,15 @@ class OrdersTripsProvider with ChangeNotifier {
   bool get notLoadingOrders {
     return isLoadingOrders;
   }
-
+  
+  bool get notLoadedMyorders{
+    return isLoadingMyOrders;
+  }
+  
   bool get notLoaded {
     return isLoading;
   }
-
+  
   List get orders {
     return _orders;
   }
@@ -104,7 +109,7 @@ class OrdersTripsProvider with ChangeNotifier {
       final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
       myorders = dataOrders["results"];
       allMyOrderDetails = dataOrders;
-      isLoadingOrders = false;
+      isLoadingMyOrders = false;
     });
   }
 

@@ -92,7 +92,7 @@ class _MyItemsState extends State<MyItems> {
             ),
             elevation: 1,
           ),
-          body: orderstripsProvider.notLoaded
+          body: orderstripsProvider.notLoadedMyorders
               ? Center(child: CircularProgressIndicator())
               : NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {
