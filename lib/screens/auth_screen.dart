@@ -1,12 +1,7 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/screens/FirebaseMessaging.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/auth.dart';
 import '../models/http_exception.dart';
 
@@ -59,14 +54,14 @@ class _AuthCardState extends State<AuthCard> {
   String deviceToken;
   _getToken() {
     _firebaseMessaging.getToken().then((device) {
-      deviceToken=device;
-    print(deviceToken);
-
+      deviceToken = device;
+      print(deviceToken);
     });
     print(deviceToken);
   }
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _getToken();
   }
@@ -101,16 +96,11 @@ class _AuthCardState extends State<AuthCard> {
     try {
       if (_authMode == AuthMode.Login) {
         // Log user in
-        await Provider.of<Auth>(context, listen: false)
-            .login(_authData['email'], _authData['password'], deviceToken);
+        await Provider.of<Auth>(context, listen: false).login(_authData['email'], _authData['password'], deviceToken);
       } else {
         // Sign user up
-        await Provider.of<Auth>(context, listen: false).signup(
-            _authData['email'],
-            _authData['password'],
-            _authData['firstname'],
-            _authData['lastname'],
-            deviceToken);
+        await Provider.of<Auth>(context, listen: false)
+            .signup(_authData['email'], _authData['password'], _authData['firstname'], _authData['lastname'], deviceToken);
       }
     } on HttpException catch (error) {
       var errorMessage = 'Authentication failed';
@@ -127,8 +117,7 @@ class _AuthCardState extends State<AuthCard> {
       }
       _showErrorDialog(errorMessage);
     } catch (error) {
-      const errorMessage =
-          'Could not authenticate you. Please try again later.';
+      const errorMessage = 'Could not authenticate you. Please try again later.';
       _showErrorDialog(errorMessage);
     }
 
@@ -264,9 +253,7 @@ class _AuthCardState extends State<AuthCard> {
               SizedBox(
                 height: 10,
               ),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
 //                Expanded(
 //                  child: new Container(
 //                      margin: const EdgeInsets.only(left: 10.0, right: 20.0),
@@ -275,10 +262,10 @@ class _AuthCardState extends State<AuthCard> {
 //                        height: 36,
 //                      )),
 //                ),
-                    Text(
-                      "Or",
-                      style: TextStyle(color: Colors.grey[500], fontSize: 20),
-                    ),
+                Text(
+                  "Or",
+                  style: TextStyle(color: Colors.grey[500], fontSize: 20),
+                ),
 //                Expanded(
 //                  child: new Container(
 //                      margin: const EdgeInsets.only(left: 20.0, right: 10.0),
@@ -287,7 +274,7 @@ class _AuthCardState extends State<AuthCard> {
 //                        height: 36,
 //                      )),
 //                ),
-                  ]),
+              ]),
               SizedBox(
                 height: 10,
               ),
@@ -320,11 +307,9 @@ class _AuthCardState extends State<AuthCard> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: deviceSize.width * 0.3, vertical: 15.0),
+                      padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.3, vertical: 15.0),
                       color: Theme.of(context).primaryColor,
-                      textColor:
-                          Theme.of(context).primaryTextTheme.button.color,
+                      textColor: Theme.of(context).primaryTextTheme.button.color,
                     ),
                 ],
               ),
@@ -333,17 +318,13 @@ class _AuthCardState extends State<AuthCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    _authMode == AuthMode.Login
-                        ? "Don't Have an account?"
-                        : 'Already a member?',
+                    _authMode == AuthMode.Login ? "Don't Have an account?" : 'Already a member?',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   InkWell(
                     child: Text(
                       '${_authMode == AuthMode.Login ? ' Sign up' : ' Log in'} ',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).accentColor),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
                     ),
                     onTap: _switchAuthMode,
                   ),
@@ -360,9 +341,7 @@ class _AuthCardState extends State<AuthCard> {
                     InkWell(
                       child: Text(
                         ' password ?',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).accentColor),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
                       ),
                       onTap: _switchAuthMode, //Todo
                     ),
@@ -394,10 +373,7 @@ class _AuthCardState extends State<AuthCard> {
                         InkWell(
                           child: Text(
                             ' Privacy Policy ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).accentColor,
-                                fontSize: 13),
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
                           ),
                           onTap: _switchAuthMode, //Todo
                         ),
@@ -411,10 +387,7 @@ class _AuthCardState extends State<AuthCard> {
                         InkWell(
                           child: Text(
                             ' Terms of use ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).accentColor,
-                                fontSize: 13),
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
                           ),
                           onTap: _switchAuthMode, //Todo
                         ),
@@ -443,8 +416,7 @@ Widget _google() {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Image(
-              image: AssetImage("assets/photos/google_logo.png"), height: 25.0),
+          Image(image: AssetImage("assets/photos/google_logo.png"), height: 25.0),
           Padding(
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: Text(
@@ -474,9 +446,7 @@ Widget _facebook() {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Image(
-              image: AssetImage("assets/photos/facebook_logo.png"),
-              height: 25.0),
+          Image(image: AssetImage("assets/photos/facebook_logo.png"), height: 25.0),
           Padding(
             padding: const EdgeInsets.only(left: 10),
             child: Text(

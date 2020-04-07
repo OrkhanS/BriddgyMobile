@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
 import 'package:optisend/screens/chat_window.dart';
@@ -9,21 +8,14 @@ import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/report_user_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-
-import 'package:flutter/material.dart';
 import 'chat_window.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:optisend/providers/messages.dart';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:badges/badges.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatsScreen extends StatefulWidget {
   final StreamController<String> streamController = StreamController<String>.broadcast();
-  IOWebSocketChannel _channel;
-
-  ObserverList<Function> _listeners = new ObserverList<Function>();
   var provider, token, auth;
   ChatsScreen({this.provider, this.token, this.auth});
   @override
@@ -35,27 +27,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
   int numberOfPages = 6;
   double viewportFraction = 0.75;
   String imageUrl;
-  Map _details = {};
-  List<dynamic> _messagess = [];
-  bool _isOn = false;
-  bool _islogged = true;
-  bool _isloading = true;
-  Map _messages = {};
-  Map _mesaj = {};
   bool isMessagesLoaded = false;
   Future<int> roomLength;
   List _rooms = [];
   String myid;
   bool _isfetchingnew = false;
-  String nextMessagesURL="FirstCall";
+  String nextMessagesURL = "FirstCall";
 
   @override
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
     super.initState();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -78,48 +61,43 @@ class _ChatsScreenState extends State<ChatsScreen> {
       Colors.lightBlue,
     ];
 
-    
     Future _loadData() async {
-      if(nextMessagesURL.toString() != "null"){
-         String url = nextMessagesURL;
-      try {
-        await http.get(
-          url,
-          headers: {
-            HttpHeaders.CONTENT_TYPE: "application/json",
-            "Authorization": "Token " + widget.token,
-          },
-        ).then((response) {
-          var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          _rooms.addAll(dataOrders["results"]);
-          nextMessagesURL = dataOrders["next"];
-        });
-      } catch (e) {
-        print("Some Error");
-      }
-      setState(() {
+      if (nextMessagesURL.toString() != "null") {
+        String url = nextMessagesURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + widget.token,
+            },
+          ).then((response) {
+            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+            _rooms.addAll(dataOrders["results"]);
+            nextMessagesURL = dataOrders["next"];
+          });
+        } catch (e) {
+          print("Some Error");
+        }
+        setState(() {
 //        items.addAll( ['item 1']);
 //        print('items: '+ items.toString());
+          _isfetchingnew = false;
+        });
+      } else {
         _isfetchingnew = false;
-      });
-    }
-    else{
-        _isfetchingnew = false;
-    }
-      
-     
+      }
     }
 
     return Consumer<Messages>(
       builder: (context, provider, child) {
-         if (widget.provider.chats.length != 0) {
+        if (widget.provider.chats.length != 0) {
           _rooms = widget.provider.chatDetails["results"];
-          if(nextMessagesURL == "FirstCall"){
+          if (nextMessagesURL == "FirstCall") {
             nextMessagesURL = widget.provider.chatDetails["next"];
           }
           //messageLoader = false;
         } else {
-
           //messageLoader = true;
         }
         return Scaffold(
@@ -216,10 +194,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                       //     ? "Recently"
                                                       //     :
                                                       timeago
-                                                          .format(DateTime.parse(
-                                                              _rooms[index]["date_modified"].toString().substring(0, 10) +
-                                                                  " " +
-                                                                  _rooms[index]["date_modified"].toString().substring(11, 26)))
+                                                          .format(DateTime.parse(_rooms[index]["date_modified"].toString().substring(0, 10) +
+                                                              " " +
+                                                              _rooms[index]["date_modified"].toString().substring(11, 26)))
                                                           .toString(),
                                                       style: TextStyle(fontSize: 15.0),
                                                     )
@@ -228,8 +205,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 trailing: widget.provider.newMessages[_rooms[index]["id"]].toString() != "0" &&
                                                         widget.provider.newMessages[_rooms[index]["id"]].toString() != "null"
                                                     ? Badge(
-                                                        badgeContent:
-                                                            Text(widget.provider.newMessages[_rooms[index]["id"]].toString()),
+                                                        badgeContent: Text(widget.provider.newMessages[_rooms[index]["id"]].toString()),
                                                         child: Icon(Icons.arrow_forward_ios),
                                                       )
                                                     : Icon(
@@ -275,9 +251,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                             Alert(
                                               context: context,
                                               type: AlertType.info,
-                                              title: "Conversation started on:  " +
-                                                  _rooms[index]["date_created"].toString().substring(0, 10) +
-                                                  "\n",
+                                              title: "Conversation started on:  " + _rooms[index]["date_created"].toString().substring(0, 10) + "\n",
                                               buttons: [
                                                 DialogButton(
                                                   child: Text(

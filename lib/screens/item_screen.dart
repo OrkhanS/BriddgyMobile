@@ -1,10 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
 import '../main.dart';
 
 class ItemScreen extends StatefulWidget {
@@ -51,8 +47,6 @@ class _ItemScreenState extends State<ItemScreen> {
     }
     return null;
   }
-
-  Map<String, dynamic> _orders = {};
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +194,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       ),
                     ),
                     trailing: Text(
-                      widget.source.toString(), //todo: data
+                      widget.source.toString(),
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -214,7 +208,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       ),
                     ),
                     trailing: Text(
-                      widget.destination["city_ascii"].toString(), //todo: data
+                      widget.destination["city_ascii"].toString(),
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -228,7 +222,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       ),
                     ),
                     trailing: Text(
-                      widget.date.toString(), //todo: data
+                      widget.date.toString(),
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -242,7 +236,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       ),
                     ),
                     trailing: Text(
-                      widget.weight.toString() + " kg", //todo: data
+                      widget.weight.toString() + " kg",
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
@@ -263,7 +257,7 @@ class _ItemScreenState extends State<ItemScreen> {
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Item cost:", //todo: data
+                      "Item cost:",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],

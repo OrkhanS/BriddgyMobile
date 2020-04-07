@@ -1,17 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:image_selector_formfield/image_selector_formfield.dart';
-import 'package:optisend/screens/orders_screen.dart';
-import 'package:optisend/main.dart';
-import 'package:optisend/screens/account_screen.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:provider/provider.dart';
-import 'package:optisend/screens/my_items.dart';
 
 class CustomerSupport extends StatefulWidget {
   var user, message;
@@ -21,11 +8,8 @@ class CustomerSupport extends StatefulWidget {
 }
 
 class _CustomerSupportState extends State<CustomerSupport> {
-  String _startDate = "Date";
   String title;
   String from, to, description;
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +27,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
         ),
         title: Text(
           "Support", //Todo: item name
-          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -57,12 +39,10 @@ class _CustomerSupportState extends State<CustomerSupport> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 30.0, top: 20, bottom: 20),
+                  padding: const EdgeInsets.only(left: 30.0, top: 20, bottom: 20),
                   child: Text(
                     "Fill the forms",
-                    style: TextStyle(
-                        fontSize: 25, color: Theme.of(context).primaryColor),
+                    style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
                   ),
                 ),
               ],
@@ -78,7 +58,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
                 onChanged: (String val) {},
               ),
             ),
-             Container(
+            Container(
               width: deviceWidth * 0.8,
               child: TextFormField(
                 decoration: InputDecoration(

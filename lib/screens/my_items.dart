@@ -108,7 +108,6 @@ class _MyItemsState extends State<MyItems> {
                       Expanded(
                         child: ListView.builder(
                           itemBuilder: (context, int i) {
-                            int key = i;
                             return Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Dismissible(
@@ -120,7 +119,7 @@ class _MyItemsState extends State<MyItems> {
                                   orderstripsProvider.myorders.removeAt(i);
                                   Flushbar(
                                     title: "Done!",
-                                    message: "Trip was deleted",
+                                    message: "Item was deleted",
                                     aroundPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
                                     borderRadius: 10,
                                     duration: Duration(seconds: 3),
@@ -146,7 +145,7 @@ class _MyItemsState extends State<MyItems> {
                                   return res; //todo check
                                 },
                                 background: Container(
-                                  decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.red[900], Colors.red[400]])),
+                                  decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.red[700], Colors.orange[300]])),
 //                                    border: Border.all(),
 //                                    borderRadius: BorderRadius.circular(5),
 //                                  ),
@@ -159,18 +158,18 @@ class _MyItemsState extends State<MyItems> {
                                       Icon(
                                         MdiIcons.delete,
                                         color: Colors.white,
-                                        size: 30,
+                                        size: 27,
                                       ),
                                       SizedBox(width: 5),
                                       Text(
-                                        "Delete",
+                                        "DELETE",
                                         style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: 30,
+                                          fontSize: 22,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      SizedBox(width: 10),
+                                      SizedBox(width: 15),
                                     ],
                                   ),
                                 ),

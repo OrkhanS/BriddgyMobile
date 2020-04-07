@@ -1,17 +1,6 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_selector_formfield/image_selector_formfield.dart';
-import 'package:optisend/screens/orders_screen.dart';
-import 'package:optisend/main.dart';
-import 'package:optisend/screens/account_screen.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:provider/provider.dart';
-import 'package:optisend/screens/my_items.dart';
 
 class ReportUser extends StatefulWidget {
   var user, message;
@@ -48,13 +37,8 @@ class ImageInputAdapter {
 }
 
 class _ReportUserState extends State<ReportUser> {
-  String _startDate = "Date";
   String title;
   String from, to, description;
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _typeAheadController = TextEditingController();
-  final TextEditingController _typeAheadController2 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +56,7 @@ class _ReportUserState extends State<ReportUser> {
         ),
         title: Text(
           "Report", //Todo: item name
-          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -86,15 +68,10 @@ class _ReportUserState extends State<ReportUser> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 30.0, top: 20, bottom: 20),
+                  padding: const EdgeInsets.only(left: 30.0, top: 20, bottom: 20),
                   child: Text(
-                    "Report " +
-                        widget.user[0]["first_name"] +
-                        " " +
-                        widget.user[0]["last_name"],
-                    style: TextStyle(
-                        fontSize: 25, color: Theme.of(context).primaryColor),
+                    "Report " + widget.user[0]["first_name"] + " " + widget.user[0]["last_name"],
+                    style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
                   ),
                 ),
               ],
@@ -113,12 +90,11 @@ class _ReportUserState extends State<ReportUser> {
             Row(
               children: <Widget>[
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 75.0, top: 30, bottom: 20),
-                      child: Text("Add Screenshots"),
+                  padding: const EdgeInsets.only(left: 75.0, top: 30, bottom: 20),
+                  child: Text("Add Screenshots"),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left:20.0, top: 20),
+                  padding: const EdgeInsets.only(left: 20.0, top: 20),
                   child: ImageSelectorFormField(
                     cropStyle: CropStyle.rectangle,
                     icon: Icon(

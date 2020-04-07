@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import './auth_screen.dart';
-import '../providers/auth.dart';
-import 'splash_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
   Widget notif() {
@@ -22,9 +18,7 @@ class NotificationScreen extends StatelessWidget {
           title: Center(
             child: Text(
               "Notifications",
-              style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
             ),
           ),
           elevation: 1,

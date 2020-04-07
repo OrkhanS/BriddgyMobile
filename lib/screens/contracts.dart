@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
-import 'package:optisend/screens/contracts_info.dart';
-import 'package:optisend/screens/item_screen.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 

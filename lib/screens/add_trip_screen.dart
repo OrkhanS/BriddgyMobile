@@ -23,7 +23,6 @@ class _AddTripScreenState extends State<AddTripScreen> {
   String departureDate = DateTime.now().toString().substring(0, 11);
   String from, to;
   String weight;
-  String _selectedCity;
   List _suggested = [];
   List _cities = [];
   bool isLoading = true;

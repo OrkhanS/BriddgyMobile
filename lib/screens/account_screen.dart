@@ -74,23 +74,6 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     widget.auth.fetchAndSetUserDetails();
 
-    List<ListTile> choices = <ListTile>[
-      ListTile(
-        leading: Icon(
-          Icons.exit_to_app,
-//          color: Theme.of(context).primaryColor,
-        ),
-        title: Text("Logout"),
-        onTap: () {
-          Provider.of<Auth>(context, listen: false).logout(context);
-        },
-      ),
-      ListTile(
-        leading: Icon(Icons.settings),
-        title: Text("Settings"),
-      )
-    ];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,

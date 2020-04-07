@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -42,19 +41,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final notifications = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
-  List<dynamic> _rooms;
   bool _isOn = false;
-  bool _loggedIn = true;
-  List<dynamic> _messages = [];
-  List<dynamic> _mesaj = [];
   int _currentIndex = 0;
   PageController _pageController;
-  bool _enabled = true;
-  int _status = 0;
-  IOWebSocketChannel _channelRoom;
   String tokenforROOM;
-  List<DateTime> _events = [];
   Map valueMessages = {};
   bool socketConnected = false;
   var neWMessage;

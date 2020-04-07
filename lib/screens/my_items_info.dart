@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class MyItemScreenInfo extends StatefulWidget {
   var id, description, image;
@@ -30,10 +28,9 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
   void initState() {
     super.initState();
   }
-  List _sugesstions=[];
-  bool isLoading=false;
-  Map<String, dynamic> _orders = {};
 
+  List _sugesstions = [];
+  bool isLoading = false;
 
   Future fetchAndSetSugesstions(id) async {
     String url = "http://briddgy.herokuapp.com/api/trips/" + id.toString() + "/suggestions/";
@@ -50,6 +47,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
       );
     });
   }
+
   //widget.myObject.toString()
   static const routeName = '/orders/item';
   @override
@@ -67,9 +65,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
         ),
         title: Text(
           widget.title.toString(), //Todo: item name
-          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -80,36 +76,32 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-               Padding(
-                 padding: const EdgeInsets.all(8.0),
-                 child: ClipRRect(
-                     borderRadius: BorderRadius.all(Radius.circular(40)),
-                     child: 
-                     Image.network(
-                       'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                       height: 250,
-                       width: 250,
-                       fit: BoxFit.cover,
-                       loadingBuilder: (BuildContext context, Widget child,
-                           ImageChunkEvent loadingProgress) {
-                         if (loadingProgress == null) return child;
-                         return Center(
-                           child: CircularProgressIndicator(
-                             value: loadingProgress.expectedTotalBytes != null
-                                 ? loadingProgress.cumulativeBytesLoaded /
-                                     loadingProgress.expectedTotalBytes
-                                 : null,
-                           ),
-                         );
-                       },
-                     ),
-                     ),
-               ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                    child: Image.network(
+                      'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                      height: 250,
+                      width: 250,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -125,9 +117,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
                   ),
 
                   Text(
-                    widget.owner["first_name"].toString() +
-                        " " +
-                        widget.owner["last_name"].toString(),
+                    widget.owner["first_name"].toString() + " " + widget.owner["last_name"].toString(),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -153,8 +143,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
                         ),
                         Text(
                           widget.owner["rating"].toString(),
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
@@ -179,8 +168,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
               ),
             ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Item Details",
                 style: TextStyle(
@@ -286,8 +274,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
               ),
             ), //
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Description",
                 style: TextStyle(
@@ -309,9 +296,8 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
                   style: TextStyle(fontSize: 17),
                 ),
               ),
-              
             ),
-              ],
+          ],
         ),
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -27,8 +26,7 @@ class Messages extends ChangeNotifier {
 
   Future fetchAndSetMessages(int i) async {
     var token = tokenforROOM;
-    String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" +
-        _chatRooms[i]["id"].toString();
+    String url = "https://briddgy.herokuapp.com/api/chat/messages/?room_id=" + _chatRooms[i]["id"].toString();
     try {
       await http.get(
         url,
@@ -42,8 +40,7 @@ class Messages extends ChangeNotifier {
         _isloadingMessages = false;
         notifyListeners();
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   bool get messagesNotLoaded {
@@ -56,13 +53,11 @@ class Messages extends ChangeNotifier {
 
   set addMessages(Map mesaj) {
     ismessagesAdded = false;
-    var room =
-        mesaj["data"] == null ? mesaj["room_id"] : mesaj["data"]["room_id"];
+    var room = mesaj["data"] == null ? mesaj["room_id"] : mesaj["data"]["room_id"];
     for (var i = 0; i < _messages.length; i++) {
       if (_messages[room] != null) {
         if (_messages[room]["results"][0]["id"] != mesaj["id"]) {
-          lastMessageID
-              .add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
+          lastMessageID.add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
           _messages[room]["results"].insert(0, mesaj);
           changeChatRoomPlace(room);
         }
@@ -75,8 +70,7 @@ class Messages extends ChangeNotifier {
       if (!okay) {
         _chatRooms.insert(0, mesaj);
       }
-      lastMessageID
-          .add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
+      lastMessageID.add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
     }
     if (ismessagesAdded == true) {
       var lastindex = lastMessageID.lastIndexOf(lastMessageID.last);
@@ -117,8 +111,7 @@ class Messages extends ChangeNotifier {
   }
 
   bool get arethereNewMessage {
-    var key = newMessage.keys
-        .firstWhere((k) => newMessage[k] != 0, orElse: () => null);
+    var key = newMessage.keys.firstWhere((k) => newMessage[k] != 0, orElse: () => null);
     if (key != null) {
       return true;
     } else {
@@ -167,8 +160,7 @@ class Messages extends ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     auth.token = extractedUserData['token'];
     tokenforROOM = extractedUserData['token'];
@@ -187,8 +179,7 @@ class Messages extends ChangeNotifier {
           _chatRooms = dataOrders["results"];
           if (_chatRooms.length == 0) {
             for (var i = 0; i < _chatRooms.length; i++) {
-              newMessage[_chatRooms[i]["id"]] =
-                  _chatRooms[i]["members"][1]["unread_count"];
+              newMessage[_chatRooms[i]["id"]] = _chatRooms[i]["members"][1]["unread_count"];
             }
           }
           isChatsLoading = false;
@@ -225,12 +216,7 @@ class Messages extends ChangeNotifier {
 
   List get chats => _chatRooms;
   Map get chatDetails => allChatRoomDetails;
-
-//---------------------------------------------------------------------------------------------
-  List<dynamic> _users = [];
-
   Map user_detail = {};
-
   Map get userDetails {
     return user_detail;
   }
@@ -242,8 +228,7 @@ class Messages extends ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     auth.token = extractedUserData['token'];
     var token = extractedUserData['token'];
@@ -260,8 +245,6 @@ class Messages extends ChangeNotifier {
         var dataOrders = json.decode(response.body) as Map<String, dynamic>;
         user_detail = dataOrders;
       });
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 }

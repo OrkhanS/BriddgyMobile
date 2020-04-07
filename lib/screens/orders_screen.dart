@@ -50,10 +50,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
   List _suggested = [];
   List _cities = [];
   List _orders = [];
-  final TextEditingController _typeAheadController = TextEditingController();
-  final TextEditingController _typeAheadController2 = TextEditingController();
-  final TextEditingController _typeAheadController3 = TextEditingController();
-  final TextEditingController _typeAheadController4 = TextEditingController();
 
   @override
   void initState() {

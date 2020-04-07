@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ContractsScreenInfo extends StatefulWidget {
   var contract;
@@ -23,7 +21,6 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
 
   List _sugesstions = [];
   bool isLoading = false;
-  Map<String, dynamic> _orders = {};
 
   Future fetchAndSetSugesstions(id) async {
     String url = "http://briddgy.herokuapp.com/api/trips/" + id.toString() + "/suggestions/";

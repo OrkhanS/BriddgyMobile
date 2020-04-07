@@ -12,7 +12,6 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
-  Timer _authTimer;
   Map user = {};
   bool isLoadingUser = true;
 
@@ -21,9 +20,7 @@ class Auth with ChangeNotifier {
   }
 
   String get token {
-    if (_expiryDate != null &&
-        _expiryDate.isAfter(DateTime.now()) &&
-        _token != null) {
+    if (_expiryDate != null && _expiryDate.isAfter(DateTime.now()) && _token != null) {
       return _token;
     }
     return null;
@@ -50,30 +47,28 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     const url = "http://briddgy.herokuapp.com/api/users/me/";
     try {
       final response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + extractedUserData['token'],
-      },
-    ).then((response) {
-      final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-      user = dataOrders;
-      isLoadingUser = false;
-      notifyListeners();
-    });
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + extractedUserData['token'],
+        },
+      ).then((response) {
+        final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+        user = dataOrders;
+        isLoadingUser = false;
+        notifyListeners();
+      });
     } catch (e) {
       return;
     }
   }
 
-  Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
+  Future<void> _authenticate(String email, String password, String urlSegment) async {
 //    final url =
 //        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key=AIzaSyC13spCwP_f_SalxEbkB-wjedoF8iYENlQ';
     const url = "http://briddgy.herokuapp.com/api/auth/";
@@ -117,8 +112,7 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> signup(String email, String password, String firstname,
-      String lastname, String deviceID) async {
+  Future<void> signup(String email, String password, String firstname, String lastname, String deviceID) async {
     //return _authenticate(email, password, 'signupNewUser');
 
     const url = "http://briddgy.herokuapp.com/api/users/";
@@ -224,8 +218,7 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 //    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
 //
 //    if (expiryDate.isBefore(DateTime.now())) {
