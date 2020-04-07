@@ -40,7 +40,7 @@ class _MyItemsState extends State<MyItems> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null") {
+      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(
@@ -91,7 +91,7 @@ class _MyItemsState extends State<MyItems> {
             ),
             elevation: 1,
           ),
-          body: orderstripsProvider.notLoaded
+          body: orderstripsProvider.notLoadedMyorders
               ? Center(child: CircularProgressIndicator())
               : NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {

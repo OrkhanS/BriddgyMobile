@@ -224,7 +224,7 @@ class _TripScreenState extends State<TripsScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextTripURL.toString() != "null") {
+      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
         String url = nextTripURL;
         try {
           await http.get(
