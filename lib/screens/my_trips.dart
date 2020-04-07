@@ -39,7 +39,7 @@ class _MyTripsState extends State<MyTrips> {
   @override
   Widget build(BuildContext context) {
         Future _loadData() async {
-      if (nextTripURL.toString() != "null") {
+      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
         String url = nextTripURL;
         try {
           await http.get(
@@ -98,9 +98,8 @@ class _MyTripsState extends State<MyTrips> {
                 // start loading data
                 setState(() {
                   _isfetchingnew = true;
-                  print("load order");
                 });
-                //_loadData(); todo: orxan
+                _loadData();
               }
             },
             child: Column(

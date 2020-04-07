@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -226,11 +227,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           builder: (_) => Auth(),
         ),
-
         ChangeNotifierProvider(
           builder: (_) => OrdersTripsProvider(),
         ),
-
         ChangeNotifierProvider(
           builder: (_) => Messages(),
         ),

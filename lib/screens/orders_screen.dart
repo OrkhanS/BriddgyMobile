@@ -182,7 +182,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null") {
+      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(

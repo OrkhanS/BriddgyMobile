@@ -38,7 +38,7 @@ class _MyItemsState extends State<MyItems> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null") {
+      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(
