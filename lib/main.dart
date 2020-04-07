@@ -7,11 +7,8 @@ import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/trip_screen.dart';
 import 'package:provider/provider.dart';
-import './screens/product_detail_screen.dart';
 import './providers/auth.dart';
 import './screens/orders_screen.dart';
-import './screens/user_products_screen.dart';
-import './screens/edit_product_screen.dart';
 import 'package:flutter/foundation.dart';
 import './screens/account_screen.dart';
 import './screens/notification_screen.dart';
@@ -33,8 +30,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
-  final StreamController<String> streamController =
-      StreamController<String>.broadcast();
+  final StreamController<String> streamController = StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
   ObserverList<Function> _listeners = new ObserverList<Function>();
   var button = ChatsScreen();
@@ -89,8 +85,7 @@ class _MyAppState extends State<MyApp> {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
     tokenforROOM = extractedUserData['token'];
   }
 
@@ -112,15 +107,12 @@ class _MyAppState extends State<MyApp> {
         if (!prefs.containsKey('userData')) {
           return false;
         }
-        final extractedUserData =
-            json.decode(prefs.getString('userData')) as Map<String, Object>;
+        final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
         auth.token = extractedUserData['token'];
 
         if (extractedUserData['token'] != null) {
-          widget._channel = new IOWebSocketChannel.connect(
-              'ws://briddgy.herokuapp.com/ws/alert/?token=' +
-                  extractedUserData['token']);
+          widget._channel = new IOWebSocketChannel.connect('ws://briddgy.herokuapp.com/ws/alert/?token=' + extractedUserData['token']);
           widget._channel.stream.listen(_onReceptionOfMessageFromServer);
           print("Alert Connected");
         }
@@ -183,14 +175,10 @@ class _MyAppState extends State<MyApp> {
       selectedFontSize: 11,
       onTap: (index) {
         setState(() => _currentIndex = index);
-        _pageController.animateToPage(index,
-            duration: Duration(milliseconds: 200), curve: Curves.ease);
+        _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.ease);
       },
       items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-            title: Text('Items'),
-            icon: Icon(MdiIcons.packageVariantClosed),
-            activeIcon: Icon(MdiIcons.packageVariant)),
+        BottomNavigationBarItem(title: Text('Items'), icon: Icon(MdiIcons.packageVariantClosed), activeIcon: Icon(MdiIcons.packageVariant)),
         BottomNavigationBarItem(
           title: Text('Trips'),
           icon: Icon(MdiIcons.roadVariant),
@@ -226,11 +214,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           builder: (_) => Auth(),
         ),
-
         ChangeNotifierProvider(
           builder: (_) => OrdersTripsProvider(),
         ),
-
         ChangeNotifierProvider(
           builder: (_) => Messages(),
         ),
@@ -261,34 +247,19 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  OrdersScreen(
-                      orderstripsProvider: orderstripsProvider,
-                      room: newmessage,
-                      auth: auth,
-                      token: tokenforROOM),
-                  TripsScreen(
-                      orderstripsProvider: orderstripsProvider,
-                      room: newmessage,
-                      auth: auth,
-                      token: tokenforROOM),
-                  ChatsScreen(
-                      provider: newmessage, auth: auth, token: tokenforROOM),
+                  OrdersScreen(orderstripsProvider: orderstripsProvider, room: newmessage, auth: auth, token: tokenforROOM),
+                  TripsScreen(orderstripsProvider: orderstripsProvider, room: newmessage, auth: auth, token: tokenforROOM),
+                  ChatsScreen(provider: newmessage, auth: auth, token: tokenforROOM),
                   NotificationScreen(),
-                  AccountScreen(
-                      token: tokenforROOM,
-                      auth: auth,
-                      orderstripsProvider: orderstripsProvider),
+                  AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider),
                 ],
               ),
             ),
             bottomNavigationBar: navbar(newmessage),
           ),
           routes: {
-            ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             TripsScreen.routeName: (ctx) => TripsScreen(),
-            UserProductsScreen.routeName: (ctx) => UserProductsScreen(),
-            EditProductScreen.routeName: (ctx) => EditProductScreen(),
             ChatWindow.routeName: (ctx) => ChatWindow(),
             ItemScreen.routeName: (ctx) => ItemScreen(),
             AddItemScreen.routeName: (ctx) => AddItemScreen(),
@@ -297,8 +268,7 @@ class _MyAppState extends State<MyApp> {
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),
-            AccountScreen.routeName: (ctx) => AccountScreen(
-                token: tokenforROOM, orderstripsProvider: orderstripsProvider),
+            AccountScreen.routeName: (ctx) => AccountScreen(token: tokenforROOM, orderstripsProvider: orderstripsProvider),
           },
         );
       }),

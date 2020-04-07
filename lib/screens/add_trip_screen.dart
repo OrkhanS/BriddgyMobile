@@ -6,12 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:optisend/screens/account_screen.dart';
-import 'package:optisend/screens/my_trips.dart';
-import 'package:optisend/screens/orders_screen.dart';
-import 'package:optisend/main.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:provider/provider.dart';
 import 'package:flushbar/flushbar.dart';
 
 class AddTripScreen extends StatefulWidget {
