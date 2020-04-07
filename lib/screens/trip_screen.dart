@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/widgets/filter_bar.dart';
@@ -496,7 +497,13 @@ class _TripScreenState extends State<TripsScreen> {
                                               onPressed: () {
                                                 createRooms(tripsProvider
                                                     .trips[i]["owner"]["id"]);
-
+                                                Flushbar(
+                                                title: "Chat with "+_trips[i]["owner"]["first_name"].toString()+" has been started!",
+                                                message: "Check Chats to see more.",
+                                                aroundPadding: const EdgeInsets.all(8),
+                                                borderRadius: 10,
+                                                duration: Duration(seconds: 5),
+                                              )..show(context);
                                                 //Todo Toast message that Conversation has been started
                                                 // Navigator.push(
                                                 //   context,

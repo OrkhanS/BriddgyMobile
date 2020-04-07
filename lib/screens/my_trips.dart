@@ -65,8 +65,8 @@ class _MyTripsState extends State<MyTrips> {
 
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-         if (orderstripsProvider.trips.length != 0) {
-          _trips = orderstripsProvider.trips;
+         if (orderstripsProvider.mytrips.length != 0) {
+          _trips = orderstripsProvider.mytrips;
           if(nextTripURL == "FirstCall"){
             nextTripURL = orderstripsProvider.detailsMyTrip["next"];
           }

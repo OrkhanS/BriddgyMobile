@@ -1,52 +1,32 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/trip_screen.dart';
 import 'package:provider/provider.dart';
-
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import './screens/splash_screen.dart';
-import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
-import './providers/products.dart';
-import './providers/cart.dart';
 import './providers/auth.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
-import './screens/auth_screen.dart';
 import 'package:flutter/foundation.dart';
-
 import './screens/account_screen.dart';
 import './screens/notification_screen.dart';
 import './screens/chats_screen.dart';
 import './screens/chat_window.dart';
 import 'package:optisend/screens/profile_screen.dart';
 import 'package:optisend/screens/item_screen.dart';
-
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:optisend/web_sockets.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'package:optisend/providers/messages.dart';
-import 'package:optisend/providers/userDetails.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
-
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/contracts.dart';
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:optisend/local_notications_helper.dart';
 import 'package:badges/badges.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -71,7 +51,7 @@ class _MyAppState extends State<MyApp> {
   bool _loggedIn = true;
   List<dynamic> _messages = [];
   List<dynamic> _mesaj = [];
-  int _currentIndex =0;
+  int _currentIndex = 0;
   PageController _pageController;
   bool _enabled = true;
   int _status = 0;
@@ -88,16 +68,6 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     getToken();
     _pageController = PageController(initialPage: 0);
-    //_configureFirebaseListerners();
-    // final settingsAndroid = AndroidInitializationSettings('app_icon');
-    // final settingsIOS = IOSInitializationSettings(
-    //     onDidReceiveLocalNotification: (id, title, body, payload) =>
-    //         onSelectNotification(payload));
-
-    // notifications.initialize(
-    //     InitializationSettings(settingsAndroid, settingsIOS),
-    //     onSelectNotification: onSelectNotification,
-    //     );
   }
 
   _configureFirebaseListerners(newmessage) {
@@ -150,7 +120,7 @@ class _MyAppState extends State<MyApp> {
         if (extractedUserData['token'] != null) {
           widget._channel = new IOWebSocketChannel.connect(
               'ws://briddgy.herokuapp.com/ws/alert/?token=' +
-                  extractedUserData['token']); //todo
+                  extractedUserData['token']);
           widget._channel.stream.listen(_onReceptionOfMessageFromServer);
           print("Alert Connected");
         }
@@ -229,10 +199,9 @@ class _MyAppState extends State<MyApp> {
         BottomNavigationBarItem(
           title: Text('Chats'),
           icon: newmessage.arethereNewMessage == true
-              ? 
-                Badge(
-                      child: Icon(MdiIcons.forumOutline),
-                    )
+              ? Badge(
+                  child: Icon(MdiIcons.forumOutline),
+                )
               : Icon(MdiIcons.forumOutline),
           activeIcon: Icon(MdiIcons.forum),
         ),
@@ -265,28 +234,6 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           builder: (_) => Messages(),
         ),
-
-        // ChangeNotifierProvider(
-        //   builder: (_) => UserDetails(),
-        // ),
-
-//         ChangeNotifierProxyProvider<Auth, Products>(
-//           builder: (ctx, auth, previousProducts) => Products(
-//             auth.token,
-//             auth.userId,
-//             previousProducts == null ? [] : previousProducts.items,
-//           ),
-//         ),
-//         ChangeNotifierProvider.value(
-//           value: Cart(),
-//         ),
-//        ChangeNotifierProxyProvider<Auth, Orders>(
-//          builder: (ctx, auth, previousOrders) => Orders(
-//            auth.token,
-//            auth.userId,
-//            previousOrders == null ? [] : previousOrders.orders,
-//          ),
-//        ),
       ],
       child: Consumer3<Auth, Messages, OrdersTripsProvider>(builder: (
         ctx,
@@ -325,9 +272,7 @@ class _MyAppState extends State<MyApp> {
                       auth: auth,
                       token: tokenforROOM),
                   ChatsScreen(
-                      provider: newmessage,
-                      auth: auth,
-                      token: tokenforROOM),
+                      provider: newmessage, auth: auth, token: tokenforROOM),
                   NotificationScreen(),
                   AccountScreen(
                       token: tokenforROOM,

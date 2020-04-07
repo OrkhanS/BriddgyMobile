@@ -63,8 +63,8 @@ class _MyItemsState extends State<MyItems> {
 
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-         if (orderstripsProvider.trips.length != 0) {
-          _orders = orderstripsProvider.trips;
+         if (orderstripsProvider.myorders.length != 0) {
+          _orders = orderstripsProvider.myorders;
           if(nextOrderURL == "FirstCall"){
             nextOrderURL = orderstripsProvider.detailsMyOrder["next"];
           }

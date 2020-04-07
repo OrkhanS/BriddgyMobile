@@ -2,20 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/widgets/filter_panel.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:flutter/foundation.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:provider/provider.dart';
 
 import 'package:optisend/widgets/filter_bar.dart';

@@ -9,9 +9,6 @@ import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/report_user_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import './auth_screen.dart';
-import '../providers/auth.dart';
-import 'splash_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'chat_window.dart';
