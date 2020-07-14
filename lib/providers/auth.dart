@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:optisend/models/api.dart';
+import 'package:optisend/models/users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/http_exception.dart';
@@ -14,13 +16,29 @@ class Auth with ChangeNotifier {
   String _userId;
   Map user = {};
   bool isLoadingUser = true;
+  bool isLoadingUserDetails = true;
+  String myTokenFromStorage;
+
+  String get myToken {
+    return myTokenFromStorage;
+  }
+
+  set myToken(string) {
+    myTokenFromStorage = string;
+  }
+
+  bool get isNotLoadingUserDetails {
+    return isLoadingUserDetails;
+  }
 
   bool get isAuth {
     return _token != null;
   }
 
   String get token {
-    if (_expiryDate != null && _expiryDate.isAfter(DateTime.now()) && _token != null) {
+    if (_expiryDate != null &&
+        _expiryDate.isAfter(DateTime.now()) &&
+        _token != null) {
       return _token;
     }
     return null;
@@ -47,9 +65,10 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
 
-    const url = "http://briddgy.herokuapp.com/api/users/me/";
+    const url = Api.currentUserDetails;
     try {
       final response = await http.get(
         url,
@@ -61,16 +80,22 @@ class Auth with ChangeNotifier {
         final dataOrders = json.decode(response.body) as Map<String, dynamic>;
         user = dataOrders;
         isLoadingUser = false;
+        isLoadingUserDetails = false;
         notifyListeners();
+        User(
+            email: user["email"],
+            id: user["id"],
+            name: user["first_name"],
+            lastname: user["last_name"],
+            token: extractedUserData['token']);
       });
     } catch (e) {
       return;
     }
   }
 
-  Future<void> _authenticate(String email, String password, String urlSegment) async {
-//    final url =
-//        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key=AIzaSyC13spCwP_f_SalxEbkB-wjedoF8iYENlQ';
+  Future<void> _authenticate(
+      String email, String password, String urlSegment) async {
     const url = "http://briddgy.herokuapp.com/api/auth/";
     try {
       final response = await http.post(
@@ -96,7 +121,6 @@ class Auth with ChangeNotifier {
           ),
         ),
       );
-//      _autoLogout();
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
@@ -112,10 +136,9 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> signup(String email, String password, String firstname, String lastname, String deviceID) async {
-    //return _authenticate(email, password, 'signupNewUser');
-
-    const url = "http://briddgy.herokuapp.com/api/users/";
+  Future<void> signup(String email, String password, String firstname,
+      String lastname, String deviceID) async {
+    const url = Api.signUp;
     try {
       final response = await http.post(
         url,
@@ -128,45 +151,28 @@ class Auth with ChangeNotifier {
             'first_name': firstname,
             'last_name': lastname,
             'deviceToken': deviceID,
-//            'returnSecureToken': true,
           },
         ),
       );
       final responseData = json.decode(response.body);
-//      final responseData = response.body;
-      print("Token: $responseData");
-//      if (responseData['error'] != null) {
-//        throw HttpException(responseData['error']['message']);
-//      }
       _token = responseData;
-//      _token = responseData['idToken'];
-//      _userId = responseData['localId'];
-//      _expiryDate = DateTime.now().add(
-//        Duration(
-//          seconds: int.parse(
-//            responseData['expiresIn'],
-//          ),
-//        ),
-//      );
-//      _autoLogout();
+      myToken = responseData;
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
           'token': _token,
-//          'userId': _userId,
-//          'expiryDate': _expiryDate.toIso8601String(),
         },
       );
       prefs.setString('userData', userData);
     } catch (error) {
       throw error;
     }
-    //return _authenticate(email, password, 'verifyPassword');
   }
 
   Future<void> login(String email, String password, String deviceID) async {
-    const url = "http://briddgy.herokuapp.com/api/auth/";
+    const url = Api.login;
+    print(url);
     try {
       final response = await http.post(
         url,
@@ -176,41 +182,24 @@ class Auth with ChangeNotifier {
             'username': email,
             'password': password,
             'deviceToken': deviceID,
-//            'returnSecureToken': true,
           },
         ),
       );
       final responseData = json.decode(response.body);
-//      final responseData = response.body;
-      print("Token: $responseData");
-//      if (responseData['error'] != null) {
-//        throw HttpException(responseData['error']['message']);
-//      }
       _token = responseData;
-//      _token = responseData['idToken'];
-//      _userId = responseData['localId'];
-//      _expiryDate = DateTime.now().add(
-//        Duration(
-//          seconds: int.parse(
-//            responseData['expiresIn'],
-//          ),
-//        ),
-//      );
-//      _autoLogout();
+      myToken = responseData;
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
           'token': _token,
-//          'userId': _userId,
-//          'expiryDate': _expiryDate.toIso8601String(),
         },
       );
       prefs.setString('userData', userData);
+      fetchAndSetUserDetails();
     } catch (error) {
       throw error;
     }
-    //return _authenticate(email, password, 'verifyPassword');
   }
 
   Future<bool> tryAutoLogin() async {
@@ -218,49 +207,28 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
-//    final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
-//
-//    if (expiryDate.isBefore(DateTime.now())) {
-//      return false;
-//    }
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
     _token = extractedUserData['token'];
-//    _userId = extractedUserData['userId'];
-//    _expiryDate = expiryDate;
+    fetchAndSetUserDetails();
     notifyListeners();
-//    _autoLogout();
     return true;
   }
 
   Future<void> logout(context) async {
     print(_token);
-    const url = "http://briddgy.herokuapp.com/api/auth/";
+    const url = Api.login;
     http.patch(url,
         headers: {
           HttpHeaders.CONTENT_TYPE: "application/json",
           "Authorization": "Token " + _token,
         },
         body: json.encode({"token": _token}));
-
     _token = null;
-//    _userId = null;
-//    _expiryDate = null;
-//    if (_authTimer != null) {
-//      _authTimer.cancel();
-//      _authTimer = null;
-//    }
     Navigator.of(context).pop();
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     prefs.remove('userData');
     prefs.clear();
   }
-
-//  void _autoLogout() {
-//    if (_authTimer != null) {
-//      _authTimer.cancel();
-//    }
-//    final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
-//    _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
-//  }
 }

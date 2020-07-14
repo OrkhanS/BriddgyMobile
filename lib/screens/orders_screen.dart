@@ -128,7 +128,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -145,7 +149,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -178,7 +184,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
+      if (nextOrderURL.toString() != "null" &&
+          nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(
@@ -239,7 +246,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
             title: Center(
               child: Text(
                 "Items",
-                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             elevation: 1,
@@ -250,54 +259,67 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 height: MediaQuery.of(context).size.height * .83,
                 child: Column(
                   children: <Widget>[
-                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+                    FilterBar(
+                        ordersProvider: orderstripsProvider,
+                        from: from,
+                        to: to,
+                        weight: weight,
+                        price: price),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                        Text(
-                          "Results: " + orderstripsProvider.orders.length.toString(),
-                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                        ),
-                        DropdownButton(
-                          hint: Text(_value),
-                          items: [
-                            DropdownMenuItem(
-                              value: "Ranking",
-                              child: Text(
-                                "Highest Ranking",
-                              ),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              "Results: " +
+                                  orderstripsProvider.orders.length.toString(),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.bold),
                             ),
-                            DropdownMenuItem(
-                              value: "Price",
-                              child: Text(
-                                "Highest Reward",
-                              ),
+                            DropdownButton(
+                              hint: Text(_value),
+                              items: [
+                                DropdownMenuItem(
+                                  value: "Ranking",
+                                  child: Text(
+                                    "Highest Ranking",
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "Price",
+                                  child: Text(
+                                    "Highest Reward",
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "WeightLow",
+                                  child: Text(
+                                    "Lowest Weight",
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "WeightMax",
+                                  child: Text(
+                                    "Highest Weight",
+                                  ),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                sortData(value, orderstripsProvider);
+                              },
                             ),
-                            DropdownMenuItem(
-                              value: "WeightLow",
-                              child: Text(
-                                "Lowest Weight",
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "WeightMax",
-                              child: Text(
-                                "Highest Weight",
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            sortData(value, orderstripsProvider);
-                          },
-                        ),
-                      ]),
+                          ]),
                     ),
                     Expanded(
                       child: orderstripsProvider.notLoadingOrders
                           ? Center(child: CircularProgressIndicator())
                           : NotificationListener<ScrollNotification>(
                               onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                if (!_isfetchingnew &&
+                                    scrollInfo.metrics.pixels ==
+                                        scrollInfo.metrics.maxScrollExtent) {
                                   // start loading data
                                   setState(() {
                                     _isfetchingnew = true;
@@ -317,12 +339,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                             id: _orders[i]["id"],
                                             owner: _orders[i]["owner"],
                                             title: _orders[i]["title"],
-                                            destination: _orders[i]["destination"],
-                                            source: _orders[i]["source"]["city_ascii"],
+                                            destination: _orders[i]
+                                                ["destination"],
+                                            source: _orders[i]["source"]
+                                                ["city_ascii"],
                                             weight: _orders[i]["weight"],
                                             price: _orders[i]["price"],
                                             date: _orders[i]["date"],
-                                            description: _orders[i]["description"],
+                                            description: _orders[i]
+                                                ["description"],
                                             image: _orders[i]["orderimage"],
                                             token: widget.token,
                                             room: widget.room,
@@ -333,22 +358,36 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     },
                                     child: Container(
                                       height: 130,
-                                      padding: EdgeInsets.symmetric(horizontal: 10),
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 10),
                                       child: Card(
                                         elevation: 4,
                                         child: Row(
                                           children: <Widget>[
                                             Padding(
-                                              padding: const EdgeInsets.all(10.0),
+                                              padding:
+                                                  const EdgeInsets.all(10.0),
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15)),
                                                 child: Image(
-                                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                                                    if (loadingProgress == null) return child;
+                                                  loadingBuilder:
+                                                      (BuildContext context,
+                                                          Widget child,
+                                                          ImageChunkEvent
+                                                              loadingProgress) {
+                                                    if (loadingProgress == null)
+                                                      return child;
                                                     return Center(
-                                                      child: CircularProgressIndicator(
-                                                        value: loadingProgress.expectedTotalBytes != null
-                                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                loadingProgress
+                                                                    .expectedTotalBytes
                                                             : null,
                                                       ),
                                                     );
@@ -361,10 +400,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                               ),
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.all(12.0),
+                                              padding:
+                                                  const EdgeInsets.all(12.0),
                                               child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   SizedBox(
                                                     width: 200,
@@ -372,8 +415,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                                                    _orders[i]["title"].toString().length > 20
 //                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
 //                                                        :
-                                                      _orders[i]["title"].toString(), //Todo: title
-                                                      overflow: TextOverflow.ellipsis,
+                                                      _orders[i]["title"]
+                                                          .toString(), //Todo: title
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       maxLines: 1,
                                                       style: TextStyle(
                                                         fontSize: 20,
@@ -383,37 +428,60 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                     ),
                                                   ),
                                                   Row(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
                                                     children: <Widget>[
                                                       Icon(
-                                                        MdiIcons.mapMarkerMultipleOutline,
-                                                        color: Theme.of(context).primaryColor,
+                                                        MdiIcons
+                                                            .mapMarkerMultipleOutline,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
                                                       ),
                                                       SizedBox(
                                                         width: 200,
                                                         child: Text(
-                                                          _orders[i]["source"]["city_ascii"] + "  >  " + _orders[i]["destination"]["city_ascii"],
+                                                          _orders[i]["source"][
+                                                                  "city_ascii"] +
+                                                              "  >  " +
+                                                              _orders[i][
+                                                                      "destination"]
+                                                                  [
+                                                                  "city_ascii"],
                                                           //Todo: Source -> Destination
                                                           maxLines: 1,
-                                                          style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              color: Colors
+                                                                  .grey[600],
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal),
                                                         ),
                                                       ),
                                                     ],
                                                   ),
                                                   Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
                                                     children: <Widget>[
                                                       Row(
                                                         children: <Widget>[
                                                           Icon(
-                                                            MdiIcons.calendarRange,
-                                                            color: Theme.of(context).primaryColor,
+                                                            MdiIcons
+                                                                .calendarRange,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
                                                           ),
                                                           Text(
-                                                            _orders[i]["date"].toString(),
+                                                            _orders[i]["date"]
+                                                                .toString(),
                                                             //Todo: date
-                                                            style: TextStyle(color: Colors.grey[600]),
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .grey[600]),
                                                           ),
                                                         ],
                                                       ),
@@ -424,15 +492,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                         children: <Widget>[
                                                           Icon(
                                                             Icons.attach_money,
-                                                            color: Theme.of(context).primaryColor,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
                                                           ),
                                                           SizedBox(
                                                             width: 50,
                                                             child: Text(
-                                                              _orders[i]["price"].toString(),
+                                                              _orders[i]
+                                                                      ["price"]
+                                                                  .toString(),
                                                               //Todo: date
                                                               maxLines: 1,
-                                                              style: TextStyle(color: Colors.grey[600]),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600]),
                                                             ),
                                                           ),
                                                         ],

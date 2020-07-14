@@ -47,7 +47,11 @@ class _AddTripScreenState extends State<AddTripScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -68,7 +72,9 @@ class _AddTripScreenState extends State<AddTripScreen> {
         ),
         title: Text(
           "Add Trip", //Todo: item name
-          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -80,10 +86,12 @@ class _AddTripScreenState extends State<AddTripScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
+                  padding:
+                      const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
                   child: Text(
                     "Trip Details",
-                    style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
+                    style: TextStyle(
+                        fontSize: 25, color: Theme.of(context).primaryColor),
                   ),
                 ),
               ],
@@ -92,7 +100,8 @@ class _AddTripScreenState extends State<AddTripScreen> {
               padding: EdgeInsets.symmetric(vertical: 10),
               width: deviceWidth * 0.8,
               child: RaisedButton(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)),
                 elevation: 4.0,
                 onPressed: () {
                   DatePicker.showDatePicker(context,
@@ -126,7 +135,10 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                   child: Text(
                                     " Date:  $departureDate",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold, fontSize: 15.0),
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15.0),
                                   ),
                                 ),
                               ],
@@ -150,21 +162,27 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     from = val;
                   },
                   controller: this._typeAheadController,
-                  decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
+                  decoration: InputDecoration(
+                      labelText: 'From', icon: Icon(Icons.location_on)),
                 ),
                 suggestionsCallback: (pattern) {
                   return getSuggestions(pattern);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
+                        suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                  this._typeAheadController.text =
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1];
                   from = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
@@ -186,21 +204,27 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     to = val;
                   },
                   controller: this._typeAheadController2,
-                  decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
+                  decoration: InputDecoration(
+                      labelText: 'To', icon: Icon(Icons.location_on)),
                 ),
                 suggestionsCallback: (pattern) {
                   return getSuggestions(pattern);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
+                        suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                  this._typeAheadController2.text =
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1];
                   to = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
@@ -267,8 +291,9 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     Navigator.pop(context);
                     Flushbar(
                       title: "Trip added",
-                      message: "You can see all of your trips in My Trips section of Account",
-                      aroundPadding: const EdgeInsets.all(8),
+                      message:
+                          "You can see all of your trips in My Trips section of Account",
+                      padding: const EdgeInsets.all(8),
                       borderRadius: 10,
                       duration: Duration(seconds: 5),
                     )..show(context);

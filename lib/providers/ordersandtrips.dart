@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optisend/models/api.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -24,15 +25,15 @@ class OrdersTripsProvider with ChangeNotifier {
   bool get notLoadingOrders {
     return isLoadingOrders;
   }
-  
-  bool get notLoadedMyorders{
+
+  bool get notLoadedMyorders {
     return isLoadingMyOrders;
   }
-  
+
   bool get notLoaded {
     return isLoading;
   }
-  
+
   List get orders {
     return _orders;
   }
@@ -40,9 +41,11 @@ class OrdersTripsProvider with ChangeNotifier {
   List get myorders {
     return _myorders;
   }
+
   Map get detailsOrder {
     return allOrdersDetails;
   }
+
   Map get detailsMyOrder {
     return allMyOrderDetails;
   }
@@ -57,9 +60,8 @@ class OrdersTripsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   Future fetchAndSetOrders() async {
-    const url = "http://briddgy.herokuapp.com/api/orders/";
+    const url = Api.orders;
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       http.get(
@@ -98,7 +100,7 @@ class OrdersTripsProvider with ChangeNotifier {
 
   Future fetchAndSetMyOrders(myToken) async {
     var token = myToken;
-    const url = "http://briddgy.herokuapp.com/api/my/orders/";
+    const url = Api.myOrders;
     http.get(
       url,
       headers: {
@@ -126,9 +128,11 @@ class OrdersTripsProvider with ChangeNotifier {
   List get mytrips {
     return _mytrips;
   }
+
   Map get detailsTrip {
     return allTripsDetails;
   }
+
   Map get detailsMyTrip {
     return allMyTripsDetails;
   }
@@ -139,7 +143,7 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 
   Future fetchAndSetTrips() async {
-    const url = "http://briddgy.herokuapp.com/api/trips/";
+    const url = Api.trips;
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       http.get(
@@ -181,7 +185,7 @@ class OrdersTripsProvider with ChangeNotifier {
 
   Future fetchAndSetMyTrips(myToken) async {
     var token = myToken;
-    const url = "http://briddgy.herokuapp.com/api/my/trips/";
+    const url = Api.myTrips;
     http.get(
       url,
       headers: {

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:optisend/screens/add_trip_screen.dart';
+import 'package:optisend/screens/auth_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/trip_screen.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
-  final StreamController<String> streamController = StreamController<String>.broadcast();
+  final StreamController<String> streamController =
+      StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
   ObserverList<Function> _listeners = new ObserverList<Function>();
   var button = ChatsScreen();
@@ -76,7 +78,8 @@ class _MyAppState extends State<MyApp> {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
     tokenforROOM = extractedUserData['token'];
   }
 
@@ -98,12 +101,15 @@ class _MyAppState extends State<MyApp> {
         if (!prefs.containsKey('userData')) {
           return false;
         }
-        final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+        final extractedUserData =
+            json.decode(prefs.getString('userData')) as Map<String, Object>;
 
         auth.token = extractedUserData['token'];
 
         if (extractedUserData['token'] != null) {
-          widget._channel = new IOWebSocketChannel.connect('ws://briddgy.herokuapp.com/ws/alert/?token=' + extractedUserData['token']);
+          widget._channel = new IOWebSocketChannel.connect(
+              'ws://briddgy.herokuapp.com/ws/alert/?token=' +
+                  extractedUserData['token']);
           widget._channel.stream.listen(_onReceptionOfMessageFromServer);
           print("Alert Connected");
         }
@@ -166,10 +172,14 @@ class _MyAppState extends State<MyApp> {
       selectedFontSize: 11,
       onTap: (index) {
         setState(() => _currentIndex = index);
-        _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.ease);
+        _pageController.animateToPage(index,
+            duration: Duration(milliseconds: 200), curve: Curves.ease);
       },
       items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(title: Text('Items'), icon: Icon(MdiIcons.packageVariantClosed), activeIcon: Icon(MdiIcons.packageVariant)),
+        BottomNavigationBarItem(
+            title: Text('Items'),
+            icon: Icon(MdiIcons.packageVariantClosed),
+            activeIcon: Icon(MdiIcons.packageVariant)),
         BottomNavigationBarItem(
           title: Text('Trips'),
           icon: Icon(MdiIcons.roadVariant),
@@ -203,13 +213,13 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          builder: (_) => Auth(),
+          create: (_) => Auth(),
         ),
         ChangeNotifierProvider(
-          builder: (_) => OrdersTripsProvider(),
+          create: (_) => OrdersTripsProvider(),
         ),
         ChangeNotifierProvider(
-          builder: (_) => Messages(),
+          create: (_) => Messages(),
         ),
       ],
       child: Consumer3<Auth, Messages, OrdersTripsProvider>(builder: (
@@ -222,6 +232,7 @@ class _MyAppState extends State<MyApp> {
         newmessage.fetchAndSetRooms(auth);
         initCommunication(auth, newmessage);
         _configureFirebaseListerners(newmessage);
+        if (auth.isAuth) auth.fetchAndSetUserDetails();
         return MaterialApp(
           title: 'Optisend',
           theme: ThemeData(
@@ -238,11 +249,25 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  OrdersScreen(orderstripsProvider: orderstripsProvider, room: newmessage, auth: auth, token: tokenforROOM),
-                  TripsScreen(orderstripsProvider: orderstripsProvider, room: newmessage, auth: auth, token: tokenforROOM),
-                  ChatsScreen(provider: newmessage, auth: auth, token: tokenforROOM),
+                  OrdersScreen(
+                      orderstripsProvider: orderstripsProvider,
+                      room: newmessage,
+                      auth: auth,
+                      token: tokenforROOM),
+                  TripsScreen(
+                      orderstripsProvider: orderstripsProvider,
+                      room: newmessage,
+                      auth: auth,
+                      token: tokenforROOM),
+                  ChatsScreen(
+                      provider: newmessage, auth: auth, token: tokenforROOM),
                   NotificationScreen(),
-                  AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider),
+                  auth.isAuth
+                      ? AccountScreen(
+                          token: tokenforROOM,
+                          auth: auth,
+                          orderstripsProvider: orderstripsProvider)
+                      : AuthScreen(),
                 ],
               ),
             ),
@@ -259,7 +284,8 @@ class _MyAppState extends State<MyApp> {
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),
-            AccountScreen.routeName: (ctx) => AccountScreen(token: tokenforROOM, orderstripsProvider: orderstripsProvider),
+            AccountScreen.routeName: (ctx) => AccountScreen(
+                token: tokenforROOM, orderstripsProvider: orderstripsProvider),
           },
         );
       }),

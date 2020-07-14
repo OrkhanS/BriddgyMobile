@@ -120,7 +120,7 @@ class _MyItemsState extends State<MyItems> {
                                   Flushbar(
                                     title: "Done!",
                                     message: "Item was deleted",
-                                    aroundPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
+                                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
                                     borderRadius: 10,
                                     duration: Duration(seconds: 3),
                                   )..show(context);

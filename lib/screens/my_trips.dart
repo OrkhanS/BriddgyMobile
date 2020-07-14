@@ -40,7 +40,8 @@ class _MyTripsState extends State<MyTrips> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
+      if (nextTripURL.toString() != "null" &&
+          nextTripURL.toString() != "FristCall") {
         String url = nextTripURL;
         try {
           await http.get(
@@ -87,13 +88,17 @@ class _MyTripsState extends State<MyTrips> {
             ),
             title: Text(
               "My Trips",
-              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold),
             ),
             elevation: 1,
           ),
           body: NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification scrollInfo) {
-              if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+              if (!_isfetchingnew &&
+                  scrollInfo.metrics.pixels ==
+                      scrollInfo.metrics.maxScrollExtent) {
                 // start loading data
                 setState(() {
                   _isfetchingnew = true;
@@ -118,7 +123,8 @@ class _MyTripsState extends State<MyTrips> {
                             Flushbar(
                               title: "Done!",
                               message: "Trip was deleted",
-                              aroundPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 20, horizontal: 60),
                               borderRadius: 10,
                               duration: Duration(seconds: 3),
                             )..show(context);
@@ -129,11 +135,16 @@ class _MyTripsState extends State<MyTrips> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: const Text("Confirm"),
-                                  content: const Text("Are you sure you wish to delete this item?"),
+                                  content: const Text(
+                                      "Are you sure you wish to delete this item?"),
                                   actions: <Widget>[
-                                    FlatButton(onPressed: () => Navigator.of(context).pop(true), child: const Text("DELETE")),
                                     FlatButton(
-                                      onPressed: () => Navigator.of(context).pop(false),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: const Text("DELETE")),
+                                    FlatButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
                                       child: const Text("CANCEL"),
                                     ),
                                   ],
@@ -144,7 +155,11 @@ class _MyTripsState extends State<MyTrips> {
                           },
                           background: Container(
                             margin: EdgeInsets.all(3),
-                            decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.red[700], Colors.orange[300]])),
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(colors: [
+                              Colors.red[700],
+                              Colors.orange[300]
+                            ])),
 //                                    border: Border.all(),
 //                                    borderRadius: BorderRadius.circular(5),
 //                                  ),
@@ -180,40 +195,62 @@ class _MyTripsState extends State<MyTrips> {
                               child: Card(
                                 elevation: 4,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Image(
-                                      image: NetworkImage("https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+                                      image: NetworkImage(
+                                          "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
                                       height: 60,
                                       width: 60,
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(12.0),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            _trips[i]["owner"]["first_name"] + " " + _trips[i]["owner"]["last_name"], //Todo: title
-                                            style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                            _trips[i]["owner"]["first_name"] +
+                                                " " +
+                                                _trips[i]["owner"]
+                                                    ["last_name"], //Todo: title
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.bold),
                                           ),
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: <Widget>[
                                               Icon(
                                                 Icons.location_on,
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
                                               ),
                                               SizedBox(
-                                                width: MediaQuery.of(context).size.width * 0.35,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.35,
                                                 child: RichText(
                                                   text: TextSpan(
                                                     text: "  " +
-                                                        _trips[i]["source"]["city_ascii"] +
+                                                        _trips[i]["source"]
+                                                            ["city_ascii"] +
                                                         "  >  " +
-                                                        _trips[i]["destination"]["city_ascii"], //Todo: Source -> Destination
+                                                        _trips[i]["destination"]
+                                                            [
+                                                            "city_ascii"], //Todo: Source -> Destination
 
-                                                    style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        color: Colors.grey[600],
+                                                        fontWeight:
+                                                            FontWeight.normal),
                                                   ),
                                                 ),
                                               ),
@@ -223,24 +260,33 @@ class _MyTripsState extends State<MyTrips> {
                                             children: <Widget>[
                                               Icon(
                                                 Icons.date_range,
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
                                               ),
                                               Text(
-                                                "  " + _trips[i]["date"].toString(), //Todo: date
-                                                style: TextStyle(color: Colors.grey[600]),
+                                                "  " +
+                                                    _trips[i]["date"]
+                                                        .toString(), //Todo: date
+                                                style: TextStyle(
+                                                    color: Colors.grey[600]),
                                               ),
                                             ],
                                           ),
                                           Row(
                                             children: <Widget>[
                                               Icon(
-                                                MdiIcons.weightKilogram, //todo: icon
+                                                MdiIcons
+                                                    .weightKilogram, //todo: icon
 //                                            (FontAwesome.suitcase),
-                                                color: Theme.of(context).primaryColor,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
                                               ),
                                               Text(
-                                                "  " + _trips[i]["weight_limit"].toString(),
-                                                style: TextStyle(color: Colors.grey[600]),
+                                                "  " +
+                                                    _trips[i]["weight_limit"]
+                                                        .toString(),
+                                                style: TextStyle(
+                                                    color: Colors.grey[600]),
                                               ),
                                             ],
                                           )
