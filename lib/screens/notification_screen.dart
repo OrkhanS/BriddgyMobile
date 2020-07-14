@@ -13,20 +13,14 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Center(
-            child: Text(
-              "Notifications",
-              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-            ),
-          ),
-          elevation: 1,
+      body: SafeArea(
+        child: ListView.builder(
+          itemCount: 20,
+          itemBuilder: (context, int i) {
+            return notif();
+          },
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[for (var i = 0; i < 5; i++) notif()],
-          ),
-        ));
+      ),
+    );
   }
 }

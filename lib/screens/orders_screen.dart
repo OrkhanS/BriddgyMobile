@@ -241,302 +241,266 @@ class _OrdersScreenState extends State<OrdersScreen> {
               );
             },
           ),
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            title: Center(
-              child: Text(
-                "Items",
-                style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            elevation: 1,
-          ),
-          body: GestureDetector(
-            child: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height * .83,
-                child: Column(
-                  children: <Widget>[
-                    FilterBar(
-                        ordersProvider: orderstripsProvider,
-                        from: from,
-                        to: to,
-                        weight: weight,
-                        price: price),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              "Results: " +
-                                  orderstripsProvider.orders.length.toString(),
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[500],
-                                  fontWeight: FontWeight.bold),
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                FilterBar(
+                    ordersProvider: orderstripsProvider,
+                    from: from,
+                    to: to,
+                    weight: weight,
+                    price: price),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Results: " +
+                              orderstripsProvider.orders.length.toString(),
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.bold),
+                        ),
+                        DropdownButton(
+                          hint: Text(_value),
+                          items: [
+                            DropdownMenuItem(
+                              value: "Ranking",
+                              child: Text("Highest Ranking"),
                             ),
-                            DropdownButton(
-                              hint: Text(_value),
-                              items: [
-                                DropdownMenuItem(
-                                  value: "Ranking",
-                                  child: Text(
-                                    "Highest Ranking",
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "Price",
-                                  child: Text(
-                                    "Highest Reward",
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "WeightLow",
-                                  child: Text(
-                                    "Lowest Weight",
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "WeightMax",
-                                  child: Text(
-                                    "Highest Weight",
-                                  ),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                sortData(value, orderstripsProvider);
-                              },
+                            DropdownMenuItem(
+                                value: "Price", child: Text("Highest Reward")),
+                            DropdownMenuItem(
+                              value: "WeightLow",
+                              child: Text(
+                                "Lowest Weight",
+                              ),
                             ),
-                          ]),
-                    ),
-                    Expanded(
-                      child: orderstripsProvider.notLoadingOrders
-                          ? Center(child: CircularProgressIndicator())
-                          : NotificationListener<ScrollNotification>(
-                              onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew &&
-                                    scrollInfo.metrics.pixels ==
-                                        scrollInfo.metrics.maxScrollExtent) {
-                                  // start loading data
-                                  setState(() {
-                                    _isfetchingnew = true;
-                                    print("load order");
-                                  });
-                                  _loadData();
-                                }
-                              },
-                              child: ListView.builder(
-                                itemBuilder: (context, int i) {
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (__) => new ItemScreen(
-                                            id: _orders[i]["id"],
-                                            owner: _orders[i]["owner"],
-                                            title: _orders[i]["title"],
-                                            destination: _orders[i]
-                                                ["destination"],
-                                            source: _orders[i]["source"]
-                                                ["city_ascii"],
-                                            weight: _orders[i]["weight"],
-                                            price: _orders[i]["price"],
-                                            date: _orders[i]["date"],
-                                            description: _orders[i]
-                                                ["description"],
-                                            image: _orders[i]["orderimage"],
-                                            token: widget.token,
-                                            room: widget.room,
-                                            auth: widget.auth,
+                            DropdownMenuItem(
+                              value: "WeightMax",
+                              child: Text(
+                                "Highest Weight",
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            sortData(value, orderstripsProvider);
+                          },
+                        ),
+                      ]),
+                ),
+                Expanded(
+                  child: orderstripsProvider.notLoadingOrders
+                      ? Center(child: CircularProgressIndicator())
+                      : NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!_isfetchingnew &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
+                              // start loading data
+                              setState(() {
+                                _isfetchingnew = true;
+                                print("load order");
+                              });
+                              _loadData();
+                            }
+                          },
+                          child: ListView.builder(
+                            itemBuilder: (context, int i) {
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (__) => new ItemScreen(
+                                        id: _orders[i]["id"],
+                                        owner: _orders[i]["owner"],
+                                        title: _orders[i]["title"],
+                                        destination: _orders[i]["destination"],
+                                        source: _orders[i]["source"]
+                                            ["city_ascii"],
+                                        weight: _orders[i]["weight"],
+                                        price: _orders[i]["price"],
+                                        date: _orders[i]["date"],
+                                        description: _orders[i]["description"],
+                                        image: _orders[i]["orderimage"],
+                                        token: widget.token,
+                                        room: widget.room,
+                                        auth: widget.auth,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: 130,
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  child: Card(
+                                    elevation: 4,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.all(10.0),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15)),
+                                            child: Image(
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent
+                                                          loadingProgress) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+
+                                              image: NetworkImage(
+                                                  // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                                  "https://picsum.photos/250?image=9"), //Todo,
+                                            ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      height: 130,
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 10),
-                                      child: Card(
-                                        elevation: 4,
-                                        child: Row(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(15)),
-                                                child: Image(
-                                                  loadingBuilder:
-                                                      (BuildContext context,
-                                                          Widget child,
-                                                          ImageChunkEvent
-                                                              loadingProgress) {
-                                                    if (loadingProgress == null)
-                                                      return child;
-                                                    return Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        value: loadingProgress
-                                                                    .expectedTotalBytes !=
-                                                                null
-                                                            ? loadingProgress
-                                                                    .cumulativeBytesLoaded /
-                                                                loadingProgress
-                                                                    .expectedTotalBytes
-                                                            : null,
-                                                      ),
-                                                    );
-                                                  },
-
-                                                  image: NetworkImage(
-                                                      // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                                      "https://picsum.photos/250?image=9"), //Todo,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(12.0),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  SizedBox(
-                                                    width: 200,
-                                                    child: Text(
+                                        Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              SizedBox(
+                                                width: 200,
+                                                child: Text(
 //                                                    _orders[i]["title"].toString().length > 20
 //                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
 //                                                        :
-                                                      _orders[i]["title"]
-                                                          .toString(), //Todo: title
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                  _orders[i]["title"]
+                                                      .toString(), //Todo: title
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.grey[800],
+//                                          fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Icon(
+                                                    MdiIcons
+                                                        .mapMarkerMultipleOutline,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 200,
+                                                    child: Text(
+                                                      _orders[i]["source"]
+                                                              ["city_ascii"] +
+                                                          "  >  " +
+                                                          _orders[i][
+                                                                  "destination"]
+                                                              ["city_ascii"],
+                                                      //Todo: Source -> Destination
                                                       maxLines: 1,
                                                       style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
-                                                      ),
+                                                          fontSize: 15,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight: FontWeight
+                                                              .normal),
                                                     ),
                                                   ),
+                                                ],
+                                              ),
+                                              Row(
+//                                        mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: <Widget>[
                                                   Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
                                                     children: <Widget>[
                                                       Icon(
-                                                        MdiIcons
-                                                            .mapMarkerMultipleOutline,
+                                                        MdiIcons.calendarRange,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                      Text(
+                                                        _orders[i]["date"]
+                                                            .toString(),
+                                                        //Todo: date
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey[600]),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    width: 50,
+                                                  ),
+                                                  Row(
+                                                    children: <Widget>[
+                                                      Icon(
+                                                        Icons.attach_money,
                                                         color: Theme.of(context)
                                                             .primaryColor,
                                                       ),
                                                       SizedBox(
-                                                        width: 200,
+                                                        width: 50,
                                                         child: Text(
-                                                          _orders[i]["source"][
-                                                                  "city_ascii"] +
-                                                              "  >  " +
-                                                              _orders[i][
-                                                                      "destination"]
-                                                                  [
-                                                                  "city_ascii"],
-                                                          //Todo: Source -> Destination
+                                                          _orders[i]["price"]
+                                                              .toString(),
+                                                          //Todo: date
                                                           maxLines: 1,
                                                           style: TextStyle(
-                                                              fontSize: 15,
                                                               color: Colors
-                                                                  .grey[600],
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal),
+                                                                  .grey[600]),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-//                                        mainAxisSize: MainAxisSize.max,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: <Widget>[
-                                                      Row(
-                                                        children: <Widget>[
-                                                          Icon(
-                                                            MdiIcons
-                                                                .calendarRange,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
-                                                          ),
-                                                          Text(
-                                                            _orders[i]["date"]
-                                                                .toString(),
-                                                            //Todo: date
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .grey[600]),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(
-                                                        width: 50,
-                                                      ),
-                                                      Row(
-                                                        children: <Widget>[
-                                                          Icon(
-                                                            Icons.attach_money,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
-                                                          ),
-                                                          SizedBox(
-                                                            width: 50,
-                                                            child: Text(
-                                                              _orders[i]
-                                                                      ["price"]
-                                                                  .toString(),
-                                                              //Todo: date
-                                                              maxLines: 1,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      600]),
-                                                            ),
-                                                          ),
-                                                        ],
                                                       ),
                                                     ],
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  );
-                                },
-                                itemCount: _orders.length,
-                              ),
-                            ),
-                    ),
-                    Container(
-                      height: _isfetchingnew ? 50.0 : 0.0,
-                      color: Colors.transparent,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  ],
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount: _orders.length,
+                          ),
+                        ),
                 ),
-              ),
+                Container(
+                  height: _isfetchingnew ? 50.0 : 0.0,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ],
             ),
           ),
         );

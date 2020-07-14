@@ -52,35 +52,8 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          "Account",
-          style: TextStyle(
-              color: Theme.of(context).primaryColor,
-              fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        elevation: 1,
-//        actions: <Widget>[
-//          PopupMenuButton<ListTile>(
-//            icon: Icon(
-//              Icons.menu,
-//              color: Colors.grey[600],
-//            ),
-//            //onSelected: choiceAction,
-//            itemBuilder: (BuildContext context) {
-//              return choices.map((ListTile choice) {
-//                return PopupMenuItem<ListTile>(
-//                  value: choice,
-//                  child: choice,
-//                );
-//              }).toList();
-//            },
-//          )
-//        ],
-      ),
-      body: widget.auth.isNotLoadingUserDetails &&
+        body: SafeArea(
+      child: widget.auth.isNotLoadingUserDetails &&
               widget.auth.userdetail.isEmpty
           ? Center(child: CircularProgressIndicator())
           : Center(
@@ -386,6 +359,6 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
             ),
-    );
+    ));
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/screens/add_item_screen.dart';
@@ -28,7 +29,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:badges/badges.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   final StreamController<String> streamController =
@@ -233,9 +236,15 @@ class _MyAppState extends State<MyApp> {
         initCommunication(auth, newmessage);
         _configureFirebaseListerners(newmessage);
         if (auth.isAuth) auth.fetchAndSetUserDetails();
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarColor: Colors.white10,
+          statusBarIconBrightness: Brightness.dark,
+        ));
         return MaterialApp(
           title: 'Optisend',
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
+            backgroundColor: Colors.white,
             primarySwatch: Colors.blue,
             primaryColor: Colors.blue[900],
             accentColor: Colors.indigoAccent,
