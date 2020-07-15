@@ -232,10 +232,14 @@ class _MyAppState extends State<MyApp> {
         orderstripsProvider,
         _,
       ) {
-        newmessage.fetchAndSetRooms(auth);
+        if (newmessage.chatsNotLoaded) newmessage.fetchAndSetRooms(auth);
         initCommunication(auth, newmessage);
         _configureFirebaseListerners(newmessage);
-        if (auth.isAuth) auth.fetchAndSetUserDetails();
+        if (auth.isNotLoadingUserDetails) auth.fetchAndSetUserDetails();
+        if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false)
+          auth.fetchAndSetReviews();
+        if (auth.statsNotReady && auth.isNotLoadingUserDetails == false)
+          auth.fetchAndSetStatistics();
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.white10,
           statusBarIconBrightness: Brightness.dark,

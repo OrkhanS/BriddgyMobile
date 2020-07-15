@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:provider/provider.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
@@ -339,7 +340,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     ),
                   ),
                   onPressed: () {
-                    //var token = Provider.of<Auth>(context, listen: false).token;
                     var token = widget.token;
                     const url = "http://briddgy.herokuapp.com/api/orders/";
                     http.post(url,
@@ -359,6 +359,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           "trip": null,
                           "description": description
                         }));
+                    Provider.of<OrdersTripsProvider>(context, listen: false)
+                        .fetchAndSetMyOrders(token);
                     Navigator.pop(context);
                     Flushbar(
                       title: "Item added",

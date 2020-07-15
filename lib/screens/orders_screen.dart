@@ -10,9 +10,7 @@ import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:provider/provider.dart';
-
 import 'package:optisend/widgets/filter_bar.dart';
-
 import 'package:optisend/providers/ordersandtrips.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -53,10 +51,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   void initState() {
-    if (widget.orderstripsProvider.myorders.isEmpty) {
+    if (widget.orderstripsProvider.notLoadingOrders) {
       widget.orderstripsProvider.fetchAndSetOrders();
     }
-
     super.initState();
   }
 

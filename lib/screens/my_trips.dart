@@ -118,7 +118,14 @@ class _MyTripsState extends State<MyTrips> {
                           movementDuration: Duration(milliseconds: 500),
                           dragStartBehavior: DragStartBehavior.start,
                           onDismissed: (direction) {
-                            //todo: delete from backend
+                            var token = widget.token;
+                            String url =
+                                "http://briddgy.herokuapp.com/api/trips/" +
+                                    _trips[i]["id"].toString();
+                            http.delete(url, headers: {
+                              HttpHeaders.CONTENT_TYPE: "application/json",
+                              "Authorization": "Token " + token,
+                            });
                             orderstripsProvider.mytrips.removeAt(i);
                             Flushbar(
                               title: "Done!",
@@ -139,8 +146,9 @@ class _MyTripsState extends State<MyTrips> {
                                       "Are you sure you wish to delete this item?"),
                                   actions: <Widget>[
                                     FlatButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true);
+                                        },
                                         child: const Text("DELETE")),
                                     FlatButton(
                                       onPressed: () =>

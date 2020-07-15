@@ -18,6 +18,10 @@ class Auth with ChangeNotifier {
   bool isLoadingUser = true;
   bool isLoadingUserDetails = true;
   String myTokenFromStorage;
+  List _reviews = [];
+  List _stats = [];
+  bool statsNotReady = true;
+  bool reviewsNotReady = true;
 
   String get myToken {
     return myTokenFromStorage;
@@ -30,6 +34,9 @@ class Auth with ChangeNotifier {
   bool get isNotLoadingUserDetails {
     return isLoadingUserDetails;
   }
+
+  List get reviews => _reviews;
+  List get stats => _stats;
 
   bool get isAuth {
     return _token != null;
@@ -58,6 +65,38 @@ class Auth with ChangeNotifier {
 
   bool get isNotLoading {
     return isLoadingUser;
+  }
+
+  Future fetchAndSetStatistics() async {
+    const url = "http://briddgy.herokuapp.com/api/users/my/stats/";
+    final response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + _token,
+      },
+    );
+
+    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    _stats = dataOrders["results"];
+    statsNotReady = false;
+    notifyListeners();
+  }
+
+  Future fetchAndSetReviews() async {
+    const url = "http://briddgy.herokuapp.com/api/users/my/reviews/";
+    final response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization": "Token " + _token,
+      },
+    );
+
+    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    _reviews = dataOrders["results"];
+    reviewsNotReady = false;
+    notifyListeners();
   }
 
   Future fetchAndSetUserDetails() async {

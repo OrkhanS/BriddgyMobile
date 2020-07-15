@@ -14,7 +14,7 @@ class OrdersTripsProvider with ChangeNotifier {
   List _trips = [];
   List _mytrips = [];
   bool isLoadingOrders = true;
-  bool isLoading;
+  bool isLoading = true;
   bool isLoadingMyOrders = true;
   String token;
   Map allTripsDetails = {};
@@ -94,7 +94,7 @@ class OrdersTripsProvider with ChangeNotifier {
       });
     }
 
-    //notifyListeners();
+    notifyListeners();
     return _orders;
   }
 
@@ -113,6 +113,8 @@ class OrdersTripsProvider with ChangeNotifier {
       allMyOrderDetails = dataOrders;
       isLoadingMyOrders = false;
     });
+
+    notifyListeners();
   }
 
   //_________________________________________________________TRIPS__________________________________________________________
@@ -181,6 +183,8 @@ class OrdersTripsProvider with ChangeNotifier {
         );
       }
     }
+
+    notifyListeners();
   }
 
   Future fetchAndSetMyTrips(myToken) async {
@@ -198,5 +202,7 @@ class OrdersTripsProvider with ChangeNotifier {
       allMyTripsDetails = dataTrips;
       isLoading = false;
     });
+
+    notifyListeners();
   }
 }

@@ -65,8 +65,9 @@ class _AccountPageState extends State<AccountPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (__) =>
-                                  ProfileScreen(user: widget.auth.userdetail)),
+                              builder: (__) => ProfileScreen(
+                                  user: widget.auth.userdetail,
+                                  token: widget.token)),
                         );
                       },
                       child: Padding(

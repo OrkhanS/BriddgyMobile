@@ -44,10 +44,10 @@ class _TripScreenState extends State<TripsScreen> {
   bool _isfetchingnew = false;
   @override
   void initState() {
-    if (widget.orderstripsProvider.mytrips.isEmpty) {
+    if (widget.orderstripsProvider.notLoaded) {
       widget.orderstripsProvider.fetchAndSetTrips();
     }
-    if (widget.orderstripsProvider.myorders.isEmpty) {
+    if (widget.orderstripsProvider.notLoadingOrders) {
       widget.orderstripsProvider.fetchAndSetOrders();
     }
     super.initState();

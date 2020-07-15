@@ -285,7 +285,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           "date": DateTime.now().toString().substring(0, 10),
                           "weight_limit": weight,
                         }));
-                    //widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+                    widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
                     //Todo // Navigator.of(context).pushNamed(AccountScreen.routeName);
                     Navigator.pop(context);
                     Flushbar(
