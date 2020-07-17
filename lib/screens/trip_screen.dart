@@ -358,94 +358,106 @@ class _TripScreenState extends State<TripsScreen> {
                                             //         getImageUrl(_trips[i]["orderimage"])
                                             // ),
                                             ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(12.0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                _trips[i]["owner"]
-                                                        ["first_name"] +
-                                                    " " +
-                                                    _trips[i]["owner"][
-                                                        "last_name"], //Todo: title
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.grey[600],
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        _trips[i]["source"]
-                                                            ["city_ascii"] +
-                                                        "  >  " +
-                                                        _trips[i]["destination"]
-                                                            [
-                                                            "city_ascii"], //Todo: Source -> Destination
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        color: Colors.grey[600],
-                                                        fontWeight:
-                                                            FontWeight.normal),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.date_range,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        _trips[i]["date"]
-                                                            .toString(), //Todo: date
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[600]),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    MdiIcons
-                                                        .weightKilogram, //todo: icon
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        _trips[i]
-                                                                ["weight_limit"]
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[600]),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
+                                        Expanded(
+                                          flex: 5,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  _trips[i]["owner"]
+                                                          ["first_name"] +
+                                                      " " +
+                                                      _trips[i]["owner"][
+                                                          "last_name"], //Todo: title
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.grey[600],
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    Text(
+                                                      "  " +
+                                                          _trips[i]["source"]
+                                                              ["city_ascii"] +
+                                                          " > " +
+                                                          _trips[i][
+                                                                  "destination"]
+                                                              ["city_ascii"],
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight: FontWeight
+                                                              .normal),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      Icons.date_range,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    Text(
+                                                      "  " +
+                                                          _trips[i]["date"]
+                                                              .toString(), //Todo: date
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Icon(
+                                                      MdiIcons
+                                                          .weightKilogram, //todo: icon
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                    ),
+                                                    Text(
+                                                      "  " +
+                                                          _trips[i][
+                                                                  "weight_limit"]
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.grey[600]),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10.0),
+                                        Expanded(
+                                          flex: 3,
                                           child: RaisedButton(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10),
                                             color: Colors.white,
                                             onPressed: () {
                                               createRooms(tripsProvider.trips[i]
@@ -463,45 +475,31 @@ class _TripScreenState extends State<TripsScreen> {
                                                 borderRadius: 10,
                                                 duration: Duration(seconds: 5),
                                               )..show(context);
-                                              //Todo Toast message that Conversation has been started
-                                              // Navigator.push(
-                                              //   context,
-                                              //   MaterialPageRoute(
-                                              //       builder: (context) => MyApp()),
-                                              // );
-                                              //Navigator.pop(context);
                                             },
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 20.0),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    MdiIcons
-                                                        .messageArrowRightOutline,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: <Widget>[
+                                                Icon(
+                                                  MdiIcons
+                                                      .messageArrowRightOutline,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  size: 19,
+                                                ),
+                                                Text(
+                                                  " Message",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
                                                         .primaryColor,
-                                                    size: 30,
                                                   ),
-                                                  Text(
-                                                    "Message",
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
+                                        SizedBox(width: 10),
                                       ],
                                     ),
                                   ),
