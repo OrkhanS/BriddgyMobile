@@ -24,7 +24,9 @@ class Auth with ChangeNotifier {
   List _reviews = [];
   List _stats = [];
   bool statsNotReady = true;
+  bool statsNotReadyForProfile = true;
   bool reviewsNotReady = true;
+  bool reviewsNotReadyForProfile = true;
 
   String get myToken {
     return myTokenFromStorage;
@@ -64,6 +66,8 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetStatistics() async {
+    statsNotReady = false;
+    notifyListeners();
     const url = Api.myStats;
     final response = await http.get(
       url,
@@ -75,11 +79,13 @@ class Auth with ChangeNotifier {
 
     final dataOrders = json.decode(response.body) as Map<String, dynamic>;
     _stats = dataOrders["results"];
-    statsNotReady = false;
+    statsNotReadyForProfile = false;
     notifyListeners();
   }
 
   Future fetchAndSetReviews() async {
+    reviewsNotReady = false;
+    notifyListeners();
     const url = Api.myReviews;
     final response = await http.get(
       url,
@@ -91,7 +97,7 @@ class Auth with ChangeNotifier {
 
     final dataOrders = json.decode(response.body) as Map<String, dynamic>;
     _reviews = dataOrders["results"];
-    reviewsNotReady = false;
+    reviewsNotReadyForProfile = false;
     notifyListeners();
   }
 

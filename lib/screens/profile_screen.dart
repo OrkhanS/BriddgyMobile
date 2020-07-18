@@ -29,13 +29,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_reviews.isEmpty && _stats.isEmpty) {
+    if (_reviews.isEmpty &&
+        !Provider.of<Auth>(context).statsNotReadyForProfile) {
       _reviews = Provider.of<Auth>(context).reviews;
       _stats = Provider.of<Auth>(context).stats;
     }
     return Scaffold(
-      body: Provider.of<Auth>(context).reviewsNotReady &&
-              Provider.of<Auth>(context).statsNotReady
+      body: Provider.of<Auth>(context).reviewsNotReadyForProfile &&
+              Provider.of<Auth>(context).statsNotReadyForProfile
           ? Center(child: CircularProgressIndicator())
           : SafeArea(
               child: Column(

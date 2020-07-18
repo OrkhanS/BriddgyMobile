@@ -29,6 +29,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:badges/badges.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'models/api.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -52,6 +54,7 @@ class _MyAppState extends State<MyApp> {
   String tokenforROOM;
   Map valueMessages = {};
   bool socketConnected = false;
+  bool socketConnectedFirebase = false;
   var neWMessage;
 
   @override
@@ -63,6 +66,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   _configureFirebaseListerners(newmessage) {
+    socketConnectedFirebase = true;
     _firebaseMessaging.configure(
       // onMessage: (Map<String, dynamic> message) async {
       //   neWMessage.addMessages = message;
@@ -111,8 +115,7 @@ class _MyAppState extends State<MyApp> {
 
         if (extractedUserData['token'] != null) {
           widget._channel = new IOWebSocketChannel.connect(
-              'ws://briddgy.herokuapp.com/ws/alert/?token=' +
-                  extractedUserData['token']);
+              Api.alertSocket + extractedUserData['token']);
           widget._channel.stream.listen(_onReceptionOfMessageFromServer);
           print("Alert Connected");
         }
@@ -232,9 +235,10 @@ class _MyAppState extends State<MyApp> {
         orderstripsProvider,
         _,
       ) {
-        if (newmessage.chatsNotLoaded) newmessage.fetchAndSetRooms(auth);
-        initCommunication(auth, newmessage);
-        _configureFirebaseListerners(newmessage);
+        if (newmessage.chatsNotLoaded && auth.token != null)
+          newmessage.fetchAndSetRooms(auth);
+        if (!socketConnected) initCommunication(auth, newmessage);
+        if (!socketConnectedFirebase) _configureFirebaseListerners(newmessage);
         if (auth.isNotLoadingUserDetails) auth.fetchAndSetUserDetails();
         if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false)
           auth.fetchAndSetReviews();

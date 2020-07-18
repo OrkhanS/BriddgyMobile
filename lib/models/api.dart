@@ -1,5 +1,7 @@
 class Api {
   static const String address = "http://34.68.255.37/";
+  static const roomSocket = "ws://34.68.255.37/chat/";
+  static const alertSocket = address + "ws/alert/?token=";
   static const currentUserDetails = address + "api/users/me/";
   static const signUp = address + "api/users/";
   static const users = address + "api/users/";
@@ -15,5 +17,5 @@ class Api {
   static const itemConnectOwner = address + "api/chat/";
   static const userStats = address + "api/users/stats/";
   static const myStats = address + "api/users/my/stats/";
-  static const myReviews = address + "api/users/my/stats/";
+  static const myReviews = address + "api/users/my/reviews/";
 }

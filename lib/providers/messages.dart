@@ -158,7 +158,7 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth) async {
-    //fetchAndSetUserDetails(auth);
+    isChatsLoading = false;
     var f;
     auth.removeListener(f);
     final prefs = await SharedPreferences.getInstance();
