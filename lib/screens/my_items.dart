@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'my_items_info.dart';
@@ -24,9 +25,12 @@ class _MyItemsState extends State<MyItems> {
   bool isLoading = true;
   bool _isfetchingnew = false;
   String nextOrderURL = "FirstCall";
+
   @override
   void initState() {
-    widget.orderstripsProvider.fetchAndSetMyOrders(widget.token);
+    if (widget.orderstripsProvider.myorders.isEmpty) {
+      widget.orderstripsProvider.fetchAndSetMyOrders(widget.token);
+    }
     super.initState();
   }
 
@@ -40,14 +44,15 @@ class _MyItemsState extends State<MyItems> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
+      if (nextOrderURL.toString() != "null" &&
+          nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(
             url,
             headers: {
               HttpHeaders.CONTENT_TYPE: "application/json",
-              "Authorization": "Token " + widget.token,
+              "Authorization": "Token " + Provider.of<Auth>(context).myToken,
             },
           ).then((response) {
             var dataOrders = json.decode(response.body) as Map<String, dynamic>;
@@ -87,7 +92,9 @@ class _MyItemsState extends State<MyItems> {
             ),
             title: Text(
               "My Items",
-              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold),
             ),
             elevation: 1,
           ),
@@ -95,7 +102,9 @@ class _MyItemsState extends State<MyItems> {
               ? Center(child: CircularProgressIndicator())
               : NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {
-                    if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                    if (!_isfetchingnew &&
+                        scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent) {
                       // start loading data
                       setState(() {
                         _isfetchingnew = true;
@@ -120,22 +129,31 @@ class _MyItemsState extends State<MyItems> {
                                   Flushbar(
                                     title: "Done!",
                                     message: "Item was deleted",
-                                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 60),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20, horizontal: 60),
                                     borderRadius: 10,
                                     duration: Duration(seconds: 3),
                                   )..show(context);
                                 },
-                                confirmDismiss: (DismissDirection direction) async {
+                                confirmDismiss:
+                                    (DismissDirection direction) async {
                                   final bool res = await showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
                                         title: const Text("Confirm"),
-                                        content: const Text("Are you sure you wish to delete this item?"),
+                                        content: const Text(
+                                            "Are you sure you wish to delete this item?"),
                                         actions: <Widget>[
-                                          FlatButton(onPressed: () => Navigator.of(context).pop(true), child: const Text("DELETE")),
                                           FlatButton(
-                                            onPressed: () => Navigator.of(context).pop(false),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(true),
+                                              child: const Text("DELETE")),
+                                          FlatButton(
+                                            onPressed: () =>
+                                                Navigator.of(context)
+                                                    .pop(false),
                                             child: const Text("CANCEL"),
                                           ),
                                         ],
@@ -145,14 +163,19 @@ class _MyItemsState extends State<MyItems> {
                                   return res; //todo check
                                 },
                                 background: Container(
-                                  decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.red[700], Colors.orange[300]])),
+                                  decoration: BoxDecoration(
+                                      gradient: LinearGradient(colors: [
+                                    Colors.red[700],
+                                    Colors.orange[300]
+                                  ])),
 //                                    border: Border.all(),
 //                                    borderRadius: BorderRadius.circular(5),
 //                                  ),
 
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: <Widget>[
                                       SizedBox(width: 40),
                                       Icon(
@@ -187,12 +210,15 @@ class _MyItemsState extends State<MyItems> {
                                               id: _orders[i]["id"],
                                               owner: _orders[i]["owner"],
                                               title: _orders[i]["title"],
-                                              destination: orderstripsProvider.myorders[i]["destination"],
-                                              source: _orders[i]["source"]["city_ascii"],
+                                              destination: orderstripsProvider
+                                                  .myorders[i]["destination"],
+                                              source: _orders[i]["source"]
+                                                  ["city_ascii"],
                                               weight: _orders[i]["weight"],
                                               price: _orders[i]["price"],
                                               date: _orders[i]["date"],
-                                              description: orderstripsProvider.myorders[i]["description"],
+                                              description: orderstripsProvider
+                                                  .myorders[i]["description"],
                                               image: _orders[i]["orderimage"],
                                             ),
                                           ),
@@ -203,7 +229,8 @@ class _MyItemsState extends State<MyItems> {
                                           Padding(
                                             padding: const EdgeInsets.all(10.0),
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(15)),
                                               child: Image(
                                                 image: NetworkImage(
                                                     // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
@@ -214,13 +241,26 @@ class _MyItemsState extends State<MyItems> {
                                           Padding(
                                             padding: const EdgeInsets.all(12.0),
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  _orders[i]["title"].toString().length > 20
-                                                      ? orderstripsProvider.myorders[i]["title"].toString().substring(0, 20) + "..."
-                                                      : orderstripsProvider.myorders[i]["title"].toString(), //Todo: title
+                                                  _orders[i]["title"]
+                                                              .toString()
+                                                              .length >
+                                                          20
+                                                      ? orderstripsProvider
+                                                              .myorders[i]
+                                                                  ["title"]
+                                                              .toString()
+                                                              .substring(
+                                                                  0, 20) +
+                                                          "..."
+                                                      : orderstripsProvider
+                                                          .myorders[i]["title"]
+                                                          .toString(), //Todo: title
                                                   style: TextStyle(
                                                     fontSize: 20,
                                                     color: Colors.grey[800],
@@ -228,33 +268,59 @@ class _MyItemsState extends State<MyItems> {
                                                   ),
                                                 ),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                   children: <Widget>[
                                                     Icon(
-                                                      MdiIcons.mapMarkerMultipleOutline,
-                                                      color: Theme.of(context).primaryColor,
+                                                      MdiIcons
+                                                          .mapMarkerMultipleOutline,
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
                                                     ),
                                                     Text(
-                                                      orderstripsProvider.myorders[i]["source"]["city_ascii"] +
+                                                      orderstripsProvider
+                                                                      .myorders[
+                                                                  i]["source"]
+                                                              ["city_ascii"] +
                                                           "  >  " +
-                                                          orderstripsProvider.myorders[i]["destination"]["city_ascii"], //Todo: Source -> Destination
-                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                          orderstripsProvider
+                                                                      .myorders[i]
+                                                                  [
+                                                                  "destination"]
+                                                              [
+                                                              "city_ascii"], //Todo: Source -> Destination
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight: FontWeight
+                                                              .normal),
                                                     ),
                                                   ],
                                                 ),
                                                 Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
                                                   children: <Widget>[
                                                     Row(
                                                       children: <Widget>[
                                                         Icon(
-                                                          MdiIcons.calendarRange,
-                                                          color: Theme.of(context).primaryColor,
+                                                          MdiIcons
+                                                              .calendarRange,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
                                                         ),
                                                         Text(
-                                                          orderstripsProvider.myorders[i]["date"].toString(), //Todo: date
-                                                          style: TextStyle(color: Colors.grey[600]),
+                                                          orderstripsProvider
+                                                              .myorders[i]
+                                                                  ["date"]
+                                                              .toString(), //Todo: date
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600]),
                                                         ),
                                                       ],
                                                     ),
@@ -265,11 +331,18 @@ class _MyItemsState extends State<MyItems> {
                                                       children: <Widget>[
                                                         Icon(
                                                           Icons.attach_money,
-                                                          color: Theme.of(context).primaryColor,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
                                                         ),
                                                         Text(
-                                                          orderstripsProvider.myorders[i]["price"].toString(), //Todo: date
-                                                          style: TextStyle(color: Colors.grey[600]),
+                                                          orderstripsProvider
+                                                              .myorders[i]
+                                                                  ["price"]
+                                                              .toString(), //Todo: date
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600]),
                                                         ),
                                                       ],
                                                     ),

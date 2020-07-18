@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
@@ -54,7 +56,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _myActivityResult;
 
   Future sortData(value, OrdersTripsProvider provider) async {
-    String url = "http://briddgy.herokuapp.com/api/orders/?order_by=";
+    String url = Api.orders + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
@@ -102,7 +104,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
+    String url = Api.getSuggestions + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -117,7 +119,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -128,13 +134,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   Future filterAndSetOrders(provider, from, to, weight, price) async {
-    urlFilter = "http://briddgy.herokuapp.com/api/orders/?";
+    urlFilter = Api.orders + "?";
     if (from != null) {
       urlFilter = urlFilter + "origin=" + from;
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -150,7 +158,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
     await http.get(
       urlFilter,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization":
+            "Token " + Provider.of<Auth>(context, listen: true).token
+      },
     ).then((response) {
       setState(
         () {
@@ -167,7 +179,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
+      if (nextOrderURL.toString() != "null" &&
+          nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(
@@ -197,7 +210,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     //print(widget.orderstripsProvider.orders);
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-        if (orderstripsProvider.orders.length != 0) {
+        if (orderstripsProvider.isLoadingOrders == false) {
           _orders = orderstripsProvider.orders;
           if (nextOrderURL == "FirstCall") {
             nextOrderURL = orderstripsProvider.detailsOrder["next"];
@@ -226,47 +239,61 @@ class _OrdersScreenState extends State<OrdersScreen> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+                FilterBar(
+                    ordersProvider: orderstripsProvider,
+                    from: from,
+                    to: to,
+                    weight: weight,
+                    price: price),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                    Text(
-                      "Results: " + orderstripsProvider.orders.length.toString(),
-                      style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton(
-                      hint: Text(_value),
-                      items: [
-                        DropdownMenuItem(
-                          value: "Ranking",
-                          child: Text("Highest Ranking"),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Results: " +
+                              orderstripsProvider.orders.length.toString(),
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.bold),
                         ),
-                        DropdownMenuItem(value: "Price", child: Text("Highest Reward")),
-                        DropdownMenuItem(
-                          value: "WeightLow",
-                          child: Text(
-                            "Lowest Weight",
-                          ),
+                        DropdownButton(
+                          hint: Text(_value),
+                          items: [
+                            DropdownMenuItem(
+                              value: "Ranking",
+                              child: Text("Highest Ranking"),
+                            ),
+                            DropdownMenuItem(
+                                value: "Price", child: Text("Highest Reward")),
+                            DropdownMenuItem(
+                              value: "WeightLow",
+                              child: Text(
+                                "Lowest Weight",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: "WeightMax",
+                              child: Text(
+                                "Highest Weight",
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            sortData(value, orderstripsProvider);
+                          },
                         ),
-                        DropdownMenuItem(
-                          value: "WeightMax",
-                          child: Text(
-                            "Highest Weight",
-                          ),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        sortData(value, orderstripsProvider);
-                      },
-                    ),
-                  ]),
+                      ]),
                 ),
                 Expanded(
                   child: orderstripsProvider.notLoadingOrders
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;
@@ -286,7 +313,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         owner: _orders[i]["owner"],
                                         title: _orders[i]["title"],
                                         destination: _orders[i]["destination"],
-                                        source: _orders[i]["source"]["city_ascii"],
+                                        source: _orders[i]["source"]
+                                            ["city_ascii"],
                                         weight: _orders[i]["weight"],
                                         price: _orders[i]["price"],
                                         date: _orders[i]["date"],
@@ -309,14 +337,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                         Padding(
                                           padding: const EdgeInsets.all(6.0),
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15)),
                                             child: Image(
-                                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                                                if (loadingProgress == null) return child;
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent
+                                                          loadingProgress) {
+                                                if (loadingProgress == null)
+                                                  return child;
                                                 return Center(
-                                                  child: CircularProgressIndicator(
-                                                    value: loadingProgress.expectedTotalBytes != null
-                                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: loadingProgress
+                                                                .expectedTotalBytes !=
+                                                            null
+                                                        ? loadingProgress
+                                                                .cumulativeBytesLoaded /
+                                                            loadingProgress
+                                                                .expectedTotalBytes
                                                         : null,
                                                   ),
                                                 );
@@ -329,10 +369,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                           ),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0, vertical: 4.0),
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: <Widget>[
                                               SizedBox(
                                                 width: 200,
@@ -340,8 +383,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                                                    _orders[i]["title"].toString().length > 20
 //                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
 //                                                        :
-                                                  _orders[i]["title"].toString(),
-                                                  overflow: TextOverflow.ellipsis,
+                                                  _orders[i]["title"]
+                                                      .toString(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   maxLines: 1,
                                                   style: TextStyle(
                                                     fontSize: 20,
@@ -351,37 +396,56 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                 ),
                                               ),
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: <Widget>[
                                                   Icon(
-                                                    MdiIcons.mapMarkerMultipleOutline,
-                                                    color: Theme.of(context).primaryColor,
+                                                    MdiIcons
+                                                        .mapMarkerMultipleOutline,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
                                                     size: 16,
                                                   ),
                                                   SizedBox(
                                                     width: 200,
                                                     child: Text(
-                                                      _orders[i]["source"]["city_ascii"] + "  >  " + _orders[i]["destination"]["city_ascii"],
+                                                      _orders[i]["source"]
+                                                              ["city_ascii"] +
+                                                          "  >  " +
+                                                          _orders[i][
+                                                                  "destination"]
+                                                              ["city_ascii"],
                                                       maxLines: 1,
-                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                      style: TextStyle(
+                                                          fontSize: 15,
+                                                          color:
+                                                              Colors.grey[600],
+                                                          fontWeight: FontWeight
+                                                              .normal),
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                               Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
                                                 children: <Widget>[
                                                   Row(
                                                     children: <Widget>[
                                                       Icon(
                                                         MdiIcons.calendarRange,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
                                                         size: 16,
                                                       ),
                                                       Text(
-                                                        _orders[i]["date"].toString(),
-                                                        style: TextStyle(color: Colors.grey[600]),
+                                                        _orders[i]["date"]
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey[600]),
                                                       ),
                                                     ],
                                                   ),
@@ -392,15 +456,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                     children: <Widget>[
                                                       Icon(
                                                         Icons.attach_money,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
                                                         size: 16,
                                                       ),
                                                       SizedBox(
                                                         width: 50,
                                                         child: Text(
-                                                          _orders[i]["price"].toString(),
+                                                          _orders[i]["price"]
+                                                              .toString(),
                                                           maxLines: 1,
-                                                          style: TextStyle(color: Colors.grey[600]),
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600]),
                                                         ),
                                                       ),
                                                     ],

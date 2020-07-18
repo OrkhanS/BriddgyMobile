@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
 
@@ -32,7 +33,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
   final TextEditingController _typeAheadController2 = TextEditingController();
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
+    String url = Api.getSuggestions + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -273,7 +274,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                   onPressed: () {
                     //var token = Provider.of<Auth>(context, listen: false).token;
                     var token = widget.token;
-                    const url = "http://briddgy.herokuapp.com/api/trips/";
+                    const url = Api.trips;
                     http.post(url,
                         headers: {
                           HttpHeaders.CONTENT_TYPE: "application/json",

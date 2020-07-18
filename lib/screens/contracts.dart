@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Contracts extends StatefulWidget {
@@ -27,17 +28,18 @@ class _ContractsState extends State<Contracts> {
   }
 
   Future fetchAndSetContracts() async {
-    const url = "http://briddgy.herokuapp.com/api/my/contracts/";
+    const url = Api.contracts;
     http.get(
       url,
       headers: {
         HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + "40694c366ab5935e997a1002fddc152c9566de90",
+        "Authorization": "Token " + widget.token,
       },
     ).then((response) {
       setState(
         () {
-          final dataContracts = json.decode(response.body) as Map<String, dynamic>;
+          final dataContracts =
+              json.decode(response.body) as Map<String, dynamic>;
           _contracts = dataContracts["results"];
           isLoading = false;
         },
@@ -67,13 +69,16 @@ class _ContractsState extends State<Contracts> {
         ),
         title: Text(
           "My Contracts",
-          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          if (!_isfetchingnew &&
+              scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
             // start loading data
             setState(() {
               _isfetchingnew = true;
@@ -109,7 +114,8 @@ class _ContractsState extends State<Contracts> {
                                       //Order image
                                       padding: const EdgeInsets.all(10.0),
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
                                         child: Image(
                                           image: NetworkImage(
                                               // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
@@ -120,41 +126,64 @@ class _ContractsState extends State<Contracts> {
                                     Padding(
                                       padding: const EdgeInsets.all(12.0),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            _contracts[i]["trip"]["source"]["city_ascii"] +
+                                            _contracts[i]["trip"]["source"]
+                                                    ["city_ascii"] +
                                                 "  >  " +
-                                                _contracts[i]["trip"]["destination"]["city_ascii"],
-                                            style: TextStyle(fontSize: 22, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                _contracts[i]["trip"]
+                                                        ["destination"]
+                                                    ["city_ascii"],
+                                            style: TextStyle(
+                                                fontSize: 22,
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.normal),
                                           ),
                                           Text(
                                             "Traveler: " +
-                                                _contracts[i]["trip"]["owner"]["first_name"] +
+                                                _contracts[i]["trip"]["owner"]
+                                                    ["first_name"] +
                                                 " " +
-                                                _contracts[i]["trip"]["owner"]["last_name"],
-                                            style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                _contracts[i]["trip"]["owner"]
+                                                    ["last_name"],
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.normal),
                                           ),
                                           Text(
                                             "Orderer: " +
-                                                _contracts[i]["order"]["owner"]["first_name"] +
+                                                _contracts[i]["order"]["owner"]
+                                                    ["first_name"] +
                                                 " " +
-                                                _contracts[i]["order"]["owner"]["last_name"],
-                                            style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                _contracts[i]["order"]["owner"]
+                                                    ["last_name"],
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.grey[600],
+                                                fontWeight: FontWeight.normal),
                                           ),
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
                                             children: <Widget>[
                                               Row(
                                                 children: <Widget>[
                                                   Icon(
                                                     MdiIcons.calendarRange,
-                                                    color: Theme.of(context).primaryColor,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
                                                   ),
                                                   Text(
-                                                    _contracts[i]["dateSigned"].toString(),
-                                                    style: TextStyle(color: Colors.grey[600]),
+                                                    _contracts[i]["dateSigned"]
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            Colors.grey[600]),
                                                   ),
                                                 ],
                                               ),
@@ -165,11 +194,16 @@ class _ContractsState extends State<Contracts> {
                                                 children: <Widget>[
                                                   Icon(
                                                     Icons.attach_money,
-                                                    color: Theme.of(context).primaryColor,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
                                                   ),
                                                   Text(
-                                                    _contracts[i]["order"]["price"].toString(),
-                                                    style: TextStyle(color: Colors.grey[600]),
+                                                    _contracts[i]["order"]
+                                                            ["price"]
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            Colors.grey[600]),
                                                   ),
                                                 ],
                                               ),
@@ -195,7 +229,8 @@ class _ContractsState extends State<Contracts> {
                             DialogButton(
                               child: Text(
                                 "Back",
-                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
                               ),
                               onPressed: () => Navigator.pop(context),
                               color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -203,7 +238,8 @@ class _ContractsState extends State<Contracts> {
                             DialogButton(
                               child: Text(
                                 "Report",
-                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
                               ),
                               onPressed: () => {},
                               color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -213,24 +249,32 @@ class _ContractsState extends State<Contracts> {
                             children: <Widget>[
                               Text(
                                 "Traveler: " +
-                                    _contracts[i]["trip"]["owner"]["first_name"] +
+                                    _contracts[i]["trip"]["owner"]
+                                        ["first_name"] +
                                     " " +
-                                    _contracts[i]["trip"]["owner"]["last_name"] +
+                                    _contracts[i]["trip"]["owner"]
+                                        ["last_name"] +
                                     "\n" +
                                     "Orderer: " +
-                                    _contracts[i]["order"]["owner"]["first_name"] +
+                                    _contracts[i]["order"]["owner"]
+                                        ["first_name"] +
                                     " " +
-                                    _contracts[i]["order"]["owner"]["last_name"] +
+                                    _contracts[i]["order"]["owner"]
+                                        ["last_name"] +
                                     "\n" +
                                     "Weight: " +
-                                    _contracts[i]["order"]["weight"].toString() +
+                                    _contracts[i]["order"]["weight"]
+                                        .toString() +
                                     "\n" +
                                     "Reward: " +
                                     _contracts[i]["order"]["price"].toString() +
                                     "\n" +
                                     "Arrival Date : " +
                                     _contracts[i]["trip"]["date"].toString(),
-                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.normal),
                               ),
                             ],
                           ),

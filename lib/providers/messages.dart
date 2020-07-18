@@ -228,31 +228,20 @@ class Messages extends ChangeNotifier {
     return user_detail;
   }
 
-  // Future fetchAndSetUserDetails(auth) async {
-  //   var f;
-  //   auth.removeListener(f);
-  //   final prefs = await SharedPreferences.getInstance();
-  //   if (!prefs.containsKey('userData')) {
-  //     return false;
-  //   }
-  //   final extractedUserData =
-  //       json.decode(prefs.getString('userData')) as Map<String, Object>;
-
-  //   auth.token = extractedUserData['token'];
-  //   var token = extractedUserData['token'];
-  //   try {
-  //     const url = "http://briddgy.herokuapp.com/api/users/me/";
-
-  //     final response = await http.get(
-  //       url,
-  //       headers: {
-  //         HttpHeaders.CONTENT_TYPE: "application/json",
-  //         "Authorization": "Token " + token,
-  //       },
-  //     ).then((response) {
-  //       var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-  //       user_detail = dataOrders;
-  //     });
-  //   } catch (error) {}
-  // }
+  removeAllDataOfProvider() {
+    _messages = {};
+    _chatRooms = [];
+    tmp = {};
+    newMessage = {};
+    newMessageCount;
+    tmpIDofMessage = 0;
+    tokenforROOM = null;
+    isUserlogged = true;
+    isChatsLoading = true;
+    _isloadingMessages = true;
+    ismessagesAdded = false;
+    lastMessageID = [];
+    userdetail = {};
+    allChatRoomDetails = {};
+  }
 }

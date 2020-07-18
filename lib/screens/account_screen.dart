@@ -172,7 +172,9 @@ class _AccountPageState extends State<AccountPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => MyItems(
-                                          token: widget.token,
+                                          token: Provider.of<Auth>(context,
+                                                  listen: true)
+                                              .token,
                                           orderstripsProvider: widget.provider,
                                         )),
                               );
@@ -199,7 +201,9 @@ class _AccountPageState extends State<AccountPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => MyTrips(
-                                          token: widget.token,
+                                          token: Provider.of<Auth>(context,
+                                                  listen: true)
+                                              .token,
                                           orderstripsProvider: widget.provider,
                                         )),
                               );
@@ -226,7 +230,9 @@ class _AccountPageState extends State<AccountPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => Contracts(
-                                          token: widget.token,
+                                          token: Provider.of<Auth>(context,
+                                                  listen: true)
+                                              .token,
                                         )),
                               );
                             },

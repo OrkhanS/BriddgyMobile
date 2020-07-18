@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
+import 'package:optisend/models/api.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -47,9 +48,6 @@ class _TripScreenState extends State<TripsScreen> {
     if (widget.orderstripsProvider.notLoaded) {
       widget.orderstripsProvider.fetchAndSetTrips();
     }
-    if (widget.orderstripsProvider.notLoadingOrders) {
-      widget.orderstripsProvider.fetchAndSetOrders();
-    }
     super.initState();
   }
 
@@ -58,13 +56,15 @@ class _TripScreenState extends State<TripsScreen> {
   Future filterAndSetTrips(from, to, weight, _endtime) async {
     var provider = widget.orderstripsProvider;
     _endtime = null;
-    urlFilter = "http://briddgy.herokuapp.com/api/trips/?";
+    urlFilter = Api.trips + "?";
     if (from != null) {
       urlFilter = urlFilter + "origin=" + from;
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -75,7 +75,10 @@ class _TripScreenState extends State<TripsScreen> {
     }
 
     if (_endtime != null) {
-      flagWeight == false && flagTo == false && flagFrom == false && flagStart == false
+      flagWeight == false &&
+              flagTo == false &&
+              flagFrom == false &&
+              flagStart == false
           ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
           : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
       flagStart = true;
@@ -95,7 +98,7 @@ class _TripScreenState extends State<TripsScreen> {
   }
 
   Future sortData(value, OrdersTripsProvider provider) async {
-    String url = "http://briddgy.herokuapp.com/api/trips/?order_by=";
+    String url = Api.trips + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
@@ -122,7 +125,7 @@ class _TripScreenState extends State<TripsScreen> {
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
+    String url = Api.getSuggestions + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -137,7 +140,11 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -145,7 +152,7 @@ class _TripScreenState extends State<TripsScreen> {
   Future createRooms(id) async {
     String tokenforROOM = widget.token;
     if (tokenforROOM != null) {
-      String url = "http://briddgy.herokuapp.com/api/chat/" + id.toString();
+      String url = Api.itemConnectOwner + id.toString();
       final response = await http.get(
         url,
         headers: {
@@ -201,7 +208,8 @@ class _TripScreenState extends State<TripsScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
+      if (nextTripURL.toString() != "null" &&
+          nextTripURL.toString() != "FristCall") {
         String url = nextTripURL;
         try {
           await http.get(
@@ -251,42 +259,53 @@ class _TripScreenState extends State<TripsScreen> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                FilterBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+                FilterBar(
+                    ordersProvider: widget.orderstripsProvider,
+                    from: from,
+                    to: to,
+                    weight: weight),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                    Text(
-                      "Results: " + _trips.length.toString(),
-                      style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton(
-                      hint: Text(_value),
-                      items: [
-                        DropdownMenuItem(
-                          value: "Ranking",
-                          child: Text(
-                            "Ranking",
-                          ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Results: " + _trips.length.toString(),
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.bold),
                         ),
-                        DropdownMenuItem(
-                          value: "WeightMax",
-                          child: Text(
-                            "Weight Limit",
-                          ),
+                        DropdownButton(
+                          hint: Text(_value),
+                          items: [
+                            DropdownMenuItem(
+                              value: "Ranking",
+                              child: Text(
+                                "Ranking",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: "WeightMax",
+                              child: Text(
+                                "Weight Limit",
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            sortData(value, tripsProvider);
+                          },
                         ),
-                      ],
-                      onChanged: (value) {
-                        sortData(value, tripsProvider);
-                      },
-                    ),
-                  ]),
+                      ]),
                 ),
                 Expanded(
                   child: tripsProvider.notLoaded != false
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;
@@ -302,12 +321,14 @@ class _TripScreenState extends State<TripsScreen> {
                                 child: Card(
                                   elevation: 2,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
                                       Padding(
                                           padding: const EdgeInsets.all(10.0),
                                           child: Image(
-                                            image: NetworkImage("https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
+                                            image: NetworkImage(
+                                                "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
                                             height: 60,
                                             width: 60,
                                           )
@@ -319,30 +340,53 @@ class _TripScreenState extends State<TripsScreen> {
                                       Expanded(
                                         flex: 5,
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0, vertical: 4.0),
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
-                                                _trips[i]["owner"]["first_name"] + " " + _trips[i]["owner"]["last_name"], //Todo: title
+                                                _trips[i]["owner"]
+                                                        ["first_name"] +
+                                                    " " +
+                                                    _trips[i]["owner"][
+                                                        "last_name"], //Todo: title
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
-                                                style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.grey[600],
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
                                                 children: <Widget>[
                                                   Icon(
                                                     Icons.location_on,
-                                                    color: Theme.of(context).primaryColor,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
                                                     size: 16,
                                                   ),
                                                   Text(
-                                                    "  " + _trips[i]["source"]["city_ascii"] + " > " + _trips[i]["destination"]["city_ascii"],
-                                                    overflow: TextOverflow.ellipsis,
+                                                    "  " +
+                                                        _trips[i]["source"]
+                                                            ["city_ascii"] +
+                                                        " > " +
+                                                        _trips[i]["destination"]
+                                                            ["city_ascii"],
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     maxLines: 1,
-                                                    style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                                                    style: TextStyle(
+                                                        fontSize: 15,
+                                                        color: Colors.grey[600],
+                                                        fontWeight:
+                                                            FontWeight.normal),
                                                   ),
                                                 ],
                                               ),
@@ -350,25 +394,37 @@ class _TripScreenState extends State<TripsScreen> {
                                                 children: <Widget>[
                                                   Icon(
                                                     Icons.date_range,
-                                                    color: Theme.of(context).primaryColor,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
                                                     size: 16,
                                                   ),
                                                   Text(
-                                                    "  " + _trips[i]["date"].toString(), //Todo: date
-                                                    style: TextStyle(color: Colors.grey[600]),
+                                                    "  " +
+                                                        _trips[i]["date"]
+                                                            .toString(), //Todo: date
+                                                    style: TextStyle(
+                                                        color:
+                                                            Colors.grey[600]),
                                                   ),
                                                 ],
                                               ),
                                               Row(
                                                 children: <Widget>[
                                                   Icon(
-                                                    MdiIcons.weightKilogram, //todo: icon
-                                                    color: Theme.of(context).primaryColor,
+                                                    MdiIcons
+                                                        .weightKilogram, //todo: icon
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
                                                     size: 16,
                                                   ),
                                                   Text(
-                                                    "  " + _trips[i]["weight_limit"].toString(),
-                                                    style: TextStyle(color: Colors.grey[600]),
+                                                    "  " +
+                                                        _trips[i]
+                                                                ["weight_limit"]
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            Colors.grey[600]),
                                                   ),
                                                 ],
                                               )
@@ -379,31 +435,42 @@ class _TripScreenState extends State<TripsScreen> {
                                       Expanded(
                                         flex: 3,
                                         child: RaisedButton(
-                                          padding: EdgeInsets.symmetric(horizontal: 10),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
                                           color: Colors.white,
                                           onPressed: () {
-                                            createRooms(tripsProvider.trips[i]["owner"]["id"]);
+                                            createRooms(tripsProvider.trips[i]
+                                                ["owner"]["id"]);
                                             Flushbar(
-                                              title: "Chat with " + _trips[i]["owner"]["first_name"].toString() + " has been started!",
-                                              message: "Check Chats to see more.",
+                                              title: "Chat with " +
+                                                  _trips[i]["owner"]
+                                                          ["first_name"]
+                                                      .toString() +
+                                                  " has been started!",
+                                              message:
+                                                  "Check Chats to see more.",
                                               padding: const EdgeInsets.all(8),
                                               borderRadius: 10,
                                               duration: Duration(seconds: 5),
                                             )..show(context);
                                           },
                                           child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
                                             children: <Widget>[
                                               Icon(
-                                                MdiIcons.messageArrowRightOutline,
-                                                color: Theme.of(context).primaryColor,
+                                                MdiIcons
+                                                    .messageArrowRightOutline,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
                                                 size: 19,
                                               ),
                                               Text(
                                                 " Message",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  color: Theme.of(context).primaryColor,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
                                                 ),
                                               ),
                                             ],

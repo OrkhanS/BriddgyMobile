@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final TextEditingController _typeAheadController2 = TextEditingController();
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
+    String url = Api.getSuggestions + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -46,7 +47,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -71,7 +76,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
               title: Text(
                 "Add Item", //Todo: item name
-                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold),
               ),
               elevation: 1,
             ),
@@ -79,10 +86,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
+                  padding:
+                      const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
                   child: Text(
                     "Item Information",
-                    style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
+                    style: TextStyle(
+                        fontSize: 25, color: Theme.of(context).primaryColor),
                   ),
                 ),
               ],
@@ -110,21 +119,27 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     from = val;
                   },
                   controller: this._typeAheadController,
-                  decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
+                  decoration: InputDecoration(
+                      labelText: 'From', icon: Icon(Icons.location_on)),
                 ),
                 suggestionsCallback: (pattern) {
                   return getSuggestions(pattern);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
+                        suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                  this._typeAheadController.text =
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1];
                   from = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
@@ -147,21 +162,27 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     to = val;
                   },
                   controller: this._typeAheadController2,
-                  decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
+                  decoration: InputDecoration(
+                      labelText: 'To', icon: Icon(Icons.location_on)),
                 ),
                 suggestionsCallback: (pattern) {
                   return getSuggestions(pattern);
                 },
                 itemBuilder: (context, suggestion) {
                   return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                    title: Text(suggestion.toString().split(", ")[0] +
+                        ", " +
+                        suggestion.toString().split(", ")[1]),
                   );
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
                 onSuggestionSelected: (suggestion) {
-                  this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                  this._typeAheadController2.text =
+                      suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1];
                   to = suggestion.toString().split(", ")[2];
                 },
                 validator: (value) {
@@ -317,7 +338,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   onPressed: () {
                     var token = widget.token;
-                    const url = "http://briddgy.herokuapp.com/api/orders/";
+                    const url = Api.orders;
                     http.post(url,
                         headers: {
                           HttpHeaders.CONTENT_TYPE: "application/json",
@@ -335,11 +356,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           "trip": null,
                           "description": description
                         }));
-                    Provider.of<OrdersTripsProvider>(context, listen: false).fetchAndSetMyOrders(token);
+                    Provider.of<OrdersTripsProvider>(context, listen: false)
+                        .fetchAndSetMyOrders(token);
                     Navigator.pop(context);
                     Flushbar(
                       title: "Item added",
-                      message: "You can see all of your items in My Items section of Account",
+                      message:
+                          "You can see all of your items in My Items section of Account",
                       padding: const EdgeInsets.all(8),
                       borderRadius: 10,
                       duration: Duration(seconds: 5),

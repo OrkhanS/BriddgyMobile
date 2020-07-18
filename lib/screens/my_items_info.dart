@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:optisend/models/api.dart';
 
 class MyItemScreenInfo extends StatefulWidget {
   var id, description, image;
@@ -33,7 +34,7 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
   bool isLoading = false;
 
   Future fetchAndSetSugesstions(id) async {
-    String url = "http://briddgy.herokuapp.com/api/trips/" + id.toString() + "/suggestions/";
+    String url = Api.trips + id.toString() + "/suggestions/";
     http.get(
       url,
       headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
@@ -65,7 +66,9 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
         ),
         title: Text(
           widget.title.toString(), //Todo: item name
-          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold),
         ),
         elevation: 1,
       ),
@@ -85,12 +88,14 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
                       height: 250,
                       width: 250,
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes
                                 : null,
                           ),
                         );
@@ -101,7 +106,8 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,7 +123,9 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
                   ),
 
                   Text(
-                    widget.owner["first_name"].toString() + " " + widget.owner["last_name"].toString(),
+                    widget.owner["first_name"].toString() +
+                        " " +
+                        widget.owner["last_name"].toString(),
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -143,7 +151,8 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
                         ),
                         Text(
                           widget.owner["rating"].toString(),
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
@@ -168,7 +177,8 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Item Details",
                 style: TextStyle(
@@ -274,7 +284,8 @@ class _MyItemScreenInfoState extends State<MyItemScreenInfo> {
               ),
             ), //
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
                 "Description",
                 style: TextStyle(

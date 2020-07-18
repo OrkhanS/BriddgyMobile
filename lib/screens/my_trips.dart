@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
@@ -26,7 +28,9 @@ class _MyTripsState extends State<MyTrips> {
 
   @override
   void initState() {
-    widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+    if (widget.orderstripsProvider.myorders.isEmpty) {
+      widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+    }
     super.initState();
   }
 
@@ -48,7 +52,7 @@ class _MyTripsState extends State<MyTrips> {
             url,
             headers: {
               HttpHeaders.CONTENT_TYPE: "application/json",
-              "Authorization": "Token " + widget.token,
+              "Authorization": "Token " + Provider.of<Auth>(context).myToken,
             },
           ).then((response) {
             var dataOrders = json.decode(response.body) as Map<String, dynamic>;
@@ -118,10 +122,8 @@ class _MyTripsState extends State<MyTrips> {
                           movementDuration: Duration(milliseconds: 500),
                           dragStartBehavior: DragStartBehavior.start,
                           onDismissed: (direction) {
-                            var token = widget.token;
-                            String url =
-                                "http://briddgy.herokuapp.com/api/trips/" +
-                                    _trips[i]["id"].toString();
+                            var token = Provider.of<Auth>(context).myToken;
+                            String url = Api.trips + _trips[i]["id"].toString();
                             http.delete(url, headers: {
                               HttpHeaders.CONTENT_TYPE: "application/json",
                               "Authorization": "Token " + token,

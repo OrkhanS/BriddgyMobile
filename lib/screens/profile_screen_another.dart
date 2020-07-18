@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
 
 class ProfileScreenAnother extends StatefulWidget {
   var user;
@@ -25,7 +26,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
   }
 
   Future fetchAndSetReviews(id) async {
-    String url = "http://briddgy.herokuapp.com/api/users/" + id.toString() + "/reviews/";
+    String url = Api.users + id.toString() + "/reviews/";
     final response = await http.get(
       url,
       headers: {
@@ -46,7 +47,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
   }
 
   Future fetchAndSetStatistics(id) async {
-    String url = "http://briddgy.herokuapp.com/api/users/stats/" + id.toString() + '/';
+    String url = Api.userStats + id.toString() + '/';
     final response = await http.get(
       url,
       headers: {
@@ -80,7 +81,9 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
         ),
         title: Text(
           "Profile", //Todo: User's name ??
-          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 1,
@@ -92,7 +95,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                 child: Column(
                   children: <Widget>[
                     Card(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
@@ -120,8 +124,15 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                       color: Colors.lightGreen,
                                     ),
                                     Text(
-                                      "  " + widget.user["first_name"].toString() + " " + widget.user["last_name"].toString(),
-                                      style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+                                      "  " +
+                                          widget.user["first_name"].toString() +
+                                          " " +
+                                          widget.user["last_name"].toString(),
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w700,
+                                          color:
+                                              Theme.of(context).primaryColor),
                                     ),
                                   ],
                                 ),
@@ -202,21 +213,25 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                         return Column(
                           children: <Widget>[
                             ListTile(
-                              contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 20),
                               isThreeLine: false,
                               leading: CircleAvatar(
                                 radius: 30,
-                                backgroundImage:
-                                    NetworkImage('https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg'), //Todo: UserPic
+                                backgroundImage: NetworkImage(
+                                    'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg'), //Todo: UserPic
                               ),
                               title: Row(
                                 children: <Widget>[
                                   Container(
-                                    width: MediaQuery.of(context).size.width * 0.4,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.4,
                                     child: Text(
-                                      _reviews[index]["author"]["first_name"].toString() +
+                                      _reviews[index]["author"]["first_name"]
+                                              .toString() +
                                           " " +
-                                          _reviews[index]["author"]["last_name"].toString(), //Todo: Name
+                                          _reviews[index]["author"]["last_name"]
+                                              .toString(), //Todo: Name
                                       softWrap: false,
 
                                       style: TextStyle(
@@ -248,7 +263,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                   ),
                                 ],
                               ),
-                              subtitle: Text(_reviews[index]["comment"].toString()),
+                              subtitle:
+                                  Text(_reviews[index]["comment"].toString()),
                             ),
                           ],
                         );

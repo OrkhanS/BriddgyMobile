@@ -50,7 +50,14 @@ class OrdersTripsProvider with ChangeNotifier {
     return allMyOrderDetails;
   }
 
+  set startLoading(trueFalse) {
+    isLoadingOrders = trueFalse;
+    notifyListeners();
+  }
+
   set orders(List temporders) {
+    _orders = [];
+    allOrdersDetails = {};
     _orders = temporders;
     notifyListeners();
   }
@@ -204,5 +211,20 @@ class OrdersTripsProvider with ChangeNotifier {
     });
 
     notifyListeners();
+  }
+
+  removeAllDataOfProvider() {
+    _orders = [];
+    _myorders = [];
+    _trips = [];
+    _mytrips = [];
+    isLoadingOrders = true;
+    isLoading = true;
+    isLoadingMyOrders = true;
+    token = null;
+    allTripsDetails = {};
+    allOrdersDetails = {};
+    allMyOrderDetails = {};
+    allMyTripsDetails = {};
   }
 }

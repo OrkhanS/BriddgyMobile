@@ -6,6 +6,9 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/users.dart';
+import 'package:optisend/providers/messages.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/http_exception.dart';
@@ -42,14 +45,7 @@ class Auth with ChangeNotifier {
     return _token != null;
   }
 
-  String get token {
-    if (_expiryDate != null &&
-        _expiryDate.isAfter(DateTime.now()) &&
-        _token != null) {
-      return _token;
-    }
-    return null;
-  }
+  String get token => _token;
 
   set token(String tokenlox) {
     _token = tokenlox;
@@ -68,7 +64,7 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetStatistics() async {
-    const url = "http://briddgy.herokuapp.com/api/users/my/stats/";
+    const url = Api.myStats;
     final response = await http.get(
       url,
       headers: {
@@ -84,7 +80,7 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetReviews() async {
-    const url = "http://briddgy.herokuapp.com/api/users/my/reviews/";
+    const url = Api.myReviews;
     final response = await http.get(
       url,
       headers: {
@@ -196,6 +192,7 @@ class Auth with ChangeNotifier {
       final responseData = json.decode(response.body);
       _token = responseData;
       myToken = responseData;
+      myTokenFromStorage = responseData;
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
@@ -227,6 +224,7 @@ class Auth with ChangeNotifier {
       final responseData = json.decode(response.body);
       _token = responseData;
       myToken = responseData;
+      myTokenFromStorage = responseData;
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
@@ -249,13 +247,14 @@ class Auth with ChangeNotifier {
     final extractedUserData =
         json.decode(prefs.getString('userData')) as Map<String, Object>;
     _token = extractedUserData['token'];
+    myToken = extractedUserData['token'];
+    myTokenFromStorage = extractedUserData['token'];
     fetchAndSetUserDetails();
     notifyListeners();
     return true;
   }
 
   Future<void> logout(context) async {
-    print(_token);
     const url = Api.login;
     http.patch(url,
         headers: {
@@ -263,11 +262,29 @@ class Auth with ChangeNotifier {
           "Authorization": "Token " + _token,
         },
         body: json.encode({"token": _token}));
-    _token = null;
     Navigator.of(context).pop();
-    notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove('userData');
+    await prefs.remove('userData');
+    prefs.commit();
     prefs.clear();
+    Provider.of<OrdersTripsProvider>(context, listen: false)
+        .removeAllDataOfProvider();
+    Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
+    removeAllDataOfProvider();
+    notifyListeners();
+  }
+
+  removeAllDataOfProvider() {
+    _expiryDate = null;
+    _userId = null;
+    _token = null;
+    user = {};
+    isLoadingUser = true;
+    isLoadingUserDetails = true;
+    myTokenFromStorage = null;
+    _reviews = [];
+    _stats = [];
+    statsNotReady = true;
+    reviewsNotReady = true;
   }
 }
