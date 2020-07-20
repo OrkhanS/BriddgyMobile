@@ -205,7 +205,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                         ),
                                                   onTap: () {
                                                     widget.provider.readMessages(_rooms[index]["id"]);
-                                                    Provider.of<Messages>(context).newMessage[_rooms[index]["id"]] = 0;
+                                                    Provider.of<Messages>(context,listen: false).newMessage[_rooms[index]["id"]] = 0;
                                                     widget.provider.fetchAndSetMessages(index);
                                                     Navigator.push(
                                                       context,

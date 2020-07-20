@@ -66,39 +66,41 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetStatistics() async {
-    statsNotReady = false;
-    notifyListeners();
     const url = Api.myStats;
-    final response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + _token,
-      },
-    );
+    if (_token != null) {
+      statsNotReady = false;
+      final response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + _token,
+        },
+      );
 
-    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-    _stats = dataOrders["results"];
-    statsNotReadyForProfile = false;
-    notifyListeners();
+      final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+      _stats = dataOrders["results"];
+      statsNotReadyForProfile = false;
+      notifyListeners();
+    }
   }
 
   Future fetchAndSetReviews() async {
-    reviewsNotReady = false;
-    notifyListeners();
     const url = Api.myReviews;
-    final response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization": "Token " + _token,
-      },
-    );
+    if (_token != null) {
+      reviewsNotReady = false;
+      final response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + _token,
+        },
+      );
 
-    final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-    _reviews = dataOrders["results"];
-    reviewsNotReadyForProfile = false;
-    notifyListeners();
+      final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+      _reviews = dataOrders["results"];
+      reviewsNotReadyForProfile = false;
+      notifyListeners();
+    }
   }
 
   Future fetchAndSetUserDetails() async {

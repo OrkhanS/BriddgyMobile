@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:optisend/models/api.dart';
+import 'package:optifyapp/models/api.dart';
+import 'package:optifyapp/providers/auth.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:optisend/providers/messages.dart';
+import 'package:optifyapp/providers/messages.dart';
 import 'package:menu/menu.dart';
 import 'dart:convert';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -12,8 +13,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ChatWindow extends StatefulWidget {
-  var provider, user, room, token;
-  ChatWindow({this.provider, this.user, this.room, this.token});
+  var provider, user, room, auth;
+  ChatWindow({this.provider, this.user, this.room, this.auth});
   static const routeName = '/chats/chat_window';
 
   @override
@@ -32,6 +33,7 @@ class _ChatWindowState extends State<ChatWindow> {
   bool _isloading = false;
   bool newMessageMe = false;
   String id;
+  String token;
   String nextMessagesURL = "FirstCall";
   var file;
   final String phpEndPoint =
@@ -42,6 +44,11 @@ class _ChatWindowState extends State<ChatWindow> {
     textEditingController = TextEditingController();
     scrollController = ScrollController();
     id = widget.room.toString();
+    if (widget.auth.myToken == null) {
+      widget.auth.getToken();
+    } else {
+      token = widget.auth.myToken.toString();
+    }
     initCommunication(id);
     super.initState();
   }
@@ -49,16 +56,11 @@ class _ChatWindowState extends State<ChatWindow> {
   initCommunication(String id) async {
     reset();
     try {
-      _channelRoom = new IOWebSocketChannel.connect(Api.roomSocket +
-          id.toString() +
-          '/?token=' +
-          widget.provider.getToken);
+      _channelRoom = new IOWebSocketChannel.connect(
+          Api.roomSocket + id.toString() + '/?token=' + token.toString());
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
-      print("Alert Connected");
-    } catch (e) {
-      print("Error Occured");
-      reset();
-    }
+      print("Room Socket Connected");
+    } catch (e) {}
   }
 
   addListener(Function callback) {
@@ -197,7 +199,7 @@ class _ChatWindowState extends State<ChatWindow> {
             url,
             headers: {
               HttpHeaders.CONTENT_TYPE: "application/json",
-              "Authorization": "Token " + widget.token,
+              "Authorization": "Token " + token,
             },
           ).then((response) {
             var dataOrders = json.decode(response.body) as Map<String, dynamic>;
