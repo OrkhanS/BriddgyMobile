@@ -67,10 +67,11 @@ class _MyAppState extends State<MyApp> {
 
   _configureFirebaseListerners(newmessage) {
     socketConnectedFirebase = true;
+    print("ConnectedFirebase");
     _firebaseMessaging.configure(
-      // onMessage: (Map<String, dynamic> message) async {
-      //   neWMessage.addMessages = message;
-      // },
+      onMessage: (Map<String, dynamic> message) async {
+        neWMessage.addMessages = message;
+      },
       onLaunch: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message;
       },
@@ -97,7 +98,6 @@ class _MyAppState extends State<MyApp> {
 
   initCommunication(auth, newmessage) async {
     if (socketConnected == false) {
-      socketConnected = true;
       reset();
       try {
         var f, d;
@@ -118,6 +118,7 @@ class _MyAppState extends State<MyApp> {
               Api.alertSocket + extractedUserData['token']);
           widget._channel.stream.listen(_onReceptionOfMessageFromServer);
           print("Alert Connected");
+          socketConnected = true;
         }
       } catch (e) {
         print("Error Occured");
@@ -237,7 +238,7 @@ class _MyAppState extends State<MyApp> {
       ) {
         if (newmessage.chatsNotLoaded && auth.token != null)
           newmessage.fetchAndSetRooms(auth);
-        if (!socketConnected) initCommunication(auth, newmessage);
+        //if (!socketConnected) initCommunication(auth, newmessage);
         if (!socketConnectedFirebase) _configureFirebaseListerners(newmessage);
         if (auth.isNotLoadingUserDetails) auth.fetchAndSetUserDetails();
         if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false)
