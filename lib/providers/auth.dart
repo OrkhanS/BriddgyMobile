@@ -179,6 +179,45 @@ class Auth with ChangeNotifier {
     }
   }
 
+  Future<bool> requestEmailVerification(_token) async {
+    const url = Api.requestEmailVerification;
+    await http.get(url, headers: {
+      HttpHeaders.contentTypeHeader: "application/json",
+      "Authorization": "Token " + _token,
+    }).then((response) {
+      if (response.statusCode == 200) {
+        print("Success");
+        return true;
+      } else {
+        print("Failed to send email");
+        return false;
+      }
+    });
+  }
+
+  Future<bool> verifyEmailCode(key) async {
+    const url = Api.verifyEmail;
+    await http
+        .post(
+      url,
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
+      body: json.encode(
+        {
+          'key': key,
+        },
+      ),
+    )
+        .then((response) {
+      if (response.statusCode == 201) {
+        fetchAndSetUserDetails();
+        return true;
+      } else {
+        print("Incorrect Confirmation Key");
+        return false;
+      }
+    });
+  }
+
   Future<void> signup(String email, String password, String firstname,
       String lastname, String deviceID) async {
     const url = Api.signUp;
@@ -197,18 +236,23 @@ class Auth with ChangeNotifier {
           },
         ),
       );
-      final responseData = json.decode(response.body);
-      _token = responseData;
-      myToken = responseData;
-      myTokenFromStorage = responseData;
-      notifyListeners();
-      final prefs = await SharedPreferences.getInstance();
-      final userData = json.encode(
-        {
-          'token': _token,
-        },
-      );
-      prefs.setString('userData', userData);
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        _token = responseData["token"];
+        myToken = responseData["token"];
+        myTokenFromStorage = responseData["token"];
+        user = {};
+        user = responseData["detail"];
+        notifyListeners();
+        final prefs = await SharedPreferences.getInstance();
+        final userData = json.encode(
+          {
+            'token': _token,
+          },
+        );
+        prefs.setString('userData', userData);
+        requestEmailVerification(_token);
+      }
     } catch (error) {
       throw error;
     }

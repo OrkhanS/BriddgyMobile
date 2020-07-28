@@ -38,13 +38,13 @@ class _ItemScreenState extends State<ItemScreen> {
     String tokenforROOM = widget.token;
     if (tokenforROOM != null) {
       String url = Api.itemConnectOwner + widget.owner["id"].toString();
-      final response = await http.get(
+      await http.get(
         url,
         headers: {
           HttpHeaders.CONTENT_TYPE: "application/json",
           "Authorization": "Token " + tokenforROOM,
         },
-      );
+      ).then((value) => print(value));
       widget.room.fetchAndSetRooms(widget.auth);
     }
     return null;
@@ -413,10 +413,7 @@ class _ItemScreenState extends State<ItemScreen> {
                         createRooms();
 
                         //Todo Toast message that Conversation has been started
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyApp()),
-                        );
+                        Navigator.pop(context);
                       },
                     ),
                     // RaisedButton(

@@ -236,9 +236,11 @@ class _MyAppState extends State<MyApp> {
         orderstripsProvider,
         _,
       ) {
+        if (auth.isAuth == false) {
+          auth.tryAutoLogin();
+        }
         if (newmessage.chatsNotLoaded && auth.token != null)
           newmessage.fetchAndSetRooms(auth);
-        //if (!socketConnected) initCommunication(auth, newmessage);
         if (!socketConnectedFirebase) _configureFirebaseListerners(newmessage);
         if (auth.isNotLoadingUserDetails) auth.fetchAndSetUserDetails();
         if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false)

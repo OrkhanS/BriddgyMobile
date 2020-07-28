@@ -18,4 +18,6 @@ class Api {
   static const userStats = address + "api/users/stats/";
   static const myStats = address + "api/users/my/stats/";
   static const myReviews = address + "api/users/my/reviews/";
+  static const requestEmailVerification = address + "api/request/email/";
+  static const verifyEmail = address + "api/request/verify/";
 }

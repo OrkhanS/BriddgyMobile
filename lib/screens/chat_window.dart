@@ -16,7 +16,6 @@ class ChatWindow extends StatefulWidget {
   var provider, user, room, auth, token;
   ChatWindow({this.provider, this.user, this.room, this.auth, this.token});
   static const routeName = '/chats/chat_window';
-
   @override
   _ChatWindowState createState() => _ChatWindowState();
 }

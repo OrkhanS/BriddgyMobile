@@ -158,6 +158,7 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth) async {
+    isUserlogged = false;
     isChatsLoading = false;
     var f;
     auth.removeListener(f);
@@ -190,7 +191,6 @@ class Messages extends ChangeNotifier {
             }
           }
           isChatsLoading = false;
-          isUserlogged = false;
         });
         return _chatRooms;
       } else {
