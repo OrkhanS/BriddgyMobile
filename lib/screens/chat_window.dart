@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:optifyapp/models/api.dart';
-import 'package:optifyapp/providers/auth.dart';
+import 'package:optisend/models/api.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:optifyapp/providers/messages.dart';
+import 'package:optisend/providers/messages.dart';
 import 'package:menu/menu.dart';
 import 'dart:convert';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -13,8 +13,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ChatWindow extends StatefulWidget {
-  var provider, user, room, auth;
-  ChatWindow({this.provider, this.user, this.room, this.auth});
+  var provider, user, room, auth, token;
+  ChatWindow({this.provider, this.user, this.room, this.auth, this.token});
   static const routeName = '/chats/chat_window';
 
   @override
@@ -36,8 +36,7 @@ class _ChatWindowState extends State<ChatWindow> {
   String token;
   String nextMessagesURL = "FirstCall";
   var file;
-  final String phpEndPoint =
-      'http://192.168.43.171/phpAPI/image.php'; //todo delete
+  final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php'; //todo delete
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
   void initState() {
@@ -56,8 +55,7 @@ class _ChatWindowState extends State<ChatWindow> {
   initCommunication(String id) async {
     reset();
     try {
-      _channelRoom = new IOWebSocketChannel.connect(
-          Api.roomSocket + id.toString() + '/?token=' + token.toString());
+      _channelRoom = new IOWebSocketChannel.connect(Api.roomSocket + id.toString() + '/?token=' + token.toString());
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Socket Connected");
     } catch (e) {}
@@ -90,12 +88,7 @@ class _ChatWindowState extends State<ChatWindow> {
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
-    var message = {
-      "message_type": "text",
-      'message': text,
-      "room_id": widget.room,
-      "sender": widget.user["id"]
-    };
+    var message = {"message_type": "text", 'message': text, "room_id": widget.room, "sender": widget.user["id"]};
     widget.provider.changeChatRoomPlace(widget.room);
 
     if (_channelRoom != null) {
@@ -235,8 +228,7 @@ class _ChatWindowState extends State<ChatWindow> {
             centerTitle: true,
             backgroundColor: Colors.white,
             leading: IconButton(
-              icon: Icon(Icons.keyboard_backspace,
-                  color: Theme.of(context).primaryColor),
+              icon: Icon(Icons.keyboard_backspace, color: Theme.of(context).primaryColor),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -271,9 +263,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       )
                     : NotificationListener<ScrollNotification>(
                         onNotification: (ScrollNotification scrollInfo) {
-                          if (!_isloading &&
-                              scrollInfo.metrics.pixels ==
-                                  scrollInfo.metrics.maxScrollExtent) {
+                          if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                             // start loading data
                             setState(() {
                               _isloading = true;
@@ -287,35 +277,26 @@ class _ChatWindowState extends State<ChatWindow> {
                           itemCount: _messages.length,
                           itemBuilder: (context, index) {
                             bool reverse = false;
-                            if (widget.user["id"] !=
-                                    _messages[index]["sender"] ||
-                                _messages[index]["sender"] == "me") {
+                            if (widget.user["id"] != _messages[index]["sender"] || _messages[index]["sender"] == "me") {
                               newMessageMe = false;
                               reverse = true;
                             }
 
                             var avatar = reverse == false
                                 ? Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, bottom: 8.0, right: 8.0),
+                                    padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
                                     child: CircleAvatar(
                                       backgroundColor: Colors.teal,
                                       child: Text(
-                                        widget.user["first_name"]
-                                            .toString()
-                                            .substring(0, 1),
+                                        widget.user["first_name"].toString().substring(0, 1),
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   )
                                 : Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, bottom: 8.0, right: 8.0),
+                                    padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
                                     child: CircleAvatar(
-                                      child: Text(widget
-                                          .provider.userDetails["first_name"]
-                                          .toString()
-                                          .substring(0, 1)),
+                                      child: Text(widget.provider.userDetails["first_name"].toString().substring(0, 1)),
                                     ),
                                   );
 
@@ -334,13 +315,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                     // Warning
                                     // Warning
                                     child: Text(
-                                      _messages[index]["text"]
-                                                  .toString()
-                                                  .length >
-                                              30
-                                          ? _messages[index]["text"]
-                                              .toString()
-                                              .substring(0, 30)
+                                      _messages[index]["text"].toString().length > 30
+                                          ? _messages[index]["text"].toString().substring(0, 30)
                                           : _messages[index]["text"].toString(),
                                       softWrap: true,
                                     ),
@@ -353,21 +329,15 @@ class _ChatWindowState extends State<ChatWindow> {
                                     context: context,
                                     type: AlertType.info,
                                     title: "Sent on:  " +
-                                        _messages[index]["date_created"]
-                                            .toString()
-                                            .substring(0, 10) +
+                                        _messages[index]["date_created"].toString().substring(0, 10) +
                                         ",  " +
-                                        _messages[index]["date_created"]
-                                            .toString()
-                                            .substring(11, 16) +
+                                        _messages[index]["date_created"].toString().substring(11, 16) +
                                         "\n",
                                     buttons: [
                                       DialogButton(
                                         child: Text(
                                           "Back",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
+                                          style: TextStyle(color: Colors.white, fontSize: 20),
                                         ),
                                         onPressed: () => Navigator.pop(context),
                                         color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -375,16 +345,14 @@ class _ChatWindowState extends State<ChatWindow> {
                                       DialogButton(
                                         child: Text(
                                           "Report",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
+                                          style: TextStyle(color: Colors.white, fontSize: 20),
                                         ),
                                         onPressed: () => {},
                                         color: Color.fromRGBO(0, 179, 134, 1.0),
                                       )
                                     ],
-                                    content: Text(
-                                        "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                    content:
+                                        Text("To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
                                   ).show();
                                 }),
                               ],
@@ -397,15 +365,13 @@ class _ChatWindowState extends State<ChatWindow> {
                               message = Stack(
                                 children: <Widget>[
                                   messagebody,
-                                  Positioned(
-                                      right: 0, bottom: 0, child: triangle),
+                                  Positioned(right: 0, bottom: 0, child: triangle),
                                 ],
                               );
                             } else {
                               message = Stack(
                                 children: <Widget>[
-                                  Positioned(
-                                      left: 0, bottom: 0, child: triangle),
+                                  Positioned(left: 0, bottom: 0, child: triangle),
                                   messagebody,
                                 ],
                               );

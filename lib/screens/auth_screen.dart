@@ -302,7 +302,7 @@ class _AuthCardState extends State<AuthCard> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       onPressed: () => _authMode == AuthMode.Login
-                          ? _submit
+                          ? _submit()
                           : Navigator.push(
                               context,
                               MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
