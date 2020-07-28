@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:optifyapp/models/api.dart';
-import 'package:optifyapp/providers/auth.dart';
+import 'package:optisend/models/api.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:optifyapp/providers/messages.dart';
+import 'package:optisend/providers/messages.dart';
 import 'package:menu/menu.dart';
 import 'dart:convert';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -13,10 +13,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ChatWindow extends StatefulWidget {
-  var provider, user, room, auth;
-  ChatWindow({this.provider, this.user, this.room, this.auth});
+  var provider, user, room, auth, token;
+  ChatWindow({this.provider, this.user, this.room, this.auth, this.token});
   static const routeName = '/chats/chat_window';
-
   @override
   _ChatWindowState createState() => _ChatWindowState();
 }
