@@ -27,6 +27,7 @@ class Auth with ChangeNotifier {
   bool statsNotReadyForProfile = true;
   bool reviewsNotReady = true;
   bool reviewsNotReadyForProfile = true;
+  bool verificationStatus = false;
 
   String get myToken {
     return myTokenFromStorage;
@@ -180,7 +181,8 @@ class Auth with ChangeNotifier {
       "Authorization": "Token " + _token,
     }).then((response) {
       if (response.statusCode == 200) {
-        print("Success");
+        print("Requested");
+        verificationStatus = false;
         return true;
       } else {
         print("Failed to send email");
@@ -194,7 +196,10 @@ class Auth with ChangeNotifier {
     await http
         .post(
       url,
-      headers: {HttpHeaders.contentTypeHeader: "application/json"},
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        "Authorization": "Token " + myTokenFromStorage,
+      },
       body: json.encode(
         {
           'key': key,
@@ -202,7 +207,9 @@ class Auth with ChangeNotifier {
       ),
     )
         .then((response) {
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
+        print("Success");
+        verificationStatus = true;
         fetchAndSetUserDetails();
         return true;
       } else {
@@ -244,6 +251,7 @@ class Auth with ChangeNotifier {
           },
         );
         prefs.setString('userData', userData);
+        verificationStatus = false;
         requestEmailVerification(_token);
       }
     } catch (error) {
