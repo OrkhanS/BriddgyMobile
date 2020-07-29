@@ -2,7 +2,6 @@
 //
 //import 'package:flutter/material.dart';
 //import 'package:intl/intl.dart';
-
 //
 //class OrderItem extends StatefulWidget {
 //  final ord.OrderItem order;
@@ -44,24 +43,24 @@
 //                children: widget.order.products
 //                    .map(
 //                      (prod) => Row(
-//                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                            children: <Widget>[
-//                              Text(
-//                                prod.title,
-//                                style: TextStyle(
-//                                  fontSize: 18,
-//                                  fontWeight: FontWeight.bold,
-//                                ),
-//                              ),
-//                              Text(
-//                                '${prod.quantity}x \$${prod.price}',
-//                                style: TextStyle(
-//                                  fontSize: 18,
-//                                  color: Colors.grey,
-//                                ),
-//                              )
-//                            ],
+//                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                        children: <Widget>[
+//                          Text(
+//                            prod.title,
+//                            style: TextStyle(
+//                              fontSize: 18,
+//                              fontWeight: FontWeight.bold,
+//                            ),
 //                          ),
+//                          Text(
+//                            '${prod.quantity}x \$${prod.price}',
+//                            style: TextStyle(
+//                              fontSize: 18,
+//                              color: Colors.grey,
+//                            ),
+//                          )
+//                        ],
+//                      ),
 //                    )
 //                    .toList(),
 //              ),

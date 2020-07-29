@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
-import 'package:optisend/models/users.dart';
+import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
@@ -108,8 +108,7 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
     const url = Api.currentUserDetails;
     try {
@@ -125,20 +124,15 @@ class Auth with ChangeNotifier {
         isLoadingUser = false;
         isLoadingUserDetails = false;
         notifyListeners();
-        User(
-            email: user["email"],
-            id: user["id"],
-            name: user["first_name"],
-            lastname: user["last_name"],
-            token: extractedUserData['token']);
+        //todo orxan
+        //User(email: user["email"], id: user["id"], name: user["first_name"], lastname: user["last_name"], token: extractedUserData['token']);
       });
     } catch (e) {
       return;
     }
   }
 
-  Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
+  Future<void> _authenticate(String email, String password, String urlSegment) async {
     const url = "http://briddgy.herokuapp.com/api/auth/";
     try {
       final response = await http.post(
@@ -218,8 +212,7 @@ class Auth with ChangeNotifier {
     });
   }
 
-  Future<void> signup(String email, String password, String firstname,
-      String lastname, String deviceID) async {
+  Future<void> signup(String email, String password, String firstname, String lastname, String deviceID) async {
     const url = Api.signUp;
     try {
       final response = await http.post(
@@ -296,8 +289,7 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
     _token = extractedUserData['token'];
     myToken = extractedUserData['token'];
     myTokenFromStorage = extractedUserData['token'];
@@ -319,8 +311,7 @@ class Auth with ChangeNotifier {
     await prefs.remove('userData');
     prefs.commit();
     prefs.clear();
-    Provider.of<OrdersTripsProvider>(context, listen: false)
-        .removeAllDataOfProvider();
+    Provider.of<OrdersTripsProvider>(context, listen: false).removeAllDataOfProvider();
     Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
     removeAllDataOfProvider();
     notifyListeners();
