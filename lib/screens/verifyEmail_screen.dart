@@ -4,6 +4,7 @@ import 'package:optisend/providers/auth.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:pinput/pin_put/pin_put_state.dart';
 import 'package:provider/provider.dart';
+import 'package:argon_buttons_flutter/argon_buttons_flutter.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   @override
@@ -37,6 +38,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.w600),
               ),
+            ),
+            SizedBox(
+              height: 20,
             ),
             Padding(
               padding:
@@ -90,6 +94,44 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   ),
                 ),
               ),
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            ArgonTimerButton(
+              height: 50,
+              width: MediaQuery.of(context).size.width * 0.45,
+              onTap: (startTimer, btnState) {
+                if (btnState == ButtonState.Idle) {
+                  Provider.of<Auth>(context, listen: false)
+                      .requestEmailVerification();
+                  startTimer(29);
+                }
+              },
+              child: Text(
+                "Resend Code",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700),
+              ),
+              loader: (timeLeft) {
+                return Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50)),
+                  margin: EdgeInsets.all(5),
+                  alignment: Alignment.center,
+                  width: 40,
+                  height: 40,
+                  child: Text(
+                    "$timeLeft",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                );
+              },
+              borderRadius: 5.0,
+              color: Color(0xFF7866FE),
             ),
 //            Padding(
 //              padding: const EdgeInsets.symmetric(horizontal: 30.0),

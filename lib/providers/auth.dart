@@ -111,7 +111,6 @@ class Auth with ChangeNotifier {
     // }
     // final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
     isLoadingUserForMain = false;
-    isLoadingUserDetails = false;
     const url = Api.currentUserDetails;
     try {
       final response = await http.get(
@@ -176,11 +175,11 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<bool> requestEmailVerification(_token) async {
+  Future<bool> requestEmailVerification() async {
     const url = Api.requestEmailVerification;
     await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: "application/json",
-      "Authorization": "Token " + _token,
+      "Authorization": "Token " + myTokenFromStorage,
     }).then((response) {
       if (response.statusCode == 200) {
         print("Requested");
@@ -244,8 +243,6 @@ class Auth with ChangeNotifier {
         _token = responseData["token"];
         myToken = responseData["token"];
         myTokenFromStorage = responseData["token"];
-        user = null;
-        user = responseData["detail"];
         notifyListeners();
         final prefs = await SharedPreferences.getInstance();
         final userData = json.encode(
@@ -255,7 +252,7 @@ class Auth with ChangeNotifier {
         );
         prefs.setString('userData', userData);
         verificationStatus = false;
-        requestEmailVerification(_token);
+        requestEmailVerification();
       }
     } catch (error) {
       throw error;

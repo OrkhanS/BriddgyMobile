@@ -46,6 +46,8 @@ dependencies:
   image_picker: ^0.6.4
   flushbar: ^1.10.4
   pinput: ^0.2.4
+  argon_buttons_flutter: ^1.0.5
+
 
 
   # The following adds the Cupertino Icons font to your application.

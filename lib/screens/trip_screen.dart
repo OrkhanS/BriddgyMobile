@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
+import 'package:optisend/screens/verifyEmail_screen.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -244,14 +245,31 @@ class _TripScreenState extends State<TripsScreen> {
           resizeToAvoidBottomPadding: true,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (__) => AddTripScreen(
-                          token: widget.token,
-                          orderstripsProvider: widget.orderstripsProvider,
-                        )),
-              );
+              if (widget.auth.isAuth) {
+                if (widget.auth.userdetail.isEmailVerified == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (__) => AddTripScreen(
+                              token: widget.token,
+                              orderstripsProvider: widget.orderstripsProvider,
+                            )),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                  );
+                }
+              } else {
+                Flushbar(
+                  title: "Warning",
+                  message: "You need to Log in to add Item!",
+                  padding: const EdgeInsets.all(8),
+                  borderRadius: 10,
+                  duration: Duration(seconds: 3),
+                )..show(context);
+              }
             },
             backgroundColor: Theme.of(context).primaryColor,
             child: Icon(Icons.add),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/item_screen.dart';
 import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
+import 'package:optisend/screens/verifyEmail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -226,14 +228,31 @@ class _OrdersScreenState extends State<OrdersScreen> {
             backgroundColor: Theme.of(context).primaryColor,
             child: Icon(Icons.add),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (__) => AddItemScreen(
-                          token: widget.token,
-                          orderstripsProvider: widget.orderstripsProvider,
-                        )),
-              );
+              if (widget.auth.isAuth) {
+                if (widget.auth.userdetail.isEmailVerified == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (__) => AddItemScreen(
+                              token: widget.token,
+                              orderstripsProvider: widget.orderstripsProvider,
+                            )),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                  );
+                }
+              } else {
+                Flushbar(
+                  title: "Warning",
+                  message: "You need to Log in to add Item!",
+                  padding: const EdgeInsets.all(8),
+                  borderRadius: 10,
+                  duration: Duration(seconds: 3),
+                )..show(context);
+              }
             },
           ),
           body: SafeArea(
