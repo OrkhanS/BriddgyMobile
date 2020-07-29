@@ -17,7 +17,7 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
-  Map user = {};
+  User user;
   bool isLoadingUser = true;
   bool isLoadingUserDetails = true;
   String myTokenFromStorage;
@@ -58,7 +58,7 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
-  Map get userdetail {
+  User get userdetail {
     return user;
   }
 
@@ -120,12 +120,15 @@ class Auth with ChangeNotifier {
           "Authorization": "Token " + extractedUserData['token'],
         },
       ).then((response) {
-        final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        user = dataOrders;
+        print("Salalama saUser:");
+        user = User.fromJson(json.decode(response.body));
+
+        print(user);
+
         isLoadingUser = false;
         isLoadingUserDetails = false;
         notifyListeners();
-        //todo orxan
+
         //User(email: user["email"], id: user["id"], name: user["first_name"], lastname: user["last_name"], token: extractedUserData['token']);
       });
     } catch (e) {
@@ -241,7 +244,7 @@ class Auth with ChangeNotifier {
         _token = responseData["token"];
         myToken = responseData["token"];
         myTokenFromStorage = responseData["token"];
-        user = {};
+        user = null;
         user = responseData["detail"];
         notifyListeners();
         final prefs = await SharedPreferences.getInstance();
@@ -261,7 +264,6 @@ class Auth with ChangeNotifier {
 
   Future<void> login(String email, String password, String deviceID) async {
     const url = Api.login;
-    print(url);
     try {
       final response = await http.post(
         url,
@@ -329,7 +331,7 @@ class Auth with ChangeNotifier {
     _expiryDate = null;
     _userId = null;
     _token = null;
-    user = {};
+    user = null;
     isLoadingUser = true;
     isLoadingUserDetails = true;
     myTokenFromStorage = null;
