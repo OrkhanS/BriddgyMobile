@@ -45,47 +45,50 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   bool isLoading = true;
-  User user;
+  var user;
   @override
   void initState() {
-    user = widget.auth.userdetail;
-    print(user);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (user == null) {
+      if (widget.auth.userdetail != null) {
+        user = widget.auth.userdetail;
+      }
+    }
     return Scaffold(
         body: SafeArea(
-      child:
-//      widget.auth.isNotLoadingUserDetails
-//          && widget.auth.userdetail.isEmpty
-//          ? Center(child: CircularProgressIndicator())
-//          :
-          Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (__) => ProfileScreen(user: user, token: widget.token)),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                    children: <Widget>[
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      child: user == null
+          ? Center(child: CircularProgressIndicator())
+          : Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (__) => ProfileScreen(
+                                  user: user, token: widget.token)),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
 
-                        backgroundImage: NetworkImage(
-                            // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                            "https://picsum.photos/250?image=9"), //Todo: UserPic
+                              backgroundImage: NetworkImage(
+                                  // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                                  "https://picsum.photos/250?image=9"), //Todo: UserPic
 //                  child: Image.network(
 //                    'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
 //                    fit: BoxFit.cover,
@@ -102,245 +105,268 @@ class _AccountPageState extends State<AccountPage> {
 //                      );
 //                    },
 //                  ),
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Text(
+                                  user.firstName + " " + user.lastName,
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.w700,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                                Text(user.email,
+                                    style: TextStyle(fontSize: 15)),
+                              ],
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(25)),
+//                                color: Theme.of(context).primaryColor,
+                                color: Colors.grey[200],
+                              ),
+                              child: Icon(
+                                Icons.navigate_next,
+                                color: Colors.grey[600],
+                                size: 30,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      Column(
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Divider(
+                        color: Colors.grey[600],
+                        height: 40,
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      elevation: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            user.firstName + " " + user.lastName,
-                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+                          ListTile(
+                            leading: Icon(MdiIcons.mailboxOpenOutline),
+                            title: Text(
+                              "My Items",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => MyItems(
+                                          token: Provider.of<Auth>(context,
+                                                  listen: true)
+                                              .token,
+                                          orderstripsProvider: widget.provider,
+                                        )),
+                              );
+                            },
                           ),
-                          Text(user.email, style: TextStyle(fontSize: 15)),
+                          ListTile(
+                            leading: Icon(MdiIcons.mapMarkerPath),
+                            title: Text(
+                              "My Trips",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => MyTrips(
+                                          token: Provider.of<Auth>(context,
+                                                  listen: true)
+                                              .token,
+                                          orderstripsProvider: widget.provider,
+                                        )),
+                              );
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(MdiIcons.scriptTextOutline),
+                            title: Text(
+                              "Accepted Deals",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => Contracts(
+                                          token: Provider.of<Auth>(context,
+                                                  listen: true)
+                                              .token,
+                                        )),
+                              );
+                            },
+                          ),
                         ],
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
-//                                color: Theme.of(context).primaryColor,
-                          color: Colors.grey[200],
-                        ),
-                        child: Icon(
-                          Icons.navigate_next,
-                          color: Colors.grey[600],
-                          size: 30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Divider(
-                  color: Colors.grey[600],
-                  height: 40,
-                ),
-              ),
-              Card(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(MdiIcons.mailboxOpenOutline),
-                      title: Text(
-                        "My Items",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (__) => MyItems(
-                                    token: Provider.of<Auth>(context, listen: true).token,
-                                    orderstripsProvider: widget.provider,
-                                  )),
-                        );
-                      },
                     ),
-                    ListTile(
-                      leading: Icon(MdiIcons.mapMarkerPath),
-                      title: Text(
-                        "My Trips",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
+                    Card(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (__) => MyTrips(
-                                    token: Provider.of<Auth>(context, listen: true).token,
-                                    orderstripsProvider: widget.provider,
-                                  )),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(MdiIcons.scriptTextOutline),
-                      title: Text(
-                        "Accepted Deals",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (__) => Contracts(
-                                    token: Provider.of<Auth>(context, listen: true).token,
-                                  )),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                elevation: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(MdiIcons.accountMultiplePlus),
-                      title: Text(
-                        "Invite Friends",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
-                      onTap: () {
-                        Share.share("Join to the Briddgy Family https://briddgy.com");
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(MdiIcons.faceAgent),
-                      title: Text(
-                        "Customer Support",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (__) => CustomerSupport()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.star_border),
-                      title: Text(
-                        "Rate/Leave suggestion", //Todo: App Rating
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
-                    ),
-                    ListTile(
-                      leading: Icon(MdiIcons.logoutVariant),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-//                          title: Text(''),
-                            content: Text(
-                              "Are you sure you want to Log out?",
+                      elevation: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(MdiIcons.accountMultiplePlus),
+                            title: Text(
+                              "Invite Friends",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
                             ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text('No.'),
-                                onPressed: () {
-                                  Navigator.of(ctx).pop();
-                                },
-                              ),
-                              FlatButton(
-                                child: Text('Yes, let me out!',
-                                    style: TextStyle(
-                                      color: Colors.redAccent,
-                                    )),
-                                onPressed: () {
-                                  Provider.of<Auth>(context, listen: false).logout(context);
-                                },
-                              ),
-                            ],
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Share.share(
+                                  "Join to the Briddgy Family https://briddgy.com");
+                            },
                           ),
-                        );
-                      },
-                      title: Text(
-                        "Logout",
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: Colors.grey[600],
-                        ),
+                          ListTile(
+                            leading: Icon(MdiIcons.faceAgent),
+                            title: Text(
+                              "Customer Support",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => CustomerSupport()),
+                              );
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.star_border),
+                            title: Text(
+                              "Rate/Leave suggestion", //Todo: App Rating
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                          ),
+                          ListTile(
+                            leading: Icon(MdiIcons.logoutVariant),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+//                          title: Text(''),
+                                  content: Text(
+                                    "Are you sure you want to Log out?",
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('No.'),
+                                      onPressed: () {
+                                        Navigator.of(ctx).pop();
+                                      },
+                                    ),
+                                    FlatButton(
+                                      child: Text('Yes, let me out!',
+                                          style: TextStyle(
+                                            color: Colors.redAccent,
+                                          )),
+                                      onPressed: () {
+                                        Provider.of<Auth>(context,
+                                                listen: false)
+                                            .logout(context);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            title: Text(
+                              "Logout",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                  color: Colors.grey[200],
+                                ),
+                                child: Icon(Icons.navigate_next)),
+                          ),
+                        ],
                       ),
-                      trailing: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Colors.grey[200],
-                          ),
-                          child: Icon(Icons.navigate_next)),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     ));
   }
 }

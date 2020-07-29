@@ -32,7 +32,7 @@ class User {
   String email;
   bool isActive;
   bool isStaff;
-  int rating;
+  double rating;
   String isNumberVerified;
   bool isEmailVerified;
   bool isPhotoVerified;

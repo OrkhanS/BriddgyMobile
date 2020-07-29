@@ -17,8 +17,8 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
-  User user;
-  bool isLoadingUser = true;
+  var user;
+  bool isLoadingUserForMain = true;
   bool isLoadingUserDetails = true;
   String myTokenFromStorage;
   List _reviews = [];
@@ -58,12 +58,12 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
-  User get userdetail {
+  get userdetail {
     return user;
   }
 
   bool get isNotLoading {
-    return isLoadingUser;
+    return isLoadingUserForMain;
   }
 
   Future fetchAndSetStatistics() async {
@@ -105,38 +105,37 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetUserDetails() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      return false;
-    }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
-
+    // final prefs = await SharedPreferences.getInstance();
+    // if (!prefs.containsKey('userData')) {
+    //   return false;
+    // }
+    // final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    isLoadingUserForMain = false;
+    isLoadingUserDetails = false;
     const url = Api.currentUserDetails;
     try {
       final response = await http.get(
         url,
         headers: {
           HttpHeaders.CONTENT_TYPE: "application/json",
-          "Authorization": "Token " + extractedUserData['token'],
+          "Authorization": "Token " + myTokenFromStorage,
         },
       ).then((response) {
-        print("Salalama saUser:");
-        user = User.fromJson(json.decode(response.body));
-
-        print(user);
-
-        isLoadingUser = false;
+        Map<String, dynamic> data =
+            json.decode(response.body) as Map<String, dynamic>;
+        user = User.fromJson(data);
+        isLoadingUserForMain = false;
         isLoadingUserDetails = false;
         notifyListeners();
-
-        //User(email: user["email"], id: user["id"], name: user["first_name"], lastname: user["last_name"], token: extractedUserData['token']);
       });
     } catch (e) {
+      print(e);
       return;
     }
   }
 
-  Future<void> _authenticate(String email, String password, String urlSegment) async {
+  Future<void> _authenticate(
+      String email, String password, String urlSegment) async {
     const url = "http://briddgy.herokuapp.com/api/auth/";
     try {
       final response = await http.post(
@@ -222,7 +221,8 @@ class Auth with ChangeNotifier {
     });
   }
 
-  Future<void> signup(String email, String password, String firstname, String lastname, String deviceID) async {
+  Future<void> signup(String email, String password, String firstname,
+      String lastname, String deviceID) async {
     const url = Api.signUp;
     try {
       final response = await http.post(
@@ -299,7 +299,8 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
     _token = extractedUserData['token'];
     myToken = extractedUserData['token'];
     myTokenFromStorage = extractedUserData['token'];
@@ -321,7 +322,8 @@ class Auth with ChangeNotifier {
     await prefs.remove('userData');
     prefs.commit();
     prefs.clear();
-    Provider.of<OrdersTripsProvider>(context, listen: false).removeAllDataOfProvider();
+    Provider.of<OrdersTripsProvider>(context, listen: false)
+        .removeAllDataOfProvider();
     Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
     removeAllDataOfProvider();
     notifyListeners();
@@ -332,7 +334,7 @@ class Auth with ChangeNotifier {
     _userId = null;
     _token = null;
     user = null;
-    isLoadingUser = true;
+    isLoadingUserForMain = true;
     isLoadingUserDetails = true;
     myTokenFromStorage = null;
     _reviews = [];
