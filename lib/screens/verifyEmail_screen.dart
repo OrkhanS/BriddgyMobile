@@ -1,6 +1,9 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:pinput/pin_put/pin_put_state.dart';
+import 'package:provider/provider.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   @override
@@ -25,28 +28,60 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30.0),
               child: Text(
                 "Verify your email",
-                style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 30,
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.w600),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
               child: Text(
-                "Please enter the 4 digit code sent to your email address",
-                style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
+                "Please enter the 5 digit code sent to your email address",
+                style: TextStyle(
+                    color: Colors.black87, fontWeight: FontWeight.w100),
               ),
             ),
+
             Container(
               margin: EdgeInsets.symmetric(horizontal: 30),
               padding: EdgeInsets.all(20),
               child: PinPut(
                 fieldsCount: 5,
-                onSubmit: (String pin) => _showSnackBar(pin, context),
+                onSubmit: (String pin) {
+                  Provider.of<Auth>(context, listen: false)
+                      .verifyEmailCode(pin)
+                      .whenComplete(() {
+                    if (Provider.of<Auth>(context, listen: false)
+                        .verificationStatus) {
+                      Navigator.pop(context);
+                      Flushbar(
+                        title: "Success",
+                        message: "You are now verified!",
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                    } else {
+                      Flushbar(
+                        title: "Failed",
+                        message: "Wrong Verification Code, Try again!",
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                    }
+                  });
+                },
                 focusNode: _pinPutFocusNode,
                 controller: _pinPutController,
-                submittedFieldDecoration: _pinPutDecoration.copyWith(borderRadius: BorderRadius.circular(20)),
+                submittedFieldDecoration: _pinPutDecoration.copyWith(
+                    borderRadius: BorderRadius.circular(20)),
                 selectedFieldDecoration: _pinPutDecoration,
                 followingFieldDecoration: _pinPutDecoration.copyWith(
                   borderRadius: BorderRadius.circular(5),
@@ -101,7 +136,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
           )),
       backgroundColor: Colors.deepPurpleAccent,
     );
-    Scaffold.of(context).hideCurrentSnackBar();
-    Scaffold.of(context).showSnackBar(snackBar);
+    // Scaffold.of(context).hideCurrentSnackBar();
+    // Scaffold.of(context).showSnackBar(snackBar);
   }
 }
