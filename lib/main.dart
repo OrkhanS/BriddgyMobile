@@ -229,9 +229,7 @@ class _MyAppState extends State<MyApp> {
         _,
       ) {
         if (auth.isAuth == false) {
-          //todo
-
-          //auth.tryAutoLogin();
+          auth.tryAutoLogin();
         }
         if (newmessage.chatsNotLoaded && auth.token != null) newmessage.fetchAndSetRooms(auth);
         if (!socketConnectedFirebase) _configureFirebaseListerners(newmessage);
