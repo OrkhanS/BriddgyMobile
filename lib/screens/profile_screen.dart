@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List _reviews = [];
   List _stats = [];
   String token;
+  User user;
   @override
   void initState() {
     token = widget.token;
@@ -29,14 +31,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_reviews.isEmpty &&
-        !Provider.of<Auth>(context).statsNotReadyForProfile) {
+    if (_reviews.isEmpty && !Provider.of<Auth>(context).statsNotReadyForProfile) {
       _reviews = Provider.of<Auth>(context).reviews;
       _stats = Provider.of<Auth>(context).stats;
     }
+    if (user == null) {
+      if (widget.user != null) {
+        user = widget.user;
+      }
+    }
     return Scaffold(
-      body: Provider.of<Auth>(context).reviewsNotReadyForProfile &&
-              Provider.of<Auth>(context).statsNotReadyForProfile
+      body: Provider.of<Auth>(context).reviewsNotReadyForProfile && Provider.of<Auth>(context).statsNotReadyForProfile
           ? Center(child: CircularProgressIndicator())
           : SafeArea(
               child: Column(
@@ -52,9 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     title: Text(
                       "Profile", //Todo: User's name ??
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                     ),
                     centerTitle: true,
                     elevation: 1,
@@ -88,14 +91,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.lightGreen,
                                   ),
                                   Text(
-                                    "  " +
-                                        widget.user["first_name"].toString() +
-                                        " " +
-                                        widget.user["last_name"].toString(),
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).primaryColor),
+                                    "  " + user.firstName + " " + user.lastName,
+                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
                                   ),
                                 ],
                               ),
@@ -113,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 trailing: Text(
-                                  widget.user["email"].toString(),
+                                  user.email,
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.grey[600],
