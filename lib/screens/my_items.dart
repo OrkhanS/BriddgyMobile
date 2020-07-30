@@ -116,7 +116,7 @@ class _MyItemsState extends State<MyItems> {
                           child: ListView.builder(
                             itemBuilder: (context, int i) {
                               return OrderWidget(
-                                order: orderstripsProvider.myorders[i],
+                                order: _orders[i],
                                 i: i,
                               );
                             },
