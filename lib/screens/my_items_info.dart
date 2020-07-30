@@ -5,19 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
 
 class MyItemScreenInfo extends StatefulWidget {
-  var id, description, image;
-  var title, owner, destination, source, date, weight, price;
+  var order;
   MyItemScreenInfo({
-    this.id,
-    this.date,
-    this.destination,
-    this.weight,
-    this.price,
-    this.owner,
-    this.title,
-    this.description,
-    this.source,
-    this.image,
+    this.order,
   });
   static const routeName = '/orders';
   @override

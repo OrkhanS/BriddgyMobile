@@ -28,13 +28,13 @@ class Order {
 
   int id;
   Owner owner;
-  int dimensions;
+  double dimensions;
   Destination source;
   Destination destination;
   DateTime date;
   String address;
-  int weight;
-  int price;
+  double weight;
+  double price;
   dynamic trip;
   String description;
   String title;
@@ -64,7 +64,8 @@ class Order {
         "dimensions": dimensions,
         "source": source.toJson(),
         "destination": destination.toJson(),
-        "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date":
+            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "address": address,
         "weight": weight,
         "price": price,
@@ -124,7 +125,7 @@ class Owner {
   bool isEmailVerified;
   bool isPhotoVerified;
   DateTime lastLogin;
-  int rating;
+  double rating;
   dynamic avatarpic;
   DateTime lastOnline;
   bool online;

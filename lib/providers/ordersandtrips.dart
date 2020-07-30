@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/order.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -115,9 +116,13 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
-      myorders = dataOrders["results"];
-      allMyOrderDetails = dataOrders;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
+
+      for (var i = 0; i < data["results"].length; i++) {
+        myorders.add(Order.fromJson(data["results"][i]));
+      }
+      allMyOrderDetails = data;
       isLoadingMyOrders = false;
     });
 
