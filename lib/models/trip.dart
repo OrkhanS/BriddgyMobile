@@ -24,7 +24,7 @@ class Trip {
   Destination source;
   Destination destination;
   DateTime date;
-  int weightLimit;
+  double weightLimit;
   int numberOfContracts;
 
   factory Trip.fromJson(Map<String, dynamic> json) => Trip(
@@ -42,7 +42,8 @@ class Trip {
         "owner": owner.toJson(),
         "source": source.toJson(),
         "destination": destination.toJson(),
-        "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date":
+            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "weight_limit": weightLimit,
         "number_of_contracts": numberOfContracts,
       };
@@ -96,7 +97,7 @@ class Owner {
   bool isEmailVerified;
   bool isPhotoVerified;
   DateTime lastLogin;
-  int rating;
+  double rating;
   dynamic avatarpic;
   DateTime lastOnline;
   bool online;

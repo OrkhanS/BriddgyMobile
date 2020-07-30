@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
+import 'package:optisend/models/trip.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -78,13 +79,19 @@ class OrdersTripsProvider with ChangeNotifier {
           HttpHeaders.CONTENT_TYPE: "application/json",
         },
       ).then((onValue) {
-        final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
-        orders = dataOrders["results"];
-        allOrdersDetails = dataOrders;
+        Map<String, dynamic> data =
+            json.decode(onValue.body) as Map<String, dynamic>;
+
+        for (var i = 0; i < data["results"].length; i++) {
+          orders.add(Order.fromJson(data["results"][i]));
+        }
+        //allOrdersDetails = data;
         isLoadingOrders = false;
+        notifyListeners();
       });
     } else {
-      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
 
       http.get(
@@ -94,14 +101,17 @@ class OrdersTripsProvider with ChangeNotifier {
           "Authorization": "Token " + token,
         },
       ).then((onValue) {
-        final dataOrders = json.decode(onValue.body) as Map<String, dynamic>;
-        orders = dataOrders["results"];
-        allOrdersDetails = dataOrders;
+        Map<String, dynamic> data =
+            json.decode(onValue.body) as Map<String, dynamic>;
+
+        for (var i = 0; i < data["results"].length; i++) {
+          orders.add(Order.fromJson(data["results"][i]));
+        }
+        //allOrdersDetails = data;
         isLoadingOrders = false;
+        notifyListeners();
       });
     }
-
-    notifyListeners();
     return _orders;
   }
 
@@ -115,7 +125,8 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         myorders.add(Order.fromJson(data["results"][i]));
@@ -163,15 +174,22 @@ class OrdersTripsProvider with ChangeNotifier {
         headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
       ).then(
         (response) {
-          final dataTrips = json.decode(response.body) as Map<String, dynamic>;
-          trips = dataTrips["results"];
-          allTripsDetails = dataTrips;
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+
+          for (var i = 0; i < data["results"].length; i++) {
+            trips.add(Trip.fromJson(data["results"][i]));
+          }
+
+          // allTripsDetails = dataTrips;
           isLoading = false;
+          notifyListeners();
           return;
         },
       );
     } else {
-      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
 
       if (token != null) {
@@ -183,16 +201,20 @@ class OrdersTripsProvider with ChangeNotifier {
           },
         ).then(
           (response) {
-            final dataTrips = json.decode(response.body) as Map<String, dynamic>;
-            trips = dataTrips["results"];
-            allTripsDetails = dataTrips;
+            Map<String, dynamic> data =
+                json.decode(response.body) as Map<String, dynamic>;
+
+            for (var i = 0; i < data["results"].length; i++) {
+              trips.add(Trip.fromJson(data["results"][i]));
+            }
+
             isLoading = false;
+            notifyListeners();
+            // allTripsDetails = dataTrips;
           },
         );
       }
     }
-
-    notifyListeners();
   }
 
   Future fetchAndSetMyTrips(myToken) async {
@@ -205,13 +227,16 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      final dataTrips = json.decode(onValue.body) as Map<String, dynamic>;
-      mytrips = dataTrips["results"];
-      allMyTripsDetails = dataTrips;
-      isLoading = false;
-    });
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
 
-    notifyListeners();
+      for (var i = 0; i < data["results"].length; i++) {
+        mytrips.add(Trip.fromJson(data["results"][i]));
+      }
+      //allMyTripsDetails = dataTrips;
+      isLoading = false;
+      notifyListeners();
+    });
   }
 
   removeAllDataOfProvider() {
