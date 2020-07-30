@@ -84,8 +84,7 @@ class OrdersTripsProvider with ChangeNotifier {
         isLoadingOrders = false;
       });
     } else {
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
 
       http.get(
@@ -116,17 +115,16 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      Map<String, dynamic> data =
-          json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         myorders.add(Order.fromJson(data["results"][i]));
       }
-      allMyOrderDetails = data;
-      isLoadingMyOrders = false;
-    });
+//      allMyOrderDetails = data;
 
-    notifyListeners();
+      isLoadingMyOrders = false;
+      notifyListeners();
+    });
   }
 
   //_________________________________________________________TRIPS__________________________________________________________
@@ -173,8 +171,7 @@ class OrdersTripsProvider with ChangeNotifier {
         },
       );
     } else {
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
 
       if (token != null) {
@@ -186,8 +183,7 @@ class OrdersTripsProvider with ChangeNotifier {
           },
         ).then(
           (response) {
-            final dataTrips =
-                json.decode(response.body) as Map<String, dynamic>;
+            final dataTrips = json.decode(response.body) as Map<String, dynamic>;
             trips = dataTrips["results"];
             allTripsDetails = dataTrips;
             isLoading = false;

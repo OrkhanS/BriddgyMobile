@@ -1,72 +1,155 @@
-//import 'dart:math';
-//
-//import 'package:flutter/material.dart';
-//import 'package:intl/intl.dart';
-//
-//class OrderItem extends StatefulWidget {
-//  final ord.OrderItem order;
-//
-//  OrderItem(this.order);
-//
-//  @override
-//  _OrderItemState createState() => _OrderItemState();
-//}
-//
-//class _OrderItemState extends State<OrderItem> {
-//  var _expanded = false;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Card(
-//      margin: EdgeInsets.all(10),
-//      child: Column(
-//        children: <Widget>[
-//          ListTile(
-//            title: Text('\$${widget.order.amount}'),
-//            subtitle: Text(
-//              DateFormat('dd/MM/yyyy hh:mm').format(widget.order.dateTime),
-//            ),
-//            trailing: IconButton(
-//              icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-//              onPressed: () {
-//                setState(() {
-//                  _expanded = !_expanded;
-//                });
-//              },
-//            ),
-//          ),
-//          if (_expanded)
-//            Container(
-//              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-//              height: min(widget.order.products.length * 20.0 + 10, 100),
-//              child: ListView(
-//                children: widget.order.products
-//                    .map(
-//                      (prod) => Row(
-//                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                        children: <Widget>[
-//                          Text(
-//                            prod.title,
-//                            style: TextStyle(
-//                              fontSize: 18,
-//                              fontWeight: FontWeight.bold,
-//                            ),
-//                          ),
-//                          Text(
-//                            '${prod.quantity}x \$${prod.price}',
-//                            style: TextStyle(
-//                              fontSize: 18,
-//                              color: Colors.grey,
-//                            ),
-//                          )
-//                        ],
-//                      ),
-//                    )
-//                    .toList(),
-//              ),
-//            )
-//        ],
-//      ),
-//    );
-//  }
-//}
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/order.dart';
+import 'package:optisend/screens/item_screen.dart';
+
+class OrderWidget extends StatefulWidget {
+  Order order;
+  var i;
+  OrderWidget({@required this.order, @required this.i});
+
+  @override
+  _OrderWidgetState createState() => _OrderWidgetState();
+}
+
+class _OrderWidgetState extends State<OrderWidget> {
+  Order order;
+  var i;
+  @override
+  void initState() {
+    i = widget.i;
+    order = widget.order;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (__) => ItemScreen(order: order),
+          ),
+        );
+      },
+      child: Container(
+        height: 100,
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        child: Card(
+          elevation: 4,
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  child: Image(
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                              : null,
+                        ),
+                      );
+                    },
+
+                    image: NetworkImage(
+                        // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
+                        "https://picsum.photos/250?image=9"), //Todo fotka,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 200,
+                      child: Text(
+//                                                    _orders[i]["title"].toString().length > 20
+//                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
+//                                                        :
+                        order.title,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.grey[800],
+//                                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Icon(
+                          MdiIcons.mapMarkerMultipleOutline,
+                          color: Theme.of(context).primaryColor,
+                          size: 16,
+                        ),
+                        SizedBox(
+                          width: 200,
+                          child: Text(
+                            order.source.cityAscii + "  >  " + order.destination.cityAscii,
+                            maxLines: 1,
+                            style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+//                                        mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.calendarRange,
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            Text(
+                              DateFormat.yMMMd().format(order.date),
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 50,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.attach_money,
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            SizedBox(
+                              width: 50,
+                              child: Text(
+                                order.price.toString(),
+                                maxLines: 1,
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

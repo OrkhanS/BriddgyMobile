@@ -6,13 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/auth.dart';
-import 'package:optisend/screens/item_screen.dart';
-import 'package:optisend/main.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:optisend/screens/verifyEmail_screen.dart';
+import 'package:optisend/widgets/order_item.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -297,144 +295,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           },
                           child: ListView.builder(
                             itemBuilder: (context, int i) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (__) => new ItemScreenOld(
-                                        id: _orders[i]["id"],
-                                        owner: _orders[i]["owner"],
-                                        title: _orders[i]["title"],
-                                        destination: _orders[i]["destination"],
-                                        source: _orders[i]["source"]["city_ascii"],
-                                        weight: _orders[i]["weight"],
-                                        price: _orders[i]["price"],
-                                        date: _orders[i]["date"],
-                                        description: _orders[i]["description"],
-                                        image: _orders[i]["orderimage"],
-                                        token: widget.token,
-                                        room: widget.room,
-                                        auth: widget.auth,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  height: 100,
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Card(
-                                    elevation: 4,
-                                    child: Row(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                                            child: Image(
-                                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                                                if (loadingProgress == null) return child;
-                                                return Center(
-                                                  child: CircularProgressIndicator(
-                                                    value: loadingProgress.expectedTotalBytes != null
-                                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                                                        : null,
-                                                  ),
-                                                );
-                                              },
-
-                                              image: NetworkImage(
-                                                  // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                                  "https://picsum.photos/250?image=9"), //Todo fotka,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              SizedBox(
-                                                width: 200,
-                                                child: Text(
-//                                                    _orders[i]["title"].toString().length > 20
-//                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
-//                                                        :
-                                                  _orders[i]["title"].toString(),
-                                                  overflow: TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    MdiIcons.mapMarkerMultipleOutline,
-                                                    color: Theme.of(context).primaryColor,
-                                                    size: 16,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 200,
-                                                    child: Text(
-                                                      _orders[i]["source"]["city_ascii"] + "  >  " + _orders[i]["destination"]["city_ascii"],
-                                                      maxLines: 1,
-                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-//                                        mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                children: <Widget>[
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        MdiIcons.calendarRange,
-                                                        color: Theme.of(context).primaryColor,
-                                                        size: 16,
-                                                      ),
-                                                      Text(
-                                                        _orders[i]["date"].toString(),
-                                                        style: TextStyle(color: Colors.grey[600]),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    width: 50,
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Icon(
-                                                        Icons.attach_money,
-                                                        color: Theme.of(context).primaryColor,
-                                                        size: 16,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 50,
-                                                        child: Text(
-                                                          _orders[i]["price"].toString(),
-                                                          maxLines: 1,
-                                                          style: TextStyle(color: Colors.grey[600]),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                              return OrderWidget(
+                                order: _orders[i],
+                                i: i,
                               );
                             },
                             itemCount: _orders.length,
