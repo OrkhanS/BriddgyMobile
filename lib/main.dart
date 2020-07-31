@@ -193,11 +193,11 @@ class _MyAppState extends State<MyApp> {
               : Icon(MdiIcons.forumOutline),
           activeIcon: Icon(MdiIcons.forum),
         ),
-        BottomNavigationBarItem(
-          title: Text('Notifications'),
-          icon: Icon(Icons.notifications_none),
-          activeIcon: Icon(Icons.notifications),
-        ),
+//        BottomNavigationBarItem(
+//          title: Text('Notifications'),
+//          icon: Icon(Icons.notifications_none),
+//          activeIcon: Icon(Icons.notifications),
+//        ),
         BottomNavigationBarItem(
           title: Text('Account'),
           icon: Icon(MdiIcons.accountSettingsOutline),
@@ -267,7 +267,7 @@ class _MyAppState extends State<MyApp> {
                   OrdersScreen(orderstripsProvider: orderstripsProvider, room: newmessage, auth: auth, token: tokenforROOM),
                   TripsScreen(orderstripsProvider: orderstripsProvider, room: newmessage, auth: auth, token: tokenforROOM),
                   ChatsScreen(provider: newmessage, auth: auth, token: tokenforROOM),
-                  NotificationScreen(),
+//                  NotificationScreen(),
                   auth.isAuth ? AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider) : AuthScreen(),
                 ],
               ),

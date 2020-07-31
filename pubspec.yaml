@@ -47,6 +47,7 @@ dependencies:
   flushbar: ^1.10.4
   pinput: ^0.2.4
   argon_buttons_flutter: ^1.0.5
+  simple_animations: ^2.2.1
 
 
 

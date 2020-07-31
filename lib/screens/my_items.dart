@@ -91,21 +91,27 @@ class _MyItemsState extends State<MyItems> {
                     },
                     child: Column(
                       children: <Widget>[
-                        AppBar(
-                          backgroundColor: Colors.white,
-                          centerTitle: true,
-                          leading: IconButton(
-                            color: Theme.of(context).primaryColor,
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: AppBar(
+                            backgroundColor: Colors.white,
+                            centerTitle: true,
+                            leading: IconButton(
+                              color: Theme.of(context).primaryColor,
+                              icon: Icon(
+                                Icons.chevron_left,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            title: Text(
+                              "My Orders",
+                              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                            ),
+                            elevation: 1,
                           ),
-                          title: Text(
-                            "My Orders",
-                            style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                          ),
-                          elevation: 1,
                         ),
                         Expanded(
                           child: ListView.builder(

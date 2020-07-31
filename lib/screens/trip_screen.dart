@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
 import 'package:optisend/screens/verifyEmail_screen.dart';
 import 'package:optisend/widgets/filter_bar.dart';
+import 'package:optisend/widgets/trip_widget.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optisend/screens/add_trip_screen.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class TripsScreen extends StatefulWidget {
   OrdersTripsProvider orderstripsProvider;
@@ -63,9 +63,7 @@ class _TripScreenState extends State<TripsScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false
-          ? urlFilter = urlFilter + "dest=" + to.toString()
-          : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -76,10 +74,7 @@ class _TripScreenState extends State<TripsScreen> {
     }
 
     if (_endtime != null) {
-      flagWeight == false &&
-              flagTo == false &&
-              flagFrom == false &&
-              flagStart == false
+      flagWeight == false && flagTo == false && flagFrom == false && flagStart == false
           ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
           : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
       flagStart = true;
@@ -141,11 +136,7 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() +
-          ", " +
-          _suggested[i]["country"].toString() +
-          ", " +
-          _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -209,8 +200,7 @@ class _TripScreenState extends State<TripsScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextTripURL.toString() != "null" &&
-          nextTripURL.toString() != "FristCall") {
+      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
         String url = nextTripURL;
         try {
           await http.get(
@@ -277,53 +267,42 @@ class _TripScreenState extends State<TripsScreen> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                FilterBar(
-                    ordersProvider: widget.orderstripsProvider,
-                    from: from,
-                    to: to,
-                    weight: weight),
+                FilterBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "Results: " + _trips.length.toString(),
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.bold),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                    Text(
+                      "Results: " + _trips.length.toString(),
+                      style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
+                    ),
+                    DropdownButton(
+                      hint: Text(_value),
+                      items: [
+                        DropdownMenuItem(
+                          value: "Ranking",
+                          child: Text(
+                            "Ranking",
+                          ),
                         ),
-                        DropdownButton(
-                          hint: Text(_value),
-                          items: [
-                            DropdownMenuItem(
-                              value: "Ranking",
-                              child: Text(
-                                "Ranking",
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "WeightMax",
-                              child: Text(
-                                "Weight Limit",
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            sortData(value, tripsProvider);
-                          },
+                        DropdownMenuItem(
+                          value: "WeightMax",
+                          child: Text(
+                            "Weight Limit",
+                          ),
                         ),
-                      ]),
+                      ],
+                      onChanged: (value) {
+                        sortData(value, tripsProvider);
+                      },
+                    ),
+                  ]),
                 ),
                 Expanded(
                   child: tripsProvider.notLoaded != false
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew &&
-                                scrollInfo.metrics.pixels ==
-                                    scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;
@@ -333,173 +312,7 @@ class _TripScreenState extends State<TripsScreen> {
                           },
                           child: ListView.builder(
                             itemBuilder: (context, int i) {
-                              return Container(
-                                height: 100,
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                child: Card(
-                                  elevation: 2,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Image(
-                                            image: NetworkImage(
-                                                "https://img.icons8.com/wired/2x/passenger-with-baggage.png"),
-                                            height: 60,
-                                            width: 60,
-                                          )
-
-                                          // Image.network(
-                                          //         getImageUrl(_trips[i]["orderimage"])
-                                          // ),
-                                          ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12.0, vertical: 4.0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                _trips[i]["owner"]
-                                                        ["first_name"] +
-                                                    " " +
-                                                    _trips[i]["owner"][
-                                                        "last_name"], //Todo: title
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.grey[600],
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    size: 16,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        _trips[i]["source"]
-                                                            ["city_ascii"] +
-                                                        " > " +
-                                                        _trips[i]["destination"]
-                                                            ["city_ascii"],
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        color: Colors.grey[600],
-                                                        fontWeight:
-                                                            FontWeight.normal),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.date_range,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    size: 16,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        _trips[i]["date"]
-                                                            .toString(), //Todo: date
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[600]),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    MdiIcons
-                                                        .weightKilogram, //todo: icon
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    size: 16,
-                                                  ),
-                                                  Text(
-                                                    "  " +
-                                                        _trips[i]
-                                                                ["weight_limit"]
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[600]),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: RaisedButton(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          color: Colors.white,
-                                          onPressed: () {
-                                            createRooms(tripsProvider.trips[i]
-                                                ["owner"]["id"]);
-                                            Flushbar(
-                                              title: "Chat with " +
-                                                  _trips[i]["owner"]
-                                                          ["first_name"]
-                                                      .toString() +
-                                                  " has been started!",
-                                              message:
-                                                  "Check Chats to see more.",
-                                              padding: const EdgeInsets.all(8),
-                                              borderRadius: 10,
-                                              duration: Duration(seconds: 5),
-                                            )..show(context);
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: <Widget>[
-                                              Icon(
-                                                MdiIcons
-                                                    .messageArrowRightOutline,
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                size: 19,
-                                              ),
-                                              Text(
-                                                " Message",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 10),
-                                    ],
-                                  ),
-                                ),
-                              );
+                              return TripWidget(trip: _trips[i], i: i);
                             },
                             itemCount: _trips == null ? 0 : _trips.length,
                           ),
