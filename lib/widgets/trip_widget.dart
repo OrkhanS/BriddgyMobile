@@ -101,10 +101,22 @@ class TripWidget extends StatelessWidget {
               //todo if user is the owner, then replace the button below with delete button
               Expanded(
                 flex: 3,
-                child: RaisedButton(
+                child: RaisedButton.icon(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   color: Theme.of(context).scaffoldBackgroundColor,
                   elevation: 1,
+                  icon: Icon(
+                    MdiIcons.chatOutline,
+                    color: Theme.of(context).primaryColor,
+                    size: 18,
+                  ),
+                  label: Text(
+                    " Message",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
                   onPressed: () {
                     //todo Orxan fix
 //                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
@@ -116,23 +128,6 @@ class TripWidget extends StatelessWidget {
                       duration: Duration(seconds: 5),
                     )..show(context);
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Icon(
-                        MdiIcons.chatOutline,
-                        color: Theme.of(context).primaryColor,
-                        size: 18,
-                      ),
-                      Text(
-                        " Message",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
               SizedBox(width: 10),
