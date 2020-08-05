@@ -1,10 +1,15 @@
 import 'dart:io';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
+import 'package:provider/provider.dart';
 import '../main.dart';
+import 'chats_screen.dart';
 
 class ItemScreen extends StatefulWidget {
   Order order;
@@ -22,22 +27,22 @@ class _ItemScreenState extends State<ItemScreen> {
     super.initState();
   }
 
-//todo orxan
-//  Future createRooms() async {
-//    String tokenforROOM = widget.token;
-//    if (tokenforROOM != null) {
-//      String url = Api.itemConnectOwner + widget.owner["id"].toString();
-//      await http.get(
-//        url,
-//        headers: {
-//          HttpHeaders.CONTENT_TYPE: "application/json",
-//          "Authorization": "Token " + tokenforROOM,
-//        },
-//      ).then((value) => print(value));
-//      widget.room.fetchAndSetRooms(widget.auth);
-//    }
-//    return null;
-//  }
+  Future createRooms() async {
+    var auth = Provider.of<Auth>(context, listen: false);
+    String tokenforROOM = auth.myTokenFromStorage;
+    if (tokenforROOM != null) {
+      String url = Api.itemConnectOwner + order.owner.id.toString() + "/";
+      await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + tokenforROOM,
+        },
+      ).then((value) => print(value));
+      //Provider.of<Messages>(context, listen: false).fetchAndSetRooms(auth);
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +64,9 @@ class _ItemScreenState extends State<ItemScreen> {
                 ),
                 title: Text(
                   order.title.toString(),
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
                 ),
                 elevation: 1,
               ),
@@ -75,12 +82,14 @@ class _ItemScreenState extends State<ItemScreen> {
                         height: 250,
                         width: 250,
                         fit: BoxFit.cover,
-                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Center(
                             child: CircularProgressIndicator(
                               value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
                                   : null,
                             ),
                           );
@@ -91,7 +100,8 @@ class _ItemScreenState extends State<ItemScreen> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,7 +143,9 @@ class _ItemScreenState extends State<ItemScreen> {
                           ),
                           Text(
                             order.owner.rating.toString(),
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       ),
@@ -168,7 +180,8 @@ class _ItemScreenState extends State<ItemScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 2),
                       child: Text(
                         "Item Details",
                         style: TextStyle(
@@ -238,7 +251,8 @@ class _ItemScreenState extends State<ItemScreen> {
                         children: <Widget>[
                           Text(
                             "Request date:",
-                            style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.grey[600]),
                           ),
                           Expanded(
                             child: SizedBox(
@@ -334,7 +348,8 @@ class _ItemScreenState extends State<ItemScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 2),
                       child: Row(
                         children: <Widget>[
                           Text(
@@ -358,7 +373,8 @@ class _ItemScreenState extends State<ItemScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -386,38 +402,23 @@ class _ItemScreenState extends State<ItemScreen> {
                         ],
                       ),
                       onPressed: () {
-                        //todo orxan fix
-                        //                        createRooms();
-
-                        //Todo Toast message that Conversation has been started
-                        Navigator.pop(context);
+                        if (Provider.of<Auth>(context, listen: false).isAuth) {
+                          createRooms();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (__) => ChatsScreen()),
+                          );
+                        } else {
+                          Flushbar(
+                            title: "Warning",
+                            message: "You need to Log in to add Item!",
+                            padding: const EdgeInsets.all(8),
+                            borderRadius: 10,
+                            duration: Duration(seconds: 3),
+                          )..show(context);
+                        }
                       },
                     ),
-                    // RaisedButton(
-                    //   color: Theme.of(context).primaryColor,
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //     children: <Widget>[
-                    //       Text(
-                    //         "To Baggage",
-                    //         style: TextStyle(
-                    //           fontSize: 20,
-                    //           fontWeight: FontWeight.bold,
-                    //           color: Colors.white,
-                    //         ),
-                    //       ),
-                    //       SizedBox(
-                    //         width: 10,
-                    //       ),
-                    //       Icon(
-                    //         Icons.add,
-                    //         size: 20,
-                    //         color: Colors.white,
-                    //       )
-                    //     ],
-                    //   ),
-                    //   onPressed: () {},
-                    // ),
                   ],
                 ),
               ),
@@ -494,7 +495,9 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                 ),
                 title: Text(
                   widget.title.toString(),
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
                 ),
                 elevation: 1,
               ),
@@ -510,12 +513,14 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                         height: 250,
                         width: 250,
                         fit: BoxFit.cover,
-                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Center(
                             child: CircularProgressIndicator(
                               value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
                                   : null,
                             ),
                           );
@@ -526,7 +531,8 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -542,7 +548,9 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                     ),
 
                     Text(
-                      widget.owner["first_name"].toString() + " " + widget.owner["last_name"].toString(),
+                      widget.owner["first_name"].toString() +
+                          " " +
+                          widget.owner["last_name"].toString(),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -568,7 +576,9 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                           ),
                           Text(
                             widget.owner["rating"].toString(),
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           )
                         ],
                       ),
@@ -603,7 +613,8 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 2),
                       child: Text(
                         "Item Details",
                         style: TextStyle(
@@ -673,7 +684,8 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                         children: <Widget>[
                           Text(
                             "Request date:",
-                            style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                            style: TextStyle(
+                                fontSize: 17, color: Colors.grey[600]),
                           ),
                           Expanded(
                             child: SizedBox(
@@ -769,7 +781,8 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 2),
                       child: Row(
                         children: <Widget>[
                           Text(
@@ -793,7 +806,8 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -823,8 +837,11 @@ class _ItemScreenOldState extends State<ItemScreenOld> {
                       onPressed: () {
                         createRooms();
 
-                        //Todo Toast message that Conversation has been started
-                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatsScreen()),
+                        );
                       },
                     ),
                     // RaisedButton(

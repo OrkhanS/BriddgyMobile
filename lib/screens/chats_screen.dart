@@ -44,7 +44,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    myid = widget.provider.userDetails["id"].toString();
+    myid = Provider.of<Auth>(context).userdetail.id.toString();
     // getAvatarUrl(String a) {
     //   String helper = 'https://briddgy.herokuapp.com/media/';
     //   imageUrl =

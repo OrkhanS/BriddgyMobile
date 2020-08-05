@@ -23,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List _stats = [];
   String token;
   User user;
+  bool editingController = false;
   @override
   void initState() {
     token = widget.token;
@@ -31,7 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_reviews.isEmpty && !Provider.of<Auth>(context).statsNotReadyForProfile) {
+    final deviceSize = MediaQuery.of(context).size;
+    if (_reviews.isEmpty &&
+        !Provider.of<Auth>(context).statsNotReadyForProfile) {
       _reviews = Provider.of<Auth>(context).reviews;
       _stats = Provider.of<Auth>(context).stats;
     }
@@ -41,7 +44,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
     return Scaffold(
-      body: Provider.of<Auth>(context).reviewsNotReadyForProfile && Provider.of<Auth>(context).statsNotReadyForProfile
+      body: Provider.of<Auth>(context).reviewsNotReadyForProfile &&
+              Provider.of<Auth>(context).statsNotReadyForProfile
           ? Center(child: CircularProgressIndicator())
           : SafeArea(
               child: Column(
@@ -57,7 +61,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     title: Text(
                       "Profile", //Todo: User's name ??
-                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold),
                     ),
                     centerTitle: true,
                     elevation: 1,
@@ -72,6 +78,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
                         children: <Widget>[
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: Icon(
+                                editingController ? Icons.cancel : Icons.edit,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  editingController
+                                      ? editingController = false
+                                      : editingController = true;
+                                });
+                              },
+                            ),
+                          ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,14 +108,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    MdiIcons.shieldCheck,
-                                    color: Colors.lightGreen,
-                                  ),
-                                  Text(
-                                    "  " + user.firstName + " " + user.lastName,
-                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
-                                  ),
+                                  user.isEmailVerified == true
+                                      ? Icon(
+                                          MdiIcons.shieldCheck,
+                                          color: Colors.lightGreen,
+                                        )
+                                      : Icon(
+                                          MdiIcons.securityNetwork,
+                                          color: Colors.red,
+                                        ),
+                                  editingController
+                                      ? Container(
+                                          width: deviceSize.width * 0.4,
+                                          child: TextFormField(
+                                            decoration: InputDecoration(
+                                              hintText: user.firstName +
+                                                  " " +
+                                                  user.lastName,
+                                              icon: Icon(Icons.edit),
+                                            ),
+                                            keyboardType: TextInputType.text,
+                                            onSaved: (value) {},
+                                          ),
+                                        )
+                                      : Text(
+                                          "  " +
+                                              user.firstName +
+                                              " " +
+                                              user.lastName,
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.w700,
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                        ),
                                 ],
                               ),
                               Divider(
@@ -109,13 +157,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.grey[600],
                                   ),
                                 ),
-                                trailing: Text(
-                                  user.email,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
+                                trailing: editingController
+                                    ? Container(
+                                        width: deviceSize.width * 0.4,
+                                        child: TextFormField(
+                                          decoration: InputDecoration(
+                                            hintText: user.email,
+                                            icon: Icon(Icons.edit),
+                                          ),
+                                          keyboardType: TextInputType.text,
+                                          onSaved: (value) {},
+                                        ),
+                                      )
+                                    : Text(
+                                        user.email,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
                               ),
                               ListTile(
                                 dense: true,
