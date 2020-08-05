@@ -27,9 +27,65 @@ class _AddItemScreenState extends State<AddItemScreen> {
   List _suggested = [];
   List _cities = [];
   bool isLoading = true;
+  var imageFile;
 
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
+
+  Future<void> _showSelectionDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text("Choose Image source"),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Text("Gallery"),
+                      onTap: () {
+                        _openGallery(context);
+                      },
+                    ),
+                    Divider(),
+                    GestureDetector(
+                      child: Text("Camera"),
+                      onTap: () {
+                        _openCamera(context);
+                      },
+                    )
+                  ],
+                ),
+              ));
+        });
+  }
+
+  void _openGallery(BuildContext context) async {
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    this.setState(() {
+      imageFile = picture;
+    });
+    Navigator.of(context).pop();
+  }
+
+  void _openCamera(BuildContext context) async {
+    var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    this.setState(() {
+      imageFile = picture;
+    });
+    Navigator.of(context).pop();
+  }
+
+  Widget _setImageView() {
+    if (imageFile != null) {
+      return Image.file(
+        imageFile,
+        fit: BoxFit.fitWidth,
+      );
+    } else {
+      return Text("Please select an image");
+    }
+  }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
     String url = Api.getSuggestions + pattern;
@@ -294,6 +350,79 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     weight = val;
                   },
                 ),
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
+                    child: InkWell(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1),
+                        ),
+                        child: imageFile == null
+                            ? Icon(
+                                Icons.add,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+                            : _setImageView(),
+                      ),
+                      onTap: () {
+                        _showSelectionDialog(context);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
+                    child: InkWell(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1),
+                        ),
+                        child: imageFile == null
+                            ? Icon(
+                                Icons.add,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+                            : _setImageView(),
+                      ),
+                      onTap: () {
+                        _showSelectionDialog(context);
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
+                    child: InkWell(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1),
+                        ),
+                        child: imageFile == null
+                            ? Icon(
+                                Icons.add,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+                            : _setImageView(),
+                      ),
+                      onTap: () {
+                        _showSelectionDialog(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30.0),

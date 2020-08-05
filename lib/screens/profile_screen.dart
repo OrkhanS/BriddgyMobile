@@ -62,134 +62,157 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     centerTitle: true,
                     elevation: 1,
                   ),
-                  Card(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
                         children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Image.network(
+                              "https://picsum.photos/250?image=9",
+                              height: 140,
+                              width: 140,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              CircleAvatar(
-                                radius: 70,
-
-                                backgroundImage: NetworkImage(
-                                    // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                    "https://picsum.photos/250?image=9"), //Todo
-                              ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
+                                children: <Widget>[
                                   Icon(
                                     MdiIcons.shieldCheck,
                                     color: Colors.lightGreen,
                                   ),
                                   Text(
-                                    "  " + user.firstName + " " + user.lastName,
-                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+                                    "Verified",
+                                    style: TextStyle(color: Colors.green),
                                   ),
+                                  Container(
+                                    width: 50,
+                                    height: 25,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green[400],
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.star,
+                                          size: 15,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "4.0",
+//                                        order.owner.rating.toString(),
+                                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                  )
                                 ],
                               ),
-                              Divider(
-                                color: Colors.grey[600],
-                                height: 50,
-                              ),
-                              ListTile(
-                                dense: true,
-                                title: Text(
-                                  "Email: ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                trailing: Text(
-                                  user.email,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              ListTile(
-                                dense: true,
-                                title: Text(
-                                  "Phone: ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                trailing: Text(
-                                  "Hidden", // todo add user's num
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              ListTile(
-                                dense: true,
-                                title: Text(
-                                  "Sent: ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                trailing: Text(
-                                  _stats[0]["totalorders"].toString(),
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              ListTile(
-                                dense: true,
-                                title: Text(
-                                  "Delivered: ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                trailing: Text(
-                                  _stats[0]["totaltrips"].toString(),
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              ListTile(
-                                dense: true,
-                                title: Text(
-                                  "Earned: ",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                trailing: Text(
-                                  _stats[0]["totalearnings"].toString() + "\$",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
+                              Text(
+                                "  " + user.firstName + " " + user.lastName,
+                                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+                              )
                             ],
                           ),
                         ],
                       ),
-                    ),
+                      Divider(
+                        color: Colors.grey[600],
+                      ),
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          "Email: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Text(
+                          user.email,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          "Phone: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Text(
+                          "Hidden", // todo add user's num
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          "Sent: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Text(
+                          _stats[0]["totalorders"].toString(),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          "Delivered: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Text(
+                          _stats[0]["totaltrips"].toString(),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        dense: true,
+                        title: Text(
+                          "Earned: ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Text(
+                          _stats[0]["totalearnings"].toString() + "\$",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Text(
                     "Reviews:",
