@@ -20,4 +20,5 @@ class Api {
   static const myReviews = address + "api/users/my/reviews/";
   static const requestEmailVerification = address + "api/request/email/";
   static const verifyEmail = address + "api/request/verify/";
+  static const orderById = address + "api/users/";
 }

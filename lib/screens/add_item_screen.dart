@@ -351,134 +351,124 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   },
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
-                    child: InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        child: imageFile == null
-                            ? Icon(
-                                Icons.add,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : _setImageView(),
-                      ),
-                      onTap: () {
-                        _showSelectionDialog(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
-                    child: InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        child: imageFile == null
-                            ? Icon(
-                                Icons.add,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : _setImageView(),
-                      ),
-                      onTap: () {
-                        _showSelectionDialog(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8.0),
-                    child: InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        child: imageFile == null
-                            ? Icon(
-                                Icons.add,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : _setImageView(),
-                      ),
-                      onTap: () {
-                        _showSelectionDialog(context);
-                      },
-                    ),
-                  ),
-                ],
-              ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: RaisedButton(
-                    color: Theme.of(context).primaryColor,
-
-                    elevation: 2,
-//                            color: Theme.of(context).primaryColor,
-                    child: Container(
-                      width: deviceWidth * 0.7,
-                      child: Center(
-                        child: Text(
-                          "Add Item",
-                          style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
-                          ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    InkWell(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1),
                         ),
+                        child: imageFile == null
+                            ? Icon(
+                                Icons.add,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+                            : _setImageView(),
                       ),
+                      onTap: () {
+                        _showSelectionDialog(context);
+                      },
                     ),
-                    onPressed: () {
-                      var token = widget.token;
-                      const url = Api.orders;
-                      http.post(url,
-                          headers: {
-                            HttpHeaders.CONTENT_TYPE: "application/json",
-                            "Authorization": "Token " + token,
-                          },
-                          body: json.encode({
-                            "title": title,
-                            "dimensions": 0,
-                            "source": from,
-                            "destination": to,
-                            "date": DateTime.now().toString().substring(0, 10),
-                            "address": "ads",
-                            "weight": weight,
-                            "price": price,
-                            "trip": null,
-                            "description": description
-                          }));
-                      Provider.of<OrdersTripsProvider>(context, listen: false).fetchAndSetMyOrders(token);
-                      Navigator.pop(context);
-                      Flushbar(
-                        title: "Item added",
-                        message: "You can see all of your items in My Items section of Account",
-                        padding: const EdgeInsets.all(8),
-                        borderRadius: 10,
-                        duration: Duration(seconds: 5),
-                      )..show(context);
-                    },
+                    InkWell(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1),
+                        ),
+                        child: imageFile == null
+                            ? Icon(
+                                Icons.add,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+                            : _setImageView(),
+                      ),
+                      onTap: () {
+                        _showSelectionDialog(context);
+                      },
+                    ),
+                    InkWell(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey, width: 1),
+                        ),
+                        child: imageFile == null
+                            ? Icon(
+                                Icons.add,
+                                size: 30,
+                                color: Colors.grey,
+                              )
+                            : _setImageView(),
+                      ),
+                      onTap: () {
+                        _showSelectionDialog(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              RaisedButton.icon(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+                icon: Icon(
+                  Icons.add,
+                  color: Theme.of(context).primaryColor,
+                  size: 20,
+                ),
+                label: Text(
+                  "Add item",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor, fontSize: 19,
+//                                    color: Theme.of(context).primaryColor,
                   ),
                 ),
-              )
+                onPressed: () {
+                  var token = widget.token;
+                  const url = Api.orders;
+                  http.post(url,
+                      headers: {
+                        HttpHeaders.CONTENT_TYPE: "application/json",
+                        "Authorization": "Token " + token,
+                      },
+                      body: json.encode({
+                        "title": title,
+                        "dimensions": 0,
+                        "source": from,
+                        "destination": to,
+                        "date": DateTime.now().toString().substring(0, 10),
+                        "address": "ads",
+                        "weight": weight,
+                        "price": price,
+                        "trip": null,
+                        "description": description
+                      }));
+                  Provider.of<OrdersTripsProvider>(context, listen: false).fetchAndSetMyOrders(token);
+                  Navigator.pop(context);
+                  Flushbar(
+                    title: "Item added",
+                    message: "You can see all of your items in My Items section of Account",
+                    padding: const EdgeInsets.all(8),
+                    borderRadius: 10,
+                    duration: Duration(seconds: 5),
+                  )..show(context);
+                },
+              ),
             ],
           ),
         ),

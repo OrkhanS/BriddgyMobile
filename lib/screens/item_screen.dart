@@ -2,8 +2,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
+import 'package:optisend/screens/profile_screen_another.dart';
 import '../main.dart';
 
 class ItemScreen extends StatefulWidget {
@@ -101,83 +104,114 @@ class _ItemScreenState extends State<ItemScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          CircleAvatar(
-                            radius: 24.0,
-                            child: Image(
-                              image: NetworkImage(
-                                  // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                  "https://picsum.photos/250?image=9"), //Todo,
-                            ),
-                          ),
-
-                          Text(
-                            order.owner.firstName + " " + order.owner.lastName,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Container(
-                            width: 50,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: Colors.green[400],
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (__) => ProfileScreenAnother(
+                                      user: order.owner,
+                                    )),
+                          );
+                        },
+                        child: Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Stack(
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    radius: 35,
+                                    backgroundImage: NetworkImage(
+                                      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+                                    ),
+                                  ),
+                                  Positioned(
+                                    left: 0,
+                                    bottom: 5,
+                                    child: Container(
+                                      width: 35,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        color: Color.fromRGBO(255, 255, 255, 80),
+                                        border: Border.all(color: Colors.green, width: 1),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.star,
+                                            size: 12,
+                                            color: Colors.green,
+                                          ),
+                                          Text(
+                                            order.owner.rating.toString(),
+                                            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            Column(
                               children: <Widget>[
-                                Icon(
-                                  Icons.star,
-                                  size: 15,
-                                  color: Colors.white,
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      MdiIcons.shieldCheck,
+                                      color: Colors.green,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                      child: Text(
+                                        order.owner.firstName + " " + order.owner.lastName,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+//                                style: TextStyle(
+//                                  fontStyle: ,
+//                                  color: Colors.white,
+//                                  fontWeight: FontWeight.bold,
+//                                  fontSize: 20,
+//                                ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  order.owner.rating.toString(),
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                )
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                  child: Text(
+                                    "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
-                          )
-//                  RatingBar(
-//                    initialRating: 3,
-//                    direction: Axis.horizontal,
-//                    allowHalfRating: true,
-//                    itemCount: 5,
-//                    glowColor: Colors.amber,
-//                    ratingWidget: RatingWidget(
-//                      full: Icon(Icons.star),
-//                      half: Icon(Icons.star_half),
-//                      empty: Icon(Icons.star_border),
-//                    ),
-//                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-//                    onRatingUpdate: (rating) {
-//                      print(rating);
-//                    },
-//                  ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),
-                    Card(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      elevation: 3,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "Item Details",
                               style: TextStyle(
@@ -188,7 +222,6 @@ class _ItemScreenState extends State<ItemScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
                               vertical: 4,
                             ),
                             child: Row(
@@ -214,7 +247,6 @@ class _ItemScreenState extends State<ItemScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
                               vertical: 4,
                             ),
                             child: Row(
@@ -240,7 +272,6 @@ class _ItemScreenState extends State<ItemScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
                               vertical: 4,
                             ),
                             child: Row(
@@ -255,7 +286,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                 ),
                                 Text(
-                                  order.date.toString(),
+                                  DateFormat.yMMMd().format(order.date),
                                   style: TextStyle(fontSize: 18),
                                 ),
                               ],
@@ -263,7 +294,6 @@ class _ItemScreenState extends State<ItemScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
                               vertical: 4,
                             ),
                             child: Row(
@@ -289,7 +319,6 @@ class _ItemScreenState extends State<ItemScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 10,
                               vertical: 4,
                             ),
                             child: Row(
@@ -333,17 +362,13 @@ class _ItemScreenState extends State<ItemScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      elevation: 3,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(vertical: 2),
                             child: Row(
                               children: <Widget>[
                                 Text(
@@ -357,7 +382,7 @@ class _ItemScreenState extends State<ItemScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(15.0),
+                            padding: const EdgeInsets.symmetric(vertical: 15.0),
                             child: Text(
                               order.description,
                               style: TextStyle(fontSize: 17),
@@ -371,35 +396,38 @@ class _ItemScreenState extends State<ItemScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          RaisedButton(
-                            color: Colors.blue[400],
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Text(
-                                  "Message",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Icon(
-                                  Icons.chat_bubble_outline,
-                                  size: 20,
-                                  color: Colors.white,
-                                )
-                              ],
+                          RaisedButton.icon(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ),
+                            icon: Icon(
+                              MdiIcons.chatOutline,
+                              color: Colors.green,
+
+//                                  color: Theme.of(context).primaryColor,
+                              size: 18,
+                            ),
+                            label: Text(
+                              " Message",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+//                                    color: Theme.of(context).primaryColor,
+                              ),
                             ),
                             onPressed: () {
-                              //todo orxan fix
-                              //                        createRooms();
-
-                              //Todo Toast message that Conversation has been started
-                              Navigator.pop(context);
+                              //todo Orxan fix
+//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
+//                                Flushbar(
+//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+//                                  message: "Check Chats to see more.",
+//                                  padding: const EdgeInsets.all(8),
+//                                  borderRadius: 10,
+//                                  duration: Duration(seconds: 5),
+//                                )..show(context);
                             },
                           ),
                           // RaisedButton(

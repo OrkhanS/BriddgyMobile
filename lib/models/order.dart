@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:optisend/models/user.dart';
+
 Order orderFromJson(String str) => Order.fromJson(json.decode(str));
 
 String orderToJson(Order data) => json.encode(data.toJson());
@@ -27,7 +29,7 @@ class Order {
   });
 
   int id;
-  Owner owner;
+  User owner;
   double dimensions;
   Destination source;
   Destination destination;
@@ -43,7 +45,7 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
         id: json["id"],
-        owner: Owner.fromJson(json["owner"]),
+        owner: User.fromJson(json["owner"]),
         dimensions: json["dimensions"],
         source: Destination.fromJson(json["source"]),
         destination: Destination.fromJson(json["destination"]),
@@ -64,8 +66,7 @@ class Order {
         "dimensions": dimensions,
         "source": source.toJson(),
         "destination": destination.toJson(),
-        "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "address": address,
         "weight": weight,
         "price": price,
@@ -98,65 +99,5 @@ class Destination {
         "city_ascii": cityAscii,
         "country": country,
         "id": id,
-      };
-}
-
-class Owner {
-  Owner({
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.isNumberVerified,
-    this.isEmailVerified,
-    this.isPhotoVerified,
-    this.lastLogin,
-    this.rating,
-    this.avatarpic,
-    this.lastOnline,
-    this.online,
-  });
-
-  int id;
-  String firstName;
-  String lastName;
-  String email;
-  String isNumberVerified;
-  bool isEmailVerified;
-  bool isPhotoVerified;
-  DateTime lastLogin;
-  double rating;
-  dynamic avatarpic;
-  DateTime lastOnline;
-  bool online;
-
-  factory Owner.fromJson(Map<String, dynamic> json) => Owner(
-        id: json["id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
-        email: json["email"],
-        isNumberVerified: json["is_number_verified"],
-        isEmailVerified: json["is_email_verified"],
-        isPhotoVerified: json["is_photo_verified"],
-        lastLogin: DateTime.parse(json["last_login"]),
-        rating: json["rating"],
-        avatarpic: json["avatarpic"],
-        lastOnline: DateTime.parse(json["last_online"]),
-        online: json["online"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "first_name": firstName,
-        "last_name": lastName,
-        "email": email,
-        "is_number_verified": isNumberVerified,
-        "is_email_verified": isEmailVerified,
-        "is_photo_verified": isPhotoVerified,
-        "last_login": lastLogin.toIso8601String(),
-        "rating": rating,
-        "avatarpic": avatarpic,
-        "last_online": lastOnline.toIso8601String(),
-        "online": online,
       };
 }

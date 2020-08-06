@@ -169,8 +169,8 @@ class _MyAppState extends State<MyApp> {
       elevation: 4,
       type: BottomNavigationBarType.fixed,
       currentIndex: _currentIndex,
-      selectedItemColor: Colors.blue[900],
-      unselectedItemColor: Colors.grey[400],
+      selectedItemColor: Colors.teal[700],
+      unselectedItemColor: Colors.grey[500],
       unselectedFontSize: 9,
       selectedFontSize: 11,
       onTap: (index) {
@@ -252,7 +252,7 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
             backgroundColor: Colors.white,
             primarySwatch: Colors.blue,
-            primaryColor: Colors.blue[900],
+            primaryColor: Colors.teal[700],
             accentColor: Colors.indigoAccent,
             fontFamily: 'Lato',
           ),
