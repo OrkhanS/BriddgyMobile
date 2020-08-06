@@ -117,7 +117,7 @@ class _FilterBarState extends State<FilterBar> {
       duration: Duration(milliseconds: 300),
       height: _expanded ? 480 : 80,
       child: Card(
-        margin: EdgeInsets.all(10),
+        margin: EdgeInsets.all(12),
         child: Column(
           children: <Widget>[
             InkWell(

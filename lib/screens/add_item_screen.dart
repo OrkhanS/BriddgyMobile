@@ -9,6 +9,7 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
@@ -27,7 +28,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
   List _cities = [];
   bool isLoading = true;
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
 
@@ -47,11 +47,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() +
-          ", " +
-          _suggested[i]["country"].toString() +
-          ", " +
-          _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -61,139 +57,130 @@ class _AddItemScreenState extends State<AddItemScreen> {
     final deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            AppBar(
-              backgroundColor: Colors.white,
-              centerTitle: true,
-              leading: IconButton(
-                color: Theme.of(context).primaryColor,
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              title: Text(
-                "Add Item", //Todo: item name
-                style: TextStyle(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: AppBar(
+                  backgroundColor: Colors.white,
+                  centerTitle: true,
+                  leading: IconButton(
                     color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold),
-              ),
-              elevation: 1,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
-                  child: Text(
-                    "Item Information",
-                    style: TextStyle(
-                        fontSize: 25, color: Theme.of(context).primaryColor),
+                    icon: Icon(
+                      Icons.chevron_left,
+                      size: 24,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                   ),
+                  title: Text(
+                    "Add Item", //Todo: item name
+                    style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                  ),
+                  elevation: 1,
                 ),
-              ],
-            ),
-            Container(
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
+                    child: Text(
+                      "Item Information",
+                      style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
 //              alignment: Alignment.center,
-              width: deviceWidth * 0.8,
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Title:',
-                  icon: Icon(Icons.markunread_mailbox),
-                ),
-                onChanged: (String val) {
-                  title = val;
-                },
-              ),
-            ),
-            Container(
-              width: deviceWidth * 0.8,
-              child: TypeAheadFormField(
-                keepSuggestionsOnLoading: false,
-                debounceDuration: const Duration(milliseconds: 200),
-                textFieldConfiguration: TextFieldConfiguration(
-                  onSubmitted: (val) {
-                    from = val;
-                  },
-                  controller: this._typeAheadController,
+                width: deviceWidth * 0.8,
+                child: TextFormField(
                   decoration: InputDecoration(
-                      labelText: 'From', icon: Icon(Icons.location_on)),
+                    labelText: 'Title',
+                    icon: Icon(Icons.markunread_mailbox),
+                  ),
+                  onChanged: (String val) {
+                    title = val;
+                  },
                 ),
-                suggestionsCallback: (pattern) {
-                  return getSuggestions(pattern);
-                },
-                itemBuilder: (context, suggestion) {
-                  return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] +
-                        ", " +
-                        suggestion.toString().split(", ")[1]),
-                  );
-                },
-                transitionBuilder: (context, suggestionsBox, controller) {
-                  return suggestionsBox;
-                },
-                onSuggestionSelected: (suggestion) {
-                  this._typeAheadController.text =
-                      suggestion.toString().split(", ")[0] +
-                          ", " +
-                          suggestion.toString().split(", ")[1];
-                  from = suggestion.toString().split(", ")[2];
-                },
-                validator: (value) {
-                  from = value;
-                  if (value.isEmpty) {
-                    return 'Please select a city';
-                  }
-                },
-                onSaved: (value) => from = value,
               ),
-            ),
+              Container(
+                width: deviceWidth * 0.8,
+                child: TypeAheadFormField(
+                  keepSuggestionsOnLoading: false,
+                  debounceDuration: const Duration(milliseconds: 200),
+                  textFieldConfiguration: TextFieldConfiguration(
+                    onSubmitted: (val) {
+                      from = val;
+                    },
+                    controller: this._typeAheadController,
+                    decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
+                  ),
+                  suggestionsCallback: (pattern) {
+                    return getSuggestions(pattern);
+                  },
+                  itemBuilder: (context, suggestion) {
+                    return ListTile(
+                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                    );
+                  },
+                  transitionBuilder: (context, suggestionsBox, controller) {
+                    return suggestionsBox;
+                  },
+                  onSuggestionSelected: (suggestion) {
+                    this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                    from = suggestion.toString().split(", ")[2];
+                  },
+                  validator: (value) {
+                    from = value;
+                    if (value.isEmpty) {
+                      return 'Please select a city';
+                    }
+                  },
+                  onSaved: (value) => from = value,
+                ),
+              ),
 
-            Container(
-              width: deviceWidth * 0.8,
-              child: TypeAheadFormField(
-                keepSuggestionsOnLoading: false,
-                debounceDuration: const Duration(milliseconds: 200),
-                textFieldConfiguration: TextFieldConfiguration(
-                  onSubmitted: (val) {
-                    to = val;
+              Container(
+                width: deviceWidth * 0.8,
+                child: TypeAheadFormField(
+                  keepSuggestionsOnLoading: false,
+                  debounceDuration: const Duration(milliseconds: 200),
+                  textFieldConfiguration: TextFieldConfiguration(
+                    onSubmitted: (val) {
+                      to = val;
+                    },
+                    controller: this._typeAheadController2,
+                    decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
+                  ),
+                  suggestionsCallback: (pattern) {
+                    return getSuggestions(pattern);
                   },
-                  controller: this._typeAheadController2,
-                  decoration: InputDecoration(
-                      labelText: 'To', icon: Icon(Icons.location_on)),
+                  itemBuilder: (context, suggestion) {
+                    return ListTile(
+                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                    );
+                  },
+                  transitionBuilder: (context, suggestionsBox, controller) {
+                    return suggestionsBox;
+                  },
+                  onSuggestionSelected: (suggestion) {
+                    this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                    to = suggestion.toString().split(", ")[2];
+                  },
+                  validator: (value) {
+                    to = value;
+                    if (value.isEmpty) {
+                      return 'Please select a city';
+                    }
+                  },
+                  onSaved: (value) => to = value,
                 ),
-                suggestionsCallback: (pattern) {
-                  return getSuggestions(pattern);
-                },
-                itemBuilder: (context, suggestion) {
-                  return ListTile(
-                    title: Text(suggestion.toString().split(", ")[0] +
-                        ", " +
-                        suggestion.toString().split(", ")[1]),
-                  );
-                },
-                transitionBuilder: (context, suggestionsBox, controller) {
-                  return suggestionsBox;
-                },
-                onSuggestionSelected: (suggestion) {
-                  this._typeAheadController2.text =
-                      suggestion.toString().split(", ")[0] +
-                          ", " +
-                          suggestion.toString().split(", ")[1];
-                  to = suggestion.toString().split(", ")[2];
-                },
-                validator: (value) {
-                  to = value;
-                  if (value.isEmpty) {
-                    return 'Please select a city';
-                  }
-                },
-                onSaved: (value) => to = value,
               ),
-            ),
 
 //            Container(
 //              padding: EdgeInsets.symmetric(vertical: 10),
@@ -250,128 +237,121 @@ class _AddItemScreenState extends State<AddItemScreen> {
 //                color: Colors.white,
 //              ),
 //            ),
-            Container(
-              width: deviceWidth * 0.8,
-              child: new ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: 300.0,
-                ),
-                child: new Scrollbar(
-                  child: new SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    reverse: true,
-                    child: new TextField(
-                      maxLines: null,
-                      decoration: InputDecoration(
-                        labelText: 'Description:',
-                        icon: Icon(Icons.description),
-                      ),
-                      onChanged: (String val) {
-                        description = val;
-                      },
+              Container(
+                width: deviceWidth * 0.8,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 300.0,
+                  ),
+                  child: TextField(
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      icon: Icon(Icons.description),
                     ),
+                    onChanged: (String val) {
+                      description = val;
+                    },
                   ),
                 ),
               ),
-            ),
-            Container(
-              width: deviceWidth * 0.8,
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Price:',
-                  icon: Icon(Icons.attach_money),
-                ),
+              Container(
+                width: deviceWidth * 0.8,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Price',
+                    icon: Icon(Icons.attach_money),
+                  ),
 
-                keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.number,
 //                      validator: (value) {
 //                        if (value.isEmpty || !value.contains('@')) {
 //                          return 'Invalid email!';
 //                        } else
 //                          return null; //Todo
 //                      },
-                onChanged: (String val) {
-                  price = val;
-                },
-              ),
-            ),
-            Container(
-              width: deviceWidth * 0.8,
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Weight:',
-                  icon: Icon(Icons.format_size),
-                ),
-
-                keyboardType: TextInputType.number,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
-                onChanged: (String val) {
-                  weight = val;
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: RaisedButton(
-                  color: Theme.of(context).primaryColor,
-
-                  elevation: 2,
-//                            color: Theme.of(context).primaryColor,
-                  child: Container(
-                    width: deviceWidth * 0.7,
-                    child: Center(
-                      child: Text(
-                        "Add Item",
-                        style: TextStyle(
-                          fontSize: 19,
-                          color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    var token = widget.token;
-                    const url = Api.orders;
-                    http.post(url,
-                        headers: {
-                          HttpHeaders.CONTENT_TYPE: "application/json",
-                          "Authorization": "Token " + token,
-                        },
-                        body: json.encode({
-                          "title": title,
-                          "dimensions": 0,
-                          "source": from,
-                          "destination": to,
-                          "date": DateTime.now().toString().substring(0, 10),
-                          "address": "ads",
-                          "weight": weight,
-                          "price": price,
-                          "trip": null,
-                          "description": description
-                        }));
-                    Provider.of<OrdersTripsProvider>(context, listen: false)
-                        .fetchAndSetMyOrders(token);
-                    Navigator.pop(context);
-                    Flushbar(
-                      title: "Item added",
-                      message:
-                          "You can see all of your items in My Items section of Account",
-                      padding: const EdgeInsets.all(8),
-                      borderRadius: 10,
-                      duration: Duration(seconds: 5),
-                    )..show(context);
+                  onChanged: (String val) {
+                    price = val;
                   },
                 ),
               ),
-            )
-          ],
+              Container(
+                width: deviceWidth * 0.8,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Weight',
+                    icon: Icon(Icons.format_size),
+                  ),
+
+                  keyboardType: TextInputType.number,
+//                      validator: (value) {
+//                        if (value.isEmpty || !value.contains('@')) {
+//                          return 'Invalid email!';
+//                        } else
+//                          return null; //Todo
+//                      },
+                  onChanged: (String val) {
+                    weight = val;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: RaisedButton(
+                    color: Theme.of(context).primaryColor,
+
+                    elevation: 2,
+//                            color: Theme.of(context).primaryColor,
+                    child: Container(
+                      width: deviceWidth * 0.7,
+                      child: Center(
+                        child: Text(
+                          "Add Item",
+                          style: TextStyle(
+                            fontSize: 19,
+                            color: Colors.white,
+//                                  fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      var token = widget.token;
+                      const url = Api.orders;
+                      http.post(url,
+                          headers: {
+                            HttpHeaders.CONTENT_TYPE: "application/json",
+                            "Authorization": "Token " + token,
+                          },
+                          body: json.encode({
+                            "title": title,
+                            "dimensions": 0,
+                            "source": from,
+                            "destination": to,
+                            "date": DateTime.now().toString().substring(0, 10),
+                            "address": "ads",
+                            "weight": weight,
+                            "price": price,
+                            "trip": null,
+                            "description": description
+                          }));
+                      Provider.of<OrdersTripsProvider>(context, listen: false).fetchAndSetMyOrders(token);
+                      Navigator.pop(context);
+                      Flushbar(
+                        title: "Item added",
+                        message: "You can see all of your items in My Items section of Account",
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 5),
+                      )..show(context);
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
