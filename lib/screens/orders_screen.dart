@@ -228,8 +228,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 } else {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                    MaterialPageRoute(
+                        builder: (__) => AddItemScreen(
+                              token: widget.token,
+                              orderstripsProvider: widget.orderstripsProvider,
+                            )),
                   );
+                  //todo remove comments
+//                  Navigator.push(
+//                    context,
+//                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+//                  );
                 }
               } else {
                 Flushbar(
