@@ -1,6 +1,10 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:provider/provider.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
+  String email;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,15 +23,19 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               title: Text(
                 "Forgot Password",
-                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold),
               ),
               elevation: 1,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30.0),
               child: Text(
                 "We'll help you recover your password and access your account, no worries.",
-                style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
+                style: TextStyle(
+                    color: Colors.black87, fontWeight: FontWeight.w100),
               ),
             ),
             Padding(
@@ -41,11 +49,15 @@ class ForgotPasswordScreen extends StatelessWidget {
                 validator: (value) {
                   if (value.isEmpty || !value.contains('@')) {
                     return 'Invalid email!';
-                  } else
-                    return null;
+                  } else {
+                    email = value;
+                  }
                 },
-                onSaved: (value) {
-                  //Todo orxan
+                onSaved: (String value) {
+                  email = value;
+                },
+                onChanged: (String val) {
+                  email = val;
                 },
               ),
             ),
@@ -57,7 +69,33 @@ class ForgotPasswordScreen extends StatelessWidget {
                 'Send Password Recovery',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              onPressed: () {}, //todo orxan
+              onPressed: () {
+                Provider.of<Auth>(context, listen: false)
+                    .requestPasswordReset(email)
+                    .whenComplete(() {
+                  if (Provider.of<Auth>(context, listen: false)
+                      .passwordResetStatus) {
+                    Provider.of<Auth>(context, listen: false)
+                        .passwordResetStatus = false;
+                    Navigator.pop(context);
+                    Flushbar(
+                      title: "Success",
+                      message: "Instructions has been sent to your Email!",
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      duration: Duration(seconds: 3),
+                    )..show(context);
+                  } else {
+                    Flushbar(
+                      title: "Failed",
+                      message: "Please check the email you have provided!",
+                      padding: const EdgeInsets.all(8),
+                      borderRadius: 10,
+                      duration: Duration(seconds: 3),
+                    )..show(context);
+                  }
+                });
+              },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),

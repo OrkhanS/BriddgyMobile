@@ -28,6 +28,7 @@ class Auth with ChangeNotifier {
   bool reviewsNotReady = true;
   bool reviewsNotReadyForProfile = true;
   bool verificationStatus = false;
+  bool passwordResetStatus = false;
 
   String get myToken {
     return myTokenFromStorage;
@@ -173,6 +174,32 @@ class Auth with ChangeNotifier {
     }
   }
 
+  Future<bool> requestPasswordReset(email) async {
+    const url = Api.forgetPassword;
+    await http
+        .post(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+      },
+      body: json.encode(
+        {
+          'email': email,
+        },
+      ),
+    )
+        .then((response) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print("Requested");
+        passwordResetStatus = true;
+        return true;
+      } else {
+        print("Failed to send email");
+        return false;
+      }
+    });
+  }
+
   Future<bool> requestEmailVerification() async {
     const url = Api.requestEmailVerification;
     await http.get(url, headers: {
@@ -266,7 +293,7 @@ class Auth with ChangeNotifier {
           {
             'username': email,
             'password': password,
-            'deviceToken': deviceID,
+            'deviceToken': "deviceID",
           },
         ),
       );
