@@ -138,7 +138,7 @@ class _FilterBarState extends State<FilterBar> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
                     child: Text(
                       _searchBarFrom + " - " + _searchBarTo + " , " + _searchBarWeight + " kg ",
-                      style: TextStyle(color: Colors.blue[800]
+                      style: TextStyle(color: Colors.teal[700]
                           // Theme.of(context).primaryColor,
                           // fontWeight: FontWeight.bold,
                           // fontSize: 20

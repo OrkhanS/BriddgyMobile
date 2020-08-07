@@ -29,25 +29,13 @@ class TripWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.network(
-                      "https://img.icons8.com/wired/2x/passenger-with-baggage.png",
-//                    frameBuilder: (BuildContext context, Widget child, int frame, bool wasSynchronouslyLoaded) {
-//                      return Container(
-//                        width: 60,
-//                        height: 60,
-//                        color: Colors.grey[200],
-//                      );
-//                    },
-                      height: 60,
-                      width: 60,
-                    )
-
-                    // Image.network(
-                    //         getImageUrl(_trips[i]["orderimage"])
-                    // ),
-                    ),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey[300],
+                  backgroundImage: NetworkImage(
+                    "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+                  ),
+                ),
                 Expanded(
                   flex: 5,
                   child: Padding(

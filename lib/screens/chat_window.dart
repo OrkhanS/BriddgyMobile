@@ -223,190 +223,203 @@ class _ChatWindowState extends State<ChatWindow> {
         }
         return Scaffold(
           resizeToAvoidBottomPadding: true,
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.white,
-            leading: IconButton(
-              icon: Icon(Icons.keyboard_backspace, color: Theme.of(context).primaryColor),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            title: Text(
-              widget.user["first_name"].toString(), //todo: name
-              style: TextStyle(color: Theme.of(context).primaryColor),
-            ),
-          ),
-          body: Column(
-            children: <Widget>[
-              Container(
-                height: _isloading ? 50.0 : 0.0,
-                color: Colors.transparent,
-                child: Center(
-                  child: CircularProgressIndicator(),
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: AppBar(
+                    centerTitle: true,
+                    backgroundColor: Colors.white,
+                    leading: IconButton(
+                      icon: Icon(Icons.chevron_left, color: Theme.of(context).primaryColor),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    title: Text(
+                      widget.user["first_name"] + " " + widget.user["last_name"],
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    ),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: messageLoader
-                    ? Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            CircularProgressIndicator(
-                              strokeWidth: 3,
-                            )
-                          ],
-                        ),
-                      )
-                    : NotificationListener<ScrollNotification>(
-                        onNotification: (ScrollNotification scrollInfo) {
-                          if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                            // start loading data
-                            setState(() {
-                              _isloading = true;
-                            });
-                            _loadData();
-                          }
-                        },
-                        child: ListView.builder(
-                          reverse: true,
-                          controller: scrollController,
-                          itemCount: _messages.length,
-                          itemBuilder: (context, index) {
-                            bool reverse = false;
-                            if (widget.user["id"] != _messages[index]["sender"] || _messages[index]["sender"] == "me") {
-                              newMessageMe = false;
-                              reverse = true;
-                            }
-
-                            var avatar = reverse == false
-                                ? Padding(
-                                    padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.teal,
-                                      child: Text(
-                                        widget.user["first_name"].toString().substring(0, 1),
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
-                                    child: CircleAvatar(
-                                      child: Text(widget.provider.userDetails["first_name"].toString().substring(0, 1)),
-                                    ),
-                                  );
-
-                            var messagebody = Menu(
-                              child: Container(
-                                  child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[100],
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    // Todo
-                                    // Warning
-                                    // Warning
-                                    child: Text(
-                                      _messages[index]["text"].toString().length > 30
-                                          ? _messages[index]["text"].toString().substring(0, 30)
-                                          : _messages[index]["text"].toString(),
-                                      softWrap: true,
-                                    ),
-                                  ),
-                                ),
-                              )),
-                              items: [
-                                MenuItem("Info", () {
-                                  Alert(
-                                    context: context,
-                                    type: AlertType.info,
-                                    title: "Sent on:  " +
-                                        _messages[index]["date_created"].toString().substring(0, 10) +
-                                        ",  " +
-                                        _messages[index]["date_created"].toString().substring(11, 16) +
-                                        "\n",
-                                    buttons: [
-                                      DialogButton(
-                                        child: Text(
-                                          "Back",
-                                          style: TextStyle(color: Colors.white, fontSize: 20),
-                                        ),
-                                        onPressed: () => Navigator.pop(context),
-                                        color: Color.fromRGBO(0, 179, 134, 1.0),
-                                      ),
-                                      DialogButton(
-                                        child: Text(
-                                          "Report",
-                                          style: TextStyle(color: Colors.white, fontSize: 20),
-                                        ),
-                                        onPressed: () => {},
-                                        color: Color.fromRGBO(0, 179, 134, 1.0),
-                                      )
-                                    ],
-                                    content:
-                                        Text("To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
-                                  ).show();
-                                }),
-                              ],
-                              decoration: MenuDecoration(),
-                            );
-
-                            Widget message;
-
-                            if (reverse) {
-                              message = Stack(
-                                children: <Widget>[
-                                  messagebody,
-                                  Positioned(right: 0, bottom: 0, child: triangle),
-                                ],
-                              );
-                            } else {
-                              message = Stack(
-                                children: <Widget>[
-                                  Positioned(left: 0, bottom: 0, child: triangle),
-                                  messagebody,
-                                ],
-                              );
-                            }
-
-                            if (reverse) {
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: message,
-                                  ),
-                                  avatar,
-                                ],
-                              );
-                            } else {
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  avatar,
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: message,
-                                  ),
-                                ],
-                              );
+                Container(
+                  height: _isloading ? 50.0 : 0.0,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                Expanded(
+                  child: messageLoader
+                      ? Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              CircularProgressIndicator(
+                                strokeWidth: 3,
+                              )
+                            ],
+                          ),
+                        )
+                      : NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                              // start loading data
+                              setState(() {
+                                _isloading = true;
+                              });
+                              _loadData();
                             }
                           },
+                          child: ListView.builder(
+                            reverse: true,
+                            controller: scrollController,
+                            itemCount: _messages.length,
+                            itemBuilder: (context, index) {
+                              bool reverse = false;
+                              if (widget.user["id"] != _messages[index]["sender"] || _messages[index]["sender"] == "me") {
+                                newMessageMe = false;
+                                reverse = true;
+                              }
+
+                              var avatar = reverse == false
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        //todo navigate to user profile
+                                        print("check");
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.teal,
+                                          child: Text(
+                                            widget.user["first_name"].toString()[0],
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                      child: CircleAvatar(
+                                        child: Text(
+                                            //todo code below returns null
+                                            widget.provider.userDetails["first_name"].toString()[0]),
+                                      ),
+                                    );
+
+                              var messagebody = Menu(
+                                child: Container(
+                                    child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue[100],
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      // Todo
+                                      // Warning
+                                      // Warning
+                                      child: Text(
+                                        _messages[index]["text"].toString().length > 30
+                                            ? _messages[index]["text"].toString().substring(0, 30)
+                                            : _messages[index]["text"].toString(),
+                                        softWrap: true,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                                items: [
+                                  MenuItem("Info", () {
+                                    Alert(
+                                      context: context,
+                                      type: AlertType.info,
+                                      title: "Sent on:  " +
+                                          _messages[index]["date_created"].toString().substring(0, 10) +
+                                          ",  " +
+                                          _messages[index]["date_created"].toString().substring(11, 16) +
+                                          "\n",
+                                      buttons: [
+                                        DialogButton(
+                                          child: Text(
+                                            "Back",
+                                            style: TextStyle(color: Colors.white, fontSize: 20),
+                                          ),
+                                          onPressed: () => Navigator.pop(context),
+                                          color: Color.fromRGBO(0, 179, 134, 1.0),
+                                        ),
+                                        DialogButton(
+                                          child: Text(
+                                            "Report",
+                                            style: TextStyle(color: Colors.white, fontSize: 20),
+                                          ),
+                                          onPressed: () => {},
+                                          color: Color.fromRGBO(0, 179, 134, 1.0),
+                                        )
+                                      ],
+                                      content: Text(
+                                          "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                    ).show();
+                                  }),
+                                ],
+                                decoration: MenuDecoration(),
+                              );
+
+                              Widget message;
+
+                              if (reverse) {
+                                message = Stack(
+                                  children: <Widget>[
+                                    messagebody,
+                                    Positioned(right: 0, bottom: 0, child: triangle),
+                                  ],
+                                );
+                              } else {
+                                message = Stack(
+                                  children: <Widget>[
+                                    Positioned(left: 0, bottom: 0, child: triangle),
+                                    messagebody,
+                                  ],
+                                );
+                              }
+
+                              if (reverse) {
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: message,
+                                    ),
+                                    avatar,
+                                  ],
+                                );
+                              } else {
+                                return Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    avatar,
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: message,
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
                         ),
-                      ),
-              ),
-              Divider(height: 2.0),
-              textInput
-            ],
+                ),
+                Divider(height: 2.0),
+                textInput
+              ],
+            ),
           ),
         );
       },

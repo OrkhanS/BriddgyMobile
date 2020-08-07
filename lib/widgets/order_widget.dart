@@ -42,26 +42,11 @@ class _OrderWidgetState extends State<OrderWidget> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(6.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
-                    child: Image(
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                                : null,
-                          ),
-                        );
-                      },
-
-                      image: NetworkImage(
-                          // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                          "https://picsum.photos/250?image=9"), //Todo fotka,
-                    ),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey[300],
+                  backgroundImage: NetworkImage(
+                    "https://picsum.photos/250?image=9",
                   ),
                 ),
                 Padding(

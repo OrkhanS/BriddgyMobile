@@ -10,7 +10,7 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/stats.dart';
 import 'package:optisend/models/user.dart';
-import 'package:optisend/widgets/order_item.dart';
+import 'package:optisend/widgets/order_widget.dart';
 
 class ProfileScreenAnother extends StatefulWidget {
   var user;
@@ -251,8 +251,6 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 icon: Icon(
                                   MdiIcons.chatOutline,
                                   color: Theme.of(context).primaryColor,
-
-//                                  color: Theme.of(context).primaryColor,
                                   size: 18,
                                 ),
                                 label: Text(

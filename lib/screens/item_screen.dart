@@ -8,6 +8,7 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import '../main.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ItemScreen extends StatefulWidget {
   Order order;
@@ -49,174 +50,172 @@ class _ItemScreenState extends State<ItemScreen> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: AppBar(
-                backgroundColor: Colors.white,
-                centerTitle: true,
-                leading: IconButton(
-                  color: Theme.of(context).primaryColor,
-                  icon: Icon(
-                    Icons.chevron_left,
-                    size: 24,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                title: Text(
-                  order.title.toString(),
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                ),
-                elevation: 1,
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (__) => ProfileScreenAnother(
+                              user: order.owner,
+                            )),
+                  );
+                },
+                child: Row(
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(40)),
-                            child: Image.network(
-                              'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                              height: 250,
-                              width: 250,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                                        : null,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                    IconButton(
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(
+                        Icons.chevron_left,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 26.0, vertical: 4),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (__) => ProfileScreenAnother(
-                                      user: order.owner,
-                                    )),
-                          );
-                        },
-                        child: Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    radius: 35,
-                                    backgroundImage: NetworkImage(
-                                      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
-                                    ),
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Text(
+                                  order.owner.firstName + " " + order.owner.lastName,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
                                   ),
-                                  Positioned(
-                                    left: 0,
-                                    bottom: 5,
-                                    child: Container(
-                                      width: 35,
-                                      height: 30,
-                                      decoration: BoxDecoration(
-                                        color: Color.fromRGBO(255, 255, 255, 80),
-                                        border: Border.all(color: Colors.green, width: 1),
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.star,
-                                            size: 12,
-                                            color: Colors.green,
-                                          ),
-                                          Text(
-                                            order.owner.rating.toString(),
-                                            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Icon(
-                                      MdiIcons.shieldCheck,
-                                      color: Colors.green,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                      child: Text(
-                                        order.owner.firstName + " " + order.owner.lastName,
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
-                                        ),
 //                                style: TextStyle(
 //                                  fontStyle: ,
 //                                  color: Colors.white,
 //                                  fontWeight: FontWeight.bold,
 //                                  fontSize: 20,
 //                                ),
-                                      ),
-                                    ),
-                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                                  child: Text(
-                                    "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
+                              Icon(
+                                MdiIcons.shieldCheck,
+                                color: Colors.green,
+                                size: 17,
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                            child: Text(
+                              "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Stack(
+                        children: <Widget>[
+                          CircleAvatar(
+                            radius: 35,
+                            backgroundColor: Colors.grey[300],
+                            backgroundImage: NetworkImage(
+                              "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+                            ),
+                          ),
+                          Positioned(
+                            left: 0,
+                            bottom: 5,
+                            child: Container(
+                              width: 35,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Color.fromRGBO(255, 255, 255, 80),
+                                border: Border.all(color: Colors.green, width: 1),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.star,
+                                    size: 12,
+                                    color: Colors.green,
+                                  ),
+                                  Text(
+                                    order.owner.rating.toString(),
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+//            Padding(
+//              padding: EdgeInsets.symmetric(horizontal: 10),
+//              child: AppBar(
+//                backgroundColor: Colors.white,
+//                centerTitle: true,
+//                leading: IconButton(
+//                  color: Theme.of(context).primaryColor,
+//                  icon: Icon(
+//                    Icons.chevron_left,
+//                    size: 24,
+//                  ),
+//                  onPressed: () {
+//                    Navigator.of(context).pop();
+//                  },
+//                ),
+//                title: Text(
+//                  order.title.toString(),
+//                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+//                ),
+//                elevation: 1,
+//              ),
+//            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              "Item Details",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Theme.of(context).primaryColor,
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              child: Text(
+                                order.title,
+                                style: TextStyle(fontSize: 22, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: FadeInImage.memoryNetwork(
+                                height: 300,
+                                fit: BoxFit.fitWidth,
+                                placeholder: kTransparentImage,
+                                image: 'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
                               ),
                             ),
                           ),
@@ -398,23 +397,59 @@ class _ItemScreenState extends State<ItemScreen> {
                         children: <Widget>[
                           RaisedButton.icon(
                             padding: EdgeInsets.symmetric(horizontal: 20),
-                            color: Theme.of(context).scaffoldBackgroundColor,
+//                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: Colors.white,
+
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                            ),
+                            icon: Icon(
+                              MdiIcons.scriptTextOutline,
+//                              color: Colors.white,
+                              color: Theme.of(context).primaryColor,
+                              size: 18,
+                            ),
+                            label: Text(
+                              " Apply for Delivery",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+//                                color: Colors.white,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            onPressed: () {
+                              //todo Orxan fix
+//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
+//                                Flushbar(
+//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+//                                  message: "Check Chats to see more.",
+//                                  padding: const EdgeInsets.all(8),
+//                                  borderRadius: 10,
+//                                  duration: Duration(seconds: 5),
+//                                )..show(context);
+                            },
+                          ),
+                          RaisedButton.icon(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+//                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: Colors.green,
+
                             elevation: 2,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(18.0),
                             ),
                             icon: Icon(
                               MdiIcons.chatOutline,
-                              color: Colors.green,
-
-//                                  color: Theme.of(context).primaryColor,
+                              color: Colors.white,
+//                              color: Theme.of(context).primaryColor,
                               size: 18,
                             ),
                             label: Text(
                               " Message",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green,
+                                color: Colors.white,
 //                                    color: Theme.of(context).primaryColor,
                               ),
                             ),

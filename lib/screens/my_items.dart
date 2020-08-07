@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:optisend/providers/auth.dart';
-import 'package:optisend/widgets/order_item.dart';
+import 'package:optisend/widgets/order_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 
