@@ -5,11 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:http/http.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
@@ -31,6 +34,51 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
+  Future<void> addPicture(id) async {
+    var token = widget.token;
+    const url = Api.addOrderImage;
+    var uri = Uri.parse(url);
+    var request = new MultipartRequest("POST", uri);
+
+    var multipartFile = await MultipartFile.fromPath("photo", imageFile);
+    request.files.add(multipartFile);
+
+    StreamedResponse response = await request.send();
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
+    http.put(url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + token,
+        },
+        body: json.encode({
+          "file": base64Encode(imageFile.readAsBytesSync()),
+          "order_id": id,
+        }));
+  }
+
+  Future upload(id) async {
+    var stream =
+        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var length = await imageFile.length();
+
+    var uri = Uri.parse(Api.addOrderImage);
+
+    var request = new http.MultipartRequest("PUT", uri);
+    var multipartFile = new http.MultipartFile('file', stream, length,
+        filename: basename(imageFile.path));
+    request.headers['Authorization'] = "Token " + widget.token;
+    //contentType: new MediaType('image', 'png'));
+    request.fields["order_id"] = id.toString();
+
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response.statusCode);
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
+  }
 
   Future<void> _showSelectionDialog(BuildContext context) {
     return showDialog(
@@ -103,7 +151,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -134,7 +186,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   title: Text(
                     "Add Item", //Todo: item name
-                    style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold),
                   ),
                   elevation: 1,
                 ),
@@ -143,10 +197,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
+                    padding:
+                        const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
                     child: Text(
                       "Item Information",
-                      style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
+                      style: TextStyle(
+                          fontSize: 25, color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ],
@@ -174,21 +230,27 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       from = val;
                     },
                     controller: this._typeAheadController,
-                    decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
+                    decoration: InputDecoration(
+                        labelText: 'From', icon: Icon(Icons.location_on)),
                   ),
                   suggestionsCallback: (pattern) {
                     return getSuggestions(pattern);
                   },
                   itemBuilder: (context, suggestion) {
                     return ListTile(
-                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                      title: Text(suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1]),
                     );
                   },
                   transitionBuilder: (context, suggestionsBox, controller) {
                     return suggestionsBox;
                   },
                   onSuggestionSelected: (suggestion) {
-                    this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                    this._typeAheadController.text =
+                        suggestion.toString().split(", ")[0] +
+                            ", " +
+                            suggestion.toString().split(", ")[1];
                     from = suggestion.toString().split(", ")[2];
                   },
                   validator: (value) {
@@ -211,21 +273,27 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       to = val;
                     },
                     controller: this._typeAheadController2,
-                    decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
+                    decoration: InputDecoration(
+                        labelText: 'To', icon: Icon(Icons.location_on)),
                   ),
                   suggestionsCallback: (pattern) {
                     return getSuggestions(pattern);
                   },
                   itemBuilder: (context, suggestion) {
                     return ListTile(
-                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                      title: Text(suggestion.toString().split(", ")[0] +
+                          ", " +
+                          suggestion.toString().split(", ")[1]),
                     );
                   },
                   transitionBuilder: (context, suggestionsBox, controller) {
                     return suggestionsBox;
                   },
                   onSuggestionSelected: (suggestion) {
-                    this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                    this._typeAheadController2.text =
+                        suggestion.toString().split(", ")[0] +
+                            ", " +
+                            suggestion.toString().split(", ")[1];
                     to = suggestion.toString().split(", ")[2];
                   },
                   validator: (value) {
@@ -356,46 +424,46 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        child: imageFile == null
-                            ? Icon(
-                                Icons.add,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : _setImageView(),
-                      ),
-                      onTap: () {
-                        _showSelectionDialog(context);
-                      },
-                    ),
-                    InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        child: imageFile == null
-                            ? Icon(
-                                Icons.add,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : _setImageView(),
-                      ),
-                      onTap: () {
-                        _showSelectionDialog(context);
-                      },
-                    ),
+                    // InkWell(
+                    //   child: Container(
+                    //     height: 100,
+                    //     width: 100,
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       border: Border.all(color: Colors.grey, width: 1),
+                    //     ),
+                    //     child: imageFile == null
+                    //         ? Icon(
+                    //             Icons.add,
+                    //             size: 30,
+                    //             color: Colors.grey,
+                    //           )
+                    //         : _setImageView(),
+                    //   ),
+                    //   onTap: () {
+                    //     _showSelectionDialog(context);
+                    //   },
+                    // ),
+                    // InkWell(
+                    //   child: Container(
+                    //     height: 100,
+                    //     width: 100,
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       border: Border.all(color: Colors.grey, width: 1),
+                    //     ),
+                    //     child: imageFile == null
+                    //         ? Icon(
+                    //             Icons.add,
+                    //             size: 30,
+                    //             color: Colors.grey,
+                    //           )
+                    //         : _setImageView(),
+                    //   ),
+                    //   onTap: () {
+                    //     _showSelectionDialog(context);
+                    //   },
+                    // ),
                     InkWell(
                       child: Container(
                         height: 100,
@@ -434,39 +502,60 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 label: Text(
                   "Add item",
                   style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor, fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor, fontSize: 19,
 //                                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 onPressed: () {
                   var token = widget.token;
                   const url = Api.orders;
-                  http.post(url,
-                      headers: {
-                        HttpHeaders.CONTENT_TYPE: "application/json",
-                        "Authorization": "Token " + token,
-                      },
-                      body: json.encode({
-                        "title": title,
-                        "dimensions": 0,
-                        "source": from,
-                        "destination": to,
-                        "date": DateTime.now().toString().substring(0, 10),
-                        "address": "ads",
-                        "weight": weight,
-                        "price": price,
-                        "trip": null,
-                        "description": description
-                      }));
-                  Provider.of<OrdersTripsProvider>(context, listen: false).fetchAndSetMyOrders(token);
-                  Navigator.pop(context);
-                  Flushbar(
-                    title: "Item added",
-                    message: "You can see all of your items in My Items section of Account",
-                    padding: const EdgeInsets.all(8),
-                    borderRadius: 10,
-                    duration: Duration(seconds: 5),
-                  )..show(context);
+                  http
+                      .post(url,
+                          headers: {
+                            HttpHeaders.CONTENT_TYPE: "application/json",
+                            "Authorization": "Token " + token,
+                          },
+                          body: json.encode({
+                            "title": title,
+                            "dimensions": 0,
+                            "source": from,
+                            "destination": to,
+                            "date": DateTime.now().toString().substring(0, 10),
+                            "address": "ads",
+                            "weight": weight,
+                            "price": price,
+                            "trip": null,
+                            "description": description
+                          }))
+                      .then((response) {
+                    if (response.statusCode == 201) {
+                      upload(json.decode(response.body)["id"]);
+
+                      /// TODO ORKHAN, add this directly to the list, need to convert it to Order object..
+                      Provider.of<OrdersTripsProvider>(context, listen: false)
+                          .myorders = [];
+                      Provider.of<OrdersTripsProvider>(context, listen: false)
+                          .fetchAndSetMyOrders(token);
+                      Navigator.pop(context);
+                      Flushbar(
+                        title: "Item added",
+                        message:
+                            "You can see all of your items in My Items section of Account",
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                    } else {
+                      Flushbar(
+                        title: "Warning",
+                        message: "Item couldn't be added, try again.",
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                    }
+                  });
                 },
               ),
             ],
