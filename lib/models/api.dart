@@ -21,4 +21,5 @@ class Api {
   static const requestEmailVerification = address + "api/request/email/";
   static const verifyEmail = address + "api/request/verify/";
   static const orderById = address + "api/users/";
+  static const forgetPassword = address + "api/request/password";
 }

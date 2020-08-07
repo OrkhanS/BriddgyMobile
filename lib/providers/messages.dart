@@ -109,7 +109,6 @@ class Messages extends ChangeNotifier {
   Map get messages => _messages;
 
   void readMessages(id) {
-    readLastMessages(id);
     newMessage[id] = 0;
     //newMessage.remove(id);
   }
@@ -124,23 +123,23 @@ class Messages extends ChangeNotifier {
     }
   }
 
-  Future readLastMessages(id) async {
-    var token = tokenforROOM;
-    try {
-      const url = "http://briddgy.herokuapp.com/api/chat/readlast/";
+  // Future readLastMessages(id) async {
+  //   var token = tokenforROOM;
+  //   try {
+  //     const url = "http://briddgy.herokuapp.com/api/chat/readlast/";
 
-      http.post(url,
-          headers: {
-            HttpHeaders.CONTENT_TYPE: "application/json",
-            "Authorization": "Token " + token,
-          },
-          body: json.encode({
-            "room_id": id,
-          }));
-    } catch (error) {
-      throw error;
-    }
-  }
+  //     http.post(url,
+  //         headers: {
+  //           HttpHeaders.CONTENT_TYPE: "application/json",
+  //           "Authorization": "Token " + token,
+  //         },
+  //         body: json.encode({
+  //           "room_id": id,
+  //         }));
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   //______________________________________________________________________________________
 
