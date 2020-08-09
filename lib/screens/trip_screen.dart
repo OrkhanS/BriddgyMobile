@@ -299,7 +299,11 @@ class _TripScreenState extends State<TripsScreen> {
                 ),
                 Expanded(
                   child: tripsProvider.notLoaded != false
-                      ? Center(child: CircularProgressIndicator())
+                      ? ListView(
+                          children: <Widget>[
+                            for (var i = 0; i < 10; i++) TripFadeWidget(),
+                          ],
+                        )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {

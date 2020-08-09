@@ -104,7 +104,9 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
               child: Column(
                 children: <Widget>[
                   Container(
+                    margin: EdgeInsets.symmetric(horizontal: 6),
                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
                       color: Colors.blueGrey,
                     ),
                     child: Column(
@@ -121,64 +123,6 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.menu,
-                                size: 21,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    radius: 40,
-                                    backgroundImage: NetworkImage(
-                                      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
-                                    ),
-                                  ),
-                                  Positioned(
-                                    left: 0,
-                                    bottom: 5,
-                                    child: Container(
-                                      width: 35,
-                                      height: 30,
-                                      decoration: BoxDecoration(
-                                        color: Color.fromRGBO(255, 255, 255, 85),
-                                        border: Border.all(color: Colors.green, width: 1.5),
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Icon(
-                                            Icons.star,
-                                            size: 12,
-                                            color: Colors.green,
-                                          ),
-                                          Text(
-                                            user.rating.toString(),
-//                                        order.owner.rating.toString(),
-                                            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
                             Column(
                               children: <Widget>[
@@ -226,10 +170,60 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 ),
                               ],
                             ),
+                            Expanded(
+                              child: SizedBox(
+                                height: 1,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
+                              child: Stack(
+                                children: <Widget>[
+                                  CircleAvatar(
+                                    radius: 35,
+                                    backgroundColor: Colors.grey[200],
+                                    backgroundImage: NetworkImage(
+                                      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+                                    ),
+                                  ),
+                                  Positioned(
+                                    left: 0,
+                                    bottom: 5,
+                                    child: Container(
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        color: Color.fromRGBO(255, 255, 255, 60),
+                                        border: Border.all(color: Theme.of(context).primaryColor, width: 0.5),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(15),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        children: <Widget>[
+                                          Text(
+//                                            "4.5",
+                                            " " + user.rating.toString(),
+//                                        order.owner.rating.toString(),
+                                            style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                                          ),
+                                          Icon(
+                                            Icons.star,
+                                            size: 11,
+                                            color: Theme.of(context).primaryColor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 5),
                           child: Row(
                             children: <Widget>[
                               Icon(
@@ -237,7 +231,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 color: Colors.white,
                                 size: 16,
                               ),
-                              Text("  Baku, Azerbaijan",
+                              Text(" Baku, Azerbaijan",
                                   style: GoogleFonts.aBeeZee(
                                     color: Colors.white,
                                     fontSize: 15,

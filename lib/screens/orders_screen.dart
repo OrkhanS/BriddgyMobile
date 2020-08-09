@@ -291,7 +291,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 ),
                 Expanded(
                   child: orderstripsProvider.notLoadingOrders
-                      ? Center(child: CircularProgressIndicator())
+                      ? ListView(
+                          children: <Widget>[
+                            for (var i = 0; i < 10; i++) OrderFadeWidget(),
+                          ],
+                        )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
@@ -308,6 +312,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 order: _orders[i],
                                 i: i,
                               );
+//                              return OrderFadeWidget();
                             },
                             itemCount: _orders.length,
                           ),

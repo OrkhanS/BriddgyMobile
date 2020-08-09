@@ -146,3 +146,117 @@ class _OrderWidgetState extends State<OrderWidget> {
     );
   }
 }
+
+class OrderFadeWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Container(
+          height: 100,
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: Colors.grey[300],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 200,
+                      height: 10,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey[200],
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Icon(
+                          MdiIcons.mapMarkerMultipleOutline,
+                          color: Colors.grey[200],
+                          size: 16,
+                        ),
+                        SizedBox(
+                          width: 200,
+                          height: 10,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.grey[200],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+//                                        mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.calendarRange,
+                              color: Colors.grey[200],
+                              size: 16,
+                            ),
+                            Container(
+                              height: 10,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.grey[200],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 50,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.attach_money,
+                              color: Colors.grey[200],
+                              size: 16,
+                            ),
+                            SizedBox(
+                              width: 50,
+                              height: 10,
+                              child: Container(
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.grey[200],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Divider(
+            height: 4,
+            color: Colors.black45,
+          ),
+        ),
+      ],
+    );
+  }
+}
