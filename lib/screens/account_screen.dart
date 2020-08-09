@@ -70,7 +70,7 @@ class _AccountPageState extends State<AccountPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (__) => ProfileScreen(user: user, token: widget.token)),
+                          MaterialPageRoute(builder: (__) => MyProfileScreen(user: user, token: widget.token)),
                         );
                       },
                       child: Padding(

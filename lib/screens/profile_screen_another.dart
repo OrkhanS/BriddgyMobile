@@ -118,6 +118,9 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 size: 21,
                                 color: Colors.white,
                               ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
                             ),
                             IconButton(
                               icon: Icon(
@@ -125,6 +128,9 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 size: 21,
                                 color: Colors.white,
                               ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
                             ),
                           ],
                         ),
