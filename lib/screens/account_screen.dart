@@ -70,7 +70,7 @@ class _AccountPageState extends State<AccountPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (__) => ProfileScreen(user: user, token: widget.token)),
+                          MaterialPageRoute(builder: (__) => MyProfileScreen(user: user, token: widget.token)),
                         );
                       },
                       child: Padding(
@@ -128,12 +128,8 @@ class _AccountPageState extends State<AccountPage> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: Divider(
-                        color: Colors.grey[600],
-                        height: 40,
-                      ),
+                    SizedBox(
+                      height: 20,
                     ),
                     Card(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),

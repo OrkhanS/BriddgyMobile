@@ -281,7 +281,6 @@ class _MyAppState extends State<MyApp> {
             ItemScreen.routeName: (ctx) => ItemScreen(),
             AddItemScreen.routeName: (ctx) => AddItemScreen(),
             AddTripScreen.routeName: (ctx) => AddTripScreen(),
-            ProfileScreen.routeName: (ctx) => ProfileScreen(),
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
-import 'package:optisend/screens/verifyEmail_screen.dart';
+import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 import 'dart:async';
@@ -299,7 +299,11 @@ class _TripScreenState extends State<TripsScreen> {
                 ),
                 Expanded(
                   child: tripsProvider.notLoaded != false
-                      ? Center(child: CircularProgressIndicator())
+                      ? ListView(
+                          children: <Widget>[
+                            for (var i = 0; i < 10; i++) TripFadeWidget(),
+                          ],
+                        )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {

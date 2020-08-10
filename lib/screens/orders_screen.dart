@@ -10,7 +10,7 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/add_item_screen.dart';
-import 'package:optisend/screens/verifyEmail_screen.dart';
+import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:optisend/widgets/order_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/widgets/filter_bar.dart';
@@ -319,7 +319,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 ),
                 Expanded(
                   child: orderstripsProvider.notLoadingOrders
-                      ? Center(child: CircularProgressIndicator())
+                      ? ListView(
+                          children: <Widget>[
+                            for (var i = 0; i < 10; i++) OrderFadeWidget(),
+                          ],
+                        )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (!_isfetchingnew &&
@@ -338,6 +342,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 order: _orders[i],
                                 i: i,
                               );
+//                              return OrderFadeWidget();
                             },
                             itemCount: _orders.length,
                           ),

@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -19,8 +21,25 @@ class ItemScreen extends StatefulWidget {
 }
 
 class _ItemScreenState extends State<ItemScreen> {
+  var _current;
   Order order;
-  var imageUrl;
+  List<Widget> imageList = [
+    FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      image:
+          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+    ),
+    FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      image:
+          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+    ),
+    FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      image:
+          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+    ),
+  ];
   @override
   void initState() {
     order = widget.order;
@@ -226,16 +245,44 @@ class _ItemScreenState extends State<ItemScreen> {
                               ),
                             ),
                           ),
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: FadeInImage.memoryNetwork(
-                                height: 300,
-                                fit: BoxFit.fitWidth,
-                                placeholder: kTransparentImage,
-                                image: imageUrl,
-                              ),
+                          CarouselSlider(
+                            options: CarouselOptions(
+                              height: 380,
+                              initialPage: 0,
+                              enableInfiniteScroll: true,
+                              reverse: false,
+                              autoPlay: true,
+                              autoPlayInterval: Duration(seconds: 5),
+                              autoPlayAnimationDuration:
+                                  Duration(milliseconds: 800),
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              enlargeCenterPage: true,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              },
+                              scrollDirection: Axis.horizontal,
                             ),
+                            items: imageList,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: imageList.map((url) {
+                              int index = imageList.indexOf(url);
+                              return Container(
+                                width: 8.0,
+                                height: 8.0,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _current == index
+                                      ? Color.fromRGBO(0, 0, 0, 0.9)
+                                      : Color.fromRGBO(0, 0, 0, 0.4),
+                                ),
+                              );
+                            }).toList(),
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(
@@ -523,3 +570,5 @@ class _ItemScreenState extends State<ItemScreen> {
     );
   }
 }
+
+class _current {}
