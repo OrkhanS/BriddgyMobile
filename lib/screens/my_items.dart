@@ -77,43 +77,47 @@ class _MyItemsState extends State<MyItems> {
         }
         return Scaffold(
           body: SafeArea(
-            child: orderstripsProvider.notLoadedMyorders
-                ? Center(child: CircularProgressIndicator())
-                : NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollInfo) {
-                      if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                        // start loading data
-                        setState(() {
-                          _isfetchingnew = true;
-                        });
-                        _loadData();
-                      }
-                    },
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: AppBar(
-                            backgroundColor: Colors.white,
-                            centerTitle: true,
-                            leading: IconButton(
-                              color: Theme.of(context).primaryColor,
-                              icon: Icon(
-                                Icons.chevron_left,
-                                size: 24,
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            title: Text(
-                              "My Orders",
-                              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                            ),
-                            elevation: 1,
-                          ),
-                        ),
-                        Expanded(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: AppBar(
+                    backgroundColor: Colors.white,
+                    centerTitle: true,
+                    leading: IconButton(
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(
+                        Icons.chevron_left,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    title: Text(
+                      "My Orders",
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                    ),
+                    elevation: 1,
+                  ),
+                ),
+                Expanded(
+                  child: orderstripsProvider.notLoadedMyorders
+                      ? ListView(
+                          children: <Widget>[
+                            for (var i = 0; i < 10; i++) OrderFadeWidget(),
+                          ],
+                        )
+                      : NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification scrollInfo) {
+                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                              // start loading data
+                              setState(() {
+                                _isfetchingnew = true;
+                              });
+                              _loadData();
+                            }
+                          },
                           child: ListView.builder(
                             itemBuilder: (context, int i) {
                               return OrderWidget(
@@ -124,16 +128,16 @@ class _MyItemsState extends State<MyItems> {
                             itemCount: _orders == null ? 0 : _orders.length,
                           ),
                         ),
-                        Container(
-                          height: _isfetchingnew ? 100.0 : 0.0,
-                          color: Colors.transparent,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      ],
-                    ),
+                ),
+                Container(
+                  height: _isfetchingnew ? 100.0 : 0.0,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: CircularProgressIndicator(),
                   ),
+                ),
+              ],
+            ),
           ),
         );
       },

@@ -81,60 +81,66 @@ class _MyTripsState extends State<MyTrips> {
         }
         return Scaffold(
           body: SafeArea(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification scrollInfo) {
-                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                  // start loading data
-                  setState(() {
-                    _isfetchingnew = true;
-                  });
-                  _loadData();
-                }
-              },
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: AppBar(
-                      backgroundColor: Colors.white,
-                      centerTitle: true,
-                      leading: IconButton(
-                        color: Theme.of(context).primaryColor,
-                        icon: Icon(
-                          Icons.chevron_left,
-                          size: 24,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: AppBar(
+                    backgroundColor: Colors.white,
+                    centerTitle: true,
+                    leading: IconButton(
+                      color: Theme.of(context).primaryColor,
+                      icon: Icon(
+                        Icons.chevron_left,
+                        size: 24,
                       ),
-                      title: Text(
-                        "My Trips",
-                        style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                      ),
-                      elevation: 1,
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, int i) {
-                        return TripWidget(
-                          trip: _trips[i],
-                          i: i,
-                        );
+                      onPressed: () {
+                        Navigator.of(context).pop();
                       },
-                      itemCount: _trips == null ? 0 : _trips.length,
                     ),
-                  ),
-                  Container(
-                    height: _isfetchingnew ? 100.0 : 0.0,
-                    color: Colors.transparent,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+                    title: Text(
+                      "My Trips",
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                     ),
+                    elevation: 1,
                   ),
-                ],
-              ),
+                ),
+                Expanded(
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                        // start loading data
+                        setState(() {
+                          _isfetchingnew = true;
+                        });
+                        _loadData();
+                      }
+                    },
+                    child: orderstripsProvider.isLoading
+                        ? ListView(
+                            children: <Widget>[
+                              for (var i = 0; i < 10; i++) TripFadeWidget(),
+                            ],
+                          )
+                        : ListView.builder(
+                            itemBuilder: (context, int i) {
+                              return TripWidget(
+                                trip: _trips[i],
+                                i: i,
+                              );
+                            },
+                            itemCount: _trips.length,
+                          ),
+                  ),
+                ),
+                Container(
+                  height: _isfetchingnew ? 100.0 : 0.0,
+                  color: Colors.transparent,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ],
             ),
           ),
         );
