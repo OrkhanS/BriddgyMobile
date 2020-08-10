@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
@@ -39,13 +40,16 @@ class _FilterBarState extends State<FilterBar> {
   var _expanded = false;
 
   Future filterAndSetOrders() async {
+    _suggested = [];
     urlFilter = Api.orders + "?";
     if (widget.from != null) {
       urlFilter = urlFilter + "origin=" + widget.from;
       flagFrom = true;
     }
     if (widget.to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + widget.to.toString() : urlFilter = urlFilter + "&dest=" + widget.to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + widget.to.toString()
+          : urlFilter = urlFilter + "&dest=" + widget.to.toString();
       flagTo = true;
     }
     if (widget.weight != null) {
@@ -62,12 +66,21 @@ class _FilterBarState extends State<FilterBar> {
     if (Provider.of<Auth>(context, listen: false).isAuth) {
       await http.get(
         urlFilter,
-        headers: {HttpHeaders.CONTENT_TYPE: "application/json", "Authorization": "Token " + Provider.of<Auth>(context, listen: false).token},
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization":
+              "Token " + Provider.of<Auth>(context, listen: false).token
+        },
       ).then((response) {
         setState(
           () {
-            final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            widget.ordersProvider.orders = dataOrders["results"];
+            Map<String, dynamic> data =
+                json.decode(response.body) as Map<String, dynamic>;
+
+            for (var i = 0; i < data["results"].length; i++) {
+              _suggested.add(Order.fromJson(data["results"][i]));
+            }
+            widget.ordersProvider.orders = _suggested;
             widget.ordersProvider.isLoadingOrders = false;
             //itemCount = dataOrders["count"];
           },
@@ -80,8 +93,13 @@ class _FilterBarState extends State<FilterBar> {
       ).then((response) {
         setState(
           () {
-            final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            widget.ordersProvider.orders = dataOrders["results"];
+            Map<String, dynamic> data =
+                json.decode(response.body) as Map<String, dynamic>;
+
+            for (var i = 0; i < data["results"].length; i++) {
+              _suggested.add(Order.fromJson(data["results"][i]));
+            }
+            widget.ordersProvider.orders = _suggested;
             widget.ordersProvider.isLoadingOrders = false;
             //itemCount = dataOrders["count"];
           },
@@ -106,7 +124,11 @@ class _FilterBarState extends State<FilterBar> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -135,9 +157,15 @@ class _FilterBarState extends State<FilterBar> {
                     border: Border(),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 5),
                     child: Text(
-                      _searchBarFrom + " - " + _searchBarTo + " , " + _searchBarWeight + " kg ",
+                      _searchBarFrom +
+                          " - " +
+                          _searchBarTo +
+                          " , " +
+                          _searchBarWeight +
+                          " kg ",
                       style: TextStyle(color: Colors.teal[700]
                           // Theme.of(context).primaryColor,
                           // fontWeight: FontWeight.bold,
@@ -162,17 +190,22 @@ class _FilterBarState extends State<FilterBar> {
               height: _expanded ? 400 : 0,
               child: Form(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15)),
                     child: Column(
                       children: <Widget>[
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 5),
                             child: TypeAheadFormField(
                               keepSuggestionsOnLoading: false,
-                              debounceDuration: const Duration(milliseconds: 200),
+                              debounceDuration:
+                                  const Duration(milliseconds: 200),
                               textFieldConfiguration: TextFieldConfiguration(
                                 onChanged: (value) {
                                   widget.from = null;
@@ -205,16 +238,25 @@ class _FilterBarState extends State<FilterBar> {
                               },
                               itemBuilder: (context, suggestion) {
                                 return ListTile(
-                                  title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                                  title: Text(
+                                      suggestion.toString().split(", ")[0] +
+                                          ", " +
+                                          suggestion.toString().split(", ")[1]),
                                 );
                               },
-                              transitionBuilder: (context, suggestionsBox, controller) {
+                              transitionBuilder:
+                                  (context, suggestionsBox, controller) {
                                 return suggestionsBox;
                               },
                               onSuggestionSelected: (suggestion) {
-                                this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                                widget.from = suggestion.toString().split(", ")[2];
-                                _searchBarFrom = suggestion.toString().split(", ")[0];
+                                this._typeAheadController.text =
+                                    suggestion.toString().split(", ")[0] +
+                                        ", " +
+                                        suggestion.toString().split(", ")[1];
+                                widget.from =
+                                    suggestion.toString().split(", ")[2];
+                                _searchBarFrom =
+                                    suggestion.toString().split(", ")[0];
                               },
                               validator: (value) {
                                 widget.from = value;
@@ -231,10 +273,12 @@ class _FilterBarState extends State<FilterBar> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 5),
                             child: TypeAheadFormField(
                               keepSuggestionsOnLoading: false,
-                              debounceDuration: const Duration(milliseconds: 200),
+                              debounceDuration:
+                                  const Duration(milliseconds: 200),
                               textFieldConfiguration: TextFieldConfiguration(
                                 onChanged: (value) {
                                   widget.to = null;
@@ -267,16 +311,25 @@ class _FilterBarState extends State<FilterBar> {
                               },
                               itemBuilder: (context, suggestion) {
                                 return ListTile(
-                                  title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                                  title: Text(
+                                      suggestion.toString().split(", ")[0] +
+                                          ", " +
+                                          suggestion.toString().split(", ")[1]),
                                 );
                               },
-                              transitionBuilder: (context, suggestionsBox, controller) {
+                              transitionBuilder:
+                                  (context, suggestionsBox, controller) {
                                 return suggestionsBox;
                               },
                               onSuggestionSelected: (suggestion) {
-                                this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                                widget.to = suggestion.toString().split(", ")[2];
-                                _searchBarTo = suggestion.toString().split(", ")[0];
+                                this._typeAheadController2.text =
+                                    suggestion.toString().split(", ")[0] +
+                                        ", " +
+                                        suggestion.toString().split(", ")[1];
+                                widget.to =
+                                    suggestion.toString().split(", ")[2];
+                                _searchBarTo =
+                                    suggestion.toString().split(", ")[0];
                               },
                               validator: (value) {
                                 widget.to = value;
@@ -290,7 +343,8 @@ class _FilterBarState extends State<FilterBar> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 5),
                             child: TextFormField(
                               controller: _typeAheadController3,
                               decoration: InputDecoration(
@@ -326,7 +380,8 @@ class _FilterBarState extends State<FilterBar> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 30, right: 30, top: 5, bottom: 20),
+                            padding: const EdgeInsets.only(
+                                left: 30, right: 30, top: 5, bottom: 20),
                             child: TextFormField(
                               controller: _typeAheadController4,
                               decoration: InputDecoration(
@@ -372,7 +427,8 @@ class _FilterBarState extends State<FilterBar> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: RaisedButton(
@@ -395,7 +451,9 @@ class _FilterBarState extends State<FilterBar> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  Provider.of<OrdersTripsProvider>(context, listen: false).startLoading = true;
+                                  Provider.of<OrdersTripsProvider>(context,
+                                          listen: false)
+                                      .startLoading = true;
                                   filterAndSetOrders();
                                   setState(() {
                                     _expanded = !_expanded;

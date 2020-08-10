@@ -16,11 +16,16 @@ class OrderWidget extends StatefulWidget {
 
 class _OrderWidgetState extends State<OrderWidget> {
   Order order;
+  var imageUrl;
   var i;
   @override
   void initState() {
     i = widget.i;
     order = widget.order;
+    imageUrl = order.orderimage.isEmpty
+        ? 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg'
+        : "https://storage.googleapis.com/briddgy-media/" +
+            order.orderimage[0].toString();
     super.initState();
   }
 
@@ -46,11 +51,16 @@ class _OrderWidgetState extends State<OrderWidget> {
                   radius: 40,
                   backgroundColor: Colors.grey[300],
                   backgroundImage: NetworkImage(
-                    "https://picsum.photos/250?image=9",
+                    imageUrl,
                   ),
+                  onBackgroundImageError: (exception, stackTrace) {
+                    imageUrl =
+                        'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+                  },
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 4.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,9 +92,14 @@ class _OrderWidgetState extends State<OrderWidget> {
                           SizedBox(
                             width: 200,
                             child: Text(
-                              order.source.cityAscii + "  >  " + order.destination.cityAscii,
+                              order.source.cityAscii +
+                                  "  >  " +
+                                  order.destination.cityAscii,
                               maxLines: 1,
-                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.normal),
                             ),
                           ),
                         ],

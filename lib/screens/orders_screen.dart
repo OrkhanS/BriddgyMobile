@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:optisend/screens/verifyEmail_screen.dart';
@@ -111,15 +112,23 @@ class _OrdersScreenState extends State<OrdersScreen> {
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          _suggested = dataOrders["results"];
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+
+          for (var i = 0; i < data["results"].length; i++) {
+            _suggested.add(Order.fromJson(data["results"][i]));
+          }
           // isLoading = false;
         },
       );
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -136,7 +145,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -152,7 +163,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
     await http.get(
       urlFilter,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json", "Authorization": "Token " + Provider.of<Auth>(context, listen: true).token},
+      headers: {
+        HttpHeaders.CONTENT_TYPE: "application/json",
+        "Authorization":
+            "Token " + Provider.of<Auth>(context, listen: true).token
+      },
     ).then((response) {
       setState(
         () {
@@ -169,7 +184,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
+      if (nextOrderURL.toString() != "null" &&
+          nextOrderURL.toString() != "FristCall") {
         String url = nextOrderURL;
         try {
           await http.get(
@@ -254,47 +270,61 @@ class _OrdersScreenState extends State<OrdersScreen> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+                FilterBar(
+                    ordersProvider: orderstripsProvider,
+                    from: from,
+                    to: to,
+                    weight: weight,
+                    price: price),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                    Text(
-                      "Results: " + orderstripsProvider.orders.length.toString(),
-                      style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton(
-                      hint: Text(_value),
-                      items: [
-                        DropdownMenuItem(
-                          value: "Ranking",
-                          child: Text("Highest Ranking"),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Results: " +
+                              orderstripsProvider.orders.length.toString(),
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.bold),
                         ),
-                        DropdownMenuItem(value: "Price", child: Text("Highest Reward")),
-                        DropdownMenuItem(
-                          value: "WeightLow",
-                          child: Text(
-                            "Lowest Weight",
-                          ),
+                        DropdownButton(
+                          hint: Text(_value),
+                          items: [
+                            DropdownMenuItem(
+                              value: "Ranking",
+                              child: Text("Highest Ranking"),
+                            ),
+                            DropdownMenuItem(
+                                value: "Price", child: Text("Highest Reward")),
+                            DropdownMenuItem(
+                              value: "WeightLow",
+                              child: Text(
+                                "Lowest Weight",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: "WeightMax",
+                              child: Text(
+                                "Highest Weight",
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            sortData(value, orderstripsProvider);
+                          },
                         ),
-                        DropdownMenuItem(
-                          value: "WeightMax",
-                          child: Text(
-                            "Highest Weight",
-                          ),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        sortData(value, orderstripsProvider);
-                      },
-                    ),
-                  ]),
+                      ]),
                 ),
                 Expanded(
                   child: orderstripsProvider.notLoadingOrders
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;
