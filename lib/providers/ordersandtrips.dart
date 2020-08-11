@@ -70,7 +70,7 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 
   Future fetchAndSetOrders() async {
-    const url = Api.orders;
+    String url = Api.orders + "?order_by=-date";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userData')) {
       final extractedUserData =

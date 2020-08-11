@@ -12,9 +12,10 @@ WebSocketsNotifications sockets = new WebSocketsNotifications();
 const String _SERVER_ADDRESS = "ws://10.143.26.254:1408";
 
 class WebSocketsNotifications {
-  static final WebSocketsNotifications _sockets = new WebSocketsNotifications._internal();
+  static final WebSocketsNotifications _sockets =
+      new WebSocketsNotifications._internal();
 
-  factory WebSocketsNotifications(){
+  factory WebSocketsNotifications() {
     return _sockets;
   }
 
@@ -29,7 +30,7 @@ class WebSocketsNotifications {
   /// Is the connection established?
   ///
   bool _isOn = false;
-  
+
   ///
   /// Listeners
   /// List of methods to be called when a new message
@@ -57,11 +58,11 @@ class WebSocketsNotifications {
       ///
       _channel.stream.listen(_onReceptionOfMessageFromServer);
       print("connetecded");
-    } catch(e){
+    } catch (e) {
       ///
       /// General error handling
-      /// TODO
-      print ("Error Occured");
+      print("Error Occured");
+
       ///
     }
   }
@@ -69,9 +70,9 @@ class WebSocketsNotifications {
   /// ----------------------------------------------------------
   /// Closes the WebSocket communication
   /// ----------------------------------------------------------
-  reset(){
-    if (_channel != null){
-      if (_channel.sink != null){
+  reset() {
+    if (_channel != null) {
+      if (_channel.sink != null) {
         _channel.sink.close();
         _isOn = false;
       }
@@ -81,9 +82,9 @@ class WebSocketsNotifications {
   /// ---------------------------------------------------------
   /// Sends a message to the server
   /// ---------------------------------------------------------
-  send(String message){
-    if (_channel != null){
-      if (_channel.sink != null && _isOn){
+  send(String message) {
+    if (_channel != null) {
+      if (_channel.sink != null && _isOn) {
         _channel.sink.add(message);
       }
     }
@@ -93,10 +94,11 @@ class WebSocketsNotifications {
   /// Adds a callback to be invoked in case of incoming
   /// notification
   /// ---------------------------------------------------------
-  addListener(Function callback){
+  addListener(Function callback) {
     _listeners.add(callback);
   }
-  removeListener(Function callback){
+
+  removeListener(Function callback) {
     _listeners.remove(callback);
   }
 
@@ -104,9 +106,9 @@ class WebSocketsNotifications {
   /// Callback which is invoked each time that we are receiving
   /// a message from the server
   /// ----------------------------------------------------------
-  _onReceptionOfMessageFromServer(message){
+  _onReceptionOfMessageFromServer(message) {
     _isOn = true;
-    _listeners.forEach((Function callback){
+    _listeners.forEach((Function callback) {
       callback(message);
     });
   }

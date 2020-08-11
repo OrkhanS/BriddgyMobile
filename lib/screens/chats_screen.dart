@@ -16,7 +16,8 @@ import 'package:badges/badges.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ChatsScreen extends StatefulWidget {
-  final StreamController<String> streamController = StreamController<String>.broadcast();
+  final StreamController<String> streamController =
+      StreamController<String>.broadcast();
   var provider, token, auth;
   ChatsScreen({this.provider, this.token, this.auth});
   @override
@@ -31,7 +32,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   bool isMessagesLoaded = false;
   Future<int> roomLength;
   List _rooms = [];
-  String myid;
+  String myid = "empty";
   bool _isfetchingnew = false;
   String nextMessagesURL = "FirstCall";
 
@@ -43,8 +44,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if(myid==null && Provider.of<Auth>(context,listen: false).isAuth){
-        myid = Provider.of<Auth>(context,listen: false).userdetail.id.toString();
+    if (myid != "empty" && Provider.of<Auth>(context).isAuth) {
+      myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
     }
     List<MaterialColor> colors = [
       Colors.amber,
@@ -95,13 +96,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
         return Scaffold(
           body: SafeArea(
             child: Container(
-              child: widget.provider.userNotLogged == true || widget.provider.chats == null
+              child: widget.provider.userNotLogged == true ||
+                      widget.provider.chats == null
                   ? Center(child: Text('No Chats'))
                   : widget.provider.chatsNotLoaded == true
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;
@@ -123,10 +127,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                       children: <Widget>[
                                         Menu(
                                           child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 7.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 7.0),
                                             child: ListTile(
                                               leading: CircleAvatar(
-                                                backgroundColor: Colors.grey[300],
+                                                backgroundColor:
+                                                    Colors.grey[300],
                                                 backgroundImage: NetworkImage(
                                                   //todo user profilepic
                                                   "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
@@ -135,14 +141,25 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                               title: Row(
                                                 children: <Widget>[
                                                   Text(
-                                                    _rooms[index]["members"][1]["user"]["id"].toString() != myid
-                                                        ? _rooms[index]["members"][1]["user"]["first_name"].toString() +
+                                                    _rooms[index]["members"][1]
+                                                                        ["user"]
+                                                                    ["id"]
+                                                                .toString() !=
+                                                            myid
+                                                        ? _rooms[index]["members"][1]["user"]["first_name"]
+                                                                .toString() +
                                                             " " +
-                                                            _rooms[index]["members"][1]["user"]["last_name"].toString()
-                                                        : _rooms[index]["members"][0]["user"]["first_name"].toString() +
+                                                            _rooms[index]["members"][1]["user"]["last_name"]
+                                                                .toString()
+                                                        : _rooms[index]["members"][0]["user"]["first_name"]
+                                                                .toString() +
                                                             " " +
-                                                            _rooms[index]["members"][0]["user"]["last_name"].toString(),
-                                                    style: TextStyle(fontSize: 15.0),
+                                                            _rooms[index]["members"][0]
+                                                                        ["user"]
+                                                                    ["last_name"]
+                                                                .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 15.0),
                                                   ),
                                                   SizedBox(
                                                     width: 16.0,
@@ -159,7 +176,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 children: <Widget>[
                                                   Text(
                                                     "Last Message:" + "  ",
-                                                    style: TextStyle(fontSize: 15.0),
+                                                    style: TextStyle(
+                                                        fontSize: 15.0),
                                                     // _messages[index]["results"][0]["text"]
                                                     //   .toString().substring(0,15)
                                                   ),
@@ -170,39 +188,82 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                     //     ? "Recently"
                                                     //     :
                                                     timeago
-                                                        .format(DateTime.parse(_rooms[index]["date_modified"].toString().substring(0, 10) +
+                                                        .format(DateTime.parse(_rooms[
+                                                                        index][
+                                                                    "date_modified"]
+                                                                .toString()
+                                                                .substring(
+                                                                    0, 10) +
                                                             " " +
-                                                            _rooms[index]["date_modified"].toString().substring(11, 26)))
+                                                            _rooms[index][
+                                                                    "date_modified"]
+                                                                .toString()
+                                                                .substring(
+                                                                    11, 26)))
                                                         .toString(),
-                                                    style: TextStyle(fontSize: 15.0),
+                                                    style: TextStyle(
+                                                        fontSize: 15.0),
                                                   )
                                                 ],
                                               ),
-                                              trailing: widget.provider.newMessages[_rooms[index]["id"]].toString() != "0" &&
-                                                      widget.provider.newMessages[_rooms[index]["id"]].toString() != "null"
+                                              trailing: widget
+                                                              .provider
+                                                              .newMessages[
+                                                                  _rooms[index]
+                                                                      ["id"]]
+                                                              .toString() !=
+                                                          "0" &&
+                                                      widget
+                                                              .provider
+                                                              .newMessages[
+                                                                  _rooms[index]
+                                                                      ["id"]]
+                                                              .toString() !=
+                                                          "null"
                                                   ? Badge(
-                                                      badgeContent: Text(widget.provider.newMessages[_rooms[index]["id"]].toString()),
-                                                      child: Icon(Icons.arrow_forward_ios),
+                                                      badgeContent: Text(widget
+                                                          .provider
+                                                          .newMessages[
+                                                              _rooms[index]
+                                                                  ["id"]]
+                                                          .toString()),
+                                                      child: Icon(Icons
+                                                          .arrow_forward_ios),
                                                     )
                                                   : Icon(
                                                       Icons.arrow_forward_ios,
                                                       size: 14.0,
                                                     ),
                                               onTap: () {
-                                                widget.provider.readMessages(_rooms[index]["id"]);
-                                                Provider.of<Messages>(context, listen: false).newMessage[_rooms[index]["id"]] = 0;
-                                                widget.provider.fetchAndSetMessages(index);
+                                                widget.provider.readMessages(
+                                                    _rooms[index]["id"]);
+                                                Provider.of<Messages>(context,
+                                                            listen: false)
+                                                        .newMessage[
+                                                    _rooms[index]["id"]] = 0;
+                                                widget.provider
+                                                    .fetchAndSetMessages(index);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (__) => ChatWindow(
-                                                          provider: widget.provider,
-                                                          room: _rooms[index]["id"],
-                                                          user: _rooms[index]["members"][1]["user"]["id"].toString() != myid
-                                                              ? _rooms[index]["members"][1]["user"]
-                                                              : _rooms[index]["members"][0]["user"],
+                                                          provider:
+                                                              widget.provider,
+                                                          room: _rooms[index]
+                                                              ["id"],
+                                                          user: _rooms[index]["members"][1]["user"]["id"]
+                                                                      .toString() !=
+                                                                  myid
+                                                              ? _rooms[index]
+                                                                      ["members"]
+                                                                  [1]["user"]
+                                                              : _rooms[index]
+                                                                      ["members"]
+                                                                  [0]["user"],
                                                           token: widget.token,
-                                                          auth: Provider.of<Auth>(context, listen: false))),
+                                                          auth: Provider.of<Auth>(
+                                                              context,
+                                                              listen: false))),
                                                 );
                                               },
                                             ),
@@ -214,10 +275,19 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (__) => ProfileScreenAnother(
-                                                            user: _rooms[index]["members"][1]["user"]["id"].toString() != myid
-                                                                ? _rooms[index]["members"][1]["user"]
-                                                                : _rooms[index]["members"][0]["user"],
+                                                      builder: (__) =>
+                                                          ProfileScreenAnother(
+                                                            user: _rooms[index]["members"][1]["user"]
+                                                                            [
+                                                                            "id"]
+                                                                        .toString() !=
+                                                                    myid
+                                                                ? _rooms[index][
+                                                                        "members"]
+                                                                    [1]["user"]
+                                                                : _rooms[index][
+                                                                        "members"]
+                                                                    [0]["user"],
                                                           )),
                                                 );
                                               },
@@ -227,32 +297,48 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 context: context,
                                                 type: AlertType.info,
                                                 title:
-                                                    "Conversation started on:  " + _rooms[index]["date_created"].toString().substring(0, 10) + "\n",
+                                                    "Conversation started on:  " +
+                                                        _rooms[index]
+                                                                ["date_created"]
+                                                            .toString()
+                                                            .substring(0, 10) +
+                                                        "\n",
                                                 buttons: [
                                                   DialogButton(
                                                     child: Text(
                                                       "Back",
-                                                      style: TextStyle(color: Colors.white, fontSize: 20),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20),
                                                     ),
-                                                    onPressed: () => Navigator.pop(context),
-                                                    color: Color.fromRGBO(0, 179, 134, 1.0),
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    color: Color.fromRGBO(
+                                                        0, 179, 134, 1.0),
                                                   ),
                                                   DialogButton(
                                                     child: Text(
                                                       "Report",
-                                                      style: TextStyle(color: Colors.white, fontSize: 20),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20),
                                                     ),
                                                     onPressed: () => {
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
-                                                            builder: (__) => ReportUser(
-                                                                  user: _rooms[index]["members"],
+                                                            builder: (__) =>
+                                                                ReportUser(
+                                                                  user: _rooms[
+                                                                          index]
+                                                                      [
+                                                                      "members"],
                                                                   message: null,
                                                                 )),
                                                       ),
                                                     },
-                                                    color: Color.fromRGBO(0, 179, 134, 1.0),
+                                                    color: Color.fromRGBO(
+                                                        0, 179, 134, 1.0),
                                                   )
                                                 ],
                                                 content: Text(

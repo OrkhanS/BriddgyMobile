@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+//import 'dart:html';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -7,12 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:http/http.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:optisend/screens/my_items.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
+import 'package:optisend/models/order.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
@@ -31,34 +36,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
   List _cities = [];
   bool isLoading = true;
   var imageFile;
+  bool addItemButton = true;
 
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
-  Future<void> addPicture(id) async {
-    var token = widget.token;
-    const url = Api.addOrderImage;
-    var uri = Uri.parse(url);
-    var request = new MultipartRequest("POST", uri);
 
-    var multipartFile = await MultipartFile.fromPath("photo", imageFile);
-    request.files.add(multipartFile);
-
-    StreamedResponse response = await request.send();
-    response.stream.transform(utf8.decoder).listen((value) {
-      print(value);
-    });
-    http.put(url,
-        headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
-          "Authorization": "Token " + token,
-        },
-        body: json.encode({
-          "file": base64Encode(imageFile.readAsBytesSync()),
-          "order_id": id,
-        }));
-  }
-
-  Future upload(id) async {
+  Future upload(id, token, orderstripsProvider, context) async {
     var stream =
         new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
@@ -68,15 +51,29 @@ class _AddItemScreenState extends State<AddItemScreen> {
     var request = new http.MultipartRequest("PUT", uri);
     var multipartFile = new http.MultipartFile('file', stream, length,
         filename: basename(imageFile.path));
-    request.headers['Authorization'] = "Token " + widget.token;
-    //contentType: new MediaType('image', 'png'));
+    request.headers['Authorization'] = "Token " + token;
     request.fields["order_id"] = id.toString();
 
     request.files.add(multipartFile);
-    var response = await request.send();
-    print(response.statusCode);
-    response.stream.transform(utf8.decoder).listen((value) {
-      print(value);
+    var response = await request.send().whenComplete(() {
+      orderstripsProvider.myorders = [];
+      orderstripsProvider.fetchAndSetMyOrders(token);
+      Navigator.pop(context);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (__) => MyItems(
+              token: token,
+              orderstripsProvider: orderstripsProvider,
+            ),
+          ));
+      Flushbar(
+        title: "Success!",
+        message: "Item added.",
+        padding: const EdgeInsets.all(8),
+        borderRadius: 10,
+        duration: Duration(seconds: 3),
+      )..show(context);
     });
   }
 
@@ -185,7 +182,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     },
                   ),
                   title: Text(
-                    "Add Item", //Todo: item name
+                    "Add Item",
                     style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.bold),
@@ -262,7 +259,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   onSaved: (value) => from = value,
                 ),
               ),
-
               Container(
                 width: deviceWidth * 0.8,
                 child: TypeAheadFormField(
@@ -305,62 +301,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   onSaved: (value) => to = value,
                 ),
               ),
-
-//            Container(
-//              padding: EdgeInsets.symmetric(vertical: 10),
-//              width: deviceWidth * 0.4,
-//              child: RaisedButton(
-//                shape: RoundedRectangleBorder(
-//                    borderRadius: BorderRadius.circular(5.0)),
-//                elevation: 4.0,
-//                onPressed: () {
-//                  DatePicker.showDatePicker(context,
-//                      theme: DatePickerTheme(
-//                        itemStyle: TextStyle(color: Colors.blue[800]),
-//                        containerHeight: 300.0,
-//                      ),
-//                      showTitleActions: true,
-//                      minTime: DateTime(2015, 1, 1),
-//                      maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
-//                    print('confirm $date'); //todo: delete
-//                    _startDate = '${date.day}/${date.month}/${date.year}  ';
-//                  }, currentTime: DateTime.now(), locale: LocaleType.en);
-//                },
-//                child: Container(
-//                  alignment: Alignment.center,
-//                  height: 40.0,
-//                  child: Row(
-//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                    children: <Widget>[
-//                      Row(
-//                        children: <Widget>[
-//                          Container(
-//                            child: Row(
-//                              children: <Widget>[
-////                                            Icon(
-////                                              Icons.date_range,
-////                                              size: 18.0,
-////                                              color: Theme.of(context)
-////                                                  .primaryColor,
-////                                            ),
-//                                Text(
-//                                  " $_startDate",
-//                                  style: TextStyle(
-//                                      color: Theme.of(context).primaryColor,
-//                                      fontWeight: FontWeight.bold,
-//                                      fontSize: 15.0),
-//                                ),
-//                              ],
-//                            ),
-//                          )
-//                        ],
-//                      ),
-//                    ],
-//                  ),
-//                ),
-//                color: Colors.white,
-//              ),
-//            ),
               Container(
                 width: deviceWidth * 0.8,
                 child: ConstrainedBox(
@@ -386,14 +326,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     labelText: 'Price',
                     icon: Icon(Icons.attach_money),
                   ),
-
                   keyboardType: TextInputType.number,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
                   onChanged: (String val) {
                     price = val;
                   },
@@ -406,14 +339,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     labelText: 'Weight',
                     icon: Icon(Icons.format_size),
                   ),
-
                   keyboardType: TextInputType.number,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
                   onChanged: (String val) {
                     weight = val;
                   },
@@ -487,77 +413,97 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ],
                 ),
               ),
-              RaisedButton.icon(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                color: Theme.of(context).scaffoldBackgroundColor,
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                ),
-                icon: Icon(
-                  Icons.add,
-                  color: Theme.of(context).primaryColor,
-                  size: 20,
-                ),
-                label: Text(
-                  "Add item",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor, fontSize: 19,
-//                                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                onPressed: () {
-                  var token = widget.token;
-                  const url = Api.orders;
-                  http
-                      .post(url,
-                          headers: {
-                            HttpHeaders.CONTENT_TYPE: "application/json",
-                            "Authorization": "Token " + token,
-                          },
-                          body: json.encode({
-                            "title": title,
-                            "dimensions": 0,
-                            "source": from,
-                            "destination": to,
-                            "date": DateTime.now().toString().substring(0, 10),
-                            "address": "ads",
-                            "weight": weight,
-                            "price": price,
-                            "trip": null,
-                            "description": description
-                          }))
-                      .then((response) {
-                    if (response.statusCode == 201) {
-                      upload(json.decode(response.body)["id"]);
-
-                      /// TODO ORKHAN, add this directly to the list, need to convert it to Order object..
-                      Provider.of<OrdersTripsProvider>(context, listen: false)
-                          .myorders = [];
-                      Provider.of<OrdersTripsProvider>(context, listen: false)
-                          .fetchAndSetMyOrders(token);
-                      Navigator.pop(context);
-                      Flushbar(
-                        title: "Item added",
-                        message:
-                            "You can see all of your items in My Items section of Account",
-                        padding: const EdgeInsets.all(8),
-                        borderRadius: 10,
-                        duration: Duration(seconds: 3),
-                      )..show(context);
-                    } else {
-                      Flushbar(
-                        title: "Warning",
-                        message: "Item couldn't be added, try again.",
-                        padding: const EdgeInsets.all(8),
-                        borderRadius: 10,
-                        duration: Duration(seconds: 3),
-                      )..show(context);
-                    }
-                  });
-                },
-              ),
+              addItemButton
+                  ? RaisedButton.icon(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                      icon: Icon(
+                        Icons.add,
+                        color: Theme.of(context).primaryColor,
+                        size: 20,
+                      ),
+                      label: Text(
+                        "Add item",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 19,
+                        ),
+                      ),
+                      onPressed: () {
+                        var token =
+                            Provider.of<Auth>(context, listen: false).token;
+                        var orderstripsProvider =
+                            Provider.of<OrdersTripsProvider>(context,
+                                listen: false);
+                        String url = Api.orders;
+                        if (title == null ||
+                            from == null ||
+                            to == null ||
+                            weight == null ||
+                            price == null) {
+                          setState(() {
+                            addItemButton = true;
+                          });
+                          Flushbar(
+                            title: "Warning!",
+                            message: "Fill all the fields and try again.",
+                            padding: const EdgeInsets.all(8),
+                            borderRadius: 10,
+                            duration: Duration(seconds: 3),
+                          )..show(context);
+                        } else {
+                          setState(() {
+                            addItemButton = false;
+                          });
+                          http
+                              .post(url,
+                                  headers: {
+                                    HttpHeaders.CONTENT_TYPE:
+                                        "application/json",
+                                    "Authorization": "Token " + token,
+                                  },
+                                  body: json.encode({
+                                    "title": title,
+                                    "dimensions": 0,
+                                    "source": from,
+                                    "destination": to,
+                                    "date": DateTime.now()
+                                        .toString()
+                                        .substring(0, 10),
+                                    "address": "ads",
+                                    "weight": weight,
+                                    "price": price,
+                                    "trip": null,
+                                    "description": description
+                                  }))
+                              .then((response) {
+                            Map data = json.decode(response.body);
+                            if (response.statusCode == 201) {
+                              upload(data["id"].toString(), token,
+                                  orderstripsProvider, context);
+                              orderstripsProvider.isLoadingMyOrders = true;
+                            } else {
+                              setState(() {
+                                addItemButton = true;
+                              });
+                              Flushbar(
+                                title: "Warning!",
+                                message: "Item couldn't be added, try again.",
+                                padding: const EdgeInsets.all(8),
+                                borderRadius: 10,
+                                duration: Duration(seconds: 3),
+                              )..show(context);
+                            }
+                          });
+                        }
+                      },
+                    )
+                  : ProgressIndicatorWidget(show: true),
             ],
           ),
         ),

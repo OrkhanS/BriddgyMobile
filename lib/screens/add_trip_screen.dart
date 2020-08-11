@@ -75,7 +75,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 },
               ),
               title: Text(
-                "Add Trip", //Todo: item name
+                "Add Trip",
                 style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold),
@@ -287,7 +287,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                           "weight_limit": weight,
                         }));
                     widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
-                    //Todo // Navigator.of(context).pushNamed(AccountScreen.routeName);
+
                     Navigator.pop(context);
                     Flushbar(
                       title: "Trip added",

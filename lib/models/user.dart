@@ -9,22 +9,22 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 String userToJson(User data) => json.encode(data.toJson());
 
 class User {
-  User({
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.isActive,
-    this.isStaff,
-    this.rating,
-    this.isNumberVerified,
-    this.isEmailVerified,
-    this.isPhotoVerified,
-    this.avatarpic,
-    this.deviceToken,
-    this.online,
-    this.lastOnline,
-  });
+  User(
+      {this.id,
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.isActive,
+      this.isStaff,
+      this.rating,
+      this.isNumberVerified,
+      this.isEmailVerified,
+      this.isPhotoVerified,
+      this.avatarpic,
+      this.deviceToken,
+      this.online,
+      this.lastOnline,
+      this.date_joined});
 
   int id;
   String firstName;
@@ -40,6 +40,7 @@ class User {
   String deviceToken;
   bool online;
   DateTime lastOnline;
+  DateTime date_joined;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
@@ -56,6 +57,7 @@ class User {
         deviceToken: json["deviceToken"],
         online: json["online"],
         lastOnline: DateTime.parse(json["last_online"]),
+        date_joined: DateTime.parse(json["date_joined"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -73,5 +75,6 @@ class User {
         "deviceToken": deviceToken,
         "online": online,
         "last_online": lastOnline.toIso8601String(),
+        "date_joined": date_joined.toIso8601String(),
       };
 }
