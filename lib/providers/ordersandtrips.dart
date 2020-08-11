@@ -72,9 +72,11 @@ class OrdersTripsProvider with ChangeNotifier {
   Future fetchAndSetOrders() async {
     const url = Api.orders;
     final prefs = await SharedPreferences.getInstance();
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
-    token = extractedUserData['token'];
+    if (prefs.containsKey('userData')) {
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      token = extractedUserData['token'];
+    }
     http
         .get(
       url,
@@ -152,9 +154,11 @@ class OrdersTripsProvider with ChangeNotifier {
   Future fetchAndSetTrips() async {
     const url = Api.trips;
     final prefs = await SharedPreferences.getInstance();
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
-    token = extractedUserData['token'];
+    if (prefs.containsKey('userData')) {
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      token = extractedUserData['token'];
+    }
     http
         .get(
       url,

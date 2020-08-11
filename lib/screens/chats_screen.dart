@@ -43,18 +43,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    myid = Provider.of<Auth>(context).userdetail.id.toString();
-    // getAvatarUrl(String a) {
-    //   String helper = 'https://briddgy.herokuapp.com/media/';
-    //   imageUrl =
-    //       'https://moonvillageassociation.org/wp-content/uploads/2018/06/default-profile-picture1.jpg';
-    //   if (a != null) {
-    //     imageUrl = 'https://briddgy.herokuapp.com/media/' + a.toString() + "/";
-    //   }
-
-    //   return imageUrl;
-    // }
-
+    if(myid==null && Provider.of<Auth>(context,listen: false).isAuth){
+        myid = Provider.of<Auth>(context,listen: false).userdetail.id.toString();
+    }
     List<MaterialColor> colors = [
       Colors.amber,
       Colors.red,
