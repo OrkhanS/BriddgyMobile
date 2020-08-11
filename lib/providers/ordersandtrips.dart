@@ -72,47 +72,31 @@ class OrdersTripsProvider with ChangeNotifier {
   Future fetchAndSetOrders() async {
     const url = Api.orders;
     final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      http.get(
-        url,
-        headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
-        },
-      ).then((onValue) {
-        Map<String, dynamic> data =
-            json.decode(onValue.body) as Map<String, dynamic>;
-
-        for (var i = 0; i < data["results"].length; i++) {
-          orders.add(Order.fromJson(data["results"][i]));
-        }
-        //allOrdersDetails = data;
-        isLoadingOrders = false;
-        notifyListeners();
-      });
-    } else {
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
-      token = extractedUserData['token'];
-
-      http.get(
-        url,
-        headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
-          "Authorization": "Token " + token,
-        },
-      ).then((onValue) {
-        Map<String, dynamic> data =
-            json.decode(onValue.body) as Map<String, dynamic>;
-
-        for (var i = 0; i < data["results"].length; i++) {
-          orders.add(Order.fromJson(data["results"][i]));
-        }
-        //allOrdersDetails = data;
-        isLoadingOrders = false;
-        notifyListeners();
-      });
-    }
-    return _orders;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    token = extractedUserData['token'];
+    http
+        .get(
+      url,
+      headers: prefs.containsKey('userData')
+          ? {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + token,
+            }
+          : {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+            },
+    )
+        .then((onValue) {
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
+      for (var i = 0; i < data["results"].length; i++) {
+        orders.add(Order.fromJson(data["results"][i]));
+      }
+      allOrdersDetails = {"next": data["next"], "count": data["count"]};
+      isLoadingOrders = false;
+      notifyListeners();
+    });
   }
 
   Future fetchAndSetMyOrders(myToken) async {
@@ -168,53 +152,34 @@ class OrdersTripsProvider with ChangeNotifier {
   Future fetchAndSetTrips() async {
     const url = Api.trips;
     final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      http.get(
-        url,
-        headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
-      ).then(
-        (response) {
-          Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
-
-          for (var i = 0; i < data["results"].length; i++) {
-            trips.add(Trip.fromJson(data["results"][i]));
-          }
-
-          // allTripsDetails = dataTrips;
-          isLoading = false;
-          notifyListeners();
-          return;
-        },
-      );
-    } else {
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
-      token = extractedUserData['token'];
-
-      if (token != null) {
-        http.get(
-          url,
-          headers: {
-            HttpHeaders.CONTENT_TYPE: "application/json",
-            "Authorization": "Token " + token,
-          },
-        ).then(
-          (response) {
-            Map<String, dynamic> data =
-                json.decode(response.body) as Map<String, dynamic>;
-
-            for (var i = 0; i < data["results"].length; i++) {
-              trips.add(Trip.fromJson(data["results"][i]));
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    token = extractedUserData['token'];
+    http
+        .get(
+      url,
+      headers: prefs.containsKey('userData')
+          ? {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+              "Authorization": "Token " + token,
             }
+          : {
+              HttpHeaders.CONTENT_TYPE: "application/json",
+            },
+    )
+        .then(
+      (response) {
+        Map<String, dynamic> data =
+            json.decode(response.body) as Map<String, dynamic>;
 
-            isLoading = false;
-            notifyListeners();
-            // allTripsDetails = dataTrips;
-          },
-        );
-      }
-    }
+        for (var i = 0; i < data["results"].length; i++) {
+          trips.add(Trip.fromJson(data["results"][i]));
+        }
+        isLoading = false;
+        notifyListeners();
+        allTripsDetails = {"next": data["next"], "count": data["count"]};
+      },
+    );
   }
 
   Future fetchAndSetMyTrips(myToken) async {

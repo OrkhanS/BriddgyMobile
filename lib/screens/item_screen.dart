@@ -23,30 +23,26 @@ class ItemScreen extends StatefulWidget {
 class _ItemScreenState extends State<ItemScreen> {
   var _current;
   Order order;
-  List<Widget> imageList = [
-    FadeInImage.memoryNetwork(
-      placeholder: kTransparentImage,
-      image:
-          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-    ),
-    FadeInImage.memoryNetwork(
-      placeholder: kTransparentImage,
-      image:
-          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-    ),
-    FadeInImage.memoryNetwork(
-      placeholder: kTransparentImage,
-      image:
-          'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-    ),
-  ];
+  var imageUrl;
+  List<Widget> imageList = [];
   @override
   void initState() {
     order = widget.order;
-    imageUrl = order.orderimage.isEmpty
-        ? 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg'
-        : "https://storage.googleapis.com/briddgy-media/" +
-            order.orderimage[0].toString();
+    if (order.orderimage.isEmpty) {
+      imageList.add(FadeInImage.memoryNetwork(
+        placeholder: kTransparentImage,
+        image:
+            'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg',
+      ));
+    } else {
+      for (var i = 0; i < order.orderimage.length; i++) {
+        imageList.add(FadeInImage.memoryNetwork(
+          placeholder: kTransparentImage,
+          image: "https://storage.googleapis.com/briddgy-media/" +
+              order.orderimage[i].toString(),
+        ));
+      }
+    }
     super.initState();
   }
 
