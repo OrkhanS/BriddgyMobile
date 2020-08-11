@@ -39,7 +39,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String weight, price;
   bool _isfetchingnew = false;
   final formKey = new GlobalKey<FormState>();
-  String nextOrderURL;
+  String nextOrderURL = "FirstCall";
   List _suggested = [];
   List _cities = [];
   List _orders = [];
@@ -179,40 +179,48 @@ class _OrdersScreenState extends State<OrdersScreen> {
       );
     });
   }
+
 //    return Form(
+  Future _loadData() async {
+    if (nextOrderURL.toString() != "null" &&
+        nextOrderURL.toString() != "FristCall") {
+      String url = nextOrderURL;
+      try {
+        await http
+            .get(
+          url,
+          headers: Provider.of<Auth>(context, listen: false).isAuth
+              ? {
+                  HttpHeaders.CONTENT_TYPE: "application/json",
+                  "Authorization": "Token " +
+                      Provider.of<Auth>(context, listen: false)
+                          .myTokenFromStorage,
+                }
+              : {
+                  HttpHeaders.CONTENT_TYPE: "application/json",
+                },
+        )
+            .then((response) {
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+          for (var i = 0; i < data["results"].length; i++) {
+            _orders.add(Order.fromJson(data["results"][i]));
+          }
+          nextOrderURL = data["next"];
+        });
+      } catch (e) {
+        print("Some Error");
+      }
+      setState(() {
+        _isfetchingnew = false;
+      });
+    } else {
+      _isfetchingnew = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future _loadData() async {
-      if (nextOrderURL.toString() != "null" &&
-          nextOrderURL.toString() != "FristCall") {
-        String url = nextOrderURL;
-        try {
-          await http.get(
-            url,
-            headers: {
-              HttpHeaders.CONTENT_TYPE: "application/json",
-              "Authorization": "Token " + widget.token,
-            },
-          ).then((response) {
-            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            _orders.addAll(dataOrders["results"]);
-            nextOrderURL = dataOrders["next"];
-          });
-        } catch (e) {
-          print("Some Error");
-        }
-        setState(() {
-//        items.addAll( ['item 1']);
-//        print('items: '+ items.toString());
-          _isfetchingnew = false;
-        });
-      } else {
-        _isfetchingnew = false;
-      }
-    }
-
-    //print(widget.orderstripsProvider.orders);
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
         if (orderstripsProvider.isLoadingOrders == false) {
@@ -220,9 +228,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
           if (nextOrderURL == "FirstCall") {
             nextOrderURL = orderstripsProvider.detailsOrder["next"];
           }
-          //messageLoader = false;
-        } else {
-          //messageLoader = true;
         }
 
         return Scaffold(
@@ -282,8 +287,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          "Results: " +
-                              orderstripsProvider.orders.length.toString(),
+                          orderstripsProvider.detailsOrder.isEmpty
+                              ? "Results: 0"
+                              : "Results: " +
+                                  orderstripsProvider.detailsOrder["count"]
+                                      .toString(),
                           style: TextStyle(
                               fontSize: 15,
                               color: Colors.grey[500],

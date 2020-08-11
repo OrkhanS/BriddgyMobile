@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/trip.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'package:optisend/widgets/trip_widget.dart';
@@ -63,7 +64,9 @@ class _TripScreenState extends State<TripsScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -74,7 +77,10 @@ class _TripScreenState extends State<TripsScreen> {
     }
 
     if (_endtime != null) {
-      flagWeight == false && flagTo == false && flagFrom == false && flagStart == false
+      flagWeight == false &&
+              flagTo == false &&
+              flagFrom == false &&
+              flagStart == false
           ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
           : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
       flagStart = true;
@@ -136,7 +142,11 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -161,6 +171,35 @@ class _TripScreenState extends State<TripsScreen> {
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
+    }
+  }
+
+  Future _loadData() async {
+    if (nextTripURL.toString() != "null" &&
+        nextTripURL.toString() != "FristCall") {
+      String url = nextTripURL;
+      try {
+        await http.get(
+          url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + widget.token,
+          },
+        ).then((response) {
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+
+          for (var i = 0; i < data["results"].length; i++) {
+            _trips.add(Trip.fromJson(data["results"][i]));
+          }
+          nextTripURL = data["next"];
+        });
+      } catch (e) {}
+      setState(() {
+        _isfetchingnew = false;
+      });
+    } else {
+      _isfetchingnew = false;
     }
   }
 
@@ -199,38 +238,14 @@ class _TripScreenState extends State<TripsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future _loadData() async {
-      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
-        String url = nextTripURL;
-        try {
-          await http.get(
-            url,
-            headers: {
-              HttpHeaders.CONTENT_TYPE: "application/json",
-              "Authorization": "Token " + widget.token,
-            },
-          ).then((response) {
-            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            _trips.addAll(dataOrders["results"]);
-            nextTripURL = dataOrders["next"];
-          });
-        } catch (e) {}
-        setState(() {
-          _isfetchingnew = false;
-        });
-      } else {
-        _isfetchingnew = false;
-      }
-    }
-
     return Consumer<OrdersTripsProvider>(
-      builder: (context, tripsProvider, child) {
-        if (tripsProvider.trips.length != 0) {
-          _trips = tripsProvider.trips;
+      builder: (context, orderstripsProvider, child) {
+        if (orderstripsProvider.trips.length != 0) {
+          _trips = orderstripsProvider.trips;
           if (nextTripURL == "FirstCall") {
-            nextTripURL = tripsProvider.detailsTrip["next"];
+            nextTripURL = orderstripsProvider.detailsTrip["next"];
           }
-        } else {}
+        }
         return Scaffold(
           resizeToAvoidBottomPadding: true,
           floatingActionButton: FloatingActionButton(
@@ -267,38 +282,51 @@ class _TripScreenState extends State<TripsScreen> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                FilterBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+                FilterBar(
+                    ordersProvider: widget.orderstripsProvider,
+                    from: from,
+                    to: to,
+                    weight: weight),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                    Text(
-                      "Results: " + _trips.length.toString(),
-                      style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                    ),
-                    DropdownButton(
-                      hint: Text(_value),
-                      items: [
-                        DropdownMenuItem(
-                          value: "Ranking",
-                          child: Text(
-                            "Ranking",
-                          ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          orderstripsProvider.detailsTrip.isEmpty
+                              ? "Results: 0"
+                              : "Results: " +
+                                  orderstripsProvider.detailsTrip["count"]
+                                      .toString(),
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey[500],
+                              fontWeight: FontWeight.bold),
                         ),
-                        DropdownMenuItem(
-                          value: "WeightMax",
-                          child: Text(
-                            "Weight Limit",
-                          ),
+                        DropdownButton(
+                          hint: Text(_value),
+                          items: [
+                            DropdownMenuItem(
+                              value: "Ranking",
+                              child: Text(
+                                "Ranking",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: "WeightMax",
+                              child: Text(
+                                "Weight Limit",
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            sortData(value, orderstripsProvider);
+                          },
                         ),
-                      ],
-                      onChanged: (value) {
-                        sortData(value, tripsProvider);
-                      },
-                    ),
-                  ]),
+                      ]),
                 ),
                 Expanded(
-                  child: tripsProvider.notLoaded != false
+                  child: orderstripsProvider.notLoaded != false
                       ? ListView(
                           children: <Widget>[
                             for (var i = 0; i < 10; i++) TripFadeWidget(),
@@ -306,7 +334,9 @@ class _TripScreenState extends State<TripsScreen> {
                         )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew &&
+                                scrollInfo.metrics.pixels ==
+                                    scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;

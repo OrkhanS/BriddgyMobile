@@ -29,6 +29,7 @@ class Auth with ChangeNotifier {
   bool reviewsNotReadyForProfile = true;
   bool verificationStatus = false;
   bool passwordResetStatus = false;
+  String deviceToken;
 
   String get myToken {
     return myTokenFromStorage;
@@ -121,7 +122,8 @@ class Auth with ChangeNotifier {
           "Authorization": "Token " + myTokenFromStorage,
         },
       ).then((response) {
-        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response.body) as Map<String, dynamic>;
         user = User.fromJson(data);
         isLoadingUserForMain = false;
         isLoadingUserDetails = false;
@@ -133,7 +135,8 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> _authenticate(String email, String password, String urlSegment) async {
+  Future<void> _authenticate(
+      String email, String password, String urlSegment) async {
     const url = "http://briddgy.herokuapp.com/api/auth/";
     try {
       final response = await http.post(
@@ -245,7 +248,8 @@ class Auth with ChangeNotifier {
     });
   }
 
-  Future<void> signup(String email, String password, String firstname, String lastname, String deviceID) async {
+  Future<void> signup(String email, String password, String firstname,
+      String lastname, String deviceID) async {
     const url = Api.signUp;
     try {
       final response = await http.post(
@@ -285,6 +289,7 @@ class Auth with ChangeNotifier {
 
   Future<void> login(String email, String password, String deviceID) async {
     const url = Api.login;
+    deviceToken = deviceID;
     try {
       final response = await http.post(
         url,
@@ -293,7 +298,7 @@ class Auth with ChangeNotifier {
           {
             'username': email,
             'password': password,
-            'deviceToken': "deviceID",
+            'deviceToken': deviceID,
           },
         ),
       );
@@ -320,7 +325,8 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData =
+        json.decode(prefs.getString('userData')) as Map<String, Object>;
     _token = extractedUserData['token'];
     myToken = extractedUserData['token'];
     myTokenFromStorage = extractedUserData['token'];
@@ -342,7 +348,8 @@ class Auth with ChangeNotifier {
     await prefs.remove('userData');
     prefs.commit();
     prefs.clear();
-    Provider.of<OrdersTripsProvider>(context, listen: false).removeAllDataOfProvider();
+    Provider.of<OrdersTripsProvider>(context, listen: false)
+        .removeAllDataOfProvider();
     Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
     removeAllDataOfProvider();
     notifyListeners();

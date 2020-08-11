@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/screens/item_screen.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class OrderWidget extends StatefulWidget {
   Order order;
@@ -58,6 +59,13 @@ class _OrderWidgetState extends State<OrderWidget> {
                         'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
                   },
                 ),
+                // Container(
+                //   child: FadeInImage.memoryNetwork(
+                //     placeholder: kTransparentImage,
+                //     image:
+                //         'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12.0, vertical: 4.0),
@@ -177,7 +185,8 @@ class OrderFadeWidget extends StatelessWidget {
                 backgroundColor: Colors.grey[300],
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
