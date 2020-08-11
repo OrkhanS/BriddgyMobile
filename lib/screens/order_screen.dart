@@ -12,15 +12,15 @@ import 'package:optisend/screens/profile_screen_another.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class ItemScreen extends StatefulWidget {
+class OrderScreen extends StatefulWidget {
   Order order;
-  ItemScreen({this.order});
+  OrderScreen({this.order});
   static const routeName = '/orders/item';
   @override
-  _ItemScreenState createState() => _ItemScreenState();
+  _OrderScreenState createState() => _OrderScreenState();
 }
 
-class _ItemScreenState extends State<ItemScreen> {
+class _OrderScreenState extends State<OrderScreen> {
   var _current;
   Order order;
   var imageUrl;
@@ -31,7 +31,7 @@ class _ItemScreenState extends State<ItemScreen> {
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
-        image: 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg',
+        image: 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png',
       ));
     } else {
       for (var i = 0; i < order.orderimage.length; i++) {
@@ -142,9 +142,9 @@ class _ItemScreenState extends State<ItemScreen> {
                         children: <Widget>[
                           CircleAvatar(
                             radius: 35,
-                            backgroundColor: Colors.grey[300],
+                            backgroundColor: Colors.grey[100],
                             backgroundImage: NetworkImage(
-                              "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg",
+                              "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png",
                             ),
                           ),
                           Positioned(

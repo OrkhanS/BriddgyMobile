@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/screens/trip_screen.dart';
 
 class TripWidget extends StatelessWidget {
   Trip trip;
@@ -16,9 +17,10 @@ class TripWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (__) => ProfileScreenAnother(
-                    user: trip.owner,
-                  )),
+            builder: (__) => TripScreen(
+              trip: trip,
+            ),
+          ),
         );
       },
       child: Column(

@@ -12,6 +12,7 @@ import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/add_item_screen.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:optisend/widgets/order_widget.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/widgets/filter_bar.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -112,8 +113,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     ).then((response) {
       setState(
         () {
-          Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
 
           for (var i = 0; i < data["results"].length; i++) {
             _suggested.add(Order.fromJson(data["results"][i]));
@@ -124,11 +124,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() +
-          ", " +
-          _suggested[i]["country"].toString() +
-          ", " +
-          _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -145,9 +141,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false
-          ? urlFilter = urlFilter + "dest=" + to.toString()
-          : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -163,11 +157,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
     await http.get(
       urlFilter,
-      headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
-        "Authorization":
-            "Token " + Provider.of<Auth>(context, listen: true).token
-      },
+      headers: {HttpHeaders.CONTENT_TYPE: "application/json", "Authorization": "Token " + Provider.of<Auth>(context, listen: true).token},
     ).then((response) {
       setState(
         () {
@@ -182,8 +172,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
 //    return Form(
   Future _loadData() async {
-    if (nextOrderURL.toString() != "null" &&
-        nextOrderURL.toString() != "FristCall") {
+    if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
       String url = nextOrderURL;
       try {
         await http
@@ -192,17 +181,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
           headers: Provider.of<Auth>(context, listen: false).isAuth
               ? {
                   HttpHeaders.CONTENT_TYPE: "application/json",
-                  "Authorization": "Token " +
-                      Provider.of<Auth>(context, listen: false)
-                          .myTokenFromStorage,
+                  "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                 }
               : {
                   HttpHeaders.CONTENT_TYPE: "application/json",
                 },
         )
             .then((response) {
-          Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
           for (var i = 0; i < data["results"].length; i++) {
             _orders.add(Order.fromJson(data["results"][i]));
           }
@@ -273,29 +259,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
             },
           ),
           body: SafeArea(
-            child: Column(
+            child: Stack(
               children: <Widget>[
-                FilterBar(
-                    ordersProvider: orderstripsProvider,
-                    from: from,
-                    to: to,
-                    weight: weight,
-                    price: price),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
                         Text(
                           orderstripsProvider.detailsOrder.isEmpty
                               ? "Results: 0"
-                              : "Results: " +
-                                  orderstripsProvider.detailsOrder["count"]
-                                      .toString(),
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.bold),
+                              : "Results: " + orderstripsProvider.detailsOrder["count"].toString(),
+                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
                         ),
                         DropdownButton(
                           hint: Text(_value),
@@ -304,8 +280,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               value: "Ranking",
                               child: Text("Highest Ranking"),
                             ),
-                            DropdownMenuItem(
-                                value: "Price", child: Text("Highest Reward")),
+                            DropdownMenuItem(value: "Price", child: Text("Highest Reward")),
                             DropdownMenuItem(
                               value: "WeightLow",
                               child: Text(
@@ -324,45 +299,39 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           },
                         ),
                       ]),
-                ),
-                Expanded(
-                  child: orderstripsProvider.notLoadingOrders
-                      ? ListView(
-                          children: <Widget>[
-                            for (var i = 0; i < 10; i++) OrderFadeWidget(),
-                          ],
-                        )
-                      : NotificationListener<ScrollNotification>(
-                          onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew &&
-                                scrollInfo.metrics.pixels ==
-                                    scrollInfo.metrics.maxScrollExtent) {
-                              // start loading data
-                              setState(() {
-                                _isfetchingnew = true;
-                              });
-                              _loadData();
-                            }
-                          },
-                          child: ListView.builder(
-                            itemBuilder: (context, int i) {
-                              return OrderWidget(
-                                order: _orders[i],
-                                i: i,
-                              );
+                    ),
+                    Expanded(
+                      child: orderstripsProvider.notLoadingOrders
+                          ? ListView(
+                              children: <Widget>[
+                                for (var i = 0; i < 10; i++) OrderFadeWidget(),
+                              ],
+                            )
+                          : NotificationListener<ScrollNotification>(
+                              onNotification: (ScrollNotification scrollInfo) {
+                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                  // start loading data
+                                  setState(() {
+                                    _isfetchingnew = true;
+                                  });
+                                  _loadData();
+                                }
+                              },
+                              child: ListView.builder(
+                                itemBuilder: (context, int i) {
+                                  return OrderWidget(
+                                    order: _orders[i],
+                                    i: i,
+                                  );
 //                              return OrderFadeWidget();
-                            },
-                            itemCount: _orders.length,
-                          ),
-                        ),
+                                },
+                                itemCount: _orders.length,
+                              ),
+                            ),
+                    ),
+                  ],
                 ),
-                Container(
-                  height: _isfetchingnew ? 50.0 : 0.0,
-                  color: Colors.transparent,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                ProgressIndicatorWidget(show: _isfetchingnew),
               ],
             ),
           ),

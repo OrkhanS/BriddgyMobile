@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/order.dart';
-import 'package:optisend/screens/item_screen.dart';
+import 'package:optisend/screens/order_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class OrderWidget extends StatefulWidget {
@@ -24,9 +24,8 @@ class _OrderWidgetState extends State<OrderWidget> {
     i = widget.i;
     order = widget.order;
     imageUrl = order.orderimage.isEmpty
-        ? 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg'
-        : "https://storage.googleapis.com/briddgy-media/" +
-            order.orderimage[0].toString();
+        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+        : "https://storage.googleapis.com/briddgy-media/" + order.orderimage[0].toString();
     super.initState();
   }
 
@@ -37,7 +36,7 @@ class _OrderWidgetState extends State<OrderWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (__) => ItemScreen(order: order),
+            builder: (__) => OrderScreen(order: order),
           ),
         );
       },
@@ -50,13 +49,12 @@ class _OrderWidgetState extends State<OrderWidget> {
               children: <Widget>[
                 CircleAvatar(
                   radius: 40,
-                  backgroundColor: Colors.grey[300],
+                  backgroundColor: Colors.grey[100],
                   backgroundImage: NetworkImage(
                     imageUrl,
                   ),
                   onBackgroundImageError: (exception, stackTrace) {
-                    imageUrl =
-                        'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg';
+                    imageUrl = 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png';
                   },
                 ),
                 // Container(
@@ -67,8 +65,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                 //   ),
                 // ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,14 +97,9 @@ class _OrderWidgetState extends State<OrderWidget> {
                           SizedBox(
                             width: 200,
                             child: Text(
-                              order.source.cityAscii +
-                                  "  >  " +
-                                  order.destination.cityAscii,
+                              order.source.cityAscii + "  >  " + order.destination.cityAscii,
                               maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.normal),
+                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                             ),
                           ),
                         ],
@@ -185,8 +177,7 @@ class OrderFadeWidget extends StatelessWidget {
                 backgroundColor: Colors.grey[300],
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
