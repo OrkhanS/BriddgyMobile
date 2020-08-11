@@ -20,6 +20,8 @@ class Api {
   static const myReviews = address + "api/users/my/reviews/";
   static const requestEmailVerification = address + "api/request/email/";
   static const verifyEmail = address + "api/request/verify/";
+  static const requestPhoneVerification = address + "api/request/phone/";
+  static const verifyPhone = address + "api/verify/phone/";
   static const orderById = address + "api/users/";
   static const forgetPassword = address + "api/request/password/";
   static const addOrderImage = address + "api/fileupload/orderimage/";

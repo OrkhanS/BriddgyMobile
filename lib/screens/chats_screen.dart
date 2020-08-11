@@ -134,7 +134,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 backgroundColor:
                                                     Colors.grey[300],
                                                 backgroundImage: NetworkImage(
-                                                  //todo user profilepic
                                                   "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
                                                 ),
                                               ),

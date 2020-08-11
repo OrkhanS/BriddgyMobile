@@ -149,12 +149,6 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                   ),
-//                                style: TextStyle(
-//                                  fontStyle: ,
-//                                  color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
-//                                  fontSize: 20,
-//                                ),
                                 ),
                               ),
                             ],

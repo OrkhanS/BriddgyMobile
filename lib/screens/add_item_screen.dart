@@ -57,7 +57,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     request.files.add(multipartFile);
     var response = await request.send().whenComplete(() {
       orderstripsProvider.myorders = [];
-      orderstripsProvider.fetchAndSetMyOrders(token);
+      orderstripsProvider.isLoadingMyOrders = true;
       Navigator.pop(context);
       Navigator.push(
           context,
@@ -486,7 +486,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             if (response.statusCode == 201) {
                               upload(data["id"].toString(), token,
                                   orderstripsProvider, context);
-                              orderstripsProvider.isLoadingMyOrders = true;
                             } else {
                               setState(() {
                                 addItemButton = true;

@@ -1,8 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
+import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:pinput/pin_put/pin_put_state.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +23,8 @@ class VerifyPhoneScreen extends StatefulWidget {
 class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
+  bool missCallmeButton = true;
+  String phone;
 
   BoxDecoration get _pinPutDecoration {
     return BoxDecoration(
@@ -36,7 +45,10 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 30.0),
                 child: Text(
                   "Verify your phone",
-                  style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 30,
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
               Container(
@@ -57,11 +69,13 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 height: 20,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
                 child: Text(
                   "Please enter your phone number, so we can verify it.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
+                  style: TextStyle(
+                      color: Colors.black87, fontWeight: FontWeight.w100),
                 ),
               ),
               SizedBox(
@@ -77,7 +91,9 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                     ),
                   ),
                   initialCountryCode: 'AZ',
-                  onChanged: (phone) {},
+                  onChanged: (value) {
+                    phone = value.completeNumber.toString();
+                  },
                 ),
               ),
 //              Container(
@@ -125,48 +141,84 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 ),
               ),
 
-              RaisedButton.icon(
-                icon: Icon(
-                  Icons.phone_in_talk,
-                  size: 20,
-                ),
-                label: Text(
-                  'MissCall Me',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                onPressed: () {
-//                  Navigator.of(context).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (__) => VerifyPhoneNextScreen()),
-                  );
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-                color: Theme.of(context).primaryColor,
-                textColor: Theme.of(context).primaryTextTheme.button.color,
-              ),
-//            Padding(
-//              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-//              child: TextFormField(
-//                decoration: InputDecoration(
-//                  labelText: 'Email',
-//                  icon: Icon(Icons.alternate_email),
-//                ),
-//                keyboardType: TextInputType.emailAddress,
-//                validator: (value) {
-//                  if (value.isEmpty || !value.contains('@')) {
-//                    return 'Invalid email!';
-//                  } else
-//                    return null;
-//                },
-//                onSaved: (value) {
-//                  //Todo orxan
-//                },
-//              ),
-//            ),
+              missCallmeButton
+                  ? RaisedButton.icon(
+                      icon: Icon(
+                        Icons.phone_in_talk,
+                        size: 20,
+                      ),
+                      label: Text(
+                        'MissCall Me',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      onPressed: () {
+                        if (phone == null) {
+                          setState(() {
+                            missCallmeButton = true;
+                          });
+                          Flushbar(
+                            title: "Warning!",
+                            message: "Fill in the field and try again.",
+                            padding: const EdgeInsets.all(8),
+                            borderRadius: 10,
+                            duration: Duration(seconds: 3),
+                          )..show(context);
+                        } else {
+                          setState(() {
+                            missCallmeButton = false;
+                          });
+                          var token =
+                              Provider.of<Auth>(context, listen: false).token;
+                          String url = Api.requestPhoneVerification;
+                          http
+                              .post(url,
+                                  headers: {
+                                    HttpHeaders.contentTypeHeader:
+                                        "application/json",
+                                    "Authorization": "Token " + token,
+                                  },
+                                  body: json.encode({
+                                    "phone": phone,
+                                  }))
+                              .then((response) {
+                            if (response.statusCode == 200) {
+                              Navigator.of(context).pop();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (__) => VerifyPhoneNextScreen()),
+                              );
+                            } else {
+                              setState(() {
+                                missCallmeButton = true;
+                              });
+                              Flushbar(
+                                title: "Error!",
+                                message: "Please try again.",
+                                padding: const EdgeInsets.all(8),
+                                borderRadius: 10,
+                                duration: Duration(seconds: 3),
+                              )..show(context);
+                            }
+                          });
+                        }
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (__) => VerifyPhoneNextScreen()),
+                        // );
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                      color: Theme.of(context).primaryColor,
+                      textColor:
+                          Theme.of(context).primaryTextTheme.button.color,
+                    )
+                  : ProgressIndicatorWidget(show: true),
 
               SizedBox(
                 height: 30,
@@ -202,12 +254,66 @@ class VerifyPhoneNextScreen extends StatefulWidget {
 class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
-
+  bool verifymeButton = true;
+  String number;
   BoxDecoration get _pinPutDecoration {
     return BoxDecoration(
       border: Border.all(color: Colors.deepPurpleAccent),
       borderRadius: BorderRadius.circular(15),
     );
+  }
+
+  Future verifyMe(pin) async {
+    if (pin == null) {
+      setState(() {
+        verifymeButton = true;
+      });
+      Flushbar(
+        title: "Warning!",
+        message: "Fill in the field and try again.",
+        padding: const EdgeInsets.all(8),
+        borderRadius: 10,
+        duration: Duration(seconds: 3),
+      )..show(context);
+    } else {
+      setState(() {
+        verifymeButton = false;
+      });
+      var token = Provider.of<Auth>(context, listen: false).token;
+      String url = Api.verifyPhone;
+      http
+          .post(url,
+              headers: {
+                HttpHeaders.contentTypeHeader: "application/json",
+                "Authorization": "Token " + token,
+              },
+              body: json.encode({
+                "verification_phone": pin,
+              }))
+          .then((response) {
+        if (response.statusCode == 200) {
+          Navigator.of(context).pop();
+          Flushbar(
+            title: "Success!",
+            message: "You are now verified.",
+            padding: const EdgeInsets.all(8),
+            borderRadius: 10,
+            duration: Duration(seconds: 3),
+          )..show(context);
+        } else {
+          setState(() {
+            verifymeButton = true;
+          });
+          Flushbar(
+            title: "Error!",
+            message: "Please try again.",
+            padding: const EdgeInsets.all(8),
+            borderRadius: 10,
+            duration: Duration(seconds: 3),
+          )..show(context);
+        }
+      });
+    }
   }
 
   @override
@@ -222,7 +328,10 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 30.0),
                 child: Text(
                   "Verify your phone",
-                  style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 30,
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
               Container(
@@ -243,11 +352,13 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 height: 20,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
                 child: Text(
                   "Enter the last 4 digits of phone number, which called you.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
+                  style: TextStyle(
+                      color: Colors.black87, fontWeight: FontWeight.w100),
                 ),
               ),
               SizedBox(
@@ -270,30 +381,15 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                       child: PinPut(
                         fieldsCount: 4,
                         onSubmit: (String pin) {
-                          Provider.of<Auth>(context, listen: false).verifyEmailCode(pin).whenComplete(() {
-                            if (Provider.of<Auth>(context, listen: false).verificationStatus) {
-                              Navigator.pop(context);
-                              Flushbar(
-                                title: "Success",
-                                message: "You are now verified!",
-                                padding: const EdgeInsets.all(8),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context);
-                            } else {
-                              Flushbar(
-                                title: "Failed",
-                                message: "Wrong Verification Code, Try again!",
-                                padding: const EdgeInsets.all(8),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context);
-                            }
-                          });
+                          verifyMe(pin);
+                        },
+                        onChanged: (value) {
+                          number = value;
                         },
                         focusNode: _pinPutFocusNode,
                         controller: _pinPutController,
-                        submittedFieldDecoration: _pinPutDecoration.copyWith(borderRadius: BorderRadius.circular(20)),
+                        submittedFieldDecoration: _pinPutDecoration.copyWith(
+                            borderRadius: BorderRadius.circular(20)),
                         selectedFieldDecoration: _pinPutDecoration,
                         followingFieldDecoration: _pinPutDecoration.copyWith(
                           borderRadius: BorderRadius.circular(5),
@@ -311,23 +407,30 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                   width: 1,
                 ),
               ),
-              RaisedButton.icon(
-                icon: Icon(
-                  Icons.phone_in_talk,
-                  size: 20,
-                ),
-                label: Text(
-                  'Salam me',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                onPressed: () {},
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-                color: Theme.of(context).primaryColor,
-                textColor: Theme.of(context).primaryTextTheme.button.color,
-              ),
+              verifymeButton
+                  ? RaisedButton.icon(
+                      icon: Icon(
+                        Icons.phone_in_talk,
+                        size: 20,
+                      ),
+                      label: Text(
+                        'Verify',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      onPressed: () {
+                        verifyMe(number);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                      color: Theme.of(context).primaryColor,
+                      textColor:
+                          Theme.of(context).primaryTextTheme.button.color,
+                    )
+                  : ProgressIndicatorWidget(show: true),
               SizedBox(
                 height: 30,
               ),

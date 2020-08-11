@@ -9,7 +9,7 @@ class ContractsScreenInfo extends StatefulWidget {
   ContractsScreenInfo({
     this.contract,
   });
-  static const routeName = '/orders'; //todo fix
+  static const routeName = '/orders';
   @override
   _ContractsScreenInfoState createState() => _ContractsScreenInfoState();
 }
@@ -40,7 +40,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
   }
 
   //widget.myObject.toString()
-  static const routeName = '/orders/item'; // todo fix
+  static const routeName = '/orders/item';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
