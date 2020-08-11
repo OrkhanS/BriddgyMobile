@@ -31,15 +31,13 @@ class _ItemScreenState extends State<ItemScreen> {
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
-        image:
-            'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg',
+        image: 'https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg',
       ));
     } else {
       for (var i = 0; i < order.orderimage.length; i++) {
         imageList.add(FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: "https://storage.googleapis.com/briddgy-media/" +
-              order.orderimage[i].toString(),
+          image: "https://storage.googleapis.com/briddgy-media/" + order.orderimage[i].toString(),
         ));
       }
     }
@@ -100,12 +98,9 @@ class _ItemScreenState extends State<ItemScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                 child: Text(
-                                  order.owner.firstName +
-                                      " " +
-                                      order.owner.lastName,
+                                  order.owner.firstName + " " + order.owner.lastName,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                     color: Colors.black,
@@ -128,12 +123,9 @@ class _ItemScreenState extends State<ItemScreen> {
                             ],
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Last online " +
-                                  DateFormat.yMMMd()
-                                      .format(order.owner.lastOnline),
+                              "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -163,16 +155,14 @@ class _ItemScreenState extends State<ItemScreen> {
                               height: 30,
                               decoration: BoxDecoration(
                                 color: Color.fromRGBO(255, 255, 255, 80),
-                                border:
-                                    Border.all(color: Colors.green, width: 1),
+                                border: Border.all(color: Colors.green, width: 1),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
                                 ),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   Icon(
                                     Icons.star,
@@ -181,9 +171,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                   Text(
                                     order.owner.rating.toString(),
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold),
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                                   )
                                 ],
                               ),
@@ -234,10 +222,7 @@ class _ItemScreenState extends State<ItemScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 2),
                               child: Text(
                                 order.title,
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w600),
+                                style: TextStyle(fontSize: 22, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),
@@ -249,8 +234,7 @@ class _ItemScreenState extends State<ItemScreen> {
                               reverse: false,
                               autoPlay: true,
                               autoPlayInterval: Duration(seconds: 5),
-                              autoPlayAnimationDuration:
-                                  Duration(milliseconds: 800),
+                              autoPlayAnimationDuration: Duration(milliseconds: 800),
                               autoPlayCurve: Curves.fastOutSlowIn,
                               enlargeCenterPage: true,
                               onPageChanged: (index, reason) {
@@ -269,13 +253,10 @@ class _ItemScreenState extends State<ItemScreen> {
                               return Container(
                                 width: 8.0,
                                 height: 8.0,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 2.0),
+                                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: _current == index
-                                      ? Color.fromRGBO(0, 0, 0, 0.9)
-                                      : Color.fromRGBO(0, 0, 0, 0.4),
+                                  color: _current == index ? Color.fromRGBO(0, 0, 0, 0.9) : Color.fromRGBO(0, 0, 0, 0.4),
                                 ),
                               );
                             }).toList(),
@@ -338,8 +319,7 @@ class _ItemScreenState extends State<ItemScreen> {
                               children: <Widget>[
                                 Text(
                                   "Request date:",
-                                  style: TextStyle(
-                                      fontSize: 17, color: Colors.grey[600]),
+                                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
                                   child: SizedBox(
@@ -453,8 +433,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
