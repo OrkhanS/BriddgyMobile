@@ -105,7 +105,7 @@ class _MyItemsState extends State<MyItems> {
                   child: orderstripsProvider.notLoadedMyorders
                       ? ListView(
                           children: <Widget>[
-                            for (var i = 0; i < 10; i++) OrderFadeWidget(),
+                            for (var i = 0; i < 5; i++) OrderFadeWidget(),
                           ],
                         )
                       : NotificationListener<ScrollNotification>(

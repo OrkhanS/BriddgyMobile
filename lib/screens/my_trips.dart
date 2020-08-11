@@ -119,7 +119,7 @@ class _MyTripsState extends State<MyTrips> {
                     child: orderstripsProvider.isLoading
                         ? ListView(
                             children: <Widget>[
-                              for (var i = 0; i < 10; i++) TripFadeWidget(),
+                              for (var i = 0; i < 5; i++) TripFadeWidget(),
                             ],
                           )
                         : ListView.builder(

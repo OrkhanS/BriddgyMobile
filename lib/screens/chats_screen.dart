@@ -121,13 +121,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           },
                           child: Column(
                             children: <Widget>[
+                              SizedBox(
+                                height: 15,
+                              ),
                               Expanded(
                                 child: ListView.builder(
                                   itemCount: _rooms.length,
                                   itemBuilder: (context, int index) {
                                     return Column(
                                       children: <Widget>[
-                                        Divider(),
                                         Menu(
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 7.0),
@@ -269,6 +271,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                           ],
                                           decoration: MenuDecoration(),
                                         ),
+                                        Divider(),
                                       ],
                                     );
                                   },

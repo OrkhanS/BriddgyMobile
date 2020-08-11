@@ -77,9 +77,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                     ),
                   ),
                   initialCountryCode: 'AZ',
-                  onChanged: (phone) {
-                    print(phone.completeNumber);
-                  },
+                  onChanged: (phone) {},
                 ),
               ),
 //              Container(
@@ -133,7 +131,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                   size: 20,
                 ),
                 label: Text(
-                  'MissCall me',
+                  'MissCall Me',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 onPressed: () {
