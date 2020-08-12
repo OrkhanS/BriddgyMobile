@@ -24,6 +24,7 @@ class Messages extends ChangeNotifier {
   Map allChatRoomDetails = {};
   bool isChatRoomCreated = false;
   bool isChatRoomPageActive = false;
+  String roomIDofActiveChatRoom = " ";
   var auth;
 
   String get getToken {
@@ -59,7 +60,9 @@ class Messages extends ChangeNotifier {
           _isloadingMessages = false;
           notifyListeners();
         });
-      } catch (e) {}
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
@@ -81,17 +84,40 @@ class Messages extends ChangeNotifier {
       "recipients": []
     };
     var tempMessage = Message.fromJson(temp);
+
+    // Checking if ChatRoom is already exists
     if (_messages[message["room_id"]] == null) {
+      _messages[message["room_id"]] = {};
+      _messages[message["room_id"]].insert(0, tempMessage);
     } else {
+      // Checking if FCM sends the same notification twice
       if (_messages[message["room_id"]][0].id.toString() !=
           message["session_id"].toString()) {
         _messages[message["room_id"]].insert(0, tempMessage);
       }
     }
 
-    // Check if user_id == sender then don't add it to newmessages list
-    if (!isChatRoomPageActive) {}
-    notifyListeners();
+    // Checking if Message is sent by ME, if not add it to newMessage list
+    if (tempMessage.id.toString() != auth.userdetail.id) {
+      // Checking if message["room_id"] => ChatRoomPage is Active, if yes don't give Notifications
+      if (!isChatRoomPageActive &&
+          message["room_id"] != roomIDofActiveChatRoom) {
+        // Checking if ChatRoom is already exists
+        if (newMessage[message["room_id"]] == null) {
+          newMessage[message["room_id"]] = {};
+          newMessage[message["room_id"]].insert(0, tempMessage);
+        } else {
+          // Checking if FCM sends the same notification twice
+          if (newMessage[message["room_id"]][0].id.toString() !=
+              message["session_id"].toString()) {
+            newMessage[message["room_id"]].insert(0, tempMessage);
+          }
+        }
+        notifyListeners();
+      }
+    }
+
+    // Lastly   need to changeRoomPlace when    isChatRoomPageActive == false
   }
 
   Map get messages => _messages;
