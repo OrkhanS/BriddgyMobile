@@ -45,7 +45,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (myid == "empty" && Provider.of<Auth>(context).isAuth) {
+    if (myid == "empty" &&
+        Provider.of<Auth>(context, listen: false).userdetail != null) {
       myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
     }
     List<MaterialColor> colors = [

@@ -88,20 +88,9 @@ class _ChatWindowState extends State<ChatWindow> {
 
     if (_channelRoom != null) {
       if (_channelRoom.sink != null) {
-        _channelRoom.sink.add(jsonEncode(text));
+        _channelRoom.sink.add(text);
       }
     }
-
-    setState(() {
-      var message = {
-        "message_type": "text",
-        'text': text,
-        "room_id": widget.room,
-        "sender": "me",
-      };
-      _messages.insert(0, message);
-      enableButton = false;
-    });
   }
 
   var triangle = CustomPaint(
@@ -195,9 +184,9 @@ class _ChatWindowState extends State<ChatWindow> {
       builder: (context, provider, child) {
         bool messageLoader = true;
         if (widget.provider.messages[widget.room] != null) {
-          _messages = widget.provider.messages[widget.room]["results"];
+          _messages = widget.provider.messages[widget.room];
           if (nextMessagesURL == "FirstCall") {
-            nextMessagesURL = widget.provider.messages[widget.room]["next"];
+            // nextMessagesURL = widget.provider.messages[widget.room]["next"];
           }
           messageLoader = false;
         } else {
@@ -265,9 +254,8 @@ class _ChatWindowState extends State<ChatWindow> {
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               bool reverse = false;
-                              if (widget.user.id !=
-                                      _messages[index]["sender"] ||
-                                  _messages[index]["sender"] == "me") {
+                              if (widget.user.id != _messages[index].sender ||
+                                  _messages[index].sender == "me") {
                                 newMessageMe = false;
                                 reverse = true;
                               }
@@ -315,15 +303,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                       // Warning
                                       // RASUL
                                       child: Text(
-                                        _messages[index]["text"]
-                                                    .toString()
-                                                    .length >
-                                                30
-                                            ? _messages[index]["text"]
-                                                .toString()
-                                                .substring(0, 30)
-                                            : _messages[index]["text"]
-                                                .toString(),
+                                        _messages[index].text.toString(),
                                         softWrap: true,
                                       ),
                                     ),
@@ -335,11 +315,13 @@ class _ChatWindowState extends State<ChatWindow> {
                                       context: context,
                                       type: AlertType.info,
                                       title: "Sent on:  " +
-                                          _messages[index]["date_created"]
+                                          _messages[index]
+                                              .dateCreated
                                               .toString()
                                               .substring(0, 10) +
                                           ",  " +
-                                          _messages[index]["date_created"]
+                                          _messages[index]
+                                              .dateCreated
                                               .toString()
                                               .substring(11, 16) +
                                           "\n",

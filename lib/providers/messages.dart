@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/chats.dart';
+import 'package:optisend/models/message.dart';
 
 class Messages extends ChangeNotifier {
   Map _messages = {};
@@ -22,14 +23,17 @@ class Messages extends ChangeNotifier {
   Map userdetail = {};
   Map allChatRoomDetails = {};
   bool isChatRoomCreated = false;
+  bool isChatRoomPageActive = false;
+  var auth;
+
   String get getToken {
     return tokenforROOM;
   }
 
-  Future fetchAndSetMessages(int i) async {
+  Future fetchAndSetMessages(int roomId) async {
     if (chats.isNotEmpty) {
       var token = tokenforROOM;
-      String url = Api.messages + _chatRooms[i].id.toString();
+      String url = Api.messages + _chatRooms[roomId].id.toString();
       try {
         await http.get(
           url,
@@ -38,8 +42,20 @@ class Messages extends ChangeNotifier {
             "Authorization": "Token " + token,
           },
         ).then((response) {
-          var data = json.decode(response.body) as Map<String, dynamic>;
-          _messages[_chatRooms[i].id] = data;
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+          var a = Message.fromJson(data["results"][0]);
+          print(a);
+          try {
+            List<Message> temp = [];
+            for (var i = 0; i < data["results"].length; i++) {
+              temp.add(Message.fromJson(data["results"][i]));
+            }
+            _messages[chats[roomId].id] = temp;
+          } catch (e) {
+            print(e);
+          }
+
           _isloadingMessages = false;
           notifyListeners();
         });
@@ -55,58 +71,27 @@ class Messages extends ChangeNotifier {
     return newMessage;
   }
 
-  set addMessages(Map mesaj) {
-    ismessagesAdded = false;
-    var room =
-        mesaj["data"] == null ? mesaj["room_id"] : mesaj["data"]["room_id"];
-    for (var i = 0; i < _messages.length; i++) {
-      if (_messages[room] != null) {
-        if (_messages[room]["results"][0]["id"] != mesaj["id"]) {
-          lastMessageID
-              .add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
-          _messages[room]["results"].insert(0, mesaj);
-          changeChatRoomPlace(room);
-        }
-        ismessagesAdded = true;
+  addMessages(message, auth) {
+    var temp = {
+      "id": int.parse(message["session_id"]),
+      "date_created": DateTime.now().toString(),
+      "date_modified": DateTime.now().toString(),
+      "text": message["message"],
+      "sender": int.parse(message["sender"]),
+      "recipients": []
+    };
+    var tempMessage = Message.fromJson(temp);
+    if (_messages[message["room_id"]] == null) {
+    } else {
+      if (_messages[message["room_id"]][0].id.toString() !=
+          message["session_id"].toString()) {
+        _messages[message["room_id"]].insert(0, tempMessage);
       }
     }
-    if (ismessagesAdded == false) {
-      ismessagesAdded = true;
-      bool okay = changeChatRoomPlace(room);
-      if (!okay) {
-        _chatRooms.insert(0, mesaj);
-      }
-      lastMessageID
-          .add(mesaj["data"] == null ? mesaj["id"] : mesaj["data"]["id"]);
-    }
-    if (ismessagesAdded == true) {
-      var lastindex = lastMessageID.lastIndexOf(lastMessageID.last);
-      var flag = false;
-      bool testforLastMessage;
-      try {
-        testforLastMessage = lastMessageID.last != lastMessageID[lastindex - 1];
-      } catch (e) {
-        flag = true;
-      }
-      if (testforLastMessage == true || flag == true) {
-        testforLastMessage = false;
-        if (newMessage[room] == null) {
-          newMessageCount = 1;
-          newMessage[room] = newMessageCount;
-        } else {
-          newMessage[room] = newMessage[room] + 1;
-        }
-      } else {
-        lastMessageID = [];
-      }
-    }
-    notifyListeners();
-  }
 
-  Map allAddMessages(Map mesaj) {
-    _messages[mesaj["room_id"]] = mesaj;
+    // Check if user_id == sender then don't add it to newmessages list
+    if (!isChatRoomPageActive) {}
     notifyListeners();
-    return _messages;
   }
 
   Map get messages => _messages;

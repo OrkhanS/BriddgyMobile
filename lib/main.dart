@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
   Map valueMessages = {};
   bool socketConnected = false;
   bool socketConnectedFirebase = false;
-  var neWMessage;
+  var neWMessage, newMessageauth;
 
   @override
   void initState() {
@@ -65,18 +65,18 @@ class _MyAppState extends State<MyApp> {
     _pageController = PageController(initialPage: 0);
   }
 
-  _configureFirebaseListerners(newmessage) {
+  _configureFirebaseListerners() {
     socketConnectedFirebase = true;
     print("ConnectedFirebase");
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        neWMessage.addMessages = message;
+        neWMessage.addMessages(message.values.last, newMessageauth);
       },
-      onLaunch: (Map<String, dynamic> message) async {
-        neWMessage.addMessages = message;
-      },
+      // onLaunch: (Map<String, dynamic> message) async {
+      //   neWMessage.addMessages = message.values.last;
+      // },
       onResume: (Map<String, dynamic> message) async {
-        neWMessage.addMessages = message;
+        neWMessage.addMessages = message.values.last;
       },
     );
   }
@@ -232,16 +232,17 @@ class _MyAppState extends State<MyApp> {
       child: Consumer3<Auth, Messages, OrdersTripsProvider>(builder: (
         ctx,
         auth,
-        newmessage,
+        message,
         orderstripsProvider,
         _,
       ) {
+        neWMessage = message;
+        newMessageauth = auth;
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (newmessage.chatsLoading && auth.isAuth)
-          newmessage.fetchAndSetRooms(auth);
-        if (!socketConnectedFirebase) _configureFirebaseListerners(newmessage);
+        if (message.chatsLoading && auth.isAuth) message.fetchAndSetRooms(auth);
+        if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
             if (auth.user == null) {
@@ -277,16 +278,16 @@ class _MyAppState extends State<MyApp> {
                 children: <Widget>[
                   OrdersScreen(
                       orderstripsProvider: orderstripsProvider,
-                      room: newmessage,
+                      room: message,
                       auth: auth,
                       token: tokenforROOM),
                   TripsScreen(
                       orderstripsProvider: orderstripsProvider,
-                      room: newmessage,
+                      room: message,
                       auth: auth,
                       token: tokenforROOM),
                   ChatsScreen(
-                      provider: newmessage, auth: auth, token: tokenforROOM),
+                      provider: message, auth: auth, token: tokenforROOM),
 //                  NotificationScreen(),
                   auth.isAuth
                       ? AccountScreen(
@@ -297,7 +298,7 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
-            bottomNavigationBar: navbar(newmessage),
+            bottomNavigationBar: navbar(message),
           ),
           routes: {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
