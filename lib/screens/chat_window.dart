@@ -42,11 +42,7 @@ class _ChatWindowState extends State<ChatWindow> {
     textEditingController = TextEditingController();
     scrollController = ScrollController();
     id = widget.room.toString();
-    if (widget.auth.myToken == null) {
-      widget.auth.getToken();
-    } else {
-      token = widget.auth.myToken.toString();
-    }
+    token = widget.auth.myTokenFromStorage;
     initCommunication(id);
     super.initState();
   }
@@ -88,22 +84,16 @@ class _ChatWindowState extends State<ChatWindow> {
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
-    var message = {
-      "message_type": "text",
-      'message': text,
-      "room_id": widget.room,
-      "sender": widget.user["id"]
-    };
     widget.provider.changeChatRoomPlace(widget.room);
 
     if (_channelRoom != null) {
       if (_channelRoom.sink != null) {
-        _channelRoom.sink.add(jsonEncode(message));
+        _channelRoom.sink.add(jsonEncode(text));
       }
     }
 
     setState(() {
-      message = {
+      var message = {
         "message_type": "text",
         'text': text,
         "room_id": widget.room,
@@ -127,15 +117,6 @@ class _ChatWindowState extends State<ChatWindow> {
     if (file == null) return;
     String base64Image = base64Encode(file.readAsBytesSync());
     String fileName = file.path.split("/").last;
-
-//    http.post(phpEndPoint, body: {
-//      "image": base64Image,
-//      "name": fileName,
-//    }).then((res) {
-//      print(res.statusCode);
-//    }).catchError((err) {
-//      print(err);
-//    });
   }
 
   @override
@@ -240,9 +221,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       },
                     ),
                     title: Text(
-                      widget.user["first_name"] +
-                          " " +
-                          widget.user["last_name"],
+                      widget.user.firstName + " " + widget.user.lastName,
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),
@@ -286,7 +265,7 @@ class _ChatWindowState extends State<ChatWindow> {
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               bool reverse = false;
-                              if (widget.user["id"] !=
+                              if (widget.user.id !=
                                       _messages[index]["sender"] ||
                                   _messages[index]["sender"] == "me") {
                                 newMessageMe = false;
@@ -305,8 +284,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                         child: CircleAvatar(
                                           backgroundColor: Colors.teal,
                                           child: Text(
-                                            widget.user["first_name"]
-                                                .toString()[0],
+                                            widget.user.firstName.toString()[0],
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
@@ -317,8 +295,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 5),
                                       child: CircleAvatar(
-                                        child: Text(widget
-                                            .provider.userDetails.first_name
+                                        child: Text(widget.user.firstName
                                             .toString()[0]),
                                       ),
                                     );

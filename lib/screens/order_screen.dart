@@ -8,7 +8,10 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:provider/provider.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -31,35 +34,20 @@ class _OrderScreenState extends State<OrderScreen> {
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
-        image: 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png',
+        image:
+            'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png',
       ));
     } else {
       for (var i = 0; i < order.orderimage.length; i++) {
         imageList.add(FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: "https://storage.googleapis.com/briddgy-media/" + order.orderimage[i].toString(),
+          image: "https://storage.googleapis.com/briddgy-media/" +
+              order.orderimage[i].toString(),
         ));
       }
     }
     super.initState();
   }
-
-//todo orxan
-//  Future createRooms() async {
-//    String tokenforROOM = widget.token;
-//    if (tokenforROOM != null) {
-//      String url = Api.itemConnectOwner + widget.owner["id"].toString();
-//      await http.get(
-//        url,
-//        headers: {
-//          HttpHeaders.CONTENT_TYPE: "application/json",
-//          "Authorization": "Token " + tokenforROOM,
-//        },
-//      ).then((value) => print(value));
-//      widget.room.fetchAndSetRooms(widget.auth);
-//    }
-//    return null;
-//  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +86,12 @@ class _OrderScreenState extends State<OrderScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
                                 child: Text(
-                                  order.owner.firstName + " " + order.owner.lastName,
+                                  order.owner.firstName +
+                                      " " +
+                                      order.owner.lastName,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                     color: Colors.black,
@@ -123,9 +114,12 @@ class _OrderScreenState extends State<OrderScreen> {
                             ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
+                              "Last online " +
+                                  DateFormat.yMMMd()
+                                      .format(order.owner.lastOnline),
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -155,14 +149,16 @@ class _OrderScreenState extends State<OrderScreen> {
                               height: 30,
                               decoration: BoxDecoration(
                                 color: Color.fromRGBO(255, 255, 255, 80),
-                                border: Border.all(color: Colors.green, width: 1),
+                                border:
+                                    Border.all(color: Colors.green, width: 1),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
                                 ),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   Icon(
                                     Icons.star,
@@ -171,7 +167,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   Text(
                                     order.owner.rating.toString(),
-                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold),
                                   )
                                 ],
                               ),
@@ -222,7 +220,10 @@ class _OrderScreenState extends State<OrderScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 2),
                               child: Text(
                                 order.title,
-                                style: TextStyle(fontSize: 22, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                    fontSize: 22,
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),
@@ -234,7 +235,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               reverse: false,
                               autoPlay: true,
                               autoPlayInterval: Duration(seconds: 5),
-                              autoPlayAnimationDuration: Duration(milliseconds: 800),
+                              autoPlayAnimationDuration:
+                                  Duration(milliseconds: 800),
                               autoPlayCurve: Curves.fastOutSlowIn,
                               enlargeCenterPage: true,
                               onPageChanged: (index, reason) {
@@ -253,10 +255,13 @@ class _OrderScreenState extends State<OrderScreen> {
                               return Container(
                                 width: 8.0,
                                 height: 8.0,
-                                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: _current == index ? Color.fromRGBO(0, 0, 0, 0.9) : Color.fromRGBO(0, 0, 0, 0.4),
+                                  color: _current == index
+                                      ? Color.fromRGBO(0, 0, 0, 0.9)
+                                      : Color.fromRGBO(0, 0, 0, 0.4),
                                 ),
                               );
                             }).toList(),
@@ -319,7 +324,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               children: <Widget>[
                                 Text(
                                   "Request date:",
-                                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                                  style: TextStyle(
+                                      fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
                                   child: SizedBox(
@@ -433,7 +439,8 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
@@ -461,15 +468,17 @@ class _OrderScreenState extends State<OrderScreen> {
                               ),
                             ),
                             onPressed: () {
-                              //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
-//                                Flushbar(
-//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                                  message: "Check Chats to see more.",
-//                                  padding: const EdgeInsets.all(8),
-//                                  borderRadius: 10,
-//                                  duration: Duration(seconds: 5),
-//                                )..show(context);
+//                               var auth =
+//                                   Provider.of<Auth>(context, listen: false);
+//                               Provider.of<Messages>(context, listen: false)
+//                                   .createRooms(order.owner.id, auth);
+// //                                Flushbar(
+// //                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+// //                                  message: "Check Chats to see more.",
+// //                                  padding: const EdgeInsets.all(8),
+// //                                  borderRadius: 10,
+// //                                  duration: Duration(seconds: 5),
+// //                                )..show(context);
                             },
                           ),
                           RaisedButton.icon(
@@ -496,8 +505,10 @@ class _OrderScreenState extends State<OrderScreen> {
                               ),
                             ),
                             onPressed: () {
-                              //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
+                              var auth =
+                                  Provider.of<Auth>(context, listen: false);
+                              Provider.of<Messages>(context, listen: false)
+                                  .createRooms(order.owner.id, auth);
 //                                Flushbar(
 //                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
 //                                  message: "Check Chats to see more.",

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:optisend/models/chats.dart';
 
 class Messages extends ChangeNotifier {
   Map _messages = {};
@@ -13,35 +14,37 @@ class Messages extends ChangeNotifier {
   int newMessageCount;
   int tmpIDofMessage = 0;
   String tokenforROOM;
-  bool isUserlogged = true;
+  bool isUserlogged = false;
   bool isChatsLoading = true;
   bool _isloadingMessages = true;
   bool ismessagesAdded = false;
   List lastMessageID = [];
   Map userdetail = {};
   Map allChatRoomDetails = {};
-
+  bool isChatRoomCreated = false;
   String get getToken {
     return tokenforROOM;
   }
 
   Future fetchAndSetMessages(int i) async {
-    var token = tokenforROOM;
-    String url = Api.messages + _chatRooms[i]["id"].toString();
-    try {
-      await http.get(
-        url,
-        headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
-          "Authorization": "Token " + token,
-        },
-      ).then((response) {
-        var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-        _messages[_chatRooms[i]["id"]] = dataOrders;
-        _isloadingMessages = false;
-        notifyListeners();
-      });
-    } catch (e) {}
+    if (chats.isNotEmpty) {
+      var token = tokenforROOM;
+      String url = Api.messages + _chatRooms[i].id.toString();
+      try {
+        await http.get(
+          url,
+          headers: {
+            HttpHeaders.CONTENT_TYPE: "application/json",
+            "Authorization": "Token " + token,
+          },
+        ).then((response) {
+          var data = json.decode(response.body) as Map<String, dynamic>;
+          _messages[_chatRooms[i].id] = data;
+          _isloadingMessages = false;
+          notifyListeners();
+        });
+      } catch (e) {}
+    }
   }
 
   bool get messagesNotLoaded {
@@ -123,30 +126,35 @@ class Messages extends ChangeNotifier {
     }
   }
 
-  // Future readLastMessages(id) async {
-  //   var token = tokenforROOM;
-  //   try {
-  //     const url = "http://briddgy.herokuapp.com/api/chat/readlast/";
-
-  //     http.post(url,
-  //         headers: {
-  //           HttpHeaders.CONTENT_TYPE: "application/json",
-  //           "Authorization": "Token " + token,
-  //         },
-  //         body: json.encode({
-  //           "room_id": id,
-  //         }));
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   //______________________________________________________________________________________
+
+  Future createRooms(id, auth) async {
+    String tokenforROOM = auth.myTokenFromStorage;
+    if (tokenforROOM != null) {
+      String url = Api.itemConnectOwner + id.toString() + '/';
+      await http.get(
+        url,
+        headers: {
+          HttpHeaders.CONTENT_TYPE: "application/json",
+          "Authorization": "Token " + tokenforROOM,
+        },
+      ).then((value) {
+        if (value.statusCode == 200) {
+          isChatRoomCreated = true;
+          fetchAndSetRooms(auth);
+          isChatsLoading = true;
+        } else {
+          isChatRoomCreated = false;
+        }
+        notifyListeners();
+      });
+    }
+  }
 
   bool changeChatRoomPlace(id) {
     newMessage[id] = 0;
     for (var i = 0; i < _chatRooms.length; i++) {
-      if (_chatRooms[i]["id"] == id) {
+      if (_chatRooms[i].id == id) {
         _chatRooms.insert(0, _chatRooms.removeAt(i));
         newMessage[id] = 0;
         return true;
@@ -157,47 +165,48 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth) async {
-    isUserlogged = false;
     isChatsLoading = false;
-    var f;
-    auth.removeListener(f);
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      return false;
-    }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    if (chats.isEmpty) {
+      if (auth.isAuth) {
+        tokenforROOM = auth.myTokenFromStorage;
+      } else {
+        var f;
+        auth.removeListener(f);
+        final prefs = await SharedPreferences.getInstance();
+        if (!prefs.containsKey('userData')) {
+          isUserlogged = false;
+          return false;
+        }
+        final extractedUserData =
+            json.decode(prefs.getString('userData')) as Map<String, Object>;
 
-    auth.token = extractedUserData['token'];
-    tokenforROOM = extractedUserData['token'];
-    try {
-      if (extractedUserData['token'] != null) {
+        auth.token = extractedUserData['token'];
+        tokenforROOM = extractedUserData['token'];
+      }
+      try {
         const url = Api.chats;
         final response = await http.get(
           url,
           headers: {
             HttpHeaders.CONTENT_TYPE: "application/json",
-            "Authorization": "Token " + extractedUserData['token'],
+            "Authorization": "Token " + tokenforROOM,
           },
         ).then((value) {
-          final dataOrders = json.decode(value.body) as Map<String, dynamic>;
-          allChatRoomDetails = dataOrders;
-          _chatRooms = dataOrders["results"];
-          if (_chatRooms.length == 0) {
-            for (var i = 0; i < _chatRooms.length; i++) {
-              newMessage[_chatRooms[i]["id"]] =
-                  _chatRooms[i]["members"][1]["unread_count"];
-            }
+          Map<String, dynamic> data =
+              json.decode(value.body) as Map<String, dynamic>;
+          for (var i = 0; i < data["results"].length; i++) {
+            _chatRooms.add(Chats.fromJson(data["results"][i]));
           }
+          // allChatRoomDetails = dataOrders;
           isChatsLoading = false;
+          isUserlogged = true;
         });
         return _chatRooms;
-      } else {
-        isUserlogged = true;
-        return null;
+      } catch (e) {
+        return;
       }
-    } catch (e) {
-      return;
+    } else {
+      isChatsLoading = false;
     }
   }
 
@@ -212,15 +221,16 @@ class Messages extends ChangeNotifier {
     return _chatRooms;
   }
 
-  bool get userNotLogged {
+  bool get userLogged {
     return isUserlogged;
   }
 
-  bool get chatsNotLoaded {
+  bool get chatsLoading {
     return isChatsLoading;
   }
 
   List get chats => _chatRooms;
+
   Map get chatDetails => allChatRoomDetails;
   Map user_detail = {};
   Map get userDetails {
@@ -235,7 +245,7 @@ class Messages extends ChangeNotifier {
     newMessageCount;
     tmpIDofMessage = 0;
     tokenforROOM = null;
-    isUserlogged = true;
+    isUserlogged = false;
     isChatsLoading = true;
     _isloadingMessages = true;
     ismessagesAdded = false;

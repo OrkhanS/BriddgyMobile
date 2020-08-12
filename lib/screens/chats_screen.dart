@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
+import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/chat_window.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
@@ -44,7 +45,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (myid != "empty" && Provider.of<Auth>(context).isAuth) {
+    if (myid == "empty" && Provider.of<Auth>(context).isAuth) {
       myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
     }
     List<MaterialColor> colors = [
@@ -54,64 +55,60 @@ class _ChatsScreenState extends State<ChatsScreen> {
       Colors.lightBlue,
     ];
 
-    Future _loadData() async {
-      if (nextMessagesURL.toString() != "null") {
-        String url = nextMessagesURL;
-        try {
-          await http.get(
-            url,
-            headers: {
-              HttpHeaders.CONTENT_TYPE: "application/json",
-              "Authorization": "Token " + widget.token,
-            },
-          ).then((response) {
-            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            _rooms.addAll(dataOrders["results"]);
-            nextMessagesURL = dataOrders["next"];
-          });
-        } catch (e) {
-          print("Some Error");
-        }
-        setState(() {
-//        items.addAll( ['item 1']);
-//        print('items: '+ items.toString());
-          _isfetchingnew = false;
-        });
-      } else {
-        _isfetchingnew = false;
-      }
-    }
+//     Future _loadData() async {
+//       if (nextMessagesURL.toString() != "null") {
+//         String url = nextMessagesURL;
+//         try {
+//           await http.get(
+//             url,
+//             headers: {
+//               HttpHeaders.CONTENT_TYPE: "application/json",
+//               "Authorization": "Token " + widget.token,
+//             },
+//           ).then((response) {
+//             var dataOrders = json.decode(response.body) as Map<String, dynamic>;
+//             _rooms.addAll(dataOrders["results"]);
+//             nextMessagesURL = dataOrders["next"];
+//           });
+//         } catch (e) {
+//           print("Some Error");
+//         }
+//         setState(() {
+// //        items.addAll( ['item 1']);
+// //        print('items: '+ items.toString());
+//           _isfetchingnew = false;
+//         });
+//       } else {
+//         _isfetchingnew = false;
+//       }
+//     }
 
     return Consumer<Messages>(
       builder: (context, provider, child) {
-        if (widget.provider.chats.length != 0) {
-          _rooms = widget.provider.chatDetails["results"];
+        if (!widget.provider.chatsLoading) {
+          _rooms = widget.provider.chats;
           if (nextMessagesURL == "FirstCall") {
-            nextMessagesURL = widget.provider.chatDetails["next"];
+            //nextMessagesURL = widget.provider.chatDetails["next"];
           }
-          //messageLoader = false;
-        } else {
-          //messageLoader = true;
         }
         return Scaffold(
           body: SafeArea(
             child: Container(
-              child: widget.provider.userNotLogged == true ||
+              child: !widget.provider.userLogged ||
                       widget.provider.chats == null
                   ? Center(child: Text('No Chats'))
-                  : widget.provider.chatsNotLoaded == true
+                  : widget.provider.chatsLoading == true
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (!_isfetchingnew &&
                                 scrollInfo.metrics.pixels ==
                                     scrollInfo.metrics.maxScrollExtent) {
-                              // start loading data
                               setState(() {
                                 _isfetchingnew = true;
                                 print("load order");
                               });
-                              _loadData();
+                              //_loadData();
                             }
                           },
                           child: Column(
@@ -123,6 +120,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                 child: ListView.builder(
                                   itemCount: _rooms.length,
                                   itemBuilder: (context, int index) {
+                                    User user = _rooms[index]
+                                                .members[1]
+                                                .user
+                                                .id
+                                                .toString() ==
+                                            myid
+                                        ? _rooms[index].members[0].user
+                                        : _rooms[index].members[1].user;
                                     return Column(
                                       children: <Widget>[
                                         Menu(
@@ -140,35 +145,15 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                               title: Row(
                                                 children: <Widget>[
                                                   Text(
-                                                    _rooms[index]["members"][1]
-                                                                        ["user"]
-                                                                    ["id"]
-                                                                .toString() !=
-                                                            myid
-                                                        ? _rooms[index]["members"][1]["user"]["first_name"]
-                                                                .toString() +
-                                                            " " +
-                                                            _rooms[index]["members"][1]["user"]["last_name"]
-                                                                .toString()
-                                                        : _rooms[index]["members"][0]["user"]["first_name"]
-                                                                .toString() +
-                                                            " " +
-                                                            _rooms[index]["members"][0]
-                                                                        ["user"]
-                                                                    ["last_name"]
-                                                                .toString(),
+                                                    user.firstName +
+                                                        " " +
+                                                        user.lastName,
                                                     style: TextStyle(
                                                         fontSize: 15.0),
                                                   ),
                                                   SizedBox(
                                                     width: 16.0,
                                                   ),
-                                                  // Text(
-                                                  //   _rooms[index]["date_modified"]
-                                                  //       .toString()
-                                                  //       .substring(0, 10),
-                                                  //   style: TextStyle(fontSize: 15.0),
-                                                  // ),
                                                 ],
                                               ),
                                               subtitle: Row(
@@ -177,92 +162,84 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                     "Last Message:" + "  ",
                                                     style: TextStyle(
                                                         fontSize: 15.0),
-                                                    // _messages[index]["results"][0]["text"]
-                                                    //   .toString().substring(0,15)
                                                   ),
                                                   Text(
-                                                    // timeago.format(DateTime.parse(_rooms[index]["date_modified"].toString().substring(0, 10) + " " + _rooms[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) == "3" ||
-                                                    //         timeago.format(DateTime.parse(_rooms[index]["date_modified"].toString().substring(0, 10) + " " + _rooms[index]["date_modified"].toString().substring(11, 26))).toString().substring(0, 1) ==
-                                                    //             "2"
-                                                    //     ? "Recently"
-                                                    //     :
                                                     timeago
-                                                        .format(DateTime.parse(_rooms[
-                                                                        index][
-                                                                    "date_modified"]
-                                                                .toString()
-                                                                .substring(
-                                                                    0, 10) +
-                                                            " " +
-                                                            _rooms[index][
-                                                                    "date_modified"]
-                                                                .toString()
-                                                                .substring(
-                                                                    11, 26)))
+                                                        .format(DateTime.parse(
+                                                            _rooms[index]
+                                                                    .dateModified
+                                                                    .toString()
+                                                                    .substring(
+                                                                        0, 10) +
+                                                                " " +
+                                                                _rooms[index]
+                                                                    .dateModified
+                                                                    .toString()
+                                                                    .substring(
+                                                                        11,
+                                                                        26)))
                                                         .toString(),
                                                     style: TextStyle(
                                                         fontSize: 15.0),
                                                   )
                                                 ],
                                               ),
-                                              trailing: widget
-                                                              .provider
-                                                              .newMessages[
-                                                                  _rooms[index]
-                                                                      ["id"]]
-                                                              .toString() !=
-                                                          "0" &&
-                                                      widget
-                                                              .provider
-                                                              .newMessages[
-                                                                  _rooms[index]
-                                                                      ["id"]]
-                                                              .toString() !=
-                                                          "null"
-                                                  ? Badge(
-                                                      badgeContent: Text(widget
-                                                          .provider
-                                                          .newMessages[
-                                                              _rooms[index]
-                                                                  ["id"]]
-                                                          .toString()),
-                                                      child: Icon(Icons
-                                                          .arrow_forward_ios),
-                                                    )
-                                                  : Icon(
-                                                      Icons.arrow_forward_ios,
-                                                      size: 14.0,
-                                                    ),
+                                              // trailing: widget
+                                              //                 .provider
+                                              //                 .newMessages[
+                                              //                     _rooms[index]
+                                              //                         ["id"]]
+                                              //                 .toString() !=
+                                              //             "0" &&
+                                              //         widget
+                                              //                 .provider
+                                              //                 .newMessages[
+                                              //                     _rooms[index]
+                                              //                         ["id"]]
+                                              //                 .toString() !=
+                                              //             "null"
+                                              //     ? Badge(
+                                              //         badgeContent: Text(widget
+                                              //             .provider
+                                              //             .newMessages[
+                                              //                 _rooms[index]
+                                              //                     ["id"]]
+                                              //             .toString()),
+                                              //         child: Icon(Icons
+                                              //             .arrow_forward_ios),
+                                              //       )
+                                              //     : Icon(
+                                              //         Icons.arrow_forward_ios,
+                                              //         size: 14.0,
+                                              //       ),
                                               onTap: () {
-                                                widget.provider.readMessages(
-                                                    _rooms[index]["id"]);
-                                                Provider.of<Messages>(context,
-                                                            listen: false)
-                                                        .newMessage[
-                                                    _rooms[index]["id"]] = 0;
+                                                // widget.provider.readMessages(
+                                                //     _rooms[index]["id"]);
+                                                // Provider.of<Messages>(context,
+                                                //             listen: false)
+                                                //         .newMessage[
+                                                //     _rooms[index]["id"]] = 0;
                                                 widget.provider
                                                     .fetchAndSetMessages(index);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (__) => ChatWindow(
-                                                          provider:
-                                                              widget.provider,
-                                                          room: _rooms[index]
-                                                              ["id"],
-                                                          user: _rooms[index]["members"][1]["user"]["id"]
-                                                                      .toString() !=
-                                                                  myid
-                                                              ? _rooms[index]
-                                                                      ["members"]
-                                                                  [1]["user"]
-                                                              : _rooms[index]
-                                                                      ["members"]
-                                                                  [0]["user"],
-                                                          token: widget.token,
-                                                          auth: Provider.of<Auth>(
-                                                              context,
-                                                              listen: false))),
+                                                      builder: (__) =>
+                                                          ChatWindow(
+                                                              provider: widget
+                                                                  .provider,
+                                                              room: _rooms[
+                                                                      index]
+                                                                  .members[0]
+                                                                  .room,
+                                                              user: user,
+                                                              token:
+                                                                  widget.token,
+                                                              auth: Provider.of<
+                                                                      Auth>(
+                                                                  context,
+                                                                  listen:
+                                                                      false))),
                                                 );
                                               },
                                             ),

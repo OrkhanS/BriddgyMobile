@@ -107,11 +107,6 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetUserDetails() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // if (!prefs.containsKey('userData')) {
-    //   return false;
-    // }
-    // final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
     isLoadingUserForMain = false;
     const url = Api.currentUserDetails;
     try {
