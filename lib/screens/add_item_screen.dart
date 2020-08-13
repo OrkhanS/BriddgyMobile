@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-//import 'dart:html';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -17,13 +16,9 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
-import 'package:optisend/models/order.dart';
 
 class AddItemScreen extends StatefulWidget {
   static const routeName = '/orders/add_item';
-  OrdersTripsProvider orderstripsProvider;
-  var token;
-  AddItemScreen({this.orderstripsProvider, this.token});
   @override
   _AddItemScreenState createState() => _AddItemScreenState();
 }
@@ -42,15 +37,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
   final TextEditingController _typeAheadController2 = TextEditingController();
 
   Future upload(id, token, orderstripsProvider, context) async {
-    var stream =
-        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
 
     var uri = Uri.parse(Api.addOrderImage);
 
     var request = new http.MultipartRequest("PUT", uri);
-    var multipartFile = new http.MultipartFile('file', stream, length,
-        filename: basename(imageFile.path));
+    var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
     request.headers['Authorization'] = "Token " + token;
     request.fields["order_id"] = id.toString();
 
@@ -148,17 +141,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() +
-          ", " +
-          _suggested[i]["country"].toString() +
-          ", " +
-          _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
     }
     return _cities;
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.white10,
+      statusBarIconBrightness: Brightness.dark,
+    ));
     final deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
@@ -183,9 +176,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   ),
                   title: Text(
                     "Add Item",
-                    style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                   ),
                   elevation: 1,
                 ),
@@ -194,12 +185,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
+                    padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
                     child: Text(
                       "Item Information",
-                      style: TextStyle(
-                          fontSize: 25, color: Theme.of(context).primaryColor),
+                      style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ],
@@ -227,27 +216,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       from = val;
                     },
                     controller: this._typeAheadController,
-                    decoration: InputDecoration(
-                        labelText: 'From', icon: Icon(Icons.location_on)),
+                    decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
                   ),
                   suggestionsCallback: (pattern) {
                     return getSuggestions(pattern);
                   },
                   itemBuilder: (context, suggestion) {
                     return ListTile(
-                      title: Text(suggestion.toString().split(", ")[0] +
-                          ", " +
-                          suggestion.toString().split(", ")[1]),
+                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
                     );
                   },
                   transitionBuilder: (context, suggestionsBox, controller) {
                     return suggestionsBox;
                   },
                   onSuggestionSelected: (suggestion) {
-                    this._typeAheadController.text =
-                        suggestion.toString().split(", ")[0] +
-                            ", " +
-                            suggestion.toString().split(", ")[1];
+                    this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
                     from = suggestion.toString().split(", ")[2];
                   },
                   validator: (value) {
@@ -269,27 +252,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       to = val;
                     },
                     controller: this._typeAheadController2,
-                    decoration: InputDecoration(
-                        labelText: 'To', icon: Icon(Icons.location_on)),
+                    decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
                   ),
                   suggestionsCallback: (pattern) {
                     return getSuggestions(pattern);
                   },
                   itemBuilder: (context, suggestion) {
                     return ListTile(
-                      title: Text(suggestion.toString().split(", ")[0] +
-                          ", " +
-                          suggestion.toString().split(", ")[1]),
+                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
                     );
                   },
                   transitionBuilder: (context, suggestionsBox, controller) {
                     return suggestionsBox;
                   },
                   onSuggestionSelected: (suggestion) {
-                    this._typeAheadController2.text =
-                        suggestion.toString().split(", ")[0] +
-                            ", " +
-                            suggestion.toString().split(", ")[1];
+                    this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
                     to = suggestion.toString().split(", ")[2];
                   },
                   validator: (value) {
@@ -299,6 +276,33 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     }
                   },
                   onSaved: (value) => to = value,
+                ),
+              ),
+              Container(
+                width: deviceWidth * 0.8,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Reward (in USD)',
+                    icon: Icon(Icons.attach_money),
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (String val) {
+                    price = val;
+                  },
+                ),
+              ),
+              Container(
+                width: deviceWidth * 0.8,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Weight',
+                    icon: Icon(Icons.format_size),
+                  ),
+                  maxLength: 4,
+                  keyboardType: TextInputType.number,
+                  onChanged: (String val) {
+                    weight = val;
+                  },
                 ),
               ),
               Container(
@@ -317,32 +321,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       description = val;
                     },
                   ),
-                ),
-              ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Price',
-                    icon: Icon(Icons.attach_money),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (String val) {
-                    price = val;
-                  },
-                ),
-              ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Weight',
-                    icon: Icon(Icons.format_size),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (String val) {
-                    weight = val;
-                  },
                 ),
               ),
               Padding(
@@ -435,17 +413,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                         ),
                       ),
                       onPressed: () {
-                        var token =
-                            Provider.of<Auth>(context, listen: false).token;
-                        var orderstripsProvider =
-                            Provider.of<OrdersTripsProvider>(context,
-                                listen: false);
+                        var token = Provider.of<Auth>(context, listen: false).token;
+                        var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
                         String url = Api.orders;
-                        if (title == null ||
-                            from == null ||
-                            to == null ||
-                            weight == null ||
-                            price == null) {
+                        if (title == null || from == null || to == null || weight == null || price == null) {
                           setState(() {
                             addItemButton = true;
                           });
@@ -463,8 +434,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           http
                               .post(url,
                                   headers: {
-                                    HttpHeaders.CONTENT_TYPE:
-                                        "application/json",
+                                    HttpHeaders.CONTENT_TYPE: "application/json",
                                     "Authorization": "Token " + token,
                                   },
                                   body: json.encode({
@@ -472,9 +442,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     "dimensions": 0,
                                     "source": from,
                                     "destination": to,
-                                    "date": DateTime.now()
-                                        .toString()
-                                        .substring(0, 10),
+                                    "date": DateTime.now().toString().substring(0, 10),
                                     "address": "ads",
                                     "weight": weight,
                                     "price": price,
@@ -484,8 +452,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                               .then((response) {
                             Map data = json.decode(response.body);
                             if (response.statusCode == 201) {
-                              upload(data["id"].toString(), token,
-                                  orderstripsProvider, context);
+                              upload(data["id"].toString(), token, orderstripsProvider, context);
                             } else {
                               setState(() {
                                 addItemButton = true;
