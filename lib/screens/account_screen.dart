@@ -4,6 +4,7 @@ import 'package:optisend/screens/contracts.dart';
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/profile_screen.dart';
+import 'package:optisend/screens/test.dart';
 import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
@@ -272,6 +273,12 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           ListTile(
                             leading: Icon(Icons.star_border),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (__) => OpenContainerTransformDemo()),
+                              );
+                            },
                             title: Text(
                               "Rate/Leave suggestion", //Todo: App Rating
                               style: TextStyle(

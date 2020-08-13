@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:animations/animations.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -218,44 +219,57 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
         return Scaffold(
           resizeToAvoidBottomPadding: true,
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(Icons.add),
-            onPressed: () {
-              if (widget.auth.isAuth) {
-                if (widget.auth.userdetail.isEmailVerified == true) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (__) => AddItemScreen(
-                              token: widget.token,
-                              orderstripsProvider: widget.orderstripsProvider,
-                            )),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (__) => AddItemScreen(
-                              token: widget.token,
-                              orderstripsProvider: widget.orderstripsProvider,
-                            )),
-                  );
-                  //todo remove comments
+          floatingActionButton: OpenContainer(
+            openElevation: 5,
+            transitionDuration: Duration(milliseconds: 500),
+            transitionType: ContainerTransitionType.fadeThrough,
+            openBuilder: (BuildContext context, VoidCallback _) {
+              return AddItemScreen();
+              //              if (widget.auth.isAuth) {
+//                if (widget.auth.userdetail.isEmailVerified == true) {
 //                  Navigator.push(
 //                    context,
-//                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+//                    MaterialPageRoute(builder: (__) => AddItemScreen()),
 //                  );
-                }
-              } else {
-                Flushbar(
-                  title: "Warning",
-                  message: "You need to Log in to add Item!",
-                  padding: const EdgeInsets.all(8),
-                  borderRadius: 10,
-                  duration: Duration(seconds: 3),
-                )..show(context);
-              }
+//                } else {
+//                  Navigator.push(
+//                    context,
+//                    MaterialPageRoute(builder: (__) => AddItemScreen()),
+//                  );
+//                  //todo remove comments
+////                  Navigator.push(
+////                    context,
+////                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+////                  );
+//                }
+//              } else {
+//                Flushbar(
+//                  title: "Warning",
+//                  message: "You need to Log in to add Item!",
+//                  padding: const EdgeInsets.all(8),
+//                  borderRadius: 10,
+//                  duration: Duration(seconds: 3),
+//                )..show(context);
+            },
+            closedElevation: 6.0,
+            closedShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(56 / 2),
+              ),
+            ),
+            closedColor: Colors.white,
+            closedBuilder: (BuildContext context, VoidCallback openContainer) {
+              return SizedBox(
+                height: 56,
+                width: 56,
+                child: Center(
+                  child: Icon(
+                    Icons.add,
+                    size: 30,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              );
             },
           ),
           body: SafeArea(
@@ -315,14 +329,31 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                     _isfetchingnew = true;
                                   });
                                   _loadData();
+
+                                  return true;
                                 }
+                                return false;
                               },
                               child: ListView.builder(
                                 itemBuilder: (context, int i) {
-                                  return OrderWidget(
-                                    order: _orders[i],
-                                    i: i,
-                                  );
+                                  if (i + 1 == _orders.length)
+                                    return Column(
+                                      children: <Widget>[
+                                        OrderWidget(
+                                          order: _orders[i],
+                                          i: i,
+                                        ),
+                                        SizedBox(
+                                          height: 80,
+                                        ),
+                                      ],
+                                    );
+                                  else
+                                    return OrderWidget(
+                                      order: _orders[i],
+                                      i: i,
+                                    );
+
 //                              return OrderFadeWidget();
                                 },
                                 itemCount: _orders.length,
