@@ -45,9 +45,8 @@ class Messages extends ChangeNotifier {
         ).then((response) {
           Map<String, dynamic> data =
               json.decode(response.body) as Map<String, dynamic>;
-          var a = Message.fromJson(data["results"][0]);
-          print(a);
           try {
+            // cannot directly add Message object to Map. So need TemporaryList
             List<Message> temp = [];
             for (var i = 0; i < data["results"].length; i++) {
               temp.add(Message.fromJson(data["results"][i]));
@@ -66,7 +65,7 @@ class Messages extends ChangeNotifier {
     }
   }
 
-  bool get messagesNotLoaded {
+  bool get messagesLoading {
     return _isloadingMessages;
   }
 
@@ -75,37 +74,48 @@ class Messages extends ChangeNotifier {
   }
 
   addMessages(message, auth) {
-    var temp = {
+    var tempMessage = Message.fromJson({
       "id": int.parse(message["session_id"]),
       "date_created": DateTime.now().toString(),
       "date_modified": DateTime.now().toString(),
       "text": message["message"],
       "sender": int.parse(message["sender"]),
       "recipients": []
-    };
-    var tempMessage = Message.fromJson(temp);
+    });
 
     // Checking if ChatRoom is already exists
-    if (_messages[message["room_id"]] == null) {
-      _messages[message["room_id"]] = {};
-      _messages[message["room_id"]].insert(0, tempMessage);
-    } else {
-      // Checking if FCM sends the same notification twice
-      if (_messages[message["room_id"]][0].id.toString() !=
-          message["session_id"].toString()) {
-        _messages[message["room_id"]].insert(0, tempMessage);
+    try {
+      if (_messages[message["room_id"]] == null ||
+          _messages[message["room_id"]].isEmpty) {
+        _messages[message["room_id"]] = {};
+        // cannot directly add Message object to Map. So need TemporaryList
+        List<Message> temporary = [];
+        temporary.add(tempMessage);
+        _messages[message["room_id"]] = temporary;
+      } else {
+        // Checking if FCM sends the same notification twice
+        if (_messages[message["room_id"]][0].id.toString() !=
+            message["session_id"].toString()) {
+          _messages[message["room_id"]].insert(0, tempMessage);
+        }
       }
+    } catch (e) {
+      print(e);
     }
 
     // Checking if Message is sent by ME, if not add it to newMessage list
-    if (tempMessage.id.toString() != auth.userdetail.id) {
-      // Checking if message["room_id"] => ChatRoomPage is Active, if yes don't give Notifications
+    if (tempMessage.sender != auth.userdetail.id) {
+      // Checking if ChatRoomPage is Active with the message["room_id"], then don't give Notifications
       if (!isChatRoomPageActive &&
           message["room_id"] != roomIDofActiveChatRoom) {
         // Checking if ChatRoom is already exists
-        if (newMessage[message["room_id"]] == null) {
+        if (newMessage[message["room_id"]] == null ||
+            newMessage[message["room_id"]].isEmpty) {
+          // cannot directly add Message object to Map. So need TemporaryList
+          List<Message> temporary = [];
+          temporary.add(tempMessage);
           newMessage[message["room_id"]] = {};
-          newMessage[message["room_id"]].insert(0, tempMessage);
+          newMessage[message["room_id"]] = temporary;
         } else {
           // Checking if FCM sends the same notification twice
           if (newMessage[message["room_id"]][0].id.toString() !=
@@ -123,8 +133,10 @@ class Messages extends ChangeNotifier {
   Map get messages => _messages;
 
   void readMessages(id) {
-    newMessage[id] = 0;
-    //newMessage.remove(id);
+    isChatRoomPageActive = true;
+    roomIDofActiveChatRoom = id.toString();
+    if (newMessage[id] != null) newMessage.remove(id);
+    //Here also send readmessage request (backend not ready)
   }
 
   bool get arethereNewMessage {

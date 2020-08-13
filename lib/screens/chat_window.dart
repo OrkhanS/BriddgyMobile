@@ -179,18 +179,22 @@ class _ChatWindowState extends State<ChatWindow> {
         _isloading = false;
       }
     }
-
+  /// ISSUES: Don't give notifications to me when I send message
+  ///         Show sending message through, newMessage button.
+  ///         When opening chatroom remove messages in NewMessage map
     return Consumer<Messages>(
       builder: (context, provider, child) {
-        bool messageLoader = true;
-        if (widget.provider.messages[widget.room] != null) {
-          _messages = widget.provider.messages[widget.room];
-          if (nextMessagesURL == "FirstCall") {
-            // nextMessagesURL = widget.provider.messages[widget.room]["next"];
+        bool messageLoader = provider.messagesLoading;
+        if (widget.provider.messages[widget.room] != null && !messageLoader) {
+          if (widget.provider.messages[widget.room].isNotEmpty) {
+            _messages = widget.provider.messages[widget.room];
+            if (nextMessagesURL == "FirstCall") {
+              // nextMessagesURL = widget.provider.messages[widget.room]["next"];
+            }
+            messageLoader = false;
+          } else {
+            messageLoader = true;
           }
-          messageLoader = false;
-        } else {
-          messageLoader = true;
         }
         return Scaffold(
           resizeToAvoidBottomPadding: true,

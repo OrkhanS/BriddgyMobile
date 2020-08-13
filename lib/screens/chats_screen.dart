@@ -45,6 +45,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.provider.isChatRoomPageActive ||
+        widget.provider.roomIDofActiveChatRoom != " ") {
+      widget.provider.isChatRoomPageActive = false;
+      widget.provider.roomIDofActiveChatRoom = " ";
+    }
     if (myid == "empty" &&
         Provider.of<Auth>(context, listen: false).userdetail != null) {
       myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
@@ -86,7 +91,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
     return Consumer<Messages>(
       builder: (context, provider, child) {
-        if (!widget.provider.chatsLoading) {
+        if (!provider.chatsLoading) {
           _rooms = widget.provider.chats;
           if (nextMessagesURL == "FirstCall") {
             //nextMessagesURL = widget.provider.chatDetails["next"];
@@ -95,10 +100,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
         return Scaffold(
           body: SafeArea(
             child: Container(
-              child: !widget.provider.userLogged ||
-                      widget.provider.chats == null
+              child: !provider.userLogged || provider.chats == null
                   ? Center(child: Text('No Chats'))
-                  : widget.provider.chatsLoading == true
+                  : provider.chatsLoading == true
                       ? Center(child: CircularProgressIndicator())
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
@@ -185,50 +189,57 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                   )
                                                 ],
                                               ),
-                                              // trailing: widget
-                                              //                 .provider
-                                              //                 .newMessages[
-                                              //                     _rooms[index]
-                                              //                         ["id"]]
-                                              //                 .toString() !=
-                                              //             "0" &&
-                                              //         widget
-                                              //                 .provider
-                                              //                 .newMessages[
-                                              //                     _rooms[index]
-                                              //                         ["id"]]
-                                              //                 .toString() !=
-                                              //             "null"
-                                              //     ? Badge(
-                                              //         badgeContent: Text(widget
-                                              //             .provider
-                                              //             .newMessages[
-                                              //                 _rooms[index]
-                                              //                     ["id"]]
-                                              //             .toString()),
-                                              //         child: Icon(Icons
-                                              //             .arrow_forward_ios),
-                                              //       )
-                                              //     : Icon(
-                                              //         Icons.arrow_forward_ios,
-                                              //         size: 14.0,
-                                              //       ),
+                                              trailing:
+                                                  //////////////////////////////////////////////////////////////////
+                                                  provider.newMessage[
+                                                              _rooms[index]
+                                                                  .id] !=
+                                                          null
+                                                      ?
+
+                                                      /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
+                                                      provider
+                                                                  .newMessage[
+                                                                      _rooms[index]
+                                                                          .id]
+                                                                  .length !=
+                                                              0
+                                                          ?
+
+                                                          /// IF LENGHT IS NOT 0, SHOWING THE BADGE
+                                                          Badge(
+                                                              badgeContent: Text(provider
+                                                                  .newMessage[
+                                                                      _rooms[index]
+                                                                          .id]
+                                                                  .length
+                                                                  .toString()),
+                                                              child: Icon(Icons
+                                                                  .arrow_forward_ios),
+                                                            )
+                                                          : Icon(
+                                                              Icons
+                                                                  .arrow_forward_ios,
+                                                              size: 14.0,
+                                                            )
+                                                      : Icon(
+                                                          Icons
+                                                              .arrow_forward_ios,
+                                                          size: 14.0,
+                                                        ),
+                                              //////////////////////////////////////////////////////////////////////////
                                               onTap: () {
-                                                // widget.provider.readMessages(
-                                                //     _rooms[index]["id"]);
-                                                // Provider.of<Messages>(context,
-                                                //             listen: false)
-                                                //         .newMessage[
-                                                //     _rooms[index]["id"]] = 0;
-                                                widget.provider
+                                                provider.readMessages(
+                                                    _rooms[index].id);
+                                                provider
                                                     .fetchAndSetMessages(index);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (__) =>
                                                           ChatWindow(
-                                                              provider: widget
-                                                                  .provider,
+                                                              provider:
+                                                                  provider,
                                                               room: _rooms[
                                                                       index]
                                                                   .members[0]

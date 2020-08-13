@@ -78,6 +78,7 @@ class _MyAppState extends State<MyApp> {
       onResume: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message.values.last;
       },
+    
     );
   }
 
@@ -196,6 +197,7 @@ class _MyAppState extends State<MyApp> {
           title: Text('Chats'),
           icon: newmessage.arethereNewMessage == true
               ? Badge(
+                  badgeContent: Text(newmessage.newMessages.length.toString()),
                   child: Icon(MdiIcons.forumOutline),
                 )
               : Icon(MdiIcons.forumOutline),
