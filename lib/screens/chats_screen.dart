@@ -40,15 +40,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     pageController = PageController(viewportFraction: viewportFraction);
+    widget.provider.isChatRoomPageActive = false;
+    widget.provider.roomIDofActiveChatroom = "Empty";
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.provider.isChatRoomPageActive ||
-        widget.provider.roomIDofActiveChatRoom != " ") {
+    if(widget.provider.isChatRoomPageActive){
       widget.provider.isChatRoomPageActive = false;
-      widget.provider.roomIDofActiveChatRoom = " ";
+      widget.provider.roomIDofActiveChatroom = "Empty";
     }
     if (myid == "empty" &&
         Provider.of<Auth>(context, listen: false).userdetail != null) {
@@ -109,10 +110,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             if (!_isfetchingnew &&
                                 scrollInfo.metrics.pixels ==
                                     scrollInfo.metrics.maxScrollExtent) {
-                              setState(() {
-                                _isfetchingnew = true;
-                                print("load order");
-                              });
+                              // setState(() {
+                              //   _isfetchingnew = true;
+                              //   print("load order");
+                              // });
                               //_loadData();
                             }
                           },

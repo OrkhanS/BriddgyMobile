@@ -24,11 +24,16 @@ class Messages extends ChangeNotifier {
   Map allChatRoomDetails = {};
   bool isChatRoomCreated = false;
   bool isChatRoomPageActive = false;
+  List roomIDsWhileChatRoomActive = [];
   String roomIDofActiveChatRoom = " ";
   var auth;
 
   String get getToken {
     return tokenforROOM;
+  }
+
+  set roomIDofActiveChatroom(val) {
+    roomIDofActiveChatRoom = val;
   }
 
   Future fetchAndSetMessages(int roomId) async {
@@ -82,21 +87,21 @@ class Messages extends ChangeNotifier {
       "sender": int.parse(message["sender"]),
       "recipients": []
     });
+    var roomid = message["room_id"];
 
     // Checking if ChatRoom is already exists
     try {
-      if (_messages[message["room_id"]] == null ||
-          _messages[message["room_id"]].isEmpty) {
-        _messages[message["room_id"]] = {};
+      if (_messages[roomid] == null || _messages[roomid].isEmpty) {
+        _messages[roomid] = {};
         // cannot directly add Message object to Map. So need TemporaryList
         List<Message> temporary = [];
         temporary.add(tempMessage);
-        _messages[message["room_id"]] = temporary;
+        _messages[roomid] = temporary;
       } else {
         // Checking if FCM sends the same notification twice
-        if (_messages[message["room_id"]][0].id.toString() !=
+        if (_messages[roomid][0].id.toString() !=
             message["session_id"].toString()) {
-          _messages[message["room_id"]].insert(0, tempMessage);
+          _messages[roomid].insert(0, tempMessage);
         }
       }
     } catch (e) {
@@ -105,36 +110,36 @@ class Messages extends ChangeNotifier {
 
     // Checking if Message is sent by ME, if not add it to newMessage list
     if (tempMessage.sender != auth.userdetail.id) {
-      // Checking if ChatRoomPage is Active with the message["room_id"], then don't give Notifications
-      if (!isChatRoomPageActive &&
-          message["room_id"] != roomIDofActiveChatRoom) {
+      // Checking if ChatRoomPage is Active with the roomid, then don't give Notifications
+      if (roomid != roomIDofActiveChatRoom) {
         // Checking if ChatRoom is already exists
-        if (newMessage[message["room_id"]] == null ||
-            newMessage[message["room_id"]].isEmpty) {
+        if (newMessage[roomid] == null || newMessage[roomid].isEmpty) {
           // cannot directly add Message object to Map. So need TemporaryList
           List<Message> temporary = [];
           temporary.add(tempMessage);
-          newMessage[message["room_id"]] = {};
-          newMessage[message["room_id"]] = temporary;
+          newMessage[roomid] = {};
+          newMessage[roomid] = temporary;
         } else {
           // Checking if FCM sends the same notification twice
-          if (newMessage[message["room_id"]][0].id.toString() !=
+          if (newMessage[roomid][0].id.toString() !=
               message["session_id"].toString()) {
-            newMessage[message["room_id"]].insert(0, tempMessage);
+            newMessage[roomid].insert(0, tempMessage);
           }
         }
-        notifyListeners();
+        if (isChatRoomPageActive) {
+          if (!roomIDsWhileChatRoomActive.contains(roomid))
+            roomIDsWhileChatRoomActive.insert(0, roomid);
+        } else {
+          changeChatRoomPlace(roomid);
+        }
       }
+      notifyListeners();
     }
-
-    // Lastly   need to changeRoomPlace when    isChatRoomPageActive == false
   }
 
   Map get messages => _messages;
 
   void readMessages(id) {
-    isChatRoomPageActive = true;
-    roomIDofActiveChatRoom = id.toString();
     if (newMessage[id] != null) newMessage.remove(id);
     //Here also send readmessage request (backend not ready)
   }
@@ -174,17 +179,25 @@ class Messages extends ChangeNotifier {
     }
   }
 
-  bool changeChatRoomPlace(id) {
-    newMessage[id] = 0;
-    for (var i = 0; i < _chatRooms.length; i++) {
-      if (_chatRooms[i].id == id) {
-        _chatRooms.insert(0, _chatRooms.removeAt(i));
-        newMessage[id] = 0;
-        return true;
+  changeChatRoomPlace(id) {
+    if (id == "ChangewithList") {
+      for (var i = 0; i < roomIDsWhileChatRoomActive.length; i++) {
+        for (var j = 0; j < chats.length; j++) {
+          if (chats[j].id.toString() ==
+              roomIDsWhileChatRoomActive[i].toString()) {
+            chats.insert(0, chats.removeAt(j));
+            notifyListeners();
+          }
+        }
+      }
+      roomIDsWhileChatRoomActive = [];
+    } else {
+      for (var i = 0; i < chats.length; i++) {
+        if (chats[i].id.toString() == id.toString()) {
+          chats.insert(0, chats.removeAt(i));
+        }
       }
     }
-    newMessage[id] = 0;
-    return false;
   }
 
   Future fetchAndSetRooms(auth) async {

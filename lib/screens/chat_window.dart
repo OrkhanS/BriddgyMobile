@@ -43,6 +43,8 @@ class _ChatWindowState extends State<ChatWindow> {
     scrollController = ScrollController();
     id = widget.room.toString();
     token = widget.auth.myTokenFromStorage;
+    widget.provider.isChatRoomPageActive = true;
+    widget.provider.roomIDofActiveChatroom = id;
     initCommunication(id);
     super.initState();
   }
@@ -110,6 +112,10 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
+    if(widget.provider.isChatRoomPageActive == false){
+      widget.provider.isChatRoomPageActive = true;
+      widget.provider.roomIDofActiveChatroom = id;
+    }
     var textInput = Row(
       children: <Widget>[
         IconButton(
@@ -179,9 +185,10 @@ class _ChatWindowState extends State<ChatWindow> {
         _isloading = false;
       }
     }
-  /// ISSUES: Don't give notifications to me when I send message
-  ///         Show sending message through, newMessage button.
-  ///         When opening chatroom remove messages in NewMessage map
+
+    /// ISSUES: Don't give notifications to me when I send message
+    ///         Show sending message through, newMessage button.
+    ///         When opening chatroom remove messages in NewMessage map
     return Consumer<Messages>(
       builder: (context, provider, child) {
         bool messageLoader = provider.messagesLoading;
@@ -210,6 +217,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       icon: Icon(Icons.chevron_left,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {
+                        if(widget.provider.roomIDsWhileChatRoomActive.isNotEmpty)widget.provider.changeChatRoomPlace("ChangewithList");
                         Navigator.of(context).pop();
                       },
                     ),
