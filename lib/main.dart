@@ -13,11 +13,8 @@ import './providers/auth.dart';
 import './screens/orders_screen.dart';
 import 'package:flutter/foundation.dart';
 import './screens/account_screen.dart';
-import './screens/notification_screen.dart';
 import './screens/chats_screen.dart';
 import './screens/chat_window.dart';
-import 'package:optisend/screens/profile_screen.dart';
-import 'package:optisend/screens/order_screen.dart';
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:optisend/providers/messages.dart';
@@ -36,8 +33,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  final StreamController<String> streamController =
-      StreamController<String>.broadcast();
+  final StreamController<String> streamController = StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
   ObserverList<Function> _listeners = new ObserverList<Function>();
   var button = ChatsScreen();
@@ -78,7 +74,6 @@ class _MyAppState extends State<MyApp> {
       onResume: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message.values.last;
       },
-    
     );
   }
 
@@ -87,8 +82,7 @@ class _MyAppState extends State<MyApp> {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
     tokenforROOM = extractedUserData['token'];
   }
 
@@ -109,14 +103,12 @@ class _MyAppState extends State<MyApp> {
         if (!prefs.containsKey('userData')) {
           return false;
         }
-        final extractedUserData =
-            json.decode(prefs.getString('userData')) as Map<String, Object>;
+        final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
         auth.token = extractedUserData['token'];
 
         if (extractedUserData['token'] != null) {
-          widget._channel = new IOWebSocketChannel.connect(
-              Api.alertSocket + extractedUserData['token']);
+          widget._channel = new IOWebSocketChannel.connect(Api.alertSocket + extractedUserData['token']);
           widget._channel.stream.listen(_onReceptionOfMessageFromServer);
           print("Alert Connected");
           socketConnected = true;
@@ -180,14 +172,10 @@ class _MyAppState extends State<MyApp> {
       selectedFontSize: 11,
       onTap: (index) {
         setState(() => _currentIndex = index);
-        _pageController.animateToPage(index,
-            duration: Duration(milliseconds: 200), curve: Curves.ease);
+        _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.ease);
       },
       items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-            title: Text('Orders'),
-            icon: Icon(MdiIcons.packageVariantClosed),
-            activeIcon: Icon(MdiIcons.packageVariant)),
+        BottomNavigationBarItem(title: Text('Orders'), icon: Icon(MdiIcons.packageVariantClosed), activeIcon: Icon(MdiIcons.packageVariant)),
         BottomNavigationBarItem(
           title: Text('Trips'),
           icon: Icon(MdiIcons.roadVariant),
@@ -252,10 +240,8 @@ class _MyAppState extends State<MyApp> {
               auth.isLoadingUserDetails = true;
             }
           });
-        if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false)
-          auth.fetchAndSetReviews();
-        if (auth.statsNotReady && auth.isNotLoadingUserDetails == false)
-          auth.fetchAndSetStatistics();
+        if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetReviews();
+        if (auth.statsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetStatistics();
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.white10,
           statusBarIconBrightness: Brightness.dark,
@@ -278,25 +264,11 @@ class _MyAppState extends State<MyApp> {
                   setState(() => _currentIndex = index);
                 },
                 children: <Widget>[
-                  OrdersScreen(
-                      orderstripsProvider: orderstripsProvider,
-                      room: message,
-                      auth: auth,
-                      token: tokenforROOM),
-                  TripsScreen(
-                      orderstripsProvider: orderstripsProvider,
-                      room: message,
-                      auth: auth,
-                      token: tokenforROOM),
-                  ChatsScreen(
-                      provider: message, auth: auth, token: tokenforROOM),
+                  OrdersScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
+                  TripsScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
+                  ChatsScreen(provider: message, auth: auth, token: tokenforROOM),
 //                  NotificationScreen(),
-                  auth.isAuth
-                      ? AccountScreen(
-                          token: tokenforROOM,
-                          auth: auth,
-                          orderstripsProvider: orderstripsProvider)
-                      : AuthScreen(),
+                  auth.isAuth ? AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider) : AuthScreen(),
                 ],
               ),
             ),
@@ -311,8 +283,7 @@ class _MyAppState extends State<MyApp> {
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),
-            AccountScreen.routeName: (ctx) => AccountScreen(
-                token: tokenforROOM, orderstripsProvider: orderstripsProvider),
+            AccountScreen.routeName: (ctx) => AccountScreen(token: tokenforROOM, orderstripsProvider: orderstripsProvider),
           },
         );
       }),

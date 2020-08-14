@@ -91,6 +91,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                         children: <Widget>[
                           Icon(
                             MdiIcons.mapMarkerMultipleOutline,
+//                            color: Colors.grey[700],
                             color: Theme.of(context).primaryColor,
                             size: 16,
                           ),
@@ -112,22 +113,24 @@ class _OrderWidgetState extends State<OrderWidget> {
                             children: <Widget>[
                               Icon(
                                 MdiIcons.calendarRange,
+//                                color: Colors.grey[700],
                                 color: Theme.of(context).primaryColor,
                                 size: 16,
                               ),
                               Text(
-                                DateFormat.yMMMd().format(order.date),
+                                DateFormat("dd MMMM").format(order.date),
                                 style: TextStyle(color: Colors.grey[600]),
                               ),
                             ],
                           ),
                           SizedBox(
-                            width: 50,
+                            width: 100,
                           ),
                           Row(
                             children: <Widget>[
                               Icon(
                                 Icons.attach_money,
+//                                color: Colors.grey[700],
                                 color: Theme.of(context).primaryColor,
                                 size: 16,
                               ),

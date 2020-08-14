@@ -1,4 +1,5 @@
 class Api {
+  static const String orderLink = "http://briddgy-web.herokuapp.com/en/orders?id=";
   static const String address = "http://34.68.255.37/";
   static const roomSocket = "ws://34.68.255.37/chat/";
   static const alertSocket = address + "ws/alert/?token=";

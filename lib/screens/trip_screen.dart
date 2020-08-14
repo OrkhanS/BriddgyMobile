@@ -128,9 +128,9 @@ class _TripScreenState extends State<TripScreen> {
                         children: <Widget>[
                           CircleAvatar(
                             radius: 35,
-                            backgroundColor: Colors.grey[300],
+                            backgroundColor: Colors.grey[100],
                             backgroundImage: NetworkImage(
-                              "https://st4.depositphotos.com/14953852/22772/v/450/depositphotos_227725020-stock-illustration-image-available-icon-flat-vector.jpg",
+                              "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png",
                             ),
                           ),
                           Positioned(
@@ -172,22 +172,22 @@ class _TripScreenState extends State<TripScreen> {
             ),
 //            Padding(
 //              padding: EdgeInsets.symmetric(horizontal: 10),
-//              child: AppBar(
-//                backgroundColor: Colors.white,
-//                centerTitle: true,
-//                leading: IconButton(
-//                  color: Theme.of(context).primaryColor,
-//                  icon: Icon(
-//                    Icons.chevron_left,
-//                    size: 24,
-//                  ),
-//                  onPressed: () {
-//                    Navigator.of(context).pop();
-//                  },
-//                ),
-//                title: Text(
-//                 trip.title.toString(),
-//                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+////              child: AppBar(
+////                backgroundColor: Colors.white,
+////                centerTitle: true,
+////                leading: IconButton(
+////                  color: Theme.of(context).primaryColor,
+////                  icon: Icon(
+////                    Icons.chevron_left,
+////                    size: 24,
+////                  ),
+////                  onPressed: () {
+////                    Navigator.of(context).pop();
+////                  },
+////                ),
+////                title: Text(
+////                 trip.title.toString(),
+////                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
 //                ),
 //                elevation: 1,
 //              ),
@@ -203,6 +203,15 @@ class _TripScreenState extends State<TripScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                          Text(
+                            "Travel Information",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Divider(),
+
                           Padding(
                             padding: EdgeInsets.symmetric(
                               vertical: 4,
@@ -210,7 +219,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Departure city:",
+                                  "From:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -235,7 +244,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Arrival city:",
+                                  "To:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -260,7 +269,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Request date:",
+                                  "Departure Date:",
                                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
@@ -269,7 +278,7 @@ class _TripScreenState extends State<TripScreen> {
                                   ),
                                 ),
                                 Text(
-                                  DateFormat.yMMMd().format(trip.date),
+                                  DateFormat('d MMMM yyyy').format(trip.date),
                                   style: TextStyle(fontSize: 18),
                                 ),
                               ],
@@ -340,18 +349,16 @@ class _TripScreenState extends State<TripScreen> {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 15.0),
-                            child: Text(
-                              trip.weightLimit.toString(),
-                              style: TextStyle(fontSize: 17),
-                            ),
+                          Divider(),
+                          Text(
+                            "Not delivering edible orders. Thanks for understanding", //todo orxan fix after adding backend
+                            style: TextStyle(fontSize: 17),
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[

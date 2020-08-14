@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
@@ -111,12 +112,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 //            :
             Column(
           children: <Widget>[
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 6),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.blueGrey,
-              ),
+            Card(
+              elevation: 3,
+              margin: EdgeInsets.symmetric(horizontal: 10),
+//              decoration: BoxDecoration(
+//                borderRadius: BorderRadius.circular(8),
+////                color: Colors.yellow[100],
+//              ),
               child: Column(
                 children: <Widget>[
                   Row(
@@ -126,7 +128,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                         icon: Icon(
                           Icons.chevron_left,
                           size: 21,
-                          color: Colors.white,
+                          //color: Colors.white,
+                          color: Theme.of(context).primaryColor,
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -140,7 +143,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 onTap: () {},
                                 child: Icon(
                                   MdiIcons.shieldCheck,
-                                  color: Colors.white,
+                                  //color: Colors.white,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                               ),
                               Padding(
@@ -150,7 +154,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   textAlign: TextAlign.start,
                                   style: GoogleFonts.lato(
                                     textStyle: Theme.of(context).textTheme.display1,
-                                    color: Colors.white,
+                                    //color: Colors.white,
+                                    color: Theme.of(context).primaryColor,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -167,10 +172,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Member since 10 July 2020",
+                              "Member since " + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
                               style: GoogleFonts.lato(
                                 textStyle: Theme.of(context).textTheme.display1,
-                                color: Colors.grey[200],
+                                color: Colors.grey[500],
+//                                color: Colors.white,
+//                                color: Theme.of(context).primaryColor,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -200,7 +207,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               child: Container(
                                 height: 30,
                                 decoration: BoxDecoration(
-                                  color: Color.fromRGBO(255, 255, 255, 60),
+//                                  color: Color.fromRGBO(255, 255, 255, 60),
+                                  color: Colors.white,
+//                                  color: Theme.of(context).primaryColor,
                                   border: Border.all(color: Theme.of(context).primaryColor, width: 0.5),
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(15),
@@ -211,9 +220,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
                                     Text(
-//                                            "4.5",
                                       " " + user.rating.toString(),
-//                                        order.owner.rating.toString(),
                                       style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                                     ),
                                     Icon(
@@ -236,12 +243,14 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       children: <Widget>[
                         Icon(
                           Icons.location_on,
-                          color: Colors.white,
+                          //color: Colors.white,
+                          color: Theme.of(context).primaryColor,
                           size: 16,
                         ),
                         Text(" Baku, Azerbaijan",
                             style: GoogleFonts.aBeeZee(
-                              color: Colors.white,
+                              //color: Colors.white,
+                              color: Theme.of(context).primaryColor,
                               fontSize: 15,
                             )),
                         Expanded(
@@ -289,16 +298,28 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               statsNotReady
                                   ? Text(
                                       "\$ 0.0",
-                                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     )
                                   : Text(
                                       "\$" + stats.totalearnings.toString(),
-                                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                               Text(
                                 "Earned",
                                 style: TextStyle(
-                                  color: Colors.grey[300],
+//                                  color: Colors.grey[300],
+                                  //color: Colors.white,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 20,
                                 ),
                               ),
@@ -313,19 +334,27 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               statsNotReady
                                   ? Text(
                                       "0",
-                                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     )
                                   : Text(
                                       stats.totalorders.toString(),
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
                                         fontSize: 20,
                                       ),
                                     ),
                               Text(
                                 "Orders",
                                 style: TextStyle(
-                                  color: Colors.grey[300],
+//                                  color: Colors.grey[300],
+                                  //color: Colors.white,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 20,
                                 ),
                               ),
@@ -344,19 +373,27 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               statsNotReady
                                   ? Text(
                                       "0",
-                                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     )
                                   : Text(
                                       stats.totalcontracts.toString(),
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
                                         fontSize: 20,
                                       ),
                                     ),
                               Text(
                                 "Delivered",
                                 style: TextStyle(
-                                  color: Colors.grey[300],
+//                                  color: Colors.grey[300],
+                                  //color: Colors.white,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 20,
                                 ),
                               ),

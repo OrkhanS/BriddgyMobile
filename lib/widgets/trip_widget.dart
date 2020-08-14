@@ -76,7 +76,7 @@ class TripWidget extends StatelessWidget {
                               size: 16,
                             ),
                             Text(
-                              "  " + DateFormat.yMMMd().format(trip.date), //Todo: date
+                              "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
@@ -89,7 +89,7 @@ class TripWidget extends StatelessWidget {
                               size: 16,
                             ),
                             Text(
-                              "  " + trip.weightLimit.toString(),
+                              "  " + trip.weightLimit.toString() + ' kg',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],

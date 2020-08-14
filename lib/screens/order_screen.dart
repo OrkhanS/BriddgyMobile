@@ -12,6 +12,7 @@ import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/messages.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -34,15 +35,13 @@ class _OrderScreenState extends State<OrderScreen> {
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
-        image:
-            'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png',
+        image: 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png',
       ));
     } else {
       for (var i = 0; i < order.orderimage.length; i++) {
         imageList.add(FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: "https://storage.googleapis.com/briddgy-media/" +
-              order.orderimage[i].toString(),
+          image: "https://storage.googleapis.com/briddgy-media/" + order.orderimage[i].toString(),
         ));
       }
     }
@@ -86,12 +85,9 @@ class _OrderScreenState extends State<OrderScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                 child: Text(
-                                  order.owner.firstName +
-                                      " " +
-                                      order.owner.lastName,
+                                  order.owner.firstName + " " + order.owner.lastName,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                     color: Colors.black,
@@ -114,12 +110,9 @@ class _OrderScreenState extends State<OrderScreen> {
                             ],
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Last online " +
-                                  DateFormat.yMMMd()
-                                      .format(order.owner.lastOnline),
+                              "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -149,16 +142,14 @@ class _OrderScreenState extends State<OrderScreen> {
                               height: 30,
                               decoration: BoxDecoration(
                                 color: Color.fromRGBO(255, 255, 255, 80),
-                                border:
-                                    Border.all(color: Colors.green, width: 1),
+                                border: Border.all(color: Colors.green, width: 1),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
                                 ),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   Icon(
                                     Icons.star,
@@ -167,9 +158,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                   Text(
                                     order.owner.rating.toString(),
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold),
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                                   )
                                 ],
                               ),
@@ -215,18 +204,6 @@ class _OrderScreenState extends State<OrderScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              child: Text(
-                                order.title,
-                                style: TextStyle(
-                                    fontSize: 22,
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
                           CarouselSlider(
                             options: CarouselOptions(
                               height: 380,
@@ -235,8 +212,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               reverse: false,
                               autoPlay: true,
                               autoPlayInterval: Duration(seconds: 5),
-                              autoPlayAnimationDuration:
-                                  Duration(milliseconds: 800),
+                              autoPlayAnimationDuration: Duration(milliseconds: 800),
                               autoPlayCurve: Curves.fastOutSlowIn,
                               enlargeCenterPage: true,
                               onPageChanged: (index, reason) {
@@ -255,17 +231,40 @@ class _OrderScreenState extends State<OrderScreen> {
                               return Container(
                                 width: 8.0,
                                 height: 8.0,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 2.0),
+                                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: _current == index
-                                      ? Color.fromRGBO(0, 0, 0, 0.9)
-                                      : Color.fromRGBO(0, 0, 0, 0.4),
+                                  color: _current == index ? Color.fromRGBO(0, 0, 0, 0.9) : Color.fromRGBO(0, 0, 0, 0.4),
                                 ),
                               );
                             }).toList(),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                order.title,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.share),
+                                onPressed: () {
+                                  Share.share("Earn \$" +
+                                      order.price.toString() +
+                                      " by delivering " +
+                                      order.title +
+                                      "\n" +
+                                      Api.orderLink +
+                                      order.id.toString());
+                                },
+                              )
+                            ],
+                          ),
+                          Divider(),
                           Padding(
                             padding: EdgeInsets.symmetric(
                               vertical: 4,
@@ -324,8 +323,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               children: <Widget>[
                                 Text(
                                   "Request date:",
-                                  style: TextStyle(
-                                      fontSize: 17, color: Colors.grey[600]),
+                                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
                                   child: SizedBox(
@@ -428,6 +426,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               ],
                             ),
                           ),
+                          Divider(),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 15.0),
                             child: Text(
@@ -439,8 +438,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
@@ -505,10 +503,8 @@ class _OrderScreenState extends State<OrderScreen> {
                               ),
                             ),
                             onPressed: () {
-                              var auth =
-                                  Provider.of<Auth>(context, listen: false);
-                              Provider.of<Messages>(context, listen: false)
-                                  .createRooms(order.owner.id, auth);
+                              var auth = Provider.of<Auth>(context, listen: false);
+                              Provider.of<Messages>(context, listen: false).createRooms(order.owner.id, auth);
 //                                Flushbar(
 //                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
 //                                  message: "Check Chats to see more.",
