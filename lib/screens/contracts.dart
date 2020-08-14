@@ -65,7 +65,7 @@ class _ContractsState extends State<Contracts> {
                 _isfetchingnew = true;
                 print("load order");
               });
-              //_loadData(); todo: orxan
+              //_loadData();
             }
           },
           child: Column(
@@ -98,7 +98,6 @@ class _ContractsState extends State<Contracts> {
                           alignment: Alignment.centerLeft,
                           child: Padding(
                             padding: const EdgeInsets.all(1),
-                            // Todo
                             // Warning
                             // Warning
                             child: InkWell(
@@ -110,18 +109,6 @@ class _ContractsState extends State<Contracts> {
                                   elevation: 4,
                                   child: Row(
                                     children: <Widget>[
-                                      Padding(
-                                        //Order image
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                                          child: Image(
-                                            image: NetworkImage(
-                                                // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                                                "https://picsum.photos/250?image=9"), //Todo,
-                                          ),
-                                        ),
-                                      ),
                                       Padding(
                                         padding: const EdgeInsets.all(12.0),
                                         child: Column(

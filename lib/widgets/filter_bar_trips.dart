@@ -297,12 +297,6 @@ class _FilterBarStateOrder extends State<FilterBarOrder> {
                               ),
 
                               keyboardType: TextInputType.number,
-//                      validator: (value) {
-//                        if (value.isEmpty || !value.contains('@')) {
-//                          return 'Invalid email!';
-//                        } else
-//                          return null; //Todo
-//                      },
                               onChanged: (String val) {
                                 widget.date = val;
                               },

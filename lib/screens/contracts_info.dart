@@ -103,15 +103,6 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  CircleAvatar(
-                    radius: 24.0,
-                    child: Image(
-                      image: NetworkImage(
-                          // "https://briddgy.herokuapp.com/media/" + _user["avatarpic"].toString() +"/"
-                          "https://picsum.photos/250?image=9"), //Todo,
-                    ),
-                  ),
-
                   Container(
                     width: 50,
                     height: 25,
@@ -206,10 +197,6 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                         color: Colors.grey[600],
                       ),
                     ),
-                    // trailing: Text(
-                    //   widget.date.toString(), //todo: data
-                    //   style: TextStyle(fontSize: 18),
-                    // ),
                   ),
                   ListTile(
                     dense: true,
@@ -220,29 +207,11 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                         color: Colors.grey[600],
                       ),
                     ),
-                    // trailing: Text(
-                    //   widget.weight.toString(), //todo: data
-                    //   style: TextStyle(fontSize: 18),
-                    // ),
                   ),
-                  // ListTile(
-                  //   dense: true,
-                  //   title: Text(
-                  //     "Dimensions:",
-                  //     style: TextStyle(
-                  //       fontSize: 17,
-                  //       color: Colors.grey[600],
-                  //     ),
-                  //   ),
-                  //   trailing: Text(
-                  //     '25x17x20', //todo: data
-                  //     style: TextStyle(fontSize: 18),
-                  //   ),
-                  // ),
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Item cost:", //todo: data
+                      "Item cost:", 
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],

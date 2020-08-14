@@ -99,7 +99,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
   }
 
-  @override //todo: check for future
+  @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
@@ -225,31 +225,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
             transitionType: ContainerTransitionType.fadeThrough,
             openBuilder: (BuildContext context, VoidCallback _) {
               return AddItemScreen();
-              //              if (widget.auth.isAuth) {
-//                if (widget.auth.userdetail.isEmailVerified == true) {
-//                  Navigator.push(
-//                    context,
-//                    MaterialPageRoute(builder: (__) => AddItemScreen()),
-//                  );
-//                } else {
-//                  Navigator.push(
-//                    context,
-//                    MaterialPageRoute(builder: (__) => AddItemScreen()),
-//                  );
-//                  //todo remove comments
-////                  Navigator.push(
-////                    context,
-////                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
-////                  );
-//                }
-//              } else {
-//                Flushbar(
-//                  title: "Warning",
-//                  message: "You need to Log in to add Item!",
-//                  padding: const EdgeInsets.all(8),
-//                  borderRadius: 10,
-//                  duration: Duration(seconds: 3),
-//                )..show(context);
             },
             closedElevation: 6.0,
             closedShape: const RoundedRectangleBorder(

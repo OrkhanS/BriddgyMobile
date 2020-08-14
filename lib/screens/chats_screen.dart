@@ -19,8 +19,8 @@ import 'package:timeago/timeago.dart' as timeago;
 class ChatsScreen extends StatefulWidget {
   final StreamController<String> streamController =
       StreamController<String>.broadcast();
-  var provider, token, auth;
-  ChatsScreen({this.provider, this.token, this.auth});
+  var provider, auth;
+  ChatsScreen({this.provider, this.auth});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -101,11 +101,20 @@ class _ChatsScreenState extends State<ChatsScreen> {
         return Scaffold(
           body: SafeArea(
             child: Container(
-              child: !provider.userLogged || provider.chats == null
-                  ? Center(child: Text('No Chats'))
-                  : provider.chatsLoading == true
-                      ? Center(child: CircularProgressIndicator())
-                      : NotificationListener<ScrollNotification>(
+              child: 
+              Provider.of<Auth>(context, listen: false).isAuth ?
+                    // if isAuth, check chats length
+                    provider.chats.isEmpty && provider.chatsLoading == false ?
+                        // if chats is empty
+                        Center(child: Text('No Chats')) :
+                        //Check if chatsloading or not
+                        provider.chatsLoading ?
+                            // if chats loading
+                            Center(child: CircularProgressIndicator()):
+
+                            // if chats are ready to show
+
+                            NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
                             if (!_isfetchingnew &&
                                 scrollInfo.metrics.pixels ==
@@ -247,7 +256,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                                   .room,
                                                               user: user,
                                                               token:
-                                                                  widget.token,
+                                                                  Provider.of<
+                                                                      Auth>(
+                                                                  context,
+                                                                  listen:
+                                                                      false).myTokenFromStorage,
                                                               auth: Provider.of<
                                                                       Auth>(
                                                                   context,
@@ -352,7 +365,268 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               ),
                             ],
                           ),
-                        ),
+                        )
+                    // if not isAuth
+                    : Center(child: Text('Please Log in'))
+              
+              // Provider.of<Auth>(context, listen: false).isAuth == false || provider.chats.isEmpty
+              //     ? Center(child: Text('No Chats'))
+              //     : provider.chatsLoading == true
+              //         ? Center(child: CircularProgressIndicator())
+              //         : NotificationListener<ScrollNotification>(
+              //             onNotification: (ScrollNotification scrollInfo) {
+              //               if (!_isfetchingnew &&
+              //                   scrollInfo.metrics.pixels ==
+              //                       scrollInfo.metrics.maxScrollExtent) {
+              //                 // setState(() {
+              //                 //   _isfetchingnew = true;
+              //                 //   print("load order");
+              //                 // });
+              //                 //_loadData();
+              //               }
+              //             },
+              //             child: Column(
+              //               children: <Widget>[
+              //                 SizedBox(
+              //                   height: 15,
+              //                 ),
+              //                 Expanded(
+              //                   child: ListView.builder(
+              //                     itemCount: _rooms.length,
+              //                     itemBuilder: (context, int index) {
+              //                       User user = _rooms[index]
+              //                                   .members[1]
+              //                                   .user
+              //                                   .id
+              //                                   .toString() ==
+              //                               myid
+              //                           ? _rooms[index].members[0].user
+              //                           : _rooms[index].members[1].user;
+              //                       return Column(
+              //                         children: <Widget>[
+              //                           Menu(
+              //                             child: Padding(
+              //                               padding: const EdgeInsets.symmetric(
+              //                                   horizontal: 7.0),
+              //                               child: ListTile(
+              //                                 leading: CircleAvatar(
+              //                                   backgroundColor:
+              //                                       Colors.grey[300],
+              //                                   backgroundImage: NetworkImage(
+              //                                     "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+              //                                   ),
+              //                                 ),
+              //                                 title: Row(
+              //                                   children: <Widget>[
+              //                                     Text(
+              //                                       user.firstName +
+              //                                           " " +
+              //                                           user.lastName,
+              //                                       style: TextStyle(
+              //                                           fontSize: 15.0),
+              //                                     ),
+              //                                     SizedBox(
+              //                                       width: 16.0,
+              //                                     ),
+              //                                   ],
+              //                                 ),
+              //                                 subtitle: Row(
+              //                                   children: <Widget>[
+              //                                     Text(
+              //                                       "Last Message:" + "  ",
+              //                                       style: TextStyle(
+              //                                           fontSize: 15.0),
+              //                                     ),
+              //                                     Text(
+              //                                       timeago
+              //                                           .format(DateTime.parse(
+              //                                               _rooms[index]
+              //                                                       .dateModified
+              //                                                       .toString()
+              //                                                       .substring(
+              //                                                           0, 10) +
+              //                                                   " " +
+              //                                                   _rooms[index]
+              //                                                       .dateModified
+              //                                                       .toString()
+              //                                                       .substring(
+              //                                                           11,
+              //                                                           26)))
+              //                                           .toString(),
+              //                                       style: TextStyle(
+              //                                           fontSize: 15.0),
+              //                                     )
+              //                                   ],
+              //                                 ),
+              //                                 trailing:
+              //                                     //////////////////////////////////////////////////////////////////
+              //                                     provider.newMessage[
+              //                                                 _rooms[index]
+              //                                                     .id] !=
+              //                                             null
+              //                                         ?
+
+              //                                         /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
+              //                                         provider
+              //                                                     .newMessage[
+              //                                                         _rooms[index]
+              //                                                             .id]
+              //                                                     .length !=
+              //                                                 0
+              //                                             ?
+
+              //                                             /// IF LENGHT IS NOT 0, SHOWING THE BADGE
+              //                                             Badge(
+              //                                                 badgeContent: Text(provider
+              //                                                     .newMessage[
+              //                                                         _rooms[index]
+              //                                                             .id]
+              //                                                     .length
+              //                                                     .toString()),
+              //                                                 child: Icon(Icons
+              //                                                     .arrow_forward_ios),
+              //                                               )
+              //                                             : Icon(
+              //                                                 Icons
+              //                                                     .arrow_forward_ios,
+              //                                                 size: 14.0,
+              //                                               )
+              //                                         : Icon(
+              //                                             Icons
+              //                                                 .arrow_forward_ios,
+              //                                             size: 14.0,
+              //                                           ),
+              //                                 //////////////////////////////////////////////////////////////////////////
+              //                                 onTap: () {
+              //                                   provider.readMessages(
+              //                                       _rooms[index].id);
+              //                                   provider
+              //                                       .fetchAndSetMessages(index);
+              //                                   Navigator.push(
+              //                                     context,
+              //                                     MaterialPageRoute(
+              //                                         builder: (__) =>
+              //                                             ChatWindow(
+              //                                                 provider:
+              //                                                     provider,
+              //                                                 room: _rooms[
+              //                                                         index]
+              //                                                     .members[0]
+              //                                                     .room,
+              //                                                 user: user,
+              //                                                 token:
+              //                                                     Provider.of<
+              //                                                         Auth>(
+              //                                                     context,
+              //                                                     listen:
+              //                                                         false).myTokenFromStorage,
+              //                                                 auth: Provider.of<
+              //                                                         Auth>(
+              //                                                     context,
+              //                                                     listen:
+              //                                                         false))),
+              //                                   );
+              //                                 },
+              //                               ),
+              //                             ),
+              //                             items: [
+              //                               MenuItem(
+              //                                 "Profile",
+              //                                 () {
+              //                                   Navigator.push(
+              //                                     context,
+              //                                     MaterialPageRoute(
+              //                                         builder: (__) =>
+              //                                             ProfileScreenAnother(
+              //                                               user: _rooms[index]["members"][1]["user"]
+              //                                                               [
+              //                                                               "id"]
+              //                                                           .toString() !=
+              //                                                       myid
+              //                                                   ? _rooms[index][
+              //                                                           "members"]
+              //                                                       [1]["user"]
+              //                                                   : _rooms[index][
+              //                                                           "members"]
+              //                                                       [0]["user"],
+              //                                             )),
+              //                                   );
+              //                                 },
+              //                               ),
+              //                               MenuItem("Info", () {
+              //                                 Alert(
+              //                                   context: context,
+              //                                   type: AlertType.info,
+              //                                   title:
+              //                                       "Conversation started on:  " +
+              //                                           _rooms[index]
+              //                                                   ["date_created"]
+              //                                               .toString()
+              //                                               .substring(0, 10) +
+              //                                           "\n",
+              //                                   buttons: [
+              //                                     DialogButton(
+              //                                       child: Text(
+              //                                         "Back",
+              //                                         style: TextStyle(
+              //                                             color: Colors.white,
+              //                                             fontSize: 20),
+              //                                       ),
+              //                                       onPressed: () =>
+              //                                           Navigator.pop(context),
+              //                                       color: Color.fromRGBO(
+              //                                           0, 179, 134, 1.0),
+              //                                     ),
+              //                                     DialogButton(
+              //                                       child: Text(
+              //                                         "Report",
+              //                                         style: TextStyle(
+              //                                             color: Colors.white,
+              //                                             fontSize: 20),
+              //                                       ),
+              //                                       onPressed: () => {
+              //                                         Navigator.push(
+              //                                           context,
+              //                                           MaterialPageRoute(
+              //                                               builder: (__) =>
+              //                                                   ReportUser(
+              //                                                     user: _rooms[
+              //                                                             index]
+              //                                                         [
+              //                                                         "members"],
+              //                                                     message: null,
+              //                                                   )),
+              //                                         ),
+              //                                       },
+              //                                       color: Color.fromRGBO(
+              //                                           0, 179, 134, 1.0),
+              //                                     )
+              //                                   ],
+              //                                   content: Text(
+              //                                       "To keep our community more secure and as mentioned in our Privacy&Policy, you cannot remove chats.\n"),
+              //                                 ).show();
+              //                               }),
+              //                             ],
+              //                             decoration: MenuDecoration(),
+              //                           ),
+              //                           Divider(),
+              //                         ],
+              //                       );
+              //                     },
+              //                   ),
+              //                 ),
+              //                 Container(
+              //                   height: _isfetchingnew ? 50.0 : 0.0,
+              //                   color: Colors.transparent,
+              //                   child: Center(
+              //                     child: CircularProgressIndicator(),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+           
+           
             ),
           ),
         );

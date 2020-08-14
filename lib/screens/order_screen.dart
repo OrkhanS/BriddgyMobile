@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -10,7 +11,9 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/messages.dart';
+import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -27,6 +30,7 @@ class _OrderScreenState extends State<OrderScreen> {
   var _current;
   Order order;
   var imageUrl;
+  bool messageDeliveryButton = true;
   List<Widget> imageList = [];
   @override
   void initState() {
@@ -389,23 +393,9 @@ class _OrderScreenState extends State<OrderScreen> {
                               ],
                             ),
                           ),
-                          // ListTile(
-                          //   dense: true,
-                          //   title: Text(
-                          //     "Dimensions:",
-                          //     style: TextStyle(
-                          //       fontSize: 17,
-                          //       color: Colors.grey[600],
-                          //     ),
-                          //   ),
-                          //   trailing: Text(
-                          //     '25x17x20', //todo: data
-                          //     style: TextStyle(fontSize: 18),
-                          //   ),
-                          // ),
                         ],
                       ),
-                    ), //
+                    ),
                     SizedBox(
                       height: 10,
                     ),
@@ -438,36 +428,37 @@ class _OrderScreenState extends State<OrderScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          RaisedButton.icon(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
+                    messageDeliveryButton
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                RaisedButton.icon(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
 //                            color: Theme.of(context).scaffoldBackgroundColor,
-                            color: Colors.white,
+                                  color: Colors.white,
 
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                            ),
-                            icon: Icon(
-                              MdiIcons.scriptTextOutline,
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                  ),
+                                  icon: Icon(
+                                    MdiIcons.scriptTextOutline,
 //                              color: Colors.white,
-                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                            label: Text(
-                              " Apply for Delivery",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).primaryColor,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    " Apply for Delivery",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
 //                                color: Colors.white,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            onPressed: () {
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  onPressed: () {
 //                               var auth =
 //                                   Provider.of<Auth>(context, listen: false);
 //                               Provider.of<Messages>(context, listen: false)
@@ -479,73 +470,94 @@ class _OrderScreenState extends State<OrderScreen> {
 // //                                  borderRadius: 10,
 // //                                  duration: Duration(seconds: 5),
 // //                                )..show(context);
-                            },
-                          ),
-                          RaisedButton.icon(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
+                                  },
+                                ),
+                                RaisedButton.icon(
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
 //                            color: Theme.of(context).scaffoldBackgroundColor,
-                            color: Colors.green,
+                                  color: Colors.green,
 
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                            ),
-                            icon: Icon(
-                              MdiIcons.chatOutline,
-                              color: Colors.white,
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                  ),
+                                  icon: Icon(
+                                    MdiIcons.chatOutline,
+                                    color: Colors.white,
 //                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                            label: Text(
-                              " Message",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    " Message",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
 //                                    color: Theme.of(context).primaryColor,
-                              ),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      messageDeliveryButton = false;
+                                    });
+                                    var auth = Provider.of<Auth>(context,
+                                        listen: false);
+                                    var messageProvider = Provider.of<Messages>(
+                                        context,
+                                        listen: false);
+
+                                    messageProvider
+                                        .createRooms(order.owner.id, auth)
+                                        .whenComplete(() => {
+                                              if (messageProvider
+                                                  .isChatRoomCreated)
+                                                {
+                                                  setState(() {
+                                                    messageDeliveryButton = true;
+                                                  }),
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (__) =>
+                                                            ChatsScreen(
+                                                                provider:
+                                                                    messageProvider,
+                                                                auth: auth)),
+                                                  ),
+                                                  Flushbar(
+                                                    title: "Success",
+                                                    message: "Chat with " +
+                                                        order.owner.firstName
+                                                            .toString() +
+                                                        " has been started!",
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    borderRadius: 10,
+                                                    duration:
+                                                        Duration(seconds: 3),
+                                                  )..show(context)
+                                                }
+                                              else
+                                                {
+                                                  setState(() {
+                                                    messageDeliveryButton = true;
+                                                  }),
+                                                  Flushbar(
+                                                    title: "Failure",
+                                                    message: "Please try again",
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    borderRadius: 10,
+                                                    duration:
+                                                        Duration(seconds: 3),
+                                                  )..show(context)
+                                                }
+                                            });
+                                  },
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              var auth =
-                                  Provider.of<Auth>(context, listen: false);
-                              Provider.of<Messages>(context, listen: false)
-                                  .createRooms(order.owner.id, auth);
-//                                Flushbar(
-//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                                  message: "Check Chats to see more.",
-//                                  padding: const EdgeInsets.all(8),
-//                                  borderRadius: 10,
-//                                  duration: Duration(seconds: 5),
-//                                )..show(context);
-                            },
-                          ),
-                          // RaisedButton(
-                          //   color: Theme.of(context).primaryColor,
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //     children: <Widget>[
-                          //       Text(
-                          //         "To Baggage",
-                          //         style: TextStyle(
-                          //           fontSize: 20,
-                          //           fontWeight: FontWeight.bold,
-                          //           color: Colors.white,
-                          //         ),
-                          //       ),
-                          //       SizedBox(
-                          //         width: 10,
-                          //       ),
-                          //       Icon(
-                          //         Icons.add,
-                          //         size: 20,
-                          //         color: Colors.white,
-                          //       )
-                          //     ],
-                          //   ),
-                          //   onPressed: () {},
-                          // ),
-                        ],
-                      ),
-                    ),
+                          )
+                        : ProgressIndicatorWidget(show: true),
                   ],
                 ),
               ),

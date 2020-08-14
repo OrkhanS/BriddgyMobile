@@ -72,9 +72,9 @@ class _MyAppState extends State<MyApp> {
       onMessage: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, newMessageauth);
       },
-      // onLaunch: (Map<String, dynamic> message) async {
-      //   neWMessage.addMessages = message.values.last;
-      // },
+      onLaunch: (Map<String, dynamic> message) async {
+        neWMessage.addMessages(message.values.last, newMessageauth);
+      },
       onResume: (Map<String, dynamic> message) async {
         neWMessage.addMessages = message.values.last;
       },
@@ -243,7 +243,7 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (message.chatsLoading && auth.isAuth) message.fetchAndSetRooms(auth);
+        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
@@ -289,7 +289,7 @@ class _MyAppState extends State<MyApp> {
                       auth: auth,
                       token: tokenforROOM),
                   ChatsScreen(
-                      provider: message, auth: auth, token: tokenforROOM),
+                      provider: message, auth: auth),
 //                  NotificationScreen(),
                   auth.isAuth
                       ? AccountScreen(
