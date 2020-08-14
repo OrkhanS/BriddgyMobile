@@ -26,7 +26,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
           },
         ),
         title: Text(
-          "Support", //Todo: item name
+          "Support",
           style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,

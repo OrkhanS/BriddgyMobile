@@ -159,7 +159,7 @@ class _TripScreenState extends State<TripsScreen> {
     return null;
   }
 
-  @override //Todo: check
+  @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);

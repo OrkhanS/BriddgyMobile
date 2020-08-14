@@ -31,7 +31,7 @@ class _MyItemsState extends State<MyItems> {
     super.initState();
   }
 
-  @override //todo: check for future
+  @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);

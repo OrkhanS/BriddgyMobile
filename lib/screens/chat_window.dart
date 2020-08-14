@@ -311,9 +311,6 @@ class _ChatWindowState extends State<ChatWindow> {
                                     alignment: Alignment.centerLeft,
                                     child: Padding(
                                       padding: const EdgeInsets.all(12.0),
-                                      // Todo
-                                      // Warning
-                                      // RASUL
                                       child: Text(
                                         _messages[index].text.toString(),
                                         softWrap: true,

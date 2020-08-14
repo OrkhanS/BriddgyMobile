@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/trip.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
+import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/trip_screen.dart';
+import 'package:provider/provider.dart';
 
 class TripWidget extends StatelessWidget {
   Trip trip;
@@ -47,7 +51,7 @@ class TripWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          trip.owner.firstName + " " + trip.owner.lastName, //Todo: title
+                          trip.owner.firstName + " " + trip.owner.lastName,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
@@ -84,7 +88,7 @@ class TripWidget extends StatelessWidget {
                         Row(
                           children: <Widget>[
                             Icon(
-                              MdiIcons.weightKilogram, //todo: icon
+                              MdiIcons.weightKilogram,
                               color: Theme.of(context).primaryColor,
                               size: 16,
                             ),
@@ -119,15 +123,23 @@ class TripWidget extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
-                      Flushbar(
-                        title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-                        message: "Check Chats to see more.",
-                        padding: const EdgeInsets.all(8),
-                        borderRadius: 10,
-                        duration: Duration(seconds: 5),
-                      )..show(context);
+                       var auth =
+                                  Provider.of<Auth>(context, listen: false);
+                        var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                        messageProvider.createRooms(trip.owner.id, auth);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                        );
+                        Flushbar(
+                          title: "Success",
+                          message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+                          padding: const EdgeInsets.all(8),
+                          borderRadius: 10,
+                          duration: Duration(seconds: 3),
+                        )..show(context);
+
                     },
                   ),
                 ),
@@ -217,7 +229,7 @@ class TripFadeWidget extends StatelessWidget {
                       Row(
                         children: <Widget>[
                           Icon(
-                            MdiIcons.weightKilogram, //todo: icon
+                            MdiIcons.weightKilogram,
                             color: Colors.grey[200],
 
                             size: 16,

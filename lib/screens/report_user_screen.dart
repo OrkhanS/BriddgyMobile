@@ -55,7 +55,7 @@ class _ReportUserState extends State<ReportUser> {
           },
         ),
         title: Text(
-          "Report", //Todo: item name
+          "Report",
           style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,

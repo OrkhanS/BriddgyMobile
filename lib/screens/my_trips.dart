@@ -35,7 +35,7 @@ class _MyTripsState extends State<MyTrips> {
     super.initState();
   }
 
-  @override //Todo: check
+  @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);

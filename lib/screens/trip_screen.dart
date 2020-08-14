@@ -30,23 +30,6 @@ class _TripScreenState extends State<TripScreen> {
     super.initState();
   }
 
-//todo orxan
-//  Future createRooms() async {
-//    String tokenforROOM = widget.token;
-//    if (tokenforROOM != null) {
-//      String url = Api.itemConnectOwner + widget.owner["id"].toString();
-//      await http.get(
-//        url,
-//        headers: {
-//          HttpHeaders.CONTENT_TYPE: "application/json",
-//          "Authorization": "Token " + tokenforROOM,
-//        },
-//      ).then((value) => print(value));
-//      widget.room.fetchAndSetRooms(widget.auth);
-//    }
-//    return null;
-//  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -309,21 +292,6 @@ class _TripScreenState extends State<TripScreen> {
                               ],
                             ),
                           ),
-
-                          // ListTile(
-                          //   dense: true,
-                          //   title: Text(
-                          //     "Dimensions:",
-                          //     style: TextStyle(
-                          //       fontSize: 17,
-                          //       color: Colors.grey[600],
-                          //     ),
-                          //   ),
-                          //   trailing: Text(
-                          //     '25x17x20', //todo: data
-                          //     style: TextStyle(fontSize: 18),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ), //

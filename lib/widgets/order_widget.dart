@@ -73,9 +73,6 @@ class _OrderWidgetState extends State<OrderWidget> {
                       SizedBox(
                         width: 200,
                         child: Text(
-//                                                    _orders[i]["title"].toString().length > 20
-//                                                        ? _orders[i]["title"].toString().substring(0, 20) + "..."
-//                                                        :
                           order.title,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,

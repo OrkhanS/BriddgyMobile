@@ -17,6 +17,7 @@ class Messages extends ChangeNotifier {
   String tokenforROOM;
   bool isUserlogged = false;
   bool isChatsLoading = true;
+  bool isChatsLoadingForMain = true;
   bool _isloadingMessages = true;
   bool ismessagesAdded = false;
   List lastMessageID = [];
@@ -119,6 +120,7 @@ class Messages extends ChangeNotifier {
           temporary.add(tempMessage);
           newMessage[roomid] = {};
           newMessage[roomid] = temporary;
+          notifyListeners();
         } else {
           // Checking if FCM sends the same notification twice
           if (newMessage[roomid][0].id.toString() !=
@@ -168,9 +170,10 @@ class Messages extends ChangeNotifier {
         },
       ).then((value) {
         if (value.statusCode == 200) {
-          isChatRoomCreated = true;
-          fetchAndSetRooms(auth);
           isChatsLoading = true;
+          isChatRoomCreated = true;
+          _chatRooms = [];
+          fetchAndSetRooms(auth);
         } else {
           isChatRoomCreated = false;
         }
@@ -201,7 +204,7 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth) async {
-    isChatsLoading = false;
+    isChatsLoadingForMain = false;
     if (chats.isEmpty) {
       if (auth.isAuth) {
         tokenforROOM = auth.myTokenFromStorage;
@@ -230,12 +233,14 @@ class Messages extends ChangeNotifier {
         ).then((value) {
           Map<String, dynamic> data =
               json.decode(value.body) as Map<String, dynamic>;
+          _chatRooms = [];
           for (var i = 0; i < data["results"].length; i++) {
             _chatRooms.add(Chats.fromJson(data["results"][i]));
           }
           // allChatRoomDetails = dataOrders;
           isChatsLoading = false;
-          isUserlogged = true;
+          isChatsLoadingForMain = false;
+          notifyListeners();
         });
         return _chatRooms;
       } catch (e) {
