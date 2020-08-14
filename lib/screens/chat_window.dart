@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/message.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
@@ -89,10 +90,29 @@ class _ChatWindowState extends State<ChatWindow> {
     widget.provider.changeChatRoomPlace(widget.room);
 
     if (_channelRoom != null) {
-      if (_channelRoom.sink != null) {
+      try {
+        if (_channelRoom.sink != null) {
         _channelRoom.sink.add(text);
       }
+      } catch (e) {
+        print(e);
+      }
     }
+
+    setState(() {
+      var tempMessage = Message.fromJson({
+        "id": int.parse("200"),
+        "date_created": DateTime.now().toString(),
+        "date_modified": DateTime.now().toString(),
+        "text": text,
+        "sender": Provider.of<Auth>(context, listen: false).user.id,
+        "recipients": []
+      });
+      Provider.of<Messages>(context, listen: false)
+          .messages[id]
+          .insert(0, tempMessage);
+      enableButton = false;
+    });
   }
 
   var triangle = CustomPaint(
@@ -112,7 +132,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    if(widget.provider.isChatRoomPageActive == false){
+    if (widget.provider.isChatRoomPageActive == false) {
       widget.provider.isChatRoomPageActive = true;
       widget.provider.roomIDofActiveChatroom = id;
     }
@@ -217,7 +237,9 @@ class _ChatWindowState extends State<ChatWindow> {
                       icon: Icon(Icons.chevron_left,
                           color: Theme.of(context).primaryColor),
                       onPressed: () {
-                        if(widget.provider.roomIDsWhileChatRoomActive.isNotEmpty)widget.provider.changeChatRoomPlace("ChangewithList");
+                        if (widget
+                            .provider.roomIDsWhileChatRoomActive.isNotEmpty)
+                          widget.provider.changeChatRoomPlace("ChangewithList");
                         Navigator.of(context).pop();
                       },
                     ),
@@ -266,8 +288,7 @@ class _ChatWindowState extends State<ChatWindow> {
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               bool reverse = false;
-                              if (widget.user.id != _messages[index].sender ||
-                                  _messages[index].sender == "me") {
+                              if (widget.user.id != _messages[index].sender) {
                                 newMessageMe = false;
                                 reverse = true;
                               }
