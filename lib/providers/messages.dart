@@ -51,15 +51,19 @@ class Messages extends ChangeNotifier {
         ).then((response) {
           Map<String, dynamic> data =
               json.decode(response.body) as Map<String, dynamic>;
-          try {
-            // cannot directly add Message object to Map. So need TemporaryList
-            List<Message> temp = [];
-            for (var i = 0; i < data["results"].length; i++) {
-              temp.add(Message.fromJson(data["results"][i]));
+          if (data["results"].isNotEmpty) {
+            try {
+              // cannot directly add Message object to Map. So need TemporaryList
+              List<Message> temp = [];
+              for (var i = 0; i < data["results"].length; i++) {
+                temp.add(Message.fromJson(data["results"][i]));
+              }
+              _messages[chats[roomId].id] = temp;
+            } catch (e) {
+              print(e);
             }
-            _messages[chats[roomId].id] = temp;
-          } catch (e) {
-            print(e);
+          } else {
+            _messages[chats[roomId].id] = null;
           }
 
           _isloadingMessages = false;
