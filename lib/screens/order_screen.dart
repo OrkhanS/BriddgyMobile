@@ -45,8 +45,7 @@ class _OrderScreenState extends State<OrderScreen> {
       for (var i = 0; i < order.orderimage.length; i++) {
         imageList.add(FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: "https://storage.googleapis.com/briddgy-media/" +
-              order.orderimage[i].toString(),
+          image: "https://storage.googleapis.com/briddgy-media/" + order.orderimage[i].toString(),
         ));
       }
     }
@@ -430,8 +429,7 @@ class _OrderScreenState extends State<OrderScreen> {
                     ),
                     messageDeliveryButton
                         ? Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20.0, vertical: 15),
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
@@ -499,59 +497,41 @@ class _OrderScreenState extends State<OrderScreen> {
                                     setState(() {
                                       messageDeliveryButton = false;
                                     });
-                                    var auth = Provider.of<Auth>(context,
-                                        listen: false);
-                                    var messageProvider = Provider.of<Messages>(
-                                        context,
-                                        listen: false);
+                                    var auth = Provider.of<Auth>(context, listen: false);
+                                    var messageProvider = Provider.of<Messages>(context, listen: false);
 
-                                    messageProvider
-                                        .createRooms(order.owner.id, auth)
-                                        .whenComplete(() => {
-                                              if (messageProvider
-                                                  .isChatRoomCreated)
-                                                {
-                                                  setState(() {
-                                                    messageDeliveryButton = true;
-                                                  }),
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (__) =>
-                                                            ChatsScreen(
-                                                                provider:
-                                                                    messageProvider,
-                                                                auth: auth)),
-                                                  ),
-                                                  Flushbar(
-                                                    title: "Success",
-                                                    message: "Chat with " +
-                                                        order.owner.firstName
-                                                            .toString() +
-                                                        " has been started!",
-                                                    padding:
-                                                        const EdgeInsets.all(8),
-                                                    borderRadius: 10,
-                                                    duration:
-                                                        Duration(seconds: 3),
-                                                  )..show(context)
-                                                }
-                                              else
-                                                {
-                                                  setState(() {
-                                                    messageDeliveryButton = true;
-                                                  }),
-                                                  Flushbar(
-                                                    title: "Failure",
-                                                    message: "Please try again",
-                                                    padding:
-                                                        const EdgeInsets.all(8),
-                                                    borderRadius: 10,
-                                                    duration:
-                                                        Duration(seconds: 3),
-                                                  )..show(context)
-                                                }
-                                            });
+                                    messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
+                                          if (messageProvider.isChatRoomCreated)
+                                            {
+                                              setState(() {
+                                                messageDeliveryButton = true;
+                                              }),
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                                              ),
+                                              Flushbar(
+                                                title: "Success",
+                                                message: "Chat with " + order.owner.firstName.toString() + " has been started!",
+                                                padding: const EdgeInsets.all(8),
+                                                borderRadius: 10,
+                                                duration: Duration(seconds: 3),
+                                              )..show(context)
+                                            }
+                                          else
+                                            {
+                                              setState(() {
+                                                messageDeliveryButton = true;
+                                              }),
+                                              Flushbar(
+                                                title: "Failure",
+                                                message: "Please try again",
+                                                padding: const EdgeInsets.all(8),
+                                                borderRadius: 10,
+                                                duration: Duration(seconds: 3),
+                                              )..show(context)
+                                            }
+                                        });
                                   },
                                 ),
                               ],

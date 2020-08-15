@@ -123,23 +123,21 @@ class TripWidget extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                       var auth =
-                                  Provider.of<Auth>(context, listen: false);
-                        var messageProvider = Provider.of<Messages>(context, listen: false);
+                      var auth = Provider.of<Auth>(context, listen: false);
+                      var messageProvider = Provider.of<Messages>(context, listen: false);
 
-                        messageProvider.createRooms(trip.owner.id, auth);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
-                        );
-                        Flushbar(
-                          title: "Success",
-                          message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-                          padding: const EdgeInsets.all(8),
-                          borderRadius: 10,
-                          duration: Duration(seconds: 3),
-                        )..show(context);
-
+                      messageProvider.createRooms(trip.owner.id, auth);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                      );
+                      Flushbar(
+                        title: "Success",
+                        message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
                     },
                   ),
                 ),
@@ -231,7 +229,6 @@ class TripFadeWidget extends StatelessWidget {
                           Icon(
                             MdiIcons.weightKilogram,
                             color: Colors.grey[200],
-
                             size: 16,
                           ),
                           Container(

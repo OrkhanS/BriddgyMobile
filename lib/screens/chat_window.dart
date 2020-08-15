@@ -1,6 +1,11 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/screens/new_contract_screen.dart';
+import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +16,8 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+
+import 'add_item_screen.dart';
 
 class ChatWindow extends StatefulWidget {
   var provider, user, room, auth, token;
@@ -52,8 +59,7 @@ class _ChatWindowState extends State<ChatWindow> {
   initCommunication(String id) async {
     reset();
     try {
-      _channelRoom = new IOWebSocketChannel.connect(
-          Api.roomSocket + id.toString() + '/?token=' + token.toString());
+      _channelRoom = new IOWebSocketChannel.connect(Api.roomSocket + id.toString() + '/?token=' + token.toString());
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Socket Connected");
     } catch (e) {}
@@ -112,7 +118,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    if(widget.provider.isChatRoomPageActive == false){
+    if (widget.provider.isChatRoomPageActive == false) {
       widget.provider.isChatRoomPageActive = true;
       widget.provider.roomIDofActiveChatroom = id;
     }
@@ -208,24 +214,164 @@ class _ChatWindowState extends State<ChatWindow> {
           body: SafeArea(
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: AppBar(
-                    centerTitle: true,
-                    backgroundColor: Colors.white,
-                    leading: IconButton(
-                      icon: Icon(Icons.chevron_left,
-                          color: Theme.of(context).primaryColor),
-                      onPressed: () {
-                        if(widget.provider.roomIDsWhileChatRoomActive.isNotEmpty)widget.provider.changeChatRoomPlace("ChangewithList");
-                        Navigator.of(context).pop();
+                Column(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (__) => ProfileScreenAnother(
+                                    user: widget.user,
+                                  )),
+                        );
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                            color: Theme.of(context).primaryColor,
+                            icon: Icon(
+                              Icons.chevron_left,
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                      child: Text(
+                                        widget.user.firstName + " " + widget.user.lastName,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+//                                style: TextStyle(
+//                                  fontStyle: ,
+//                                  color: Colors.white,
+//                                  fontWeight: FontWeight.bold,
+//                                  fontSize: 20,
+//                                ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      MdiIcons.shieldCheck,
+                                      color: Colors.green,
+                                      size: 17,
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                  child: Text(
+                                    "Last online " + DateFormat.yMMMd().format(widget.user.lastOnline),
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Stack(
+                              children: <Widget>[
+                                CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.grey[100],
+                                  backgroundImage: NetworkImage(
+                                    "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png",
+                                  ),
+                                ),
+//                              Positioned(
+//                                left: 0,
+//                                bottom: 5,
+//                                child: Container(
+//                                  width: 35,
+//                                  height: 30,
+//                                  decoration: BoxDecoration(
+//                                    color: Color.fromRGBO(255, 255, 255, 80),
+//                                    border: Border.all(color: Colors.green, width: 1),
+//                                    borderRadius: BorderRadius.all(
+//                                      Radius.circular(20),
+//                                    ),
+//                                  ),
+//                                  child: Row(
+//                                    mainAxisSize: MainAxisSize.max,
+//                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                                    children: <Widget>[
+//                                      Icon(
+//                                        Icons.star,
+//                                        size: 12,
+//                                        color: Colors.green,
+//                                      ),
+//                                      Text(
+//                                        widget.user.rating.toString(),
+//                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+//                                      )
+//                                    ],
+//                                  ),
+//                                ),
+//                              ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    OpenContainer(
+                      openElevation: 5,
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionType: ContainerTransitionType.fadeThrough,
+                      openBuilder: (BuildContext context, VoidCallback _) {
+                        return NewContactScreen();
+                      },
+                      closedElevation: 6.0,
+                      closedShape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(56 / 2),
+                        ),
+                      ),
+                      closedColor: Colors.white,
+                      closedBuilder: (BuildContext context, VoidCallback openContainer) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+//                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Icon(
+                                MdiIcons.scriptTextOutline,
+                                color: Colors.green[600],
+                                size: 18,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "Propose Contract",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
-                    title: Text(
-                      widget.user.firstName + " " + widget.user.lastName,
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
-                  ),
+                  ],
                 ),
                 Container(
                   height: _isloading ? 50.0 : 0.0,
@@ -250,9 +396,7 @@ class _ChatWindowState extends State<ChatWindow> {
                         )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isloading &&
-                                scrollInfo.metrics.pixels ==
-                                    scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isloading = true;
@@ -266,8 +410,7 @@ class _ChatWindowState extends State<ChatWindow> {
                             itemCount: _messages.length,
                             itemBuilder: (context, index) {
                               bool reverse = false;
-                              if (widget.user.id != _messages[index].sender ||
-                                  _messages[index].sender == "me") {
+                              if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
                                 newMessageMe = false;
                                 reverse = true;
                               }
@@ -279,24 +422,20 @@ class _ChatWindowState extends State<ChatWindow> {
                                         print("check");
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                         child: CircleAvatar(
                                           backgroundColor: Colors.teal,
                                           child: Text(
                                             widget.user.firstName.toString()[0],
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            style: TextStyle(color: Colors.white),
                                           ),
                                         ),
                                       ),
                                     )
                                   : Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 5),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                       child: CircleAvatar(
-                                        child: Text(widget.user.firstName
-                                            .toString()[0]),
+                                        child: Text(widget.user.firstName.toString()[0]),
                                       ),
                                     );
 
@@ -324,39 +463,26 @@ class _ChatWindowState extends State<ChatWindow> {
                                       context: context,
                                       type: AlertType.info,
                                       title: "Sent on:  " +
-                                          _messages[index]
-                                              .dateCreated
-                                              .toString()
-                                              .substring(0, 10) +
+                                          _messages[index].dateCreated.toString().substring(0, 10) +
                                           ",  " +
-                                          _messages[index]
-                                              .dateCreated
-                                              .toString()
-                                              .substring(11, 16) +
+                                          _messages[index].dateCreated.toString().substring(11, 16) +
                                           "\n",
                                       buttons: [
                                         DialogButton(
                                           child: Text(
                                             "Back",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
+                                            style: TextStyle(color: Colors.white, fontSize: 20),
                                           ),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          color:
-                                              Color.fromRGBO(0, 179, 134, 1.0),
+                                          onPressed: () => Navigator.pop(context),
+                                          color: Color.fromRGBO(0, 179, 134, 1.0),
                                         ),
                                         DialogButton(
                                           child: Text(
                                             "Report",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
+                                            style: TextStyle(color: Colors.white, fontSize: 20),
                                           ),
                                           onPressed: () => {},
-                                          color:
-                                              Color.fromRGBO(0, 179, 134, 1.0),
+                                          color: Color.fromRGBO(0, 179, 134, 1.0),
                                         )
                                       ],
                                       content: Text(
@@ -373,15 +499,13 @@ class _ChatWindowState extends State<ChatWindow> {
                                 message = Stack(
                                   children: <Widget>[
                                     messagebody,
-                                    Positioned(
-                                        right: 0, bottom: 0, child: triangle),
+                                    Positioned(right: 0, bottom: 0, child: triangle),
                                   ],
                                 );
                               } else {
                                 message = Stack(
                                   children: <Widget>[
-                                    Positioned(
-                                        left: 0, bottom: 0, child: triangle),
+                                    Positioned(left: 0, bottom: 0, child: triangle),
                                     messagebody,
                                   ],
                                 );

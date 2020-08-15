@@ -225,8 +225,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                       children: <Widget>[
                         Icon(
                           Icons.location_on,
-//color: Colors.white,
-                          color: Theme.of(context).primaryColor, size: 16,
+                          color: Theme.of(context).primaryColor,
+                          size: 16,
                         ),
                         Text(
                           " Baku, Azerbaijan",
@@ -242,21 +242,24 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                         ),
                         RaisedButton.icon(
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          elevation: 3,
+//                            color: Theme.of(context).scaffoldBackgroundColor,
+                          color: Colors.green,
+
+                          elevation: 2,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                           icon: Icon(
                             MdiIcons.chatOutline,
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.white,
+//                              color: Theme.of(context).primaryColor,
                             size: 18,
                           ),
                           label: Text(
                             "Message",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.white,
 //                                    color: Theme.of(context).primaryColor,
                             ),
                           ),
@@ -321,7 +324,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                         color: Colors.grey[800],
 //                                        color: Theme.of(context).primaryColor,
                                         fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+//                                        fontWeight: FontWeight.bold,
                                       ),
                                     )
                                   : Text(
@@ -358,7 +361,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                         color: Colors.grey[800],
 //                                        color: Theme.of(context).primaryColor,
                                         fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+//                                        fontWeight: FontWeight.bold,
                                       ),
                                     )
                                   : Text(
