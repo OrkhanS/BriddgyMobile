@@ -75,7 +75,7 @@ class Auth with ChangeNotifier {
       final response = await http.get(
         url,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization": "Token " + _token,
         },
       );
@@ -94,7 +94,7 @@ class Auth with ChangeNotifier {
       final response = await http.get(
         url,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization": "Token " + _token,
         },
       );
@@ -113,7 +113,7 @@ class Auth with ChangeNotifier {
       final response = await http.get(
         url,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization": "Token " + myTokenFromStorage,
         },
       ).then((response) {
@@ -249,7 +249,7 @@ class Auth with ChangeNotifier {
     try {
       final response = await http.post(
         url,
-        headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+        headers: {HttpHeaders.contentTypeHeader: "application/json"},
         body: json.encode(
           {
             'email': email,
@@ -288,7 +288,7 @@ class Auth with ChangeNotifier {
     try {
       final response = await http.post(
         url,
-        headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+        headers: {HttpHeaders.contentTypeHeader: "application/json"},
         body: json.encode(
           {
             'username': email,
@@ -334,7 +334,7 @@ class Auth with ChangeNotifier {
     const url = Api.login;
     http.patch(url,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization": "Token " + _token,
         },
         body: json.encode({"token": _token}));

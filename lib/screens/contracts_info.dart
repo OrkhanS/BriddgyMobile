@@ -27,7 +27,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
     String url = Api.trips + id.toString() + "/suggestions/";
     http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {

@@ -82,11 +82,11 @@ class OrdersTripsProvider with ChangeNotifier {
       url,
       headers: prefs.containsKey('userData')
           ? {
-              HttpHeaders.CONTENT_TYPE: "application/json",
+              HttpHeaders.contentTypeHeader: "application/json",
               "Authorization": "Token " + token,
             }
           : {
-              HttpHeaders.CONTENT_TYPE: "application/json",
+              HttpHeaders.contentTypeHeader: "application/json",
             },
     )
         .then((onValue) {
@@ -107,7 +107,7 @@ class OrdersTripsProvider with ChangeNotifier {
     http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
@@ -164,11 +164,11 @@ class OrdersTripsProvider with ChangeNotifier {
       url,
       headers: prefs.containsKey('userData')
           ? {
-              HttpHeaders.CONTENT_TYPE: "application/json",
+              HttpHeaders.contentTypeHeader: "application/json",
               "Authorization": "Token " + token,
             }
           : {
-              HttpHeaders.CONTENT_TYPE: "application/json",
+              HttpHeaders.contentTypeHeader: "application/json",
             },
     )
         .then(
@@ -192,7 +192,7 @@ class OrdersTripsProvider with ChangeNotifier {
     http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
         "Authorization": "Token " + token,
       },
     ).then((onValue) {

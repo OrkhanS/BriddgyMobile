@@ -32,7 +32,7 @@ class _ContractsState extends State<Contracts> {
     http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
         "Authorization": "Token " + widget.token,
       },
     ).then((response) {

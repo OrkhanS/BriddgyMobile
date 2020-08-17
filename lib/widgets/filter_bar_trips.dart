@@ -55,7 +55,7 @@ class _FilterBarStateOrder extends State<FilterBarOrder> {
 
     await http.get(
       urlFilter,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
@@ -72,7 +72,7 @@ class _FilterBarStateOrder extends State<FilterBarOrder> {
     String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {

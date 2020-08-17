@@ -45,7 +45,7 @@ class Messages extends ChangeNotifier {
         await http.get(
           url,
           headers: {
-            HttpHeaders.CONTENT_TYPE: "application/json",
+            HttpHeaders.contentTypeHeader: "application/json",
             "Authorization": "Token " + token,
           },
         ).then((response) {
@@ -102,6 +102,7 @@ class Messages extends ChangeNotifier {
         List<Message> temporary = [];
         temporary.add(tempMessage);
         _messages[roomid] = temporary;
+        if(_messages[roomid] == null)fetchRoomDetails(roomid, auth);
       } else {
         // Checking if FCM sends the same notification twice
         if (_messages[roomid][0].id.toString() !=
@@ -134,7 +135,7 @@ class Messages extends ChangeNotifier {
         }
         if (isChatRoomPageActive) {
           if (!roomIDsWhileChatRoomActive.contains(roomid))
-            roomIDsWhileChatRoomActive.insert(0, roomid);
+            roomIDsWhileChatRoomActive.add(roomid);
         } else {
           changeChatRoomPlace(roomid);
         }
@@ -169,7 +170,7 @@ class Messages extends ChangeNotifier {
       await http.get(
         url,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization": "Token " + tokenforROOM,
         },
       ).then((value) {
@@ -207,6 +208,29 @@ class Messages extends ChangeNotifier {
     }
   }
 
+  notifFun() {
+    notifyListeners();
+  }
+
+  Future fetchRoomDetails(id, auth) async {
+    String token = auth.myTokenFromStorage;
+    final url = Api.chats + id.toString() + '/';
+    http.get(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        "Authorization": "Token " + token,
+      },
+    ).then((value) {
+      if (value.statusCode == 200) {
+        Map<String, dynamic> data =
+            json.decode(value.body) as Map<String, dynamic>;
+        chats.insert(0, Chats.fromJson(data));
+        if (!isChatRoomPageActive)notifyListeners();
+      }
+    });
+  }
+
   Future fetchAndSetRooms(auth) async {
     isChatsLoadingForMain = false;
     if (chats.isEmpty) {
@@ -231,7 +255,7 @@ class Messages extends ChangeNotifier {
         final response = await http.get(
           url,
           headers: {
-            HttpHeaders.CONTENT_TYPE: "application/json",
+            HttpHeaders.contentTypeHeader: "application/json",
             "Authorization": "Token " + tokenforROOM,
           },
         ).then((value) {

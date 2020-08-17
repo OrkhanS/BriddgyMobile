@@ -129,7 +129,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     String url = Api.getSuggestions + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
@@ -434,7 +434,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           http
                               .post(url,
                                   headers: {
-                                    HttpHeaders.CONTENT_TYPE: "application/json",
+                                    HttpHeaders.contentTypeHeader: "application/json",
                                     "Authorization": "Token " + token,
                                   },
                                   body: json.encode({

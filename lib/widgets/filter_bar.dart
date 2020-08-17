@@ -67,7 +67,7 @@ class _FilterBarState extends State<FilterBar> {
       await http.get(
         urlFilter,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization":
               "Token " + Provider.of<Auth>(context, listen: false).token
         },
@@ -89,7 +89,7 @@ class _FilterBarState extends State<FilterBar> {
     } else {
       await http.get(
         urlFilter,
-        headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+        headers: {HttpHeaders.contentTypeHeader: "application/json"},
       ).then((response) {
         setState(
           () {
@@ -112,7 +112,7 @@ class _FilterBarState extends State<FilterBar> {
     String url = Api.getSuggestions + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {

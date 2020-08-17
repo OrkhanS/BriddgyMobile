@@ -75,7 +75,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     await http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
         "Authorization": "Token " + widget.token,
       },
     ).then((response) {
@@ -110,7 +110,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     String url = Api.getSuggestions + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
@@ -158,7 +158,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
     await http.get(
       urlFilter,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json", "Authorization": "Token " + Provider.of<Auth>(context, listen: true).token},
+      headers: {HttpHeaders.contentTypeHeader: "application/json", "Authorization": "Token " + Provider.of<Auth>(context, listen: true).token},
     ).then((response) {
       setState(
         () {
@@ -181,11 +181,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
           url,
           headers: Provider.of<Auth>(context, listen: false).isAuth
               ? {
-                  HttpHeaders.CONTENT_TYPE: "application/json",
+                  HttpHeaders.contentTypeHeader: "application/json",
                   "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                 }
               : {
-                  HttpHeaders.CONTENT_TYPE: "application/json",
+                  HttpHeaders.contentTypeHeader: "application/json",
                 },
         )
             .then((response) {

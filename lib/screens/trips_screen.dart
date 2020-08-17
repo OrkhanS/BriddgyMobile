@@ -83,7 +83,7 @@ class _TripScreenState extends State<TripsScreen> {
     }
     await http.get(
       urlFilter,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
@@ -108,7 +108,7 @@ class _TripScreenState extends State<TripsScreen> {
     await http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
         "Authorization": "Token " + widget.token,
       },
     ).then((response) {
@@ -126,7 +126,7 @@ class _TripScreenState extends State<TripsScreen> {
     String url = Api.getSuggestions + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
@@ -150,7 +150,7 @@ class _TripScreenState extends State<TripsScreen> {
       final response = await http.get(
         url,
         headers: {
-          HttpHeaders.CONTENT_TYPE: "application/json",
+          HttpHeaders.contentTypeHeader: "application/json",
           "Authorization": "Token " + tokenforROOM,
         },
       );
@@ -173,7 +173,7 @@ class _TripScreenState extends State<TripsScreen> {
         await http.get(
           url,
           headers: {
-            HttpHeaders.CONTENT_TYPE: "application/json",
+            HttpHeaders.contentTypeHeader: "application/json",
             "Authorization": "Token " + widget.token,
           },
         ).then((response) {

@@ -51,7 +51,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
       },
     );
 
@@ -69,7 +69,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
       },
     );
 
@@ -89,7 +89,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.CONTENT_TYPE: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
       },
     );
 

@@ -48,7 +48,7 @@ class _MyItemsState extends State<MyItems> {
           await http.get(
             url,
             headers: {
-              HttpHeaders.CONTENT_TYPE: "application/json",
+              HttpHeaders.contentTypeHeader: "application/json",
               "Authorization": "Token " + Provider.of<Auth>(context).myToken,
             },
           ).then((response) {
