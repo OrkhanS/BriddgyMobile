@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:optisend/models/api.dart';
+import 'package:flushbar/flushbar.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+import 'package:provider/provider.dart';
+import 'package:optisend/providers/auth.dart';
+import 'dart:convert';
 
 class EditProfileScreen extends StatefulWidget {
   @override
@@ -14,8 +23,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     this.setState(() {
       imageFile = picture;
     });
-    Navigator.of(context).pop();
+    upload(context);
   }
+
+  Future upload(context) async {
+    var stream =
+        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var length = await imageFile.length();
+
+    var uri = Uri.parse(Api.addUserImage);
+    var token = Provider.of<Auth>(context, listen: false).myTokenFromStorage;
+    var request = new http.MultipartRequest("PUT", uri);
+    var multipartFile = new http.MultipartFile('file', stream, length,
+        filename: basename(imageFile.path));
+    request.headers['Authorization'] = "Token " + token;
+
+    request.files.add(multipartFile);
+    var response = await request.send().then((value) {
+      print(value.statusCode);
+      value.stream.transform(utf8.decoder).listen((value) {
+        print(value);
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +71,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 title: Text(
                   "Edit Profile",
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
                 ),
                 elevation: 1,
               ),
@@ -55,7 +88,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: <Widget>[
                         Text(
                           "Profile Picture",
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 20),
                         ),
                         Text(
                           "Edit",
@@ -73,8 +107,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           radius: 45,
                           backgroundColor: Colors.grey[200],
                           backgroundImage: NetworkImage(
-                            "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
-                          ),
+                           "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+                          ) ,
                         ),
                         GestureDetector(
                           onTap: () {
@@ -96,7 +130,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: <Widget>[
                         Text(
                           "Name",
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 20),
                         ),
                         Text(
                           "Edit",
@@ -121,7 +156,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               enabledBorder: InputBorder.none,
                               errorBorder: InputBorder.none,
                               disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+                              contentPadding: EdgeInsets.only(
+                                  left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Name"),
                         ),
                       ),
@@ -131,7 +167,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: <Widget>[
                         Text(
                           "Surname",
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 20),
                         ),
                         Text(
                           "Edit",
@@ -156,7 +193,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               enabledBorder: InputBorder.none,
                               errorBorder: InputBorder.none,
                               disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+                              contentPadding: EdgeInsets.only(
+                                  left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "Surname"),
                         ),
                       ),
@@ -166,7 +204,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: <Widget>[
                         Text(
                           "Phone number",
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 20),
                         ),
                         Text(
                           "Edit",
@@ -191,7 +230,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               enabledBorder: InputBorder.none,
                               errorBorder: InputBorder.none,
                               disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+                              contentPadding: EdgeInsets.only(
+                                  left: 15, bottom: 11, top: 11, right: 15),
                               hintText: "+12456787654"),
                         ),
                       ),

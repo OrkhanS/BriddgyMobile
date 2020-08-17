@@ -27,4 +27,5 @@ class Api {
   static const orderById = address + "api/users/";
   static const forgetPassword = address + "api/request/password/";
   static const addOrderImage = address + "api/fileupload/orderimage/";
+  static const addUserImage = address + "api/fileupload/userimage/";  
 }
