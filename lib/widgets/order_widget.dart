@@ -162,6 +162,162 @@ class _OrderWidgetState extends State<OrderWidget> {
   }
 }
 
+class OrderSimpleWidget extends StatefulWidget {
+  Order order;
+  var i;
+  OrderSimpleWidget({@required this.order, @required this.i});
+
+  @override
+  _OrderSimpleWidgetState createState() => _OrderSimpleWidgetState();
+}
+
+class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
+  Order order;
+  var imageUrl;
+  var i;
+  @override
+  void initState() {
+    i = widget.i;
+    order = widget.order;
+    imageUrl = order.orderimage.isEmpty
+        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+        : "https://storage.googleapis.com/briddgy-media/" + order.orderimage[0].toString();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onLongPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (__) => OrderScreen(order: order),
+          ),
+        );
+      },
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: 100,
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+              children: <Widget>[
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey[100],
+                  backgroundImage: NetworkImage(
+                    imageUrl,
+                  ),
+                  onBackgroundImageError: (exception, stackTrace) {
+                    imageUrl = 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png';
+                  },
+                ),
+                // Container(
+                //   child: FadeInImage.memoryNetwork(
+                //     placeholder: kTransparentImage,
+                //     image:
+                //         'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
+                //   ),
+                // ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 200,
+                        child: Text(
+                          order.title,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey[800],
+//                                          fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Icon(
+                            MdiIcons.mapMarkerMultipleOutline,
+//                            color: Colors.grey[700],
+                            color: Theme.of(context).primaryColor,
+                            size: 16,
+                          ),
+                          SizedBox(
+                            width: 200,
+                            child: Text(
+                              order.source.cityAscii + "  >  " + order.destination.cityAscii,
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+//                                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Icon(
+                                MdiIcons.calendarRange,
+//                                color: Colors.grey[700],
+                                color: Theme.of(context).primaryColor,
+                                size: 16,
+                              ),
+                              Text(
+                                DateFormat("d MMMM").format(order.date),
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: 100,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.attach_money,
+//                                color: Colors.grey[700],
+                                color: Theme.of(context).primaryColor,
+                                size: 16,
+                              ),
+                              SizedBox(
+                                width: 50,
+                                child: Text(
+                                  order.price.toString(),
+                                  maxLines: 1,
+                                  style: TextStyle(color: Colors.grey[600]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Divider(
+              height: 4,
+              color: Colors.black45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class OrderFadeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

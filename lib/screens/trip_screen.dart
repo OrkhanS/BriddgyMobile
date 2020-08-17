@@ -10,6 +10,7 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:share/share.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -186,15 +187,34 @@ class _TripScreenState extends State<TripScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
-                            "Travel Information",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Theme.of(context).primaryColor,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Travel Information",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.share,
+                                ),
+                                onPressed: () {
+                                  Share.share(trip.owner.firstName +
+                                      " is traveling from " +
+                                      trip.source.cityAscii +
+                                      " to " +
+                                      trip.destination.cityAscii +
+                                      ".\n" +
+                                      Api.tripLink +
+                                      trip.id.toString());
+                                },
+                              )
+                            ],
                           ),
                           Divider(),
-
                           Padding(
                             padding: EdgeInsets.symmetric(
                               vertical: 4,

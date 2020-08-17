@@ -1,10 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
+import 'package:optisend/models/order.dart';
+import 'package:optisend/models/trip.dart';
 import 'package:optisend/models/user.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/trip_widget.dart';
+import 'package:provider/provider.dart';
 
 bool _iAmOrderer = true;
+Trip _trip;
+Order _order;
 
 class NewContactScreen extends StatefulWidget {
   final User user;
@@ -20,6 +31,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
   bool complete = false;
   @override
   Widget build(BuildContext context) {
+    int myId = Provider.of<Auth>(context, listen: false).user.id;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -118,7 +130,8 @@ class _NewContactScreenState extends State<NewContactScreen> {
               ),
             ),
             if (currentStep == 1) Step1(stepIncrement, setOrderer),
-            if (currentStep == 2) Step2(stepIncrement, widget.user),
+            if (currentStep == 2) Step2(stepIncrement, widget.user, myId),
+            if (currentStep == 3) Step3(stepIncrement, widget.user, myId),
             if (currentStep == 4) Step4(),
           ],
         ),
@@ -218,10 +231,35 @@ class Step1 extends StatelessWidget {
   }
 }
 
-class Step2 extends StatelessWidget {
+class Step2 extends StatefulWidget {
   final Function next;
   final User user;
-  Step2(this.next, this.user);
+  final int myId;
+  Step2(this.next, this.user, this.myId);
+
+  @override
+  _Step2State createState() => _Step2State();
+}
+
+class _Step2State extends State<Step2> {
+  List<Trip> trips = [];
+  User user;
+  bool tripsFetched = false;
+  bool ordersFetched = false;
+
+  @override
+  void initState() {
+    user = widget.user;
+    loadTrips(trips, _iAmOrderer ? user.id : widget.myId, tripFetchDone);
+
+    super.initState();
+  }
+
+  void tripFetchDone() {
+    setState(() {
+      tripsFetched = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,42 +270,98 @@ class Step2 extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: _iAmOrderer ? Text("Select Trip of " + user.firstName) : Text("Select Your trip"),
+            child: _iAmOrderer ? Text("Select Trip of " + widget.user.firstName) : Text("Select Your trip"),
           ),
           Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, int i) {
-                return Container(
-                  decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.green)),
-                  child: TripFadeWidget(),
-                );
-              },
-              itemCount: 10,
-            ),
-//              ListView(
-//            children: <Widget>[
-//              for (var i = 0; i < 10; i++)
-//                GestureDetector(
-//                  onTap: () {},
-//                  child: Container(
-//                    decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.green)),
-//                    child: TripFadeWidget(),
-//                  ),
-//                ),
-//            ],
-//          )
-//            Provider.of(context).notLoaded != false
-//                ? ListView(
-//                    children: <Widget>[
-//                      for (var i = 0; i < 10; i++) TripFadeWidget(),
-//                    ],
-//                  )
-//                : ListView.builder(
-//                    itemBuilder: (context, int i) {
-//                      return TripWidget(trip: _trips[i], i: i);
-//                    },
-//                    itemCount: _trips == null ? 0 : _trips.length,
-//                  ),
+            child: tripsFetched
+                ? ListView.builder(
+                    itemBuilder: (context, int i) {
+                      var color = Colors.grey;
+                      return GestureDetector(
+                        onTap: () {
+                          _trip = trips[i];
+                          widget.next();
+                        },
+                        child: Container(
+//                          decoration: BoxDecoration(border: Border.all(width: 1, color: color)),
+                          child: TripSimpleWidget(trip: trips[i], i: i),
+                        ),
+                      );
+                    },
+                    itemCount: trips == null ? 0 : trips.length)
+                : ListView(
+                    children: [for (var i = 0; i < 10; i++) TripFadeWidget()],
+                  ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class Step3 extends StatefulWidget {
+  final Function next;
+  final User user;
+  final int myId;
+  Step3(this.next, this.user, this.myId);
+
+  @override
+  _Step3State createState() => _Step3State();
+}
+
+class _Step3State extends State<Step3> {
+  List<Order> orders = [];
+  User user;
+  bool tripsFetched = false;
+  bool ordersFetched = false;
+
+  @override
+  void initState() {
+    user = widget.user;
+    loadOrders(orders, !_iAmOrderer ? user.id : widget.myId, orderFetchDone);
+
+    super.initState();
+  }
+
+  void orderFetchDone() {
+    setState(() {
+      ordersFetched = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: !_iAmOrderer ? Text("Select Order of " + widget.user.firstName) : Text("Select Your Order"),
+          ),
+          Expanded(
+            child: ordersFetched
+                ? ListView.builder(
+                    itemBuilder: (context, int i) {
+                      if (orders[i].source.cityAscii == _trip.source.cityAscii)
+                        return GestureDetector(
+                          onTap: () {
+                            _order = orders[i];
+                            widget.next();
+                          },
+                          child: Container(
+//                          decoration: BoxDecoration(border: Border.all(width: 1, color: color)),
+                            child: OrderSimpleWidget(order: orders[i], i: i),
+                          ),
+                        );
+                      else
+                        return SizedBox();
+                    },
+                    itemCount: orders == null ? 0 : orders.length)
+                : ListView(
+                    children: [for (var i = 0; i < 10; i++) OrderFadeWidget()],
+                  ),
           )
         ],
       ),
@@ -287,8 +381,12 @@ class Step4 extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text("Summary"),
           ),
-          TripFadeWidget(),
-          OrderFadeWidget(),
+          TripSimpleWidget(
+            trip: _trip,
+          ),
+          OrderSimpleWidget(
+            order: _order,
+          ),
           Expanded(
             child: SizedBox(
               width: 1,
@@ -326,4 +424,40 @@ class Step4 extends StatelessWidget {
       ),
     );
   }
+}
+
+void loadTrips(List<Trip> trips, int id, Function fetch) async {
+  final url = Api.orderById + id.toString() + "/trips/";
+  http.get(
+    url,
+    headers: {
+      HttpHeaders.contentTypeHeader: "application/json",
+    },
+  ).then((onValue) {
+    Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+
+    for (var i = 0; i < data["results"].length; i++) {
+//      print(data["results"][i]);
+      trips.add(Trip.fromJson(data["results"][i]));
+    }
+    fetch();
+  });
+}
+
+void loadOrders(List<Order> orders, int id, Function fetch) async {
+  final url = Api.orderById + id.toString() + "/orders/";
+  http.get(
+    url,
+    headers: {
+      HttpHeaders.contentTypeHeader: "application/json",
+    },
+  ).then((onValue) {
+    Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+
+    for (var i = 0; i < data["results"].length; i++) {
+//      print(data["results"][i]);
+      orders.add(Order.fromJson(data["results"][i]));
+    }
+    fetch();
+  });
 }
