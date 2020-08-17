@@ -138,6 +138,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
   Future<bool> _onWillPop() async {
     widget.provider.messages[id] = _messages;
+    widget.provider.isChatRoomPageActive = false;
     widget.provider.changeChatRoomPlace("ChangewithList");
     widget.provider.notifFun();
     return true;
@@ -261,6 +262,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                 size: 24,
                               ),
                               onPressed: () {
+                                widget.provider.isChatRoomPageActive = false;
                                 widget.provider.changeChatRoomPlace("ChangewithList");
                                 widget.provider.notifFun();
                                 Navigator.of(context).pop();
