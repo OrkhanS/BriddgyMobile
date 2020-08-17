@@ -265,7 +265,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                       Api.orderLink +
                                       order.id.toString());
                                 },
-                              )
+                              ),
                             ],
                           ),
                           Divider(),
