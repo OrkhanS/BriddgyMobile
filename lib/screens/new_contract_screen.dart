@@ -52,8 +52,12 @@ class _NewContactScreenState extends State<NewContactScreen> {
                   },
                 ),
                 title: Text(
-                  "New Contact ",
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                  "Propose contract",
+                  style: TextStyle(
+//                    color: Colors.black,
+                    color: Theme.of(context).primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 elevation: 1,
               ),

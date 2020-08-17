@@ -273,8 +273,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           onPressed: () {
                             Navigator.push(
                               context,
-//                              MaterialPageRoute(builder: (__) => EditProfileScreen()),
-                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
+                              MaterialPageRoute(builder: (__) => EditProfileScreen()),
+//                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
                             );
                           },
                         ),
