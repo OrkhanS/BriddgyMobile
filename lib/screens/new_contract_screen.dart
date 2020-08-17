@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/user.dart';
 import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 
+bool _iAmOrderer = true;
+
 class NewContactScreen extends StatefulWidget {
+  final User user;
+  NewContactScreen(this.user);
+
   @override
   _NewContactScreenState createState() => _NewContactScreenState();
 }
 
 class _NewContactScreenState extends State<NewContactScreen> {
   int currentStep = 1;
-  bool iAmOrderer = true;
+
   bool complete = false;
   @override
   Widget build(BuildContext context) {
@@ -112,7 +118,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
               ),
             ),
             if (currentStep == 1) Step1(stepIncrement, setOrderer),
-            if (currentStep == 2) Step2(),
+            if (currentStep == 2) Step2(stepIncrement, widget.user),
             if (currentStep == 4) Step4(),
           ],
         ),
@@ -132,19 +138,19 @@ class _NewContactScreenState extends State<NewContactScreen> {
   void stepIncrement() {
     setState(() {
       //todo Rasul fix
-      currentStep = 4;
+      currentStep++;
     });
   }
 
   void setOrderer(bool me) {
     setState(() {
-      iAmOrderer = me;
+      _iAmOrderer = me;
     });
   }
 }
 
 class Step1 extends StatelessWidget {
-  Function next, setOrderer;
+  final Function next, setOrderer;
 
   Step1(this.next, this.setOrderer);
   @override
@@ -213,6 +219,10 @@ class Step1 extends StatelessWidget {
 }
 
 class Step2 extends StatelessWidget {
+  final Function next;
+  final User user;
+  Step2(this.next, this.user);
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -222,14 +232,30 @@ class Step2 extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("Select Trip"),
+            child: _iAmOrderer ? Text("Select Trip of " + user.firstName) : Text("Select Your trip"),
           ),
           Expanded(
-              child: ListView(
-            children: <Widget>[
-              for (var i = 0; i < 10; i++) TripFadeWidget(),
-            ],
-          )
+            child: ListView.builder(
+              itemBuilder: (context, int i) {
+                return Container(
+                  decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.green)),
+                  child: TripFadeWidget(),
+                );
+              },
+              itemCount: 10,
+            ),
+//              ListView(
+//            children: <Widget>[
+//              for (var i = 0; i < 10; i++)
+//                GestureDetector(
+//                  onTap: () {},
+//                  child: Container(
+//                    decoration: BoxDecoration(border: Border.all(width: 1, color: Colors.green)),
+//                    child: TripFadeWidget(),
+//                  ),
+//                ),
+//            ],
+//          )
 //            Provider.of(context).notLoaded != false
 //                ? ListView(
 //                    children: <Widget>[
@@ -242,7 +268,7 @@ class Step2 extends StatelessWidget {
 //                    },
 //                    itemCount: _trips == null ? 0 : _trips.length,
 //                  ),
-              )
+          )
         ],
       ),
     );

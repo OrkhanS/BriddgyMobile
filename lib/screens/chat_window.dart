@@ -335,7 +335,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       transitionDuration: Duration(milliseconds: 500),
                       transitionType: ContainerTransitionType.fadeThrough,
                       openBuilder: (BuildContext context, VoidCallback _) {
-                        return NewContactScreen();
+                        return NewContactScreen(widget.user);
                       },
                       closedElevation: 6.0,
                       closedShape: const RoundedRectangleBorder(
