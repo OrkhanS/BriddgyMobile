@@ -18,6 +18,7 @@ class OrdersTripsProvider with ChangeNotifier {
   bool isLoadingOrders = true;
   bool isLoading = true;
   bool isLoadingMyOrders = true;
+  bool isLoadingMyTrips = true;
   String token;
   Map allTripsDetails = {};
   Map allOrdersDetails = {};
@@ -28,7 +29,7 @@ class OrdersTripsProvider with ChangeNotifier {
     return isLoadingOrders;
   }
 
-  bool get notLoadedMyorders {
+  bool get isloadingMyorders {
     return isLoadingMyOrders;
   }
 
@@ -73,7 +74,8 @@ class OrdersTripsProvider with ChangeNotifier {
     String url = Api.orders + "?order_by=-date";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userData')) {
-      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
     }
     http
@@ -89,7 +91,8 @@ class OrdersTripsProvider with ChangeNotifier {
             },
     )
         .then((onValue) {
-      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
       for (var i = 0; i < data["results"].length; i++) {
         orders.add(Order.fromJson(data["results"][i]));
       }
@@ -109,13 +112,13 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         myorders.add(Order.fromJson(data["results"][i]));
       }
-//      allMyOrderDetails = data;
-
+      allMyOrderDetails = {"next": data["next"], "count": data["count"]};
       isLoadingMyOrders = false;
       notifyListeners();
     });
@@ -131,7 +134,8 @@ class OrdersTripsProvider with ChangeNotifier {
         HttpHeaders.contentTypeHeader: "application/json",
       },
     ).then((onValue) {
-      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         orders.add(Order.fromJson(data["results"][i]));
@@ -149,7 +153,8 @@ class OrdersTripsProvider with ChangeNotifier {
         HttpHeaders.contentTypeHeader: "application/json",
       },
     ).then((onValue) {
-      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         trips.add(Trip.fromJson(data["results"][i]));
@@ -189,7 +194,8 @@ class OrdersTripsProvider with ChangeNotifier {
     const url = Api.trips + "?order_by=-date";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userData')) {
-      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
     }
     http
@@ -206,7 +212,8 @@ class OrdersTripsProvider with ChangeNotifier {
     )
         .then(
       (response) {
-        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response.body) as Map<String, dynamic>;
 
         for (var i = 0; i < data["results"].length; i++) {
           trips.add(Trip.fromJson(data["results"][i]));
@@ -228,13 +235,14 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data =
+          json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         mytrips.add(Trip.fromJson(data["results"][i]));
       }
-      //allMyTripsDetails = dataTrips;
-      isLoading = false;
+      allMyTripsDetails = {"next": data["next"], "count": data["count"]};
+      isLoadingMyTrips = false;
       notifyListeners();
     });
   }
@@ -252,5 +260,6 @@ class OrdersTripsProvider with ChangeNotifier {
     allOrdersDetails = {};
     allMyOrderDetails = {};
     allMyTripsDetails = {};
+    notifyListeners();
   }
 }

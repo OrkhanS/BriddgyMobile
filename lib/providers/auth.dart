@@ -362,5 +362,6 @@ class Auth with ChangeNotifier {
     _stats = [];
     statsNotReady = true;
     reviewsNotReady = true;
+    notifyListeners();
   }
 }

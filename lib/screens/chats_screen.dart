@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
+import 'package:optisend/models/chats.dart';
 import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/chat_window.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/report_user_screen.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'chat_window.dart';
@@ -62,40 +64,41 @@ class _ChatsScreenState extends State<ChatsScreen> {
       Colors.lightBlue,
     ];
 
-//     Future _loadData() async {
-//       if (nextMessagesURL.toString() != "null") {
-//         String url = nextMessagesURL;
-//         try {
-//           await http.get(
-//             url,
-//             headers: {
-//               HttpHeaders.contentTypeHeader: "application/json",
-//               "Authorization": "Token " + widget.token,
-//             },
-//           ).then((response) {
-//             var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-//             _rooms.addAll(dataOrders["results"]);
-//             nextMessagesURL = dataOrders["next"];
-//           });
-//         } catch (e) {
-//           print("Some Error");
-//         }
-//         setState(() {
-// //        items.addAll( ['item 1']);
-// //        print('items: '+ items.toString());
-//           _isfetchingnew = false;
-//         });
-//       } else {
-//         _isfetchingnew = false;
-//       }
-//     }
+    Future _loadData() async {
+      if (nextMessagesURL.toString() != "null" && nextMessagesURL.toString() != "FristCall") {
+        String url = nextMessagesURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + Provider.of<Auth>(context,listen: false).myTokenFromStorage,
+            },
+          ).then((response) {
+            Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+            for (var i = 0; i < data["results"].length; i++) {
+              _rooms.add(Chats.fromJson(data["results"][i]));
+            }
+            nextMessagesURL = data["next"];
+          });
+        } catch (e) {
+          print("Some Error");
+        }
+        setState(() {
+          _isfetchingnew = false;
+        });
+      } else {
+        _isfetchingnew = false;
+      }
+    }
 
     return Consumer<Messages>(
       builder: (context, provider, child) {
         if (!provider.chatsLoading) {
           _rooms = widget.provider.chats;
           if (nextMessagesURL == "FirstCall") {
-            //nextMessagesURL = widget.provider.chatDetails["next"];
+            nextMessagesURL = widget.provider.chatDetails["next"];
           }
         }
         return Scaffold(
@@ -119,12 +122,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             if (!_isfetchingnew &&
                                 scrollInfo.metrics.pixels ==
                                     scrollInfo.metrics.maxScrollExtent) {
-                              // setState(() {
-                              //   _isfetchingnew = true;
-                              //   print("load order");
-                              // });
-                              //_loadData();
+                              setState(() {
+                                _isfetchingnew = true;
+                                print("load order");
+                              });
+                              _loadData();
                             }
+                            
                           },
                           child: Column(
                             children: <Widget>[
@@ -241,6 +245,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                               onTap: () {
                                                 provider.readMessages(
                                                     _rooms[index].id);
+                                                provider.messagesLoading = true;
                                                 provider
                                                     .fetchAndSetMessages(index);
                                                 Navigator.push(
@@ -356,13 +361,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                   },
                                 ),
                               ),
-                              Container(
-                                height: _isfetchingnew ? 50.0 : 0.0,
-                                color: Colors.transparent,
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              ),
+                              ProgressIndicatorWidget(show: _isfetchingnew)
                             ],
                           ),
                         )

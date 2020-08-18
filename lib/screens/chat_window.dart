@@ -7,6 +7,7 @@ import 'package:optisend/models/message.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/new_contract_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
@@ -48,12 +49,12 @@ class _ChatWindowState extends State<ChatWindow> {
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
   void initState() {
+    widget.provider.roomIDofActiveChatroom = id;
     textEditingController = TextEditingController();
     scrollController = ScrollController();
     id = widget.room.toString();
     token = widget.auth.myTokenFromStorage;
     widget.provider.isChatRoomPageActive = true;
-    widget.provider.roomIDofActiveChatroom = id;
     initCommunication(id);
     super.initState();
   }
@@ -137,7 +138,7 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   Future<bool> _onWillPop() async {
-    widget.provider.messages[id] = _messages;
+    // widget.provider.messages[widget.room]["data"] = _messages;
     widget.provider.isChatRoomPageActive = false;
     widget.provider.changeChatRoomPlace("ChangewithList");
     widget.provider.notifFun();
@@ -195,29 +196,32 @@ class _ChatWindowState extends State<ChatWindow> {
     );
 
     Future _loadData() async {
-//       if (nextMessagesURL.toString() != "null") {
-//         String url = nextMessagesURL;
-//         try {
-//           await http.get(
-//             url,
-//             headers: {
-//               HttpHeaders.contentTypeHeader: "application/json",
-//               "Authorization": "Token " + token,
-//             },
-//           ).then((response) {
-//             var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-//             _messages.addAll(dataOrders["results"]);
-//             nextMessagesURL = dataOrders["next"];
-//           });
-//         } catch (e) {}
-//         setState(() {
-// //        items.addAll( ['item 1']);
-// //        print('items: '+ items.toString());
-//           _isloading = false;
-//         });
-//       } else {
-//         _isloading = false;
-//       }
+      if (nextMessagesURL.toString() != "null" && nextMessagesURL.toString() != "FirstCall") {
+        String url = nextMessagesURL;
+        try {
+          await http.get(
+            url,
+            headers: {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + token,
+            },
+          ).then((response) {
+            Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+            for (var i = 0; i < data["results"].length; i++) {
+              _messages.add(Message.fromJson(data["results"][i]));
+            }
+            nextMessagesURL = data["next"];
+          });
+        } catch (e) {}
+        setState(() {
+//        items.addAll( ['item 1']);
+//        print('items: '+ items.toString());
+          _isloading = false;
+        });
+      } else {
+        _isloading = false;
+      }
     }
 
     return WillPopScope(
@@ -227,9 +231,9 @@ class _ChatWindowState extends State<ChatWindow> {
           bool messageLoader = provider.messagesLoading;
           if (widget.provider.messages[widget.room] != null && !messageLoader) {
             if (widget.provider.messages[widget.room].isNotEmpty) {
-              _messages = widget.provider.messages[widget.room];
+              _messages = widget.provider.messages[widget.room]["data"];
               if (nextMessagesURL == "FirstCall") {
-                // nextMessagesURL = widget.provider.messages[widget.room]["next"];
+                nextMessagesURL = widget.provider.messages[widget.room]["next"];
               }
               messageLoader = false;
             } else {
@@ -262,8 +266,10 @@ class _ChatWindowState extends State<ChatWindow> {
                                 size: 24,
                               ),
                               onPressed: () {
+                                // widget.provider.messages[widget.room]["data"] = _messages;
                                 widget.provider.isChatRoomPageActive = false;
-                                widget.provider.changeChatRoomPlace("ChangewithList");
+                                widget.provider
+                                    .changeChatRoomPlace("ChangewithList");
                                 widget.provider.notifFun();
                                 Navigator.of(context).pop();
                               },
@@ -412,8 +418,7 @@ class _ChatWindowState extends State<ChatWindow> {
                       ),
                     ],
                   ),
-                  Container(
-                    height: _isloading ? 50.0 : 0.0,
+                  if(_isloading)Container(
                     color: Colors.transparent,
                     child: Center(
                       child: CircularProgressIndicator(),

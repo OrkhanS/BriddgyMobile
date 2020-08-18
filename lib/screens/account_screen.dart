@@ -58,9 +58,10 @@ class _AccountPageState extends State<AccountPage> {
     if (user == null) {
       if (widget.auth.userdetail != null) {
         user = widget.auth.userdetail;
-        imageUrl = user.avatarpic == null
-        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-        : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic[0].toString();
+        imageUrl =
+            //user.avatarpic == null
+            'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png';
+//        : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic[0].toString();
       }
     }
     return Scaffold(
@@ -90,8 +91,7 @@ class _AccountPageState extends State<AccountPage> {
                               radius: 50,
                               backgroundColor:
                                   Theme.of(context).scaffoldBackgroundColor,
-                              backgroundImage: NetworkImage(
-                                  imageUrl),
+                              backgroundImage: NetworkImage(imageUrl),
                             ),
                             Column(
                               children: <Widget>[

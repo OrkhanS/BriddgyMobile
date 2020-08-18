@@ -6,9 +6,16 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:intl/intl.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:provider/provider.dart';
+
+import 'my_trips.dart';
 
 class AddTripScreen extends StatefulWidget {
   OrdersTripsProvider orderstripsProvider;
@@ -27,6 +34,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
   List _suggested = [];
   List _cities = [];
   bool isLoading = true;
+  bool addTripButton = true;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _typeAheadController = TextEditingController();
@@ -112,7 +120,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       showTitleActions: true,
                       minTime: DateTime.now(),
                       maxTime: DateTime(2025, 12, 31), onConfirm: (date) {
-                    departureDate = '${date.day}/${date.month}/${date.year}  ';
+                    departureDate = '${date.year}-${date.month}-${date.day}';
                   }, currentTime: DateTime.now(), locale: LocaleType.en);
                 },
                 child: Container(
@@ -249,58 +257,101 @@ class _AddTripScreenState extends State<AddTripScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: RaisedButton(
-                  color: Theme.of(context).primaryColor,
+            addTripButton
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: RaisedButton(
+                        color: Theme.of(context).primaryColor,
 
-                  elevation: 2,
+                        elevation: 2,
 //                            color: Theme.of(context).primaryColor,
-                  child: Container(
-                    width: deviceWidth * 0.7,
-                    child: Center(
-                      child: Text(
-                        "Add Trip",
-                        style: TextStyle(
-                          fontSize: 19,
-                          color: Colors.white,
+                        child: Container(
+                          width: deviceWidth * 0.7,
+                          child: Center(
+                            child: Text(
+                              "Add Trip",
+                              style: TextStyle(
+                                fontSize: 19,
+                                color: Colors.white,
 //                                  fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
+                        onPressed: () {
+                          var token =
+                              Provider.of<Auth>(context, listen: false).token;
+                          const url = Api.trips;
+                          if (from == null || to == null || weight == null) {
+                            setState(() {
+                              addTripButton = true;
+                            });
+                            Flushbar(
+                              title: "Warning!",
+                              message: "Fill all the fields and try again.",
+                              padding: const EdgeInsets.all(8),
+                              borderRadius: 10,
+                              duration: Duration(seconds: 3),
+                            )..show(context);
+                          } else {
+                            setState(() {
+                              addTripButton = false;
+                            });
+                            http
+                                .post(url,
+                                    headers: {
+                                      HttpHeaders.contentTypeHeader:
+                                          "application/json",
+                                      "Authorization": "Token " + token,
+                                    },
+                                    body: json.encode({
+                                      "source": from,
+                                      "destination": to,
+                                      "date": departureDate
+                                          .toString(),
+                                      "weight_limit": weight,
+                                    }))
+                                .then((value) {
+                              if (value.statusCode == 201) {
+                                widget.orderstripsProvider.isLoadingMyTrips = true;
+                                widget.orderstripsProvider
+                                    .fetchAndSetMyTrips(widget.token);
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (__) => MyTrips()),
+                              );
+                              
+                                Flushbar(
+                                  title: "Trip added",
+                                  message:
+                                      "You can see all of your trips in My Trips section of Account",
+                                  padding: const EdgeInsets.all(8),
+                                  borderRadius: 10,
+                                  duration: Duration(seconds: 5),
+                                )..show(context);
+                              } else {
+                                setState(() {
+                                  addTripButton = true;
+                                });
+                                Flushbar(
+                                  title: "Warning!",
+                                  message: "Item couldn't be added, try again.",
+                                  padding: const EdgeInsets.all(8),
+                                  borderRadius: 10,
+                                  duration: Duration(seconds: 3),
+                                )..show(context);
+                              }
+                            });
+                          }
+                        },
                       ),
                     ),
-                  ),
-                  onPressed: () {
-                    //var token = Provider.of<Auth>(context, listen: false).token;
-                    var token = widget.token;
-                    const url = Api.trips;
-                    http.post(url,
-                        headers: {
-                          HttpHeaders.contentTypeHeader: "application/json",
-                          "Authorization": "Token " + token,
-                        },
-                        body: json.encode({
-                          "source": from,
-                          "destination": to,
-                          "date": DateTime.now().toString().substring(0, 10),
-                          "weight_limit": weight,
-                        }));
-                    widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
-
-                    Navigator.pop(context);
-                    Flushbar(
-                      title: "Trip added",
-                      message:
-                          "You can see all of your trips in My Trips section of Account",
-                      padding: const EdgeInsets.all(8),
-                      borderRadius: 10,
-                      duration: Duration(seconds: 5),
-                    )..show(context);
-                  },
-                ),
-              ),
-            )
+                  )
+                : ProgressIndicatorWidget(show: true),
           ],
         ),
       ),

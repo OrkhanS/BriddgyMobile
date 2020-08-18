@@ -65,7 +65,9 @@ class _TripScreenState extends State<TripsScreen> {
       flagFrom = true;
     }
     if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
+      flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
     if (weight != null) {
@@ -76,7 +78,10 @@ class _TripScreenState extends State<TripsScreen> {
     }
 
     if (_endtime != null) {
-      flagWeight == false && flagTo == false && flagFrom == false && flagStart == false
+      flagWeight == false &&
+              flagTo == false &&
+              flagFrom == false &&
+              flagStart == false
           ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
           : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
       flagStart = true;
@@ -138,7 +143,11 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -167,7 +176,8 @@ class _TripScreenState extends State<TripsScreen> {
   }
 
   Future _loadData() async {
-    if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
+    if (nextTripURL.toString() != "null" &&
+        nextTripURL.toString() != "FristCall") {
       String url = nextTripURL;
       try {
         await http.get(
@@ -177,7 +187,8 @@ class _TripScreenState extends State<TripsScreen> {
             "Authorization": "Token " + widget.token,
           },
         ).then((response) {
-          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
 
           for (var i = 0; i < data["results"].length; i++) {
             _trips.add(Trip.fromJson(data["results"][i]));
@@ -241,21 +252,28 @@ class _TripScreenState extends State<TripsScreen> {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               if (widget.auth.isAuth) {
-                if (widget.auth.userdetail.isEmailVerified == true) {
-                  Navigator.push(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (__) => AddTripScreen(
                               token: widget.token,
                               orderstripsProvider: widget.orderstripsProvider,
-                            )),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
-                  );
-                }
+                            )));
+                // if (widget.auth.userdetail.isEmailVerified == true) {
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (__) => AddTripScreen(
+                //               token: widget.token,
+                //               orderstripsProvider: widget.orderstripsProvider,
+                //             )),
+                //   );
+                // } else {
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                //   );
+                // }
               } else {
                 Flushbar(
                   title: "Warning",
@@ -274,35 +292,48 @@ class _TripScreenState extends State<TripsScreen> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+                    FilterBar(
+                        ordersProvider: widget.orderstripsProvider,
+                        from: from,
+                        to: to,
+                        weight: weight),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                        Text(
-                          orderstripsProvider.detailsTrip.isEmpty ? "Results: 0" : "Results: " + orderstripsProvider.detailsTrip["count"].toString(),
-                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                        ),
-                        DropdownButton(
-                          hint: Text(_value),
-                          items: [
-                            DropdownMenuItem(
-                              value: "Ranking",
-                              child: Text(
-                                "Ranking",
-                              ),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              orderstripsProvider.detailsTrip.isEmpty
+                                  ? "Results: 0"
+                                  : "Results: " +
+                                      orderstripsProvider.detailsTrip["count"]
+                                          .toString(),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.bold),
                             ),
-                            DropdownMenuItem(
-                              value: "WeightMax",
-                              child: Text(
-                                "Weight Limit",
-                              ),
+                            DropdownButton(
+                              hint: Text(_value),
+                              items: [
+                                DropdownMenuItem(
+                                  value: "Ranking",
+                                  child: Text(
+                                    "Ranking",
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: "WeightMax",
+                                  child: Text(
+                                    "Weight Limit",
+                                  ),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                sortData(value, orderstripsProvider);
+                              },
                             ),
-                          ],
-                          onChanged: (value) {
-                            sortData(value, orderstripsProvider);
-                          },
-                        ),
-                      ]),
+                          ]),
                     ),
                     Expanded(
                       child: orderstripsProvider.notLoaded != false
@@ -313,7 +344,9 @@ class _TripScreenState extends State<TripsScreen> {
                             )
                           : NotificationListener<ScrollNotification>(
                               onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                if (!_isfetchingnew &&
+                                    scrollInfo.metrics.pixels ==
+                                        scrollInfo.metrics.maxScrollExtent) {
                                   // start loading data
                                   setState(() {
                                     _isfetchingnew = true;
