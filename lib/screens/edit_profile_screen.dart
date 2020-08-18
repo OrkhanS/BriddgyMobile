@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:optisend/models/user.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  final User user;
+  EditProfileScreen(this.user);
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   var imageFile;
+  User user;
   void _openGallery(BuildContext context) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
     this.setState(() {
       imageFile = picture;
     });
-    Navigator.of(context).pop();
+  }
+
+  @override
+  void initState() {
+    user = widget.user;
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -50,6 +60,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: <Widget>[
+                    Text(user.firstName + " " + user.lastName),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -149,6 +160,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         decoration: BoxDecoration(color: Colors.white54),
                         child: TextField(
 //                          enabled: false,
+
                           decoration: InputDecoration(
                               fillColor: Colors.blue,
                               border: InputBorder.none,
@@ -213,8 +225,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-              color: Theme.of(context).primaryColor,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8.0),
+              color: Theme.of(context).accentColor,
               textColor: Theme.of(context).primaryTextTheme.button.color,
             ),
             SizedBox(

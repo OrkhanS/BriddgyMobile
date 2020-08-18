@@ -61,8 +61,7 @@ class _ChatWindowState extends State<ChatWindow> {
   initCommunication(String id) async {
     reset();
     try {
-      _channelRoom = new IOWebSocketChannel.connect(
-          Api.roomSocket + id.toString() + '/?token=' + token.toString());
+      _channelRoom = new IOWebSocketChannel.connect(Api.roomSocket + id.toString() + '/?token=' + token.toString());
       _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
       print("Room Socket Connected");
     } catch (e) {}
@@ -275,12 +274,9 @@ class _ChatWindowState extends State<ChatWindow> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4.0),
+                                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                         child: Text(
-                                          widget.user.firstName +
-                                              " " +
-                                              widget.user.lastName,
+                                          widget.user.firstName + " " + widget.user.lastName,
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: Colors.black,
@@ -303,12 +299,9 @@ class _ChatWindowState extends State<ChatWindow> {
                                     ],
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
                                     child: Text(
-                                      "Last online " +
-                                          DateFormat.yMMMd()
-                                              .format(widget.user.lastOnline),
+                                      "Last online " + DateFormat.yMMMd().format(widget.user.lastOnline),
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 14,
@@ -320,8 +313,7 @@ class _ChatWindowState extends State<ChatWindow> {
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(
                                 children: <Widget>[
                                   CircleAvatar(
@@ -381,11 +373,9 @@ class _ChatWindowState extends State<ChatWindow> {
                           ),
                         ),
                         closedColor: Colors.white,
-                        closedBuilder:
-                            (BuildContext context, VoidCallback openContainer) {
+                        closedBuilder: (BuildContext context, VoidCallback openContainer) {
                           return Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
 //                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -435,9 +425,7 @@ class _ChatWindowState extends State<ChatWindow> {
                           )
                         : NotificationListener<ScrollNotification>(
                             onNotification: (ScrollNotification scrollInfo) {
-                              if (!_isloading &&
-                                  scrollInfo.metrics.pixels ==
-                                      scrollInfo.metrics.maxScrollExtent) {
+                              if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                                 // start loading data
                                 setState(() {
                                   _isloading = true;
@@ -451,8 +439,7 @@ class _ChatWindowState extends State<ChatWindow> {
                               itemCount: _messages.length,
                               itemBuilder: (context, index) {
                                 bool reverse = false;
-                                if (widget.user.id != _messages[index].sender ||
-                                    _messages[index].sender == "me") {
+                                if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
                                   newMessageMe = false;
                                   reverse = true;
                                 }
@@ -464,25 +451,20 @@ class _ChatWindowState extends State<ChatWindow> {
                                           print("check");
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                           child: CircleAvatar(
                                             backgroundColor: Colors.teal,
                                             child: Text(
-                                              widget.user.firstName
-                                                  .toString()[0],
-                                              style: TextStyle(
-                                                  color: Colors.white),
+                                              widget.user.firstName.toString()[0],
+                                              style: TextStyle(color: Colors.white),
                                             ),
                                           ),
                                         ),
                                       )
                                     : Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                         child: CircleAvatar(
-                                          child: Text(widget.user.firstName
-                                              .toString()[0]),
+                                          child: Text(widget.user.firstName.toString()[0]),
                                         ),
                                       );
 
@@ -510,39 +492,26 @@ class _ChatWindowState extends State<ChatWindow> {
                                         context: context,
                                         type: AlertType.info,
                                         title: "Sent on:  " +
-                                            _messages[index]
-                                                .dateCreated
-                                                .toString()
-                                                .substring(0, 10) +
+                                            _messages[index].dateCreated.toString().substring(0, 10) +
                                             ",  " +
-                                            _messages[index]
-                                                .dateCreated
-                                                .toString()
-                                                .substring(11, 16) +
+                                            _messages[index].dateCreated.toString().substring(11, 16) +
                                             "\n",
                                         buttons: [
                                           DialogButton(
                                             child: Text(
                                               "Back",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
+                                              style: TextStyle(color: Colors.white, fontSize: 20),
                                             ),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            color: Color.fromRGBO(
-                                                0, 179, 134, 1.0),
+                                            onPressed: () => Navigator.pop(context),
+                                            color: Color.fromRGBO(0, 179, 134, 1.0),
                                           ),
                                           DialogButton(
                                             child: Text(
                                               "Report",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
+                                              style: TextStyle(color: Colors.white, fontSize: 20),
                                             ),
                                             onPressed: () => {},
-                                            color: Color.fromRGBO(
-                                                0, 179, 134, 1.0),
+                                            color: Color.fromRGBO(0, 179, 134, 1.0),
                                           )
                                         ],
                                         content: Text(
@@ -559,15 +528,13 @@ class _ChatWindowState extends State<ChatWindow> {
                                   message = Stack(
                                     children: <Widget>[
                                       messagebody,
-                                      Positioned(
-                                          right: 0, bottom: 0, child: triangle),
+                                      Positioned(right: 0, bottom: 0, child: triangle),
                                     ],
                                   );
                                 } else {
                                   message = Stack(
                                     children: <Widget>[
-                                      Positioned(
-                                          left: 0, bottom: 0, child: triangle),
+                                      Positioned(left: 0, bottom: 0, child: triangle),
                                       messagebody,
                                     ],
                                   );

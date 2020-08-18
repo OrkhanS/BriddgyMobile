@@ -256,7 +256,7 @@ class _MyAppState extends State<MyApp> {
             backgroundColor: Colors.white,
             primarySwatch: Colors.blue,
             primaryColor: Colors.teal[700],
-            accentColor: Colors.indigoAccent,
+            accentColor: Colors.green,
             fontFamily: 'Lato',
           ),
           home: Scaffold(
