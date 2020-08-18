@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
         neWMessage.addMessages(message.values.last, newMessageauth);
       },
       onResume: (Map<String, dynamic> message) async {
-        neWMessage.addMessages = message.values.last;
+        neWMessage.addMessages(message.values.last, newMessageauth);
       },
     );
   }
@@ -234,7 +234,7 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth);
+        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth,false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {

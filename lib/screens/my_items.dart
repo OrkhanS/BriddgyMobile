@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/widgets/order_widget.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 
@@ -38,33 +40,41 @@ class _MyItemsState extends State<MyItems> {
     }
   }
 
+  Future _loadData() async {
+    if (nextOrderURL.toString() != "null" &&
+        nextOrderURL.toString() != "FristCall") {
+      String url = nextOrderURL;
+      print(url);
+      try {
+        await http.get(
+          url,
+          headers: {
+            HttpHeaders.contentTypeHeader: "application/json",
+            "Authorization": "Token " + Provider.of<Auth>(context,listen: false).myTokenFromStorage,
+          },
+        ).then((response) {
+          print(response.statusCode);
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
+
+          for (var i = 0; i < data["results"].length; i++) {
+            _orders.add(Order.fromJson(data["results"][i]));
+          }
+          nextOrderURL = data["next"];
+        });
+      } catch (e) {
+        print(e);
+      }
+      setState(() {
+        _isfetchingnew = false;
+      });
+    } else {
+      _isfetchingnew = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future _loadData() async {
-      if (nextOrderURL.toString() != "null" &&
-          nextOrderURL.toString() != "FristCall") {
-        String url = nextOrderURL;
-        try {
-          await http.get(
-            url,
-            headers: {
-              HttpHeaders.contentTypeHeader: "application/json",
-              "Authorization": "Token " + Provider.of<Auth>(context).myToken,
-            },
-          ).then((response) {
-            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            _orders.addAll(dataOrders["results"]);
-            nextOrderURL = dataOrders["next"];
-          });
-        } catch (e) {}
-        setState(() {
-          _isfetchingnew = false;
-        });
-      } else {
-        _isfetchingnew = false;
-      }
-    }
-
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
         if (orderstripsProvider.myorders.length != 0) {
@@ -72,9 +82,6 @@ class _MyItemsState extends State<MyItems> {
           if (nextOrderURL == "FirstCall") {
             nextOrderURL = orderstripsProvider.detailsMyOrder["next"];
           }
-          //messageLoader = false;
-        } else {
-          //messageLoader = true;
         }
         return Scaffold(
           body: SafeArea(
@@ -105,7 +112,7 @@ class _MyItemsState extends State<MyItems> {
                   ),
                 ),
                 Expanded(
-                  child: orderstripsProvider.notLoadedMyorders
+                  child: orderstripsProvider.isloadingMyorders
                       ? ListView(
                           children: <Widget>[
                             for (var i = 0; i < 5; i++) OrderFadeWidget(),
@@ -134,13 +141,7 @@ class _MyItemsState extends State<MyItems> {
                           ),
                         ),
                 ),
-                Container(
-                  height: _isfetchingnew ? 100.0 : 0.0,
-                  color: Colors.transparent,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                ProgressIndicatorWidget(show: _isfetchingnew,),
               ],
             ),
           ),

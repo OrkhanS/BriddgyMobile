@@ -5,7 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -29,8 +31,10 @@ class _MyTripsState extends State<MyTrips> {
 
   @override
   void initState() {
-    if (widget.orderstripsProvider.myorders.isEmpty) {
-      widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+    if(widget.orderstripsProvider != null){
+        if (widget.orderstripsProvider.mytrips.isEmpty) {
+          widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+        } 
     }
     super.initState();
   }
@@ -52,12 +56,15 @@ class _MyTripsState extends State<MyTrips> {
             url,
             headers: {
               HttpHeaders.contentTypeHeader: "application/json",
-              "Authorization": "Token " + Provider.of<Auth>(context).myToken,
+              "Authorization": "Token " + Provider.of<Auth>(context,listen: false).myTokenFromStorage,
             },
           ).then((response) {
-            var dataOrders = json.decode(response.body) as Map<String, dynamic>;
-            _trips.addAll(dataOrders["results"]);
-            nextTripURL = dataOrders["next"];
+            Map<String, dynamic> data =
+                json.decode(response.body) as Map<String, dynamic>;
+            for (var i = 0; i < data["results"].length; i++) {
+              _trips.add(Trip.fromJson(data["results"][i]));
+            }
+            nextTripURL = data["next"];
           });
         } catch (e) {}
         setState(() {
@@ -75,10 +82,7 @@ class _MyTripsState extends State<MyTrips> {
           if (nextTripURL == "FirstCall") {
             nextTripURL = orderstripsProvider.detailsMyTrip["next"];
           }
-          //messageLoader = false;
-        } else {
-          //messageLoader = true;
-        }
+        } 
         return Scaffold(
           body: SafeArea(
             child: Column(
@@ -116,7 +120,7 @@ class _MyTripsState extends State<MyTrips> {
                         _loadData();
                       }
                     },
-                    child: orderstripsProvider.isLoading
+                    child: orderstripsProvider.isLoadingMyTrips
                         ? ListView(
                             children: <Widget>[
                               for (var i = 0; i < 5; i++) TripFadeWidget(),
@@ -133,13 +137,7 @@ class _MyTripsState extends State<MyTrips> {
                           ),
                   ),
                 ),
-                Container(
-                  height: _isfetchingnew ? 100.0 : 0.0,
-                  color: Colors.transparent,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                ProgressIndicatorWidget(show: _isfetchingnew,),
               ],
             ),
           ),

@@ -11,7 +11,12 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/stats.dart';
 import 'package:optisend/models/user.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
+import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/widgets/order_widget.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreenAnother extends StatefulWidget {
   var user;
@@ -31,6 +36,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
   User user;
   Stats stats;
   List orders = [];
+  bool messageButton = true;
   @override
   void initState() {
     user = widget.user;
@@ -69,7 +75,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
 
     if (this.mounted) {
       setState(() {
-        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response.body) as Map<String, dynamic>;
         for (var i = 0; i < data["results"].length; i++) {
           orders.add(Order.fromJson(data["results"][i]));
         }
@@ -89,7 +96,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
 
     if (this.mounted) {
       setState(() {
-        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data =
+            json.decode(response.body) as Map<String, dynamic>;
         stats = Stats.fromJson(data);
         statsNotReady = false;
       });
@@ -138,12 +146,14 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Text(
                                   user.firstName + " " + user.lastName,
                                   textAlign: TextAlign.start,
                                   style: GoogleFonts.lato(
-                                    textStyle: Theme.of(context).textTheme.display1,
+                                    textStyle:
+                                        Theme.of(context).textTheme.display1,
                                     color: Colors.black,
 //                                    color: Theme.of(context).primaryColor,
                                     fontSize: 20,
@@ -154,9 +164,13 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                             ],
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Member since " + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
+                              "Member since " +
+                                  DateFormat("dd MMMM yy")
+                                      .format(user.date_joined)
+                                      .toString(),
                               style: GoogleFonts.lato(
                                 color: Colors.grey[700],
 //                                color: Theme.of(context).primaryColor,
@@ -173,7 +187,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 6),
                         child: Stack(
                           children: <Widget>[
                             CircleAvatar(
@@ -190,20 +205,25 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 height: 30,
                                 decoration: BoxDecoration(
                                   color: Color.fromRGBO(255, 255, 255, 60),
-                                  border: Border.all(color: Theme.of(context).primaryColor, width: 0.5),
+                                  border: Border.all(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 0.5),
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(15),
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
                                   children: <Widget>[
                                     Text(
 //                                            "4.5",
                                       " " + user.rating.toString(),
 //                                        order.owner.rating.toString(),
-                                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Icon(
                                       Icons.star,
@@ -220,7 +240,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 13.0, vertical: 5),
                     child: Row(
                       children: <Widget>[
                         Icon(
@@ -240,9 +261,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                             height: 1,
                           ),
                         ),
-                        RaisedButton.icon(
+                       messageButton ?  RaisedButton.icon(
                           padding: EdgeInsets.symmetric(horizontal: 10),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
                           color: Colors.green,
 
                           elevation: 2,
@@ -252,29 +272,56 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                           icon: Icon(
                             MdiIcons.chatOutline,
                             color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
-                            size: 18,
+                             size: 18,
                           ),
                           label: Text(
                             "Message",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
-//                                    color: Theme.of(context).primaryColor,
                             ),
                           ),
                           onPressed: () {
-                            //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
-//                                Flushbar(
-//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                                  message: "Check Chats to see more.",
-//                                  padding: const EdgeInsets.all(8),
-//                                  borderRadius: 10,
-//                                  duration: Duration(seconds: 5),
-//                                )..show(context);
+                            setState(() {
+                              messageButton = false;
+                            });
+                          var auth = Provider.of<Auth>(context, listen: false);
+                          var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                          messageProvider.createRooms(user.id, auth).whenComplete(() => {
+                          if (messageProvider.isChatRoomCreated)
+                            {
+                              setState(() {
+                                messageButton = true;
+                              }),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                              ),
+                              Flushbar(
+                                title: "Success",
+                                message: "Chat with " + user.firstName.toString() + " has been started!",
+                                padding: const EdgeInsets.all(8),
+                                borderRadius: 10,
+                                duration: Duration(seconds: 3),
+                              )..show(context)
+                            }
+                          else
+                            {
+                              setState(() {
+                                messageButton = true;
+                              }),
+                              Flushbar(
+                                title: "Failure",
+                                message: "Please try again",
+                                padding: const EdgeInsets.all(8),
+                                borderRadius: 10,
+                                duration: Duration(seconds: 3),
+                              )..show(context)
+                            }
+                        });
                           },
-                        ),
+                        ) : ProgressIndicatorWidget(show: true),
                       ],
                     ),
                   ),
@@ -339,7 +386,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 "Orders",
                                 style: TextStyle(
 //color: Colors.white,
-                                  color: Theme.of(context).primaryColor, fontSize: 20,
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 20,
                                 ),
                               ),
                             ],
@@ -376,7 +424,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                 "Delivered",
                                 style: TextStyle(
 //color: Colors.white,
-                                  color: Theme.of(context).primaryColor, fontSize: 20,
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 20,
                                 ),
                               ),
                             ],

@@ -58,7 +58,7 @@ class Messages extends ChangeNotifier {
               for (var i = 0; i < data["results"].length; i++) {
                 temp.add(Message.fromJson(data["results"][i]));
               }
-              _messages[chats[roomId].id] = temp;
+              _messages[chats[roomId].id] = {"next": data["next"], "data": temp};
             } catch (e) {
               print(e);
             }
@@ -79,6 +79,10 @@ class Messages extends ChangeNotifier {
     return _isloadingMessages;
   }
 
+  set messagesLoading(bool loading) {
+    _isloadingMessages = loading;
+  }
+
   Map get newMessages {
     return newMessage;
   }
@@ -97,12 +101,20 @@ class Messages extends ChangeNotifier {
     // Checking if ChatRoom is already exists
     try {
       if (_messages[roomid] == null || _messages[roomid].isEmpty) {
+        bool fetchRoom = true;
+        if (_messages[roomid] == null) {
+          for (var i; i < chats.length; i++) {
+            if (chats[i].id == roomid) {
+              fetchRoom = false;
+            }
+          }
+          if(fetchRoom)fetchRoomDetails(roomid, auth);
+        }
         _messages[roomid] = {};
         // cannot directly add Message object to Map. So need TemporaryList
         List<Message> temporary = [];
         temporary.add(tempMessage);
         _messages[roomid] = temporary;
-        if(_messages[roomid] == null)fetchRoomDetails(roomid, auth);
       } else {
         // Checking if FCM sends the same notification twice
         if (_messages[roomid][0].id.toString() !=
@@ -178,7 +190,7 @@ class Messages extends ChangeNotifier {
           isChatsLoading = true;
           isChatRoomCreated = true;
           _chatRooms = [];
-          fetchAndSetRooms(auth);
+          fetchAndSetRooms(auth, false);
         } else {
           isChatRoomCreated = false;
         }
@@ -226,14 +238,14 @@ class Messages extends ChangeNotifier {
         Map<String, dynamic> data =
             json.decode(value.body) as Map<String, dynamic>;
         chats.insert(0, Chats.fromJson(data));
-        if (!isChatRoomPageActive)notifyListeners();
+        if (!isChatRoomPageActive) notifyListeners();
       }
     });
   }
 
-  Future fetchAndSetRooms(auth) async {
+  Future fetchAndSetRooms(auth, isNewMessage) async {
     isChatsLoadingForMain = false;
-    if (chats.isEmpty) {
+    if (chats.isEmpty || isNewMessage) {
       if (auth.isAuth) {
         tokenforROOM = auth.myTokenFromStorage;
       } else {
@@ -265,10 +277,10 @@ class Messages extends ChangeNotifier {
           for (var i = 0; i < data["results"].length; i++) {
             _chatRooms.add(Chats.fromJson(data["results"][i]));
           }
-          // allChatRoomDetails = dataOrders;
+          allChatRoomDetails = {"next": data["next"], "count": data["count"]};
           isChatsLoading = false;
           isChatsLoadingForMain = false;
-          notifyListeners();
+          if (!isChatRoomPageActive) notifyListeners();
         });
         return _chatRooms;
       } catch (e) {
@@ -307,6 +319,8 @@ class Messages extends ChangeNotifier {
   }
 
   removeAllDataOfProvider() {
+    roomIDsWhileChatRoomActive = [];
+    roomIDofActiveChatRoom = " ";
     _messages = {};
     _chatRooms = [];
     tmp = {};
@@ -318,8 +332,12 @@ class Messages extends ChangeNotifier {
     isChatsLoading = true;
     _isloadingMessages = true;
     ismessagesAdded = false;
+    isChatsLoadingForMain = true;
     lastMessageID = [];
     userdetail = {};
     allChatRoomDetails = {};
+    isChatRoomCreated = false;
+    isChatRoomPageActive = false;
+    notifyListeners();
   }
 }
