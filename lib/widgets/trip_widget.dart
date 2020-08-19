@@ -47,7 +47,7 @@ class TripWidget extends StatelessWidget {
                   radius: 40,
                   child: FadeInImage(
                       image: NetworkImage(imageUrl),
-                      placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
+                      placeholder: NetworkImage(Api.noPictureImage)),
                   backgroundColor: Colors.grey[300],
                   // backgroundImage: NetworkImage(
                   //   imageUrl,

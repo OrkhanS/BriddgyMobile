@@ -51,7 +51,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                 CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.grey[100],
-                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
+                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage(Api.noPictureImage)),
 
                 ),
                 // Container(
