@@ -42,8 +42,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
   void initState() {
     user = widget.user;
     imageUrl = user.avatarpic == null
-        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-        : "https://storage.googleapis.com/briddgy-media/" +
+        ? Api.noPictureImage
+        : Api.storageBucket +
             user.avatarpic.toString();
     loadOrders();
     fetchAndSetReviews();

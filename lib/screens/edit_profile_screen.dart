@@ -62,7 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           setState(() {
             picturePosting = false;
             Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
-            imageUrl = "https://storage.googleapis.com/briddgy-media/" + json.decode(value)["name"].toString();
+            imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
           });
         });
       }
@@ -75,8 +75,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (widget.auth.userdetail != null) {
         user = widget.auth.userdetail;
         imageUrl = widget.auth.userdetail.avatarpic == null
-            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-            : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic.toString();
+            ? Api.noPictureImage
+            : Api.storageBucket + user.avatarpic.toString();
       }
     }
     return Scaffold(

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/screens/order_screen.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -24,8 +25,8 @@ class _OrderWidgetState extends State<OrderWidget> {
     i = widget.i;
     order = widget.order;
     imageUrl = order.orderimage.isEmpty
-        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-        : "https://storage.googleapis.com/briddgy-media/" + order.orderimage[0].toString();
+        ? Api.noPictureImage
+        : Api.storageBucket + order.orderimage[0].toString();
     super.initState();
   }
 
@@ -176,8 +177,8 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
     i = widget.i;
     order = widget.order;
     imageUrl = order.orderimage.isEmpty
-        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-        : "https://storage.googleapis.com/briddgy-media/" + order.orderimage[0].toString();
+        ? Api.noPictureImage
+        : Api.storageBucket + order.orderimage[0].toString();
     super.initState();
   }
 
@@ -206,7 +207,7 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
                     imageUrl,
                   ),
                   onBackgroundImageError: (exception, stackTrace) {
-                    imageUrl = 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png';
+                    imageUrl = Api.noPictureImage;
                   },
                 ),
                 // Container(

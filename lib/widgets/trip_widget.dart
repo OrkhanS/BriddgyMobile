@@ -3,6 +3,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/messages.dart';
@@ -20,8 +21,8 @@ class TripWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (imageUrl == null) {
       imageUrl = trip.owner.avatarpic == null
-          ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-          : "https://storage.googleapis.com/briddgy-media/" + trip.owner.avatarpic.toString();
+          ? Api.noPictureImage
+          : Api.storageBucket + trip.owner.avatarpic.toString();
     }
     return GestureDetector(
       onTap: () {
@@ -304,8 +305,8 @@ class TripSimpleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (imageUrl == null) {
       imageUrl = trip.owner.avatarpic == null
-          ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-          : "https://storage.googleapis.com/briddgy-media/" + trip.owner.avatarpic.toString();
+          ? Api.noPictureImage
+          : Api.storageBucket + trip.owner.avatarpic.toString();
     }
     return Column(
       children: <Widget>[

@@ -110,8 +110,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     if (widget.auth.userdetail != null) {
         user = widget.auth.userdetail;
         imageUrl = widget.auth.userdetail.avatarpic == null
-            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-            : "https://storage.googleapis.com/briddgy-media/" +
+            ? Api.noPictureImage
+            : Api.storageBucket +
                 user.avatarpic.toString();
       }
     return Scaffold(

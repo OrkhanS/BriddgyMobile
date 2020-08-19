@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/models/api.dart';
 import 'package:optisend/screens/contracts.dart';
 import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/my_trips.dart';
@@ -58,8 +59,8 @@ class _AccountPageState extends State<AccountPage> {
     if (widget.auth.userdetail != null) {
         user = widget.auth.userdetail;
         imageUrl = widget.auth.userdetail.avatarpic == null
-            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-            : "https://storage.googleapis.com/briddgy-media/" +
+            ? Api.noPictureImage
+            : Api.storageBucket +
                 user.avatarpic.toString();
     }
     return Scaffold(

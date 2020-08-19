@@ -326,7 +326,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                     radius: 25,
                                     backgroundColor: Colors.grey[100],
                                     backgroundImage: NetworkImage(
-                                      "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png",
+                                      Api.noPictureImage,
                                     ),
                                   ),
 //                              Positioned(

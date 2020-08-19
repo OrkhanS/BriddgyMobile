@@ -37,19 +37,19 @@ class _OrderScreenState extends State<OrderScreen> {
   void initState() {
     order = widget.order;
     imageUrl = order.owner.avatarpic == null
-            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-            : "https://storage.googleapis.com/briddgy-media/" +
+            ? Api.noPictureImage
+            : Api.storageBucket +
                 order.owner.avatarpic.toString();
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
-        image: 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png',
+        image: Api.noPictureImage,
       ));
     } else {
       for (var i = 0; i < order.orderimage.length; i++) {
         imageList.add(FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: "https://storage.googleapis.com/briddgy-media/" + order.orderimage[i].toString(),
+          image: Api.storageBucket + order.orderimage[i].toString(),
         ));
       }
     }

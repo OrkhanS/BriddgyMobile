@@ -30,8 +30,8 @@ class _TripScreenState extends State<TripScreen> {
   void initState() {
     trip = widget.trip;
     imageUrl = trip.owner.avatarpic == null ?
-          'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-            : "https://storage.googleapis.com/briddgy-media/" +
+          Api.noPictureImage
+            : Api.storageBucket +
                 trip.owner.avatarpic.toString();
     super.initState();
   }
