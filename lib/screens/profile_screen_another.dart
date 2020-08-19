@@ -37,9 +37,14 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
   Stats stats;
   List orders = [];
   bool messageButton = true;
+  var imageUrl;
   @override
   void initState() {
     user = widget.user;
+    imageUrl = user.avatarpic == null
+        ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+        : "https://storage.googleapis.com/briddgy-media/" +
+            user.avatarpic.toString();
     loadOrders();
     fetchAndSetReviews();
     fetchAndSetStatistics();
@@ -194,9 +199,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                             CircleAvatar(
                               radius: 35,
                               backgroundColor: Colors.grey[200],
-                              backgroundImage: NetworkImage(
-                                "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
-                              ),
+                              child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
+
                             ),
                             Positioned(
                               left: 0,
@@ -261,67 +265,86 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                             height: 1,
                           ),
                         ),
-                       messageButton ?  RaisedButton.icon(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          color: Colors.green,
+                        messageButton
+                            ? RaisedButton.icon(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                color: Colors.green,
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                ),
+                                icon: Icon(
+                                  MdiIcons.chatOutline,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  "Message",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    messageButton = false;
+                                  });
+                                  var auth =
+                                      Provider.of<Auth>(context, listen: false);
+                                  var messageProvider = Provider.of<Messages>(
+                                      context,
+                                      listen: false);
 
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          icon: Icon(
-                            MdiIcons.chatOutline,
-                            color: Colors.white,
-                             size: 18,
-                          ),
-                          label: Text(
-                            "Message",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              messageButton = false;
-                            });
-                          var auth = Provider.of<Auth>(context, listen: false);
-                          var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                          messageProvider.createRooms(user.id, auth).whenComplete(() => {
-                          if (messageProvider.isChatRoomCreated)
-                            {
-                              setState(() {
-                                messageButton = true;
-                              }),
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
-                              ),
-                              Flushbar(
-                                title: "Success",
-                                message: "Chat with " + user.firstName.toString() + " has been started!",
-                                padding: const EdgeInsets.all(8),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context)
-                            }
-                          else
-                            {
-                              setState(() {
-                                messageButton = true;
-                              }),
-                              Flushbar(
-                                title: "Failure",
-                                message: "Please try again",
-                                padding: const EdgeInsets.all(8),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context)
-                            }
-                        });
-                          },
-                        ) : ProgressIndicatorWidget(show: true),
+                                  messageProvider
+                                      .createRooms(user.id, auth)
+                                      .whenComplete(() => {
+                                            if (messageProvider
+                                                .isChatRoomCreated)
+                                              {
+                                                setState(() {
+                                                  messageButton = true;
+                                                }),
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (__) =>
+                                                          ChatsScreen(
+                                                              provider:
+                                                                  messageProvider,
+                                                              auth: auth)),
+                                                ),
+                                                Flushbar(
+                                                  title: "Success",
+                                                  message: "Chat with " +
+                                                      user.firstName
+                                                          .toString() +
+                                                      " has been started!",
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  borderRadius: 10,
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                )..show(context)
+                                              }
+                                            else
+                                              {
+                                                setState(() {
+                                                  messageButton = true;
+                                                }),
+                                                Flushbar(
+                                                  title: "Failure",
+                                                  message: "Please try again",
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  borderRadius: 10,
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                )..show(context)
+                                              }
+                                          });
+                                },
+                              )
+                            : ProgressIndicatorWidget(show: true),
                       ],
                     ),
                   ),

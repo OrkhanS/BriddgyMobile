@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -14,8 +15,15 @@ class TripWidget extends StatelessWidget {
   Trip trip;
   var i;
   TripWidget({@required this.trip, @required this.i});
+  var imageUrl;
   @override
   Widget build(BuildContext context) {
+    if (imageUrl == null) {
+      imageUrl = trip.owner.avatarpic == null
+          ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+          : "https://storage.googleapis.com/briddgy-media/" +
+              trip.owner.avatarpic.toString();
+    }
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -37,10 +45,11 @@ class TripWidget extends StatelessWidget {
               children: <Widget>[
                 CircleAvatar(
                   radius: 40,
+                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
                   backgroundColor: Colors.grey[300],
-                  backgroundImage: NetworkImage(
-                    "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
-                  ),
+                  // backgroundImage: NetworkImage(
+                  //   imageUrl,
+                  // ),
                 ),
                 Expanded(
                   flex: 5,
@@ -306,9 +315,16 @@ class TripFadeWidget extends StatelessWidget {
 class TripSimpleWidget extends StatelessWidget {
   Trip trip;
   var i;
+  var imageUrl;
   TripSimpleWidget({@required this.trip, @required this.i});
   @override
   Widget build(BuildContext context) {
+    if (imageUrl == null) {
+      imageUrl = trip.owner.avatarpic == null
+          ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+          : "https://storage.googleapis.com/briddgy-media/" +
+              trip.owner.avatarpic.toString();
+    }
     return Column(
       children: <Widget>[
         Container(
@@ -321,7 +337,7 @@ class TripSimpleWidget extends StatelessWidget {
                 radius: 40,
                 backgroundColor: Colors.grey[300],
                 backgroundImage: NetworkImage(
-                  "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
+                  imageUrl,
                 ),
               ),
               Expanded(

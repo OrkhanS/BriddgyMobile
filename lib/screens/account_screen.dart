@@ -55,14 +55,12 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
-      if (widget.auth.userdetail != null) {
+    if (widget.auth.userdetail != null) {
         user = widget.auth.userdetail;
-        imageUrl =
-            //user.avatarpic == null
-            'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png';
-//        : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic[0].toString();
-      }
+        imageUrl = widget.auth.userdetail.avatarpic == null
+            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+            : "https://storage.googleapis.com/briddgy-media/" +
+                user.avatarpic.toString();
     }
     return Scaffold(
         body: SafeArea(
@@ -78,7 +76,7 @@ class _AccountPageState extends State<AccountPage> {
                           context,
                           MaterialPageRoute(
                               builder: (__) => MyProfileScreen(
-                                  user: user, token: widget.token)),
+                                  user: user, auth: widget.auth)),
                         );
                       },
                       child: Padding(
