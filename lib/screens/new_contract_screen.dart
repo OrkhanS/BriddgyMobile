@@ -348,7 +348,9 @@ class _Step3State extends State<Step3> {
             child: ordersFetched
                 ? ListView.builder(
                     itemBuilder: (context, int i) {
-                      if (orders[i].source.cityAscii == _trip.source.cityAscii)
+                      //todo fix Rasul
+//                      if (orders[i].source.cityAscii == _trip.source.cityAscii)
+                      if (true)
                         return GestureDetector(
                           onTap: () {
                             _order = orders[i];
@@ -383,7 +385,10 @@ class Step4 extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("Summary"),
+            child: Text(
+              "Summary",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           TripSimpleWidget(
             trip: _trip,

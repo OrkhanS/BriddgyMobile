@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ import 'package:async/async.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/auth.dart';
 import 'dart:convert';
+import 'package:optisend/models/user.dart';
 
 class EditProfileScreen extends StatefulWidget {
   var user;
@@ -23,14 +25,21 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   var imageFile;
   var imageUrl;
-  var user;
+  User user;
   bool picturePosting = false;
   void _openGallery(BuildContext context) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
     this.setState(() {
       imageFile = picture;
-    });
-    upload(context);
+    });upload(context);
+  }
+
+  @override
+  void initState() {
+    user = widget.user;
+    // TODO: implement initState
+    super.initState();
+
   }
 
   Future upload(context) async {
@@ -62,10 +71,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +115,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: <Widget>[
+                    Text(user.firstName + " " + user.lastName),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
