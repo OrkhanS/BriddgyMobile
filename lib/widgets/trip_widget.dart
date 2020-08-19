@@ -21,8 +21,7 @@ class TripWidget extends StatelessWidget {
     if (imageUrl == null) {
       imageUrl = trip.owner.avatarpic == null
           ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-          : "https://storage.googleapis.com/briddgy-media/" +
-              trip.owner.avatarpic.toString();
+          : "https://storage.googleapis.com/briddgy-media/" + trip.owner.avatarpic.toString();
     }
     return GestureDetector(
       onTap: () {
@@ -45,7 +44,9 @@ class TripWidget extends StatelessWidget {
               children: <Widget>[
                 CircleAvatar(
                   radius: 40,
-                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
+                  child: FadeInImage(
+                      image: NetworkImage(imageUrl),
+                      placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
                   backgroundColor: Colors.grey[300],
                   // backgroundImage: NetworkImage(
                   //   imageUrl,
@@ -54,8 +55,7 @@ class TripWidget extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,10 +64,7 @@ class TripWidget extends StatelessWidget {
                           trip.owner.firstName + " " + trip.owner.lastName,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -78,16 +75,10 @@ class TripWidget extends StatelessWidget {
                               size: 16,
                             ),
                             Text(
-                              "  " +
-                                  trip.source.cityAscii +
-                                  " > " +
-                                  trip.destination.cityAscii,
+                              "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.normal),
+                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                             ),
                           ],
                         ),
@@ -99,9 +90,7 @@ class TripWidget extends StatelessWidget {
                               size: 16,
                             ),
                             Text(
-                              "  " +
-                                  DateFormat('dd MMMM')
-                                      .format(trip.date), //Todo: date
+                              "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
@@ -145,22 +134,17 @@ class TripWidget extends StatelessWidget {
                     ),
                     onPressed: () {
                       var auth = Provider.of<Auth>(context, listen: false);
-                      var messageProvider =
-                          Provider.of<Messages>(context, listen: false);
+                      var messageProvider = Provider.of<Messages>(context, listen: false);
 
                       messageProvider.createRooms(trip.owner.id, auth);
                       messageProvider.isChatsLoading = true;
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (__) => ChatsScreen(
-                                provider: messageProvider, auth: auth)),
+                        MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
                       );
                       Flushbar(
                         title: "Success",
-                        message: "Chat with " +
-                            trip.owner.firstName.toString() +
-                            " has been started!",
+                        message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
                         padding: const EdgeInsets.all(8),
                         borderRadius: 10,
                         duration: Duration(seconds: 3),
@@ -203,8 +187,7 @@ class TripFadeWidget extends StatelessWidget {
               Expanded(
                 flex: 5,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -322,8 +305,7 @@ class TripSimpleWidget extends StatelessWidget {
     if (imageUrl == null) {
       imageUrl = trip.owner.avatarpic == null
           ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-          : "https://storage.googleapis.com/briddgy-media/" +
-              trip.owner.avatarpic.toString();
+          : "https://storage.googleapis.com/briddgy-media/" + trip.owner.avatarpic.toString();
     }
     return Column(
       children: <Widget>[
@@ -343,8 +325,7 @@ class TripSimpleWidget extends StatelessWidget {
               Expanded(
                 flex: 5,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,10 +334,7 @@ class TripSimpleWidget extends StatelessWidget {
                         trip.owner.firstName + " " + trip.owner.lastName,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -367,16 +345,10 @@ class TripSimpleWidget extends StatelessWidget {
                             size: 16,
                           ),
                           Text(
-                            "  " +
-                                trip.source.cityAscii +
-                                " > " +
-                                trip.destination.cityAscii,
+                            "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.normal),
+                            style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                           ),
                         ],
                       ),
@@ -388,9 +360,7 @@ class TripSimpleWidget extends StatelessWidget {
                             size: 16,
                           ),
                           Text(
-                            "  " +
-                                DateFormat('dd MMMM')
-                                    .format(trip.date), //Todo: date
+                            "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],

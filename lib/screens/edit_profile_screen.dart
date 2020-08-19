@@ -46,8 +46,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       picturePosting = true;
     });
-    var stream =
-        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
 
     var uri = Uri.parse(Api.addUserImage);
@@ -62,23 +61,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         value.stream.transform(utf8.decoder).listen((value) {
           setState(() {
             picturePosting = false;
-            Provider.of<Auth>(context,listen: false).changeUserAvatar(json.decode(value)["name"].toString());
-            imageUrl = "https://storage.googleapis.com/briddgy-media/"+json.decode(value)["name"].toString();
+            Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
+            imageUrl = "https://storage.googleapis.com/briddgy-media/" + json.decode(value)["name"].toString();
           });
         });
       }
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     if (user == null) {
       if (widget.auth.userdetail != null) {
         user = widget.auth.userdetail;
-        imageUrl = widget.auth.userdetail.avatarpic == null?
-            'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
-       : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic.toString();
+        imageUrl = widget.auth.userdetail.avatarpic == null
+            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+            : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic.toString();
       }
     }
     return Scaffold(
@@ -272,15 +270,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     label: Text(
                       'Save',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                     onPressed: () {},
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
                     color: Theme.of(context).primaryColor,
                     textColor: Theme.of(context).primaryTextTheme.button.color,
                   ),
