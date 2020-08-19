@@ -25,9 +25,14 @@ class TripScreen extends StatefulWidget {
 class _TripScreenState extends State<TripScreen> {
   var _current;
   Trip trip;
+  var imageUrl;
   @override
   void initState() {
     trip = widget.trip;
+    imageUrl = trip.owner.avatarpic == null ?
+          'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+            : "https://storage.googleapis.com/briddgy-media/" +
+                trip.owner.avatarpic.toString();
     super.initState();
   }
 
@@ -114,7 +119,7 @@ class _TripScreenState extends State<TripScreen> {
                             radius: 35,
                             backgroundColor: Colors.grey[100],
                             backgroundImage: NetworkImage(
-                              "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png",
+                              imageUrl,
                             ),
                           ),
                           Positioned(

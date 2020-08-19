@@ -36,6 +36,10 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   void initState() {
     order = widget.order;
+    imageUrl = order.owner.avatarpic == null
+            ? 'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+            : "https://storage.googleapis.com/briddgy-media/" +
+                order.owner.avatarpic.toString();
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
@@ -134,9 +138,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           CircleAvatar(
                             radius: 35,
                             backgroundColor: Colors.grey[100],
-                            backgroundImage: NetworkImage(
-                              "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png",
-                            ),
+                            child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage("https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png")),
                           ),
                           Positioned(
                             left: 0,

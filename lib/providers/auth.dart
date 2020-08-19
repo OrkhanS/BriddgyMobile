@@ -68,6 +68,11 @@ class Auth with ChangeNotifier {
     return isLoadingUserForMain;
   }
 
+  changeUserAvatar(url) {
+    user.avatarpic = url;
+    notifyListeners();
+  }
+
   Future fetchAndSetStatistics() async {
     const url = Api.myStats;
     if (_token != null) {

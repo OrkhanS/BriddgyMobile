@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +13,18 @@ import 'package:optisend/providers/auth.dart';
 import 'dart:convert';
 
 class EditProfileScreen extends StatefulWidget {
+  var user;
+  var auth;
+  EditProfileScreen({@required this.user, @required this.auth});
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   var imageFile;
+  var imageUrl;
+  var user;
+  bool picturePosting = false;
   void _openGallery(BuildContext context) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
     this.setState(() {
@@ -27,6 +34,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future upload(context) async {
+    setState(() {
+      picturePosting = true;
+    });
     var stream =
         new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
@@ -40,16 +50,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     request.files.add(multipartFile);
     var response = await request.send().then((value) {
-      print(value.statusCode);
-      value.stream.transform(utf8.decoder).listen((value) {
-        print(value);
-      });
+      if (value.statusCode == 201) {
+        value.stream.transform(utf8.decoder).listen((value) {
+          setState(() {
+            picturePosting = false;
+            Provider.of<Auth>(context,listen: false).changeUserAvatar(json.decode(value)["name"].toString());
+            imageUrl = "https://storage.googleapis.com/briddgy-media/"+json.decode(value)["name"].toString();
+          });
+        });
+      }
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (user == null) {
+      if (widget.auth.userdetail != null) {
+        user = widget.auth.userdetail;
+        imageUrl = widget.auth.userdetail.avatarpic == null?
+            'https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png'
+       : "https://storage.googleapis.com/briddgy-media/" + user.avatarpic.toString();
+      }
+    }
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -107,8 +134,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           radius: 45,
                           backgroundColor: Colors.grey[200],
                           backgroundImage: NetworkImage(
-                           "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?cs=srgb&dl=pexels-pixabay-220453.jpg&fm=jpg",
-                          ) ,
+                            imageUrl,
+                          ),
                         ),
                         GestureDetector(
                           onTap: () {
@@ -240,23 +267,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-            RaisedButton.icon(
-              icon: Icon(
-                Icons.save,
-                size: 20,
-              ),
-              label: Text(
-                'Save',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              onPressed: () {},
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).primaryTextTheme.button.color,
-            ),
+            picturePosting
+                ? ProgressIndicatorWidget(show: true)
+                : RaisedButton.icon(
+                    icon: Icon(
+                      Icons.save,
+                      size: 20,
+                    ),
+                    label: Text(
+                      'Save',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    onPressed: () {},
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                    color: Theme.of(context).primaryColor,
+                    textColor: Theme.of(context).primaryTextTheme.button.color,
+                  ),
             SizedBox(
               height: 20,
             ),
