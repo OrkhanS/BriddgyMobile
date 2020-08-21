@@ -11,6 +11,9 @@ import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/trip_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
+
+import 'generators.dart';
 
 class TripWidget extends StatelessWidget {
   Trip trip;
@@ -20,9 +23,7 @@ class TripWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null) {
-      imageUrl = trip.owner.avatarpic == null
-          ? Api.noPictureImage
-          : Api.storageBucket + trip.owner.avatarpic.toString();
+      imageUrl = trip.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + trip.owner.avatarpic.toString();
     }
     return GestureDetector(
       onTap: () {
@@ -43,16 +44,34 @@ class TripWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                CircleAvatar(
-                  radius: 40,
-                  child: FadeInImage(
-                      image: NetworkImage(imageUrl),
-                      placeholder: NetworkImage(Api.noPictureImage)),
-                  backgroundColor: Colors.grey[300],
-                  // backgroundImage: NetworkImage(
-                  //   imageUrl,
-                  // ),
-                ),
+                imageUrl == Api.noPictureImage
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(40.0),
+                          child: Image.network(
+                            imageUrl,
+                            errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                              return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0);
+                            },
+                            height: 60,
+                            width: 60,
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+//                CircleAvatar(
+//                  radius: 40,
+//                  child: FadeInImage.memoryNetwork(
+//                    image: imageUrl,
+//                    placeholder: kTransparentImage,
+//                  ),
+//                  backgroundColor: Colors.grey[200],
+//                ),
                 Expanded(
                   flex: 5,
                   child: Padding(
@@ -304,9 +323,7 @@ class TripSimpleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null) {
-      imageUrl = trip.owner.avatarpic == null
-          ? Api.noPictureImage
-          : Api.storageBucket + trip.owner.avatarpic.toString();
+      imageUrl = trip.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + trip.owner.avatarpic.toString();
     }
     return Column(
       children: <Widget>[

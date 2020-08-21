@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:optisend/models/api.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:optisend/widgets/generators.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
@@ -71,14 +72,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
-      if (widget.auth.userdetail != null) {
-        user = widget.auth.userdetail;
-        imageUrl = widget.auth.userdetail.avatarpic == null
-            ? Api.noPictureImage
-            : Api.storageBucket + user.avatarpic.toString();
-      }
+    if (widget.auth.userdetail != null) {
+      user = widget.auth.userdetail;
+      imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
     }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -130,13 +128,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     Stack(
                       children: [
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundColor: Colors.grey[200],
-                          backgroundImage: NetworkImage(
-                            imageUrl,
-                          ),
-                        ),
+                        imageUrl == Api.noPictureImage
+                            ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 90.0)
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(100.0),
+                                child: Image.network(
+                                  imageUrl,
+                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                    return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 90.0);
+                                  },
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              ),
                         GestureDetector(
                           onTap: () {
                             _openGallery(context);
@@ -151,76 +156,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "Name",
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                        ),
-                        Text(
-                          "Edit",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 20,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(color: Colors.white54),
-                        child: TextField(
-//                          enabled: false,
-                          decoration: InputDecoration(
-                              fillColor: Colors.blue,
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Name"),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          "Surname",
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                        ),
-                        Text(
-                          "Edit",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 20,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(color: Colors.white54),
-                        child: TextField(
-//                          enabled: false,
-                          decoration: InputDecoration(
-                              fillColor: Colors.blue,
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "Surname"),
-                        ),
-                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -49,8 +49,7 @@ class Messages extends ChangeNotifier {
             "Authorization": "Token " + token,
           },
         ).then((response) {
-          Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
           if (data["results"].isNotEmpty) {
             try {
               // cannot directly add Message object to Map. So need TemporaryList
@@ -60,7 +59,7 @@ class Messages extends ChangeNotifier {
               }
               _messages[chats[roomId].id] = {"next": data["next"], "data": temp};
             } catch (e) {
-              print(e);
+              print(e + "salam");
             }
           } else {
             _messages[chats[roomId].id] = null;
@@ -70,7 +69,7 @@ class Messages extends ChangeNotifier {
           notifyListeners();
         });
       } catch (e) {
-        print(e);
+        print(e + "72");
       }
     }
   }
@@ -108,7 +107,7 @@ class Messages extends ChangeNotifier {
               fetchRoom = false;
             }
           }
-          if(fetchRoom)fetchRoomDetails(roomid, auth);
+          if (fetchRoom) fetchRoomDetails(roomid, auth);
         }
         _messages[roomid] = {};
         // cannot directly add Message object to Map. So need TemporaryList
@@ -117,13 +116,12 @@ class Messages extends ChangeNotifier {
         _messages[roomid] = temporary;
       } else {
         // Checking if FCM sends the same notification twice
-        if (_messages[roomid][0].id.toString() !=
-            message["session_id"].toString()) {
+        if (_messages[roomid][0].id.toString() != message["session_id"].toString()) {
           _messages[roomid].insert(0, tempMessage);
         }
       }
     } catch (e) {
-      print(e);
+      print(e + "124");
     }
 
     // Checking if Message is sent by ME, if not add it to newMessage list
@@ -140,14 +138,12 @@ class Messages extends ChangeNotifier {
           notifyListeners();
         } else {
           // Checking if FCM sends the same notification twice
-          if (newMessage[roomid][0].id.toString() !=
-              message["session_id"].toString()) {
+          if (newMessage[roomid][0].id.toString() != message["session_id"].toString()) {
             newMessage[roomid].insert(0, tempMessage);
           }
         }
         if (isChatRoomPageActive) {
-          if (!roomIDsWhileChatRoomActive.contains(roomid))
-            roomIDsWhileChatRoomActive.add(roomid);
+          if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
         } else {
           changeChatRoomPlace(roomid);
         }
@@ -164,8 +160,7 @@ class Messages extends ChangeNotifier {
   }
 
   bool get arethereNewMessage {
-    var key = newMessage.keys
-        .firstWhere((k) => newMessage[k] != 0, orElse: () => null);
+    var key = newMessage.keys.firstWhere((k) => newMessage[k] != 0, orElse: () => null);
     if (key != null) {
       return true;
     } else {
@@ -203,8 +198,7 @@ class Messages extends ChangeNotifier {
     if (id == "ChangewithList") {
       for (var i = 0; i < roomIDsWhileChatRoomActive.length; i++) {
         for (var j = 0; j < chats.length; j++) {
-          if (chats[j].id.toString() ==
-              roomIDsWhileChatRoomActive[i].toString()) {
+          if (chats[j].id.toString() == roomIDsWhileChatRoomActive[i].toString()) {
             chats.insert(0, chats.removeAt(j));
             notifyListeners();
           }
@@ -235,8 +229,7 @@ class Messages extends ChangeNotifier {
       },
     ).then((value) {
       if (value.statusCode == 200) {
-        Map<String, dynamic> data =
-            json.decode(value.body) as Map<String, dynamic>;
+        Map<String, dynamic> data = json.decode(value.body) as Map<String, dynamic>;
         chats.insert(0, Chats.fromJson(data));
         if (!isChatRoomPageActive) notifyListeners();
       }
@@ -256,8 +249,7 @@ class Messages extends ChangeNotifier {
           isUserlogged = false;
           return false;
         }
-        final extractedUserData =
-            json.decode(prefs.getString('userData')) as Map<String, Object>;
+        final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
         auth.token = extractedUserData['token'];
         tokenforROOM = extractedUserData['token'];
@@ -271,8 +263,7 @@ class Messages extends ChangeNotifier {
             "Authorization": "Token " + tokenforROOM,
           },
         ).then((value) {
-          Map<String, dynamic> data =
-              json.decode(value.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(value.body) as Map<String, dynamic>;
           _chatRooms = [];
           for (var i = 0; i < data["results"].length; i++) {
             _chatRooms.add(Chats.fromJson(data["results"][i]));

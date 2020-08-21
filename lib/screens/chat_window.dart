@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/message.dart';
+import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/new_contract_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/widgets/generators.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +47,7 @@ class _ChatWindowState extends State<ChatWindow> {
   String nextMessagesURL = "FirstCall";
   bool isMessageSent = false;
   var file;
+  User me;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
@@ -54,6 +57,7 @@ class _ChatWindowState extends State<ChatWindow> {
     scrollController = ScrollController();
     id = widget.room.toString();
     token = widget.auth.myTokenFromStorage;
+    me = widget.auth.user;
     widget.provider.isChatRoomPageActive = true;
     initCommunication(id);
     super.initState();
@@ -205,8 +209,7 @@ class _ChatWindowState extends State<ChatWindow> {
               "Authorization": "Token " + token,
             },
           ).then((response) {
-            Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
+            Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
             for (var i = 0; i < data["results"].length; i++) {
               _messages.add(Message.fromJson(data["results"][i]));
             }
@@ -267,8 +270,7 @@ class _ChatWindowState extends State<ChatWindow> {
                               onPressed: () {
                                 // widget.provider.messages[widget.room]["data"] = _messages;
                                 widget.provider.isChatRoomPageActive = false;
-                                widget.provider
-                                    .changeChatRoomPlace("ChangewithList");
+                                widget.provider.changeChatRoomPlace("ChangewithList");
                                 widget.provider.notifFun();
                                 Navigator.of(context).pop();
                               },
@@ -322,13 +324,22 @@ class _ChatWindowState extends State<ChatWindow> {
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(
                                 children: <Widget>[
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.grey[100],
-                                    backgroundImage: NetworkImage(
-                                      Api.noPictureImage,
-                                    ),
-                                  ),
+//                                  imageUrl == Api.noPictureImage
+//                                      ?
+                                  InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+//                                      : ClipRRect(
+//                                    borderRadius: BorderRadius.circular(25.0),
+//                                    child: Image.network(
+//                                      imageUrl,
+//                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+//                                        return InitialsAvatarWidget(_rooms[index].members[0].user.firstName.toString(),
+//                                            _rooms[index].members[0].user.lastName.toString());
+//                                      },
+//                                      height: 50,
+//                                      width: 50,
+//                                      fit: BoxFit.fitWidth,
+//                                    ),
+//                                  )
 //                              Positioned(
 //                                left: 0,
 //                                bottom: 5,
@@ -408,12 +419,13 @@ class _ChatWindowState extends State<ChatWindow> {
                       ),
                     ],
                   ),
-                  if(_isloading)Container(
-                    color: Colors.transparent,
-                    child: Center(
-                      child: CircularProgressIndicator(),
+                  if (_isloading)
+                    Container(
+                      color: Colors.transparent,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
                   Expanded(
                     child: messageLoader
                         ? Padding(
@@ -443,6 +455,15 @@ class _ChatWindowState extends State<ChatWindow> {
                               controller: scrollController,
                               itemCount: _messages.length,
                               itemBuilder: (context, index) {
+                                bool iscontract = false;
+
+                                try {
+                                  var check = json.decode(_messages[index].text.toString()) as Map<String, dynamic>;
+                                  iscontract = true;
+                                } on FormatException catch (_) {
+                                  iscontract = false;
+                                }
+
                                 bool reverse = false;
                                 if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
                                   newMessageMe = false;
@@ -452,80 +473,110 @@ class _ChatWindowState extends State<ChatWindow> {
                                 var avatar = reverse == false
                                     ? GestureDetector(
                                         onTap: () {
-                                          //todo navigate to user profile
+                                          //ToDo navigate to user profile
                                           print("check");
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          child: CircleAvatar(
-                                            backgroundColor: Colors.teal,
-                                            child: Text(
-                                              widget.user.firstName.toString()[0],
-                                              style: TextStyle(color: Colors.white),
-                                            ),
-                                          ),
+                                          child: InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 35.0),
                                         ),
                                       )
                                     : Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                        child: CircleAvatar(
-                                          child: Text(widget.user.firstName.toString()[0]),
-                                        ),
+                                        child: InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 35.0),
                                       );
 
-                                var messagebody = Menu(
-                                  child: Container(
-                                      child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue[100],
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          _messages[index].text.toString(),
-                                          softWrap: true,
-                                        ),
-                                      ),
-                                    ),
-                                  )),
-                                  items: [
-                                    MenuItem("Info", () {
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.info,
-                                        title: "Sent on:  " +
-                                            _messages[index].dateCreated.toString().substring(0, 10) +
-                                            ",  " +
-                                            _messages[index].dateCreated.toString().substring(11, 16) +
-                                            "\n",
-                                        buttons: [
-                                          DialogButton(
-                                            child: Text(
-                                              "Back",
-                                              style: TextStyle(color: Colors.white, fontSize: 20),
-                                            ),
-                                            onPressed: () => Navigator.pop(context),
-                                            color: Color.fromRGBO(0, 179, 134, 1.0),
+                                var messagebody = !iscontract
+                                    ? Menu(
+                                        child: Container(
+                                          width: _messages[index].text.toString().length * 9.0 + 20 > MediaQuery.of(context).size.width * 0.6
+                                              ? MediaQuery.of(context).size.width * 0.6
+                                              : _messages[index].text.toString().length * 9.0 + 20,
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue[100],
+                                            borderRadius: BorderRadius.circular(8.0),
                                           ),
-                                          DialogButton(
-                                            child: Text(
-                                              "Report",
-                                              style: TextStyle(color: Colors.white, fontSize: 20),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10),
+                                              child: Text(
+                                                _messages[index].text.toString(),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 50,
+                                              ),
                                             ),
-                                            onPressed: () => {},
-                                            color: Color.fromRGBO(0, 179, 134, 1.0),
-                                          )
+                                          ),
+                                        ),
+                                        items: [
+                                          MenuItem("Info", () {
+                                            Alert(
+                                              context: context,
+                                              type: AlertType.info,
+                                              title: "Sent on:  " +
+                                                  _messages[index].dateCreated.toString().substring(0, 10) +
+                                                  ",  " +
+                                                  _messages[index].dateCreated.toString().substring(11, 16) +
+                                                  "\n",
+                                              buttons: [
+                                                DialogButton(
+                                                  child: Text(
+                                                    "Back",
+                                                    style: TextStyle(color: Colors.white, fontSize: 20),
+                                                  ),
+                                                  onPressed: () => Navigator.pop(context),
+                                                  color: Color.fromRGBO(0, 179, 134, 1.0),
+                                                ),
+                                                DialogButton(
+                                                  child: Text(
+                                                    "Report",
+                                                    style: TextStyle(color: Colors.white, fontSize: 20),
+                                                  ),
+                                                  onPressed: () => {},
+                                                  color: Color.fromRGBO(0, 179, 134, 1.0),
+                                                )
+                                              ],
+                                              content: Text(
+                                                  "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                            ).show();
+                                          }),
                                         ],
-                                        content: Text(
-                                            "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
-                                      ).show();
-                                    }),
-                                  ],
-                                  decoration: MenuDecoration(),
-                                );
+                                        decoration: MenuDecoration(),
+                                      )
+                                    : Container(
+                                        width: MediaQuery.of(context).size.width * 0.6,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue[100],
+//                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                          borderRadius: BorderRadius.circular(10),
+//                                          border: Border.all(color: Colors.grey[500]),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Text("I am traveling"),
+                                            ListTile(
+                                              leading: Text("From"),
+                                              trailing: Text("Set"),
+                                            ),
+                                            RaisedButton(
+                                              color: Colors.blue,
+                                              child: Text(
+                                                "Accept",
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                              onPressed: () {},
+                                            ),
+                                            RaisedButton(
+                                              color: Colors.red,
+                                              child: Text(
+                                                "Reject",
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                              onPressed: () {},
+                                            ),
+                                          ],
+                                        ),
+                                      );
 
                                 Widget message;
 
@@ -533,13 +584,13 @@ class _ChatWindowState extends State<ChatWindow> {
                                   message = Stack(
                                     children: <Widget>[
                                       messagebody,
-                                      Positioned(right: 0, bottom: 0, child: triangle),
+                                      !iscontract ? Positioned(right: 0, bottom: 0, child: triangle) : SizedBox(),
                                     ],
                                   );
                                 } else {
                                   message = Stack(
                                     children: <Widget>[
-                                      Positioned(left: 0, bottom: 0, child: triangle),
+                                      !iscontract ? Positioned(left: 0, bottom: 0, child: triangle) : SizedBox(),
                                       messagebody,
                                     ],
                                   );

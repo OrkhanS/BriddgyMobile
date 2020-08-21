@@ -24,9 +24,7 @@ class _OrderWidgetState extends State<OrderWidget> {
   void initState() {
     i = widget.i;
     order = widget.order;
-    imageUrl = order.orderimage.isEmpty
-        ? Api.noPictureImage
-        : Api.storageBucket + order.orderimage[0].toString();
+    imageUrl = order.orderimage.isEmpty ? Api.noPictureImage : Api.storageBucket + order.orderimage[0].toString();
     super.initState();
   }
 
@@ -48,12 +46,23 @@ class _OrderWidgetState extends State<OrderWidget> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[100],
-                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage(Api.noPictureImage)),
-
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(25.0),
+                  child: Image.network(
+                    imageUrl,
+                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                      return SizedBox();
+                    },
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
+//                CircleAvatar(
+//                  radius: 40,
+//                  backgroundColor: Colors.grey[100],
+//                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage(Api.noPictureImage)),
+//                ),
                 // Container(
                 //   child: FadeInImage.memoryNetwork(
                 //     placeholder: kTransparentImage,
@@ -176,9 +185,7 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
   void initState() {
     i = widget.i;
     order = widget.order;
-    imageUrl = order.orderimage.isEmpty
-        ? Api.noPictureImage
-        : Api.storageBucket + order.orderimage[0].toString();
+    imageUrl = order.orderimage.isEmpty ? Api.noPictureImage : Api.storageBucket + order.orderimage[0].toString();
     super.initState();
   }
 
@@ -200,16 +207,28 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[100],
-                  backgroundImage: NetworkImage(
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(25.0),
+                  child: Image.network(
                     imageUrl,
+                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                      return SizedBox();
+                    },
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.fitWidth,
                   ),
-                  onBackgroundImageError: (exception, stackTrace) {
-                    imageUrl = Api.noPictureImage;
-                  },
                 ),
+//                CircleAvatar(
+//                  radius: 40,
+//                  backgroundColor: Colors.grey[100],
+//                  backgroundImage: NetworkImage(
+//                    imageUrl,
+//                  ),
+//                  onBackgroundImageError: (exception, stackTrace) {
+//                    imageUrl = Api.noPictureImage;
+//                  },
+//                ),
                 // Container(
                 //   child: FadeInImage.memoryNetwork(
                 //     placeholder: kTransparentImage,

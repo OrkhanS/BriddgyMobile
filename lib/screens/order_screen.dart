@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -11,11 +12,13 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/messages.dart';
+import 'package:optisend/screens/apply_for_order.dart';
 import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import '../ad_manager.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -33,13 +36,11 @@ class _OrderScreenState extends State<OrderScreen> {
   var imageUrl;
   bool messageDeliveryButton = true;
   List<Widget> imageList = [];
+
   @override
   void initState() {
     order = widget.order;
-    imageUrl = order.owner.avatarpic == null
-            ? Api.noPictureImage
-            : Api.storageBucket +
-                order.owner.avatarpic.toString();
+    imageUrl = order.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + order.owner.avatarpic.toString();
     if (order.orderimage.isEmpty) {
       imageList.add(FadeInImage.memoryNetwork(
         placeholder: kTransparentImage,
@@ -328,7 +329,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Request date:",
+                                  "Posten on:",
                                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
@@ -459,17 +460,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ),
                                   ),
                                   onPressed: () {
-//                               var auth =
-//                                   Provider.of<Auth>(context, listen: false);
-//                               Provider.of<Messages>(context, listen: false)
-//                                   .createRooms(order.owner.id, auth);
-// //                                Flushbar(
-// //                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-// //                                  message: "Check Chats to see more.",
-// //                                  padding: const EdgeInsets.all(8),
-// //                                  borderRadius: 10,
-// //                                  duration: Duration(seconds: 5),
-// //                                )..show(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (__) => ApplyForOrderScreen()),
+                                    );
                                   },
                                 ),
                                 RaisedButton.icon(

@@ -6,6 +6,7 @@ import 'package:optisend/screens/my_items.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/profile_screen.dart';
 import 'package:optisend/screens/test.dart';
+import 'package:optisend/widgets/generators.dart';
 import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
@@ -57,11 +58,8 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.auth.userdetail != null) {
-        user = widget.auth.userdetail;
-        imageUrl = widget.auth.userdetail.avatarpic == null
-            ? Api.noPictureImage
-            : Api.storageBucket +
-                user.avatarpic.toString();
+      user = widget.auth.userdetail;
+      imageUrl = widget.auth.userdetail.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
     }
     return Scaffold(
         body: SafeArea(
@@ -75,9 +73,7 @@ class _AccountPageState extends State<AccountPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (__) => MyProfileScreen(
-                                  user: user, auth: widget.auth)),
+                          MaterialPageRoute(builder: (__) => MyProfileScreen(user: user, auth: widget.auth)),
                         );
                       },
                       child: Padding(
@@ -86,29 +82,32 @@ class _AccountPageState extends State<AccountPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor:
-                                  Theme.of(context).scaffoldBackgroundColor,
-                              backgroundImage: NetworkImage(imageUrl),
-                            ),
+                            imageUrl == Api.noPictureImage
+                                ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(25.0),
+                                    child: Image.network(
+                                      imageUrl,
+                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                        return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
+                                      },
+                                      height: 70,
+                                      width: 70,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
                             Column(
                               children: <Widget>[
                                 Text(
                                   user.firstName + " " + user.lastName,
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w700,
-                                      color: Theme.of(context).primaryColor),
+                                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
                                 ),
-                                Text(user.email,
-                                    style: TextStyle(fontSize: 15)),
+                                Text(user.email, style: TextStyle(fontSize: 15)),
                               ],
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(25)),
+                                borderRadius: BorderRadius.all(Radius.circular(25)),
 //                                color: Theme.of(context).primaryColor,
                                 color: Colors.grey[200],
                               ),
@@ -145,8 +144,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
@@ -155,9 +153,7 @@ class _AccountPageState extends State<AccountPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => MyItems(
-                                          token: Provider.of<Auth>(context,
-                                                  listen: true)
-                                              .token,
+                                          token: Provider.of<Auth>(context, listen: true).token,
                                           orderstripsProvider: widget.provider,
                                         )),
                               );
@@ -174,8 +170,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
@@ -184,9 +179,7 @@ class _AccountPageState extends State<AccountPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => MyTrips(
-                                          token: Provider.of<Auth>(context,
-                                                  listen: true)
-                                              .token,
+                                          token: Provider.of<Auth>(context, listen: true).token,
                                           orderstripsProvider: widget.provider,
                                         )),
                               );
@@ -203,8 +196,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
@@ -213,9 +205,7 @@ class _AccountPageState extends State<AccountPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (__) => Contracts(
-                                          token: Provider.of<Auth>(context,
-                                                  listen: true)
-                                              .token,
+                                          token: Provider.of<Auth>(context, listen: true).token,
                                         )),
                               );
                             },
@@ -224,8 +214,7 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                     ),
                     Card(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
@@ -244,14 +233,12 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
                             onTap: () {
-                              Share.share(
-                                  "Join to the Briddgy Family https://briddgy.com");
+                              Share.share("Join to the Briddgy Family https://briddgy.com");
                             },
                           ),
                           ListTile(
@@ -265,16 +252,14 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (__) => CustomerSupport()),
+                                MaterialPageRoute(builder: (__) => CustomerSupport()),
                               );
                             },
                           ),
@@ -283,9 +268,7 @@ class _AccountPageState extends State<AccountPage> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (__) =>
-                                        OpenContainerTransformDemo()),
+                                MaterialPageRoute(builder: (__) => OpenContainerTransformDemo()),
                               );
                             },
                             title: Text(
@@ -297,8 +280,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),
@@ -326,9 +308,7 @@ class _AccountPageState extends State<AccountPage> {
                                             color: Colors.redAccent,
                                           )),
                                       onPressed: () {
-                                        Provider.of<Auth>(context,
-                                                listen: false)
-                                            .logout(context);
+                                        Provider.of<Auth>(context, listen: false).logout(context);
                                       },
                                     ),
                                   ],
@@ -344,8 +324,7 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                             trailing: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
                                   color: Colors.grey[200],
                                 ),
                                 child: Icon(Icons.navigate_next)),

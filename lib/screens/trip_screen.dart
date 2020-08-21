@@ -10,6 +10,7 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/widgets/generators.dart';
 import 'package:share/share.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -29,10 +30,7 @@ class _TripScreenState extends State<TripScreen> {
   @override
   void initState() {
     trip = widget.trip;
-    imageUrl = trip.owner.avatarpic == null ?
-          Api.noPictureImage
-            : Api.storageBucket +
-                trip.owner.avatarpic.toString();
+    imageUrl = trip.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + trip.owner.avatarpic.toString();
     super.initState();
   }
 
@@ -115,21 +113,28 @@ class _TripScreenState extends State<TripScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Stack(
                         children: <Widget>[
-                          CircleAvatar(
-                            radius: 35,
-                            backgroundColor: Colors.grey[100],
-                            backgroundImage: NetworkImage(
-                              imageUrl,
-                            ),
-                          ),
+                          imageUrl == Api.noPictureImage
+                              ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(25.0),
+                                  child: Image.network(
+                                    imageUrl,
+                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                      return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                                    },
+                                    height: 70,
+                                    width: 70,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
                           Positioned(
-                            left: 0,
-                            bottom: 5,
+                            bottom: 0,
+                            right: 0,
                             child: Container(
                               width: 35,
                               height: 30,
                               decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 80),
+                                color: Color.fromRGBO(255, 255, 255, 10),
                                 border: Border.all(color: Colors.green, width: 1),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
@@ -146,7 +151,7 @@ class _TripScreenState extends State<TripScreen> {
                                   ),
                                   Text(
                                     trip.owner.rating.toString(),
-                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.w800),
                                   )
                                 ],
                               ),
