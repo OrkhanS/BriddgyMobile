@@ -137,8 +137,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
                                     return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 90.0);
                                   },
-                                  height: 50,
-                                  width: 50,
+                                  height: 90,
+                                  width: 90,
                                   fit: BoxFit.fitWidth,
                                 ),
                               ),

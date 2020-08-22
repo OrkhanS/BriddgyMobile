@@ -23,7 +23,8 @@ import 'package:timeago/timeago.dart' as timeago;
 class ChatsScreen extends StatefulWidget {
   final StreamController<String> streamController = StreamController<String>.broadcast();
   var provider, auth;
-  ChatsScreen({this.provider, this.auth});
+  bool shouldOpenTop = false;
+  ChatsScreen({this.provider, this.auth, this.shouldOpenTop});
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
@@ -139,6 +140,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                             : _rooms[index].members[1].user;
 
                                         imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
+
                                         return Column(
                                           children: <Widget>[
                                             Menu(
@@ -282,7 +284,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                 ),
                               )
                     // if not isAuth
-                    : Center(child: Text('Please Log in'))
+                    : Center(
+                        child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          'To be able to Chat, Please Log In.',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ))
 
                 // Provider.of<Auth>(context, listen: false).isAuth == false || provider.chats.isEmpty
                 //     ? Center(child: Text('No Chats'))

@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:optisend/models/user.dart';
+import 'package:utf/utf.dart';
 
 Order orderFromJson(String str) => Order.fromJson(json.decode(str));
 
@@ -54,8 +55,9 @@ class Order {
         weight: json["weight"],
         price: json["price"],
         trip: json["trip"],
-        description: json["description"],
-        title: json["title"],
+//        description: json["description"],
+        description: utf8.decode(json["description"].toString().codeUnits),
+        title: utf8.decode(json["title"].toString().codeUnits),
         deliverer: json["deliverer"],
         orderimage: List<dynamic>.from(json["orderimage"].map((x) => x)),
       );
@@ -66,8 +68,7 @@ class Order {
         "dimensions": dimensions,
         "source": source.toJson(),
         "destination": destination.toJson(),
-        "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "address": address,
         "weight": weight,
         "price": price,

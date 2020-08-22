@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/locale.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
@@ -15,9 +17,11 @@ import 'package:optisend/providers/messages.dart';
 import 'package:optisend/screens/apply_for_order.dart';
 import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/widgets/generators.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:utf/utf.dart';
 import '../ad_manager.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -136,19 +140,28 @@ class _OrderScreenState extends State<OrderScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Stack(
                         children: <Widget>[
-                          CircleAvatar(
-                            radius: 35,
-                            backgroundColor: Colors.grey[100],
-                            child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage(Api.noPictureImage)),
-                          ),
+                          imageUrl == Api.noPictureImage
+                              ? InitialsAvatarWidget(order.owner.firstName.toString(), order.owner.lastName.toString(), 70.0)
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(40.0),
+                                  child: Image.network(
+                                    imageUrl,
+                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                      return InitialsAvatarWidget(order.owner.firstName.toString(), order.owner.lastName.toString(), 70.0);
+                                    },
+                                    height: 70,
+                                    width: 70,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
                           Positioned(
-                            left: 0,
-                            bottom: 5,
+                            left: 17,
+                            right: 17,
+                            bottom: 0,
                             child: Container(
-                              width: 35,
-                              height: 30,
+                              height: 18,
                               decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 80),
+                                color: Color.fromRGBO(255, 255, 255, 30),
                                 border: Border.all(color: Colors.green, width: 1),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
@@ -213,7 +226,6 @@ class _OrderScreenState extends State<OrderScreen> {
                         children: <Widget>[
                           CarouselSlider(
                             options: CarouselOptions(
-                              height: 380,
                               initialPage: 0,
                               enableInfiniteScroll: true,
                               reverse: false,
@@ -238,7 +250,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               return Container(
                                 width: 8.0,
                                 height: 8.0,
-                                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                                margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: _current == index ? Color.fromRGBO(0, 0, 0, 0.9) : Color.fromRGBO(0, 0, 0, 0.4),
@@ -252,7 +264,7 @@ class _OrderScreenState extends State<OrderScreen> {
                               Text(
                                 order.title,
                                 style: TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 20,
                                   color: Theme.of(context).primaryColor,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -279,7 +291,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Departure city:",
+                                  "From:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -304,7 +316,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Arrival city:",
+                                  "To:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -376,7 +388,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Item cost:",
+                                  "Reward:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -421,10 +433,13 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                           Divider(),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 15.0),
+                            padding: const EdgeInsets.symmetric(vertical: 0.0),
                             child: Text(
                               order.description,
-                              style: TextStyle(fontSize: 17),
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.1,
+                              ),
                             ),
                           ),
                         ],
@@ -436,36 +451,36 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                RaisedButton.icon(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
-                                  color: Colors.white,
-
-                                  elevation: 2,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                  ),
-                                  icon: Icon(
-                                    MdiIcons.scriptTextOutline,
-//                              color: Colors.white,
-                                    color: Theme.of(context).primaryColor,
-                                    size: 18,
-                                  ),
-                                  label: Text(
-                                    " Apply for Delivery",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-//                                color: Colors.white,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (__) => ApplyForOrderScreen()),
-                                    );
-                                  },
-                                ),
+//                                RaisedButton.icon(
+//                                  padding: EdgeInsets.symmetric(horizontal: 20),
+////                            color: Theme.of(context).scaffoldBackgroundColor,
+//                                  color: Colors.white,
+//
+//                                  elevation: 2,
+//                                  shape: RoundedRectangleBorder(
+//                                    borderRadius: BorderRadius.circular(18.0),
+//                                  ),
+//                                  icon: Icon(
+//                                    MdiIcons.scriptTextOutline,
+////                              color: Colors.white,
+//                                    color: Theme.of(context).primaryColor,
+//                                    size: 18,
+//                                  ),
+//                                  label: Text(
+//                                    " Apply for Delivery",
+//                                    style: TextStyle(
+//                                      fontWeight: FontWeight.bold,
+////                                color: Colors.white,
+//                                      color: Theme.of(context).primaryColor,
+//                                    ),
+//                                  ),
+//                                  onPressed: () {
+//                                    Navigator.push(
+//                                      context,
+//                                      MaterialPageRoute(builder: (__) => ApplyForOrderScreen()),
+//                                    );
+//                                  },
+//                                ),
                                 RaisedButton.icon(
                                   padding: EdgeInsets.symmetric(horizontal: 20),
 //                            color: Theme.of(context).scaffoldBackgroundColor,
@@ -504,12 +519,18 @@ class _OrderScreenState extends State<OrderScreen> {
                                               }),
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                                                MaterialPageRoute(
+                                                    builder: (__) => ChatsScreen(
+                                                          provider: messageProvider,
+                                                          auth: auth,
+                                                          shouldOpenTop: true,
+                                                        )),
                                               ),
                                               Flushbar(
                                                 title: "Success",
                                                 message: "Chat with " + order.owner.firstName.toString() + " has been started!",
-                                                padding: const EdgeInsets.all(8),
+                                                padding: const EdgeInsets.all(20),
+                                                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                                 borderRadius: 10,
                                                 duration: Duration(seconds: 3),
                                               )..show(context)
