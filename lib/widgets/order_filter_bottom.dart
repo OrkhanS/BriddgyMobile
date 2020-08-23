@@ -402,17 +402,21 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           ),
                         ),
                         onTap: () {
-                          var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                          widget.from = null;
-                          widget.to = null;
-                          widget.weight = null;
-                          widget.price = null;
-                          provider.isLoadingTrips = true;
-                          provider.fetchAndSetMyOrders(Provider.of<Auth>(context, listen: false));
-                          urlFilter = null;
                           setState(() {
+                            widget.from = null;
+                            widget.to = null;
+                            widget.weight = null;
+                            widget.price = null;
+                            _searchBarFrom = "Anywhere";
+                            _searchBarTo = "Anywhere";
+                            _searchBarWeight = "Any";
                             _expanded = !_expanded;
                           });
+                          var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                          provider.isLoadingOrders = true;
+                          provider.notify();
+                          provider.fetchAndSetOrders();
+                          urlFilter = null;
                         },
                       ),
                       Expanded(flex: 2, child: SizedBox()),
