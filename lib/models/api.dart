@@ -1,8 +1,6 @@
 class Api {
-  static const String orderLink =
-      "http://briddgy-web.herokuapp.com/en/orders?id=";
-  static const String tripLink =
-      "http://briddgy-web.herokuapp.com/en/trips?id=";
+  static const String orderLink = "http://briddgy-web.herokuapp.com/en/orders?id=";
+  static const String tripLink = "http://briddgy-web.herokuapp.com/en/trips?id=";
   static const storageBucket = "https://storage.googleapis.com/briddgy-media/";
   static const String address = "http://34.68.255.37/";
   static const roomSocket = "ws://34.68.255.37/chat/";
@@ -31,6 +29,6 @@ class Api {
   static const forgetPassword = address + "api/request/password/";
   static const addOrderImage = address + "api/fileupload/orderimage/";
   static const addUserImage = address + "api/fileupload/userimage/";
-  static const noPictureImage =
-      "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png";
+  static const applyForDelivery = address + "api/contracts/sign/";
+  static const noPictureImage = "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png";
 }

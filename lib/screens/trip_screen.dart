@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -9,8 +10,12 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/screens/verify_phone_screen.dart';
 import 'package:optisend/widgets/generators.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -384,15 +389,27 @@ class _TripScreenState extends State<TripScreen> {
                               ),
                             ),
                             onPressed: () {
-                              //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
-//                                Flushbar(
-//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                                  message: "Check Chats to see more.",
-//                                  padding: const EdgeInsets.all(8),
-//                                  borderRadius: 10,
-//                                  duration: Duration(seconds: 5),
-//                                )..show(context);
+                              var auth = Provider.of<Auth>(context,listen: false);
+                                if (auth.isAuth) {
+                                  if (auth.userdetail.isNumberVerified == true) {
+                                    //NOW CREATE CONTRACT
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (__) => ChatsScreen()),
+                                    );
+                                  } else {
+                                    Navigator.push(context, MaterialPageRoute(builder: (__)=>VerifyPhoneNextScreen()));
+                                  }
+                              } else {
+                                Flushbar(
+                                  title: "Warning",
+                                  message: "You need to Log in to add Item!",
+                                  padding: const EdgeInsets.all(8),
+                                  borderRadius: 10,
+                                  duration: Duration(seconds: 3),
+                                )..show(context);
+                              }
                             },
                           ),
                           RaisedButton.icon(

@@ -292,6 +292,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
               }))
           .then((response) {
         if (response.statusCode == 200) {
+          Provider.of<Auth>(context, listen: false).user.isNumberVerified = true;
           Navigator.of(context).pop();
           Flushbar(
             title: "Success!",
