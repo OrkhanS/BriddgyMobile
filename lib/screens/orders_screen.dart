@@ -59,6 +59,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _myActivityResult;
 
   Future sortData(value, OrdersTripsProvider provider) async {
+    provider.isLoadingOrders = true; provider.notify();
     String url = Api.orders + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
@@ -74,13 +75,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
     } else if (value == 3) {
       url = url + "weight";
     }
-    provider.isLoadingOrders = true;
     await http.get(
       url,
-      headers: {
-        HttpHeaders.contentTypeHeader: "application/json",
-        "Authorization": "Token " + widget.token,
-      },
+      headers:Provider.of<Auth>(context, listen: false).isAuth
+          ? {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+            }
+          : {
+              HttpHeaders.contentTypeHeader: "application/json",
+            }, 
     ).then((response) {
       setState(
         () {
@@ -90,8 +94,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
           for (var i = 0; i < data["results"].length; i++) {
             _orders.add(Order.fromJson(data["results"][i]));
           }
+          provider.orders = _orders;
           nextOrderURL = data["next"];
-          provider.isLoadingOrders = false;
+          provider.isLoadingOrders = false; provider.notify();
         },
       );
     });
