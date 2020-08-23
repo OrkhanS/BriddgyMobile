@@ -230,6 +230,14 @@ class _TripScreenState extends State<TripsScreen> {
                             )),
                   );
                 } else {
+                  Provider.of<Auth>(context,listen:false).requestEmailVerification();
+                  Flushbar(
+                    title: "Email Sent",
+                    message: "Please check your email for code!",
+                    padding: const EdgeInsets.all(8),
+                    borderRadius: 10,
+                    duration: Duration(seconds: 3),
+                  )..show(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
