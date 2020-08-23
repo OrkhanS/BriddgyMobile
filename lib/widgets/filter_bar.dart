@@ -40,7 +40,7 @@ class _FilterBarState extends State<FilterBar> {
   var _expanded = false;
 
   Future filterAndSetOrders() async {
-    _suggested = [];
+    widget.ordersProvider.isLoadingOrders = true;
     urlFilter = Api.orders + "?";
     if (widget.from != null) {
       urlFilter = urlFilter + "origin=" + widget.from;
@@ -63,14 +63,17 @@ class _FilterBarState extends State<FilterBar> {
           ? urlFilter = urlFilter + "min_price=" + widget.price.toString()
           : urlFilter = urlFilter + "&min_price=" + widget.price.toString();
     }
-    if (Provider.of<Auth>(context, listen: false).isAuth) {
-      await http.get(
+   
+    await http.get(
         urlFilter,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          "Authorization":
-              "Token " + Provider.of<Auth>(context, listen: false).token
-        },
+        headers: Provider.of<Auth>(context, listen: false).isAuth
+          ? {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+            }
+          : {
+              HttpHeaders.contentTypeHeader: "application/json",
+            }, 
       ).then((response) {
         setState(
           () {
@@ -80,32 +83,13 @@ class _FilterBarState extends State<FilterBar> {
             for (var i = 0; i < data["results"].length; i++) {
               _suggested.add(Order.fromJson(data["results"][i]));
             }
-            widget.ordersProvider.orders = _suggested;
+            widget.ordersProvider.orders = []; widget.ordersProvider.orders = _suggested;
+            widget.ordersProvider.allOrdersDetails = {"next": data["next"], "count": data["count"]};
             widget.ordersProvider.isLoadingOrders = false;
-            //itemCount = dataOrders["count"];
+            widget.ordersProvider.notify();
           },
         );
       });
-    } else {
-      await http.get(
-        urlFilter,
-        headers: {HttpHeaders.contentTypeHeader: "application/json"},
-      ).then((response) {
-        setState(
-          () {
-            Map<String, dynamic> data =
-                json.decode(response.body) as Map<String, dynamic>;
-
-            for (var i = 0; i < data["results"].length; i++) {
-              _suggested.add(Order.fromJson(data["results"][i]));
-            }
-            widget.ordersProvider.orders = _suggested;
-            widget.ordersProvider.isLoadingOrders = false;
-            //itemCount = dataOrders["count"];
-          },
-        );
-      });
-    }
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {

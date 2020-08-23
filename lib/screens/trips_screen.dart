@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
-import 'package:optisend/widgets/filter_bar.dart';
+import 'package:optisend/widgets/filter_bar_trips.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 import 'dart:async';
@@ -56,50 +56,7 @@ class _TripScreenState extends State<TripsScreen> {
 
   List _trips = [];
 
-  Future filterAndSetTrips(from, to, weight, _endtime) async {
-    var provider = widget.orderstripsProvider;
-    _endtime = null;
-    urlFilter = Api.trips + "?";
-    if (from != null) {
-      urlFilter = urlFilter + "origin=" + from;
-      flagFrom = true;
-    }
-    if (to != null) {
-      flagFrom == false
-          ? urlFilter = urlFilter + "dest=" + to.toString()
-          : urlFilter = urlFilter + "&dest=" + to.toString();
-      flagTo = true;
-    }
-    if (weight != null) {
-      flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "weight=" + weight.toString()
-          : urlFilter = urlFilter + "&weight=" + weight.toString();
-      flagWeight = true;
-    }
-
-    if (_endtime != null) {
-      flagWeight == false &&
-              flagTo == false &&
-              flagFrom == false &&
-              flagStart == false
-          ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
-          : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
-      flagStart = true;
-    }
-    await http.get(
-      urlFilter,
-      headers: {HttpHeaders.contentTypeHeader: "application/json"},
-    ).then((response) {
-      setState(
-        () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          provider.trips = dataOrders["results"];
-          provider.isLoadingTrips = false;
-        },
-      );
-    });
-  }
-
+ 
   Future sortData(value, OrdersTripsProvider provider) async {
     String url = Api.trips + "?order_by=";
     if (urlFilter.isNotEmpty) {
@@ -237,7 +194,7 @@ class _TripScreenState extends State<TripsScreen> {
             ),
           ),
           onPressed: () {
-            filterAndSetTrips(from, to, weight, _endtime);
+            //filterAndSetTrips(from, to, weight, _endtime);
             build(context);
           },
         ),
@@ -300,7 +257,7 @@ class _TripScreenState extends State<TripsScreen> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBar(
+                    FilterBarTrip(
                         ordersProvider: widget.orderstripsProvider,
                         from: from,
                         to: to,

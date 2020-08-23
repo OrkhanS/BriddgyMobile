@@ -70,6 +70,10 @@ class OrdersTripsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  notify(){
+    notifyListeners();
+  }
+
   Future fetchAndSetOrders() async {
     String url = Api.orders + "?order_by=-date";
     final prefs = await SharedPreferences.getInstance();

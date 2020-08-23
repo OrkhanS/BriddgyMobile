@@ -142,43 +142,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
   void dispose() {
     super.dispose();
   }
-
-  Future filterAndSetOrders(provider, from, to, weight, price) async {
-    urlFilter = Api.orders + "?";
-    if (from != null) {
-      urlFilter = urlFilter + "origin=" + from;
-      flagFrom = true;
-    }
-    if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
-      flagTo = true;
-    }
-    if (weight != null) {
-      flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "weight=" + weight.toString()
-          : urlFilter = urlFilter + "&weight=" + weight.toString();
-      flagWeight = true;
-    }
-    if (price != null) {
-      flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "min_price=" + price.toString()
-          : urlFilter = urlFilter + "&min_price=" + price.toString();
-    }
-    await http.get(
-      urlFilter,
-      headers: {HttpHeaders.contentTypeHeader: "application/json", "Authorization": "Token " + Provider.of<Auth>(context, listen: true).token},
-    ).then((response) {
-      setState(
-        () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          provider.orders = dataOrders["results"];
-          provider.isLoading = false;
-          // _itemCount = dataOrders["count"];
-        },
-      );
-    });
-  }
-
 //    return Form(
   Future _loadData() async {
     if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {

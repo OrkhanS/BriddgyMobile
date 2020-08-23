@@ -6,17 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/trip.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:provider/provider.dart';
 
-class FilterBarOrder extends StatefulWidget {
+class FilterBarTrip extends StatefulWidget {
   var from, to, weight, date;
   OrdersTripsProvider ordersProvider;
-  FilterBarOrder({this.ordersProvider, this.from, this.to, this.weight, this.date});
+  FilterBarTrip({this.ordersProvider, this.from, this.to, this.weight, this.date});
   @override
-  _FilterBarStateOrder createState() => _FilterBarStateOrder();
+  _FilterBarStateTrip createState() => _FilterBarStateTrip();
 }
 
-class _FilterBarStateOrder extends State<FilterBarOrder> {
+class _FilterBarStateTrip extends State<FilterBarTrip> {
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
   final TextEditingController _typeAheadController3 = TextEditingController();
@@ -52,20 +55,46 @@ class _FilterBarStateOrder extends State<FilterBarOrder> {
           : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
       flagWeight = true;
     }
+      await http.get(
+        urlFilter,
+        headers: Provider.of<Auth>(context, listen: false).isAuth
+          ? {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+            }
+          : {
+              HttpHeaders.contentTypeHeader: "application/json",
+            }, 
+      ).then((response) {
+        setState(
+          () {
+            Map<String, dynamic> data =
+                json.decode(response.body) as Map<String, dynamic>;
 
-    await http.get(
-      urlFilter,
-      headers: {HttpHeaders.contentTypeHeader: "application/json"},
-    ).then((response) {
-      setState(
-        () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          widget.ordersProvider.orders = dataOrders["results"];
-          isLoading = false;
-          //itemCount = dataOrders["count"];
-        },
-      );
-    });
+            for (var i = 0; i < data["results"].length; i++) {
+              _suggested.add(Trip.fromJson(data["results"][i]));
+            }
+            widget.ordersProvider.trips = []; widget.ordersProvider.trips = _suggested; 
+            widget.ordersProvider.allTripsDetails = {"next": data["next"], "count": data["count"]};
+            widget.ordersProvider.isLoadingTrips = false;
+            widget.ordersProvider.notify();
+          },
+        );
+      });
+
+    // await http.get(
+    //   urlFilter,
+    //   headers: {HttpHeaders.contentTypeHeader: "application/json"},
+    // ).then((response) {
+    //   setState(
+    //     () {
+    //       final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    //       widget.ordersProvider.orders = dataOrders["results"];
+    //       isLoading = false;
+    //       //itemCount = dataOrders["count"];
+    //     },
+    //   );
+    // });
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
