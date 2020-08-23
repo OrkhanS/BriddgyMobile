@@ -36,21 +36,28 @@ class _FilterBarStateTrip extends State<FilterBarTrip> {
   bool flagFrom = false;
   bool flagTo = false;
   bool flagWeight = false;
-  String urlFilter = "";
+  String urlFilter;
   var _expanded = false;
 
   Future filterAndSetTrips() async {
-    urlFilter = Api.trips + "?";
+    var provider = widget.ordersProvider; 
+    provider.isLoadingTrips = true; provider.notify();
+
+    if(urlFilter==null)urlFilter = Api.trips + "?";
     if (widget.from != null) {
-      urlFilter = urlFilter + "origin=" + widget.from;
+      flagWeight == false && flagTo == false && flagFrom == false 
+          ? urlFilter = urlFilter + "origin=" + widget.from 
+          : urlFilter = urlFilter + "&origin=" + widget.from;
       flagFrom = true;
     }
     if (widget.to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + widget.to.toString() : urlFilter = urlFilter + "&dest=" + widget.to.toString();
+      flagWeight == false && flagTo == false && flagFrom == false
+          ? urlFilter = urlFilter + "dest=" + widget.to.toString()
+          : urlFilter = urlFilter + "&dest=" + widget.to.toString();
       flagTo = true;
     }
     if (widget.weight != null) {
-      flagTo == false && flagFrom == false
+      flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "weight=" + widget.weight.toString()
           : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
       flagWeight = true;
@@ -70,7 +77,7 @@ class _FilterBarStateTrip extends State<FilterBarTrip> {
           () {
             Map<String, dynamic> data =
                 json.decode(response.body) as Map<String, dynamic>;
-
+            _suggested=[];
             for (var i = 0; i < data["results"].length; i++) {
               _suggested.add(Trip.fromJson(data["results"][i]));
             }
@@ -406,6 +413,43 @@ class _FilterBarStateTrip extends State<FilterBarTrip> {
                             ),
                           ),
                         ),
+                         Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: RaisedButton(
+                                color: Theme.of(context).primaryColor,
+                                elevation: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Center(
+                                    child: Text(
+                                      "Reset",
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  var provider = Provider.of<OrdersTripsProvider>(context,listen:false);
+                                  widget.from=null; widget.to=null;
+                                  widget.weight=null; widget.date=null;
+                                  provider.isLoadingTrips=true; provider.fetchAndSetTrips();
+                                  urlFilter=null;
+                                  setState(() {
+                                    _expanded = !_expanded;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                    
                       ],
                     ),
                   ),

@@ -224,28 +224,21 @@ class _TripScreenState extends State<TripsScreen> {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               if (widget.auth.isAuth) {
-                Navigator.push(
+                if (widget.auth.userdetail.isEmailVerified == true) {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (__) => AddTripScreen(
                               token: widget.token,
                               orderstripsProvider: widget.orderstripsProvider,
-                            )));
-                // if (widget.auth.userdetail.isEmailVerified == true) {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (__) => AddTripScreen(
-                //               token: widget.token,
-                //               orderstripsProvider: widget.orderstripsProvider,
-                //             )),
-                //   );
-                // } else {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
-                //   );
-                // }
+                            )),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                  );
+                }
               } else {
                 Flushbar(
                   title: "Warning",

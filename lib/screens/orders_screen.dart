@@ -195,34 +195,62 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
         return Scaffold(
           resizeToAvoidBottomPadding: true,
-          floatingActionButton: OpenContainer(
-            openElevation: 5,
-            transitionDuration: Duration(milliseconds: 500),
-            transitionType: ContainerTransitionType.fadeThrough,
-            openBuilder: (BuildContext context, VoidCallback _) {
-              return AddItemScreen();
+          floatingActionButton:  FloatingActionButton(
+            onPressed: () {
+              if (widget.auth.isAuth) {
+                if (widget.auth.userdetail.isEmailVerified == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (__) => AddItemScreen()),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                  );
+                }
+              } else {
+                Flushbar(
+                  title: "Warning",
+                  message: "You need to Log in to add Item!",
+                  padding: const EdgeInsets.all(8),
+                  borderRadius: 10,
+                  duration: Duration(seconds: 3),
+                )..show(context);
+              }
             },
-            closedElevation: 6.0,
-            closedShape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(56 / 2),
-              ),
-            ),
-            closedColor: Colors.white,
-            closedBuilder: (BuildContext context, VoidCallback openContainer) {
-              return SizedBox(
-                height: 56,
-                width: 56,
-                child: Center(
-                  child: Icon(
-                    Icons.add,
-                    size: 30,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              );
-            },
+            backgroundColor: Theme.of(context).primaryColor,
+            child: Icon(Icons.add),
           ),
+          // OpenContainer(
+          //   openElevation: 5,
+          //   transitionDuration: Duration(milliseconds: 500),
+          //   transitionType: ContainerTransitionType.fadeThrough,
+          //   openBuilder: (BuildContext context, VoidCallback _) {
+          //     return 
+          //   },
+          //   closedElevation: 6.0,
+          //   closedShape: const RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.all(
+          //       Radius.circular(56 / 2),
+          //     ),
+          //   ),
+          //   closedColor: Colors.white,
+          //   closedBuilder: (BuildContext context, VoidCallback openContainer) {
+          //     return SizedBox(
+          //       height: 56,
+          //       width: 56,
+          //       child: Center(
+          //         child: Icon(
+          //           Icons.add,
+          //           size: 30,
+          //           color: Theme.of(context).primaryColor,
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
           body: SafeArea(
             child: Stack(
               children: <Widget>[
