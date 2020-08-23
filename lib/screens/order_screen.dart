@@ -481,14 +481,15 @@ class _OrderScreenState extends State<OrderScreen> {
 //                                    );
 //                                  },
 //                                ),
+                                Expanded(
+                                  child: SizedBox(),
+                                ),
                                 RaisedButton.icon(
                                   padding: EdgeInsets.symmetric(horizontal: 20),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
                                   color: Colors.green,
-
-                                  elevation: 2,
+                                  elevation: 5,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
+                                    borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   icon: Icon(
                                     MdiIcons.chatOutline,
@@ -499,8 +500,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   label: Text(
                                     " Message",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
                                     ),
                                   ),

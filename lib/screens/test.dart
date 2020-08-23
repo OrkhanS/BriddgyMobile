@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
-import 'package:optisend/screens/add_item_screen.dart';
+import 'package:optisend/screens/add_order_screen.dart';
 
 const String _loremIpsumParagraph = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod '
     'tempor incididunt ut labore et dolore magna aliqua. Vulputate dignissim '

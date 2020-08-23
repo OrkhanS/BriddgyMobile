@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -14,6 +15,8 @@ import 'package:optisend/widgets/generators.dart';
 import 'package:share/share.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import 'chats_screen.dart';
 
 class TripScreen extends StatefulWidget {
   Trip trip;
@@ -116,7 +119,7 @@ class _TripScreenState extends State<TripScreen> {
                           imageUrl == Api.noPictureImage
                               ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
                               : ClipRRect(
-                                  borderRadius: BorderRadius.circular(25.0),
+                                  borderRadius: BorderRadius.circular(40.0),
                                   child: Image.network(
                                     imageUrl,
                                     errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
@@ -128,13 +131,13 @@ class _TripScreenState extends State<TripScreen> {
                                   ),
                                 ),
                           Positioned(
+                            left: 17,
+                            right: 17,
                             bottom: 0,
-                            right: 0,
                             child: Container(
-                              width: 35,
-                              height: 30,
+                              height: 18,
                               decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 10),
+                                color: Color.fromRGBO(255, 255, 255, 30),
                                 border: Border.all(color: Colors.green, width: 1),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(20),
@@ -151,7 +154,7 @@ class _TripScreenState extends State<TripScreen> {
                                   ),
                                   Text(
                                     trip.owner.rating.toString(),
-                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.w800),
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                                   )
                                 ],
                               ),
@@ -356,53 +359,49 @@ class _TripScreenState extends State<TripScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          RaisedButton.icon(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
-                            color: Colors.white,
-
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                            ),
-                            icon: Icon(
-                              MdiIcons.scriptTextOutline,
-//                              color: Colors.white,
-                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                            label: Text(
-                              " Apply for Delivery",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-//                                color: Colors.white,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            onPressed: () {
-                              //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
-//                                Flushbar(
-//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                                  message: "Check Chats to see more.",
-//                                  padding: const EdgeInsets.all(8),
-//                                  borderRadius: 10,
-//                                  duration: Duration(seconds: 5),
-//                                )..show(context);
-                            },
+//                                RaisedButton.icon(
+//                                  padding: EdgeInsets.symmetric(horizontal: 20),
+////                            color: Theme.of(context).scaffoldBackgroundColor,
+//                                  color: Colors.white,
+//
+//                                  elevation: 2,
+//                                  shape: RoundedRectangleBorder(
+//                                    borderRadius: BorderRadius.circular(18.0),
+//                                  ),
+//                                  icon: Icon(
+//                                    MdiIcons.scriptTextOutline,
+////                              color: Colors.white,
+//                                    color: Theme.of(context).primaryColor,
+//                                    size: 18,
+//                                  ),
+//                                  label: Text(
+//                                    " Apply for Delivery",
+//                                    style: TextStyle(
+//                                      fontWeight: FontWeight.bold,
+////                                color: Colors.white,
+//                                      color: Theme.of(context).primaryColor,
+//                                    ),
+//                                  ),
+//                                  onPressed: () {
+//                                    Navigator.push(
+//                                      context,
+//                                      MaterialPageRoute(builder: (__) => ApplyForOrderScreen()),
+//                                    );
+//                                  },
+//                                ),
+                          Expanded(
+                            child: SizedBox(),
                           ),
                           RaisedButton.icon(
                             padding: EdgeInsets.symmetric(horizontal: 20),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
                             color: Colors.green,
-
-                            elevation: 2,
+                            elevation: 5,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                             icon: Icon(
                               MdiIcons.chatOutline,
@@ -413,48 +412,14 @@ class _TripScreenState extends State<TripScreen> {
                             label: Text(
                               " Message",
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
                               ),
                             ),
                             onPressed: () {
-                              //todo Orxan fix
-//                  createRooms(tripsProvider.trips[i]["owner"]["id"]);
-//                                Flushbar(
-//                                  title: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                                  message: "Check Chats to see more.",
-//                                  padding: const EdgeInsets.all(8),
-//                                  borderRadius: 10,
-//                                  duration: Duration(seconds: 5),
-//                                )..show(context);
+                              //todo Orxan
                             },
                           ),
-                          // RaisedButton(
-                          //   color: Theme.of(context).primaryColor,
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //     children: <Widget>[
-                          //       Text(
-                          //         "To Baggage",
-                          //         style: TextStyle(
-                          //           fontSize: 20,
-                          //           fontWeight: FontWeight.bold,
-                          //           color: Colors.white,
-                          //         ),
-                          //       ),
-                          //       SizedBox(
-                          //         width: 10,
-                          //       ),
-                          //       Icon(
-                          //         Icons.add,
-                          //         size: 20,
-                          //         color: Colors.white,
-                          //       )
-                          //     ],
-                          //   ),
-                          //   onPressed: () {},
-                          // ),
                         ],
                       ),
                     ),

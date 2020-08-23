@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:http/http.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -181,17 +182,46 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   elevation: 1,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, top: 20, bottom: 20),
-                    child: Text(
-                      "Item Information",
-                      style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
-                    ),
+//              Padding(
+//                padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+//                child: Text(
+//                  "Item Details",
+////                  textAlign: TextAlign.center,
+//                  style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
+//                ),
+//              ),
+              SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                child: Container(
+                  height: 80,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey, width: .5),
                   ),
-                ],
+                  child: imageFile == null
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              "Add image",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        )
+                      : _setImageView(),
+                ),
+                onTap: () {
+                  _showSelectionDialog(context);
+                },
               ),
               Container(
 //              alignment: Alignment.center,
@@ -199,83 +229,90 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 child: TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Title',
-                    icon: Icon(Icons.markunread_mailbox),
+                    icon: Icon(MdiIcons.bagCarryOn),
                   ),
                   onChanged: (String val) {
                     title = val;
                   },
                 ),
               ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: TypeAheadFormField(
-                  keepSuggestionsOnLoading: false,
-                  debounceDuration: const Duration(milliseconds: 200),
-                  textFieldConfiguration: TextFieldConfiguration(
-                    onSubmitted: (val) {
-                      from = val;
-                    },
-                    controller: this._typeAheadController,
-                    decoration: InputDecoration(labelText: 'From', icon: Icon(Icons.location_on)),
-                  ),
-                  suggestionsCallback: (pattern) {
-                    return getSuggestions(pattern);
-                  },
-                  itemBuilder: (context, suggestion) {
-                    return ListTile(
-                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
-                    );
-                  },
-                  transitionBuilder: (context, suggestionsBox, controller) {
-                    return suggestionsBox;
-                  },
-                  onSuggestionSelected: (suggestion) {
-                    this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                    from = suggestion.toString().split(", ")[2];
-                  },
-                  validator: (value) {
-                    from = value;
-                    if (value.isEmpty) {
-                      return 'Please select a city';
-                    }
-                  },
-                  onSaved: (value) => from = value,
-                ),
-              ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: TypeAheadFormField(
-                  keepSuggestionsOnLoading: false,
-                  debounceDuration: const Duration(milliseconds: 200),
-                  textFieldConfiguration: TextFieldConfiguration(
-                    onSubmitted: (val) {
-                      to = val;
-                    },
-                    controller: this._typeAheadController2,
-                    decoration: InputDecoration(labelText: 'To', icon: Icon(Icons.location_on)),
-                  ),
-                  suggestionsCallback: (pattern) {
-                    return getSuggestions(pattern);
-                  },
-                  itemBuilder: (context, suggestion) {
-                    return ListTile(
-                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
-                    );
-                  },
-                  transitionBuilder: (context, suggestionsBox, controller) {
-                    return suggestionsBox;
-                  },
-                  onSuggestionSelected: (suggestion) {
-                    this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                    to = suggestion.toString().split(", ")[2];
-                  },
-                  validator: (value) {
-                    to = value;
-                    if (value.isEmpty) {
-                      return 'Please select a city';
-                    }
-                  },
-                  onSaved: (value) => to = value,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: deviceWidth * 0.4,
+                      child: TypeAheadFormField(
+                        keepSuggestionsOnLoading: false,
+                        debounceDuration: const Duration(milliseconds: 200),
+                        textFieldConfiguration: TextFieldConfiguration(
+                          onSubmitted: (val) {
+                            from = val;
+                          },
+                          controller: this._typeAheadController,
+                          decoration: InputDecoration(labelText: 'From', icon: Icon(MdiIcons.bridge)),
+                        ),
+                        suggestionsCallback: (pattern) {
+                          return getSuggestions(pattern);
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                          );
+                        },
+                        transitionBuilder: (context, suggestionsBox, controller) {
+                          return suggestionsBox;
+                        },
+                        onSuggestionSelected: (suggestion) {
+                          this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                          from = suggestion.toString().split(", ")[2];
+                        },
+                        validator: (value) {
+                          from = value;
+                          if (value.isEmpty) {
+                            return 'Please select a city';
+                          }
+                        },
+                        onSaved: (value) => from = value,
+                      ),
+                    ),
+                    Container(
+                      width: deviceWidth * 0.4,
+                      child: TypeAheadFormField(
+                        keepSuggestionsOnLoading: false,
+                        debounceDuration: const Duration(milliseconds: 200),
+                        textFieldConfiguration: TextFieldConfiguration(
+                          onSubmitted: (val) {
+                            to = val;
+                          },
+                          controller: this._typeAheadController2,
+                          decoration: InputDecoration(labelText: 'To', icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
+                        ),
+                        suggestionsCallback: (pattern) {
+                          return getSuggestions(pattern);
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return ListTile(
+                            title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                          );
+                        },
+                        transitionBuilder: (context, suggestionsBox, controller) {
+                          return suggestionsBox;
+                        },
+                        onSuggestionSelected: (suggestion) {
+                          this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                          to = suggestion.toString().split(", ")[2];
+                        },
+                        validator: (value) {
+                          to = value;
+                          if (value.isEmpty) {
+                            return 'Please select a city';
+                          }
+                        },
+                        onSaved: (value) => to = value,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Container(
@@ -296,7 +333,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 child: TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Weight',
-                    icon: Icon(Icons.format_size),
+                    icon: Icon(MdiIcons.weightKilogram),
                   ),
                   maxLength: 4,
                   keyboardType: TextInputType.number,
@@ -315,7 +352,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     maxLines: null,
                     decoration: InputDecoration(
                       labelText: 'Description',
-                      icon: Icon(Icons.description),
+                      icon: Icon(MdiIcons.informationOutline),
                     ),
                     onChanged: (String val) {
                       description = val;
@@ -324,7 +361,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
@@ -368,106 +405,89 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     //     _showSelectionDialog(context);
                     //   },
                     // ),
-                    InkWell(
-                      child: Container(
-                        height: 100,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        child: imageFile == null
-                            ? Icon(
-                                Icons.add,
-                                size: 30,
-                                color: Colors.grey,
-                              )
-                            : _setImageView(),
-                      ),
-                      onTap: () {
-                        _showSelectionDialog(context);
-                      },
-                    ),
                   ],
                 ),
               ),
               addItemButton
-                  ? RaisedButton.icon(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      ),
-                      icon: Icon(
-                        Icons.add,
-                        color: Theme.of(context).primaryColor,
-                        size: 20,
-                      ),
-                      label: Text(
-                        "Add item",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 19,
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 60),
+                      child: RaisedButton(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        color: Colors.green,
+//                      elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
                         ),
+                        child: Container(
+                          width: double.infinity,
+                          child: Text(
+                            "Add Order",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          var token = Provider.of<Auth>(context, listen: false).token;
+                          var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                          String url = Api.orders;
+                          if (title == null || from == null || to == null || weight == null || price == null) {
+                            setState(() {
+                              addItemButton = true;
+                            });
+                            Flushbar(
+                              title: "Warning!",
+                              message: "Fill all the fields and try again.",
+                              padding: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.all(20),
+                              borderRadius: 10,
+                              duration: Duration(seconds: 3),
+                            )..show(context);
+                          } else {
+                            setState(() {
+                              addItemButton = false;
+                            });
+                            http
+                                .post(url,
+                                    headers: {
+                                      HttpHeaders.CONTENT_TYPE: "application/json",
+                                      "Authorization": "Token " + token,
+                                    },
+                                    body: json.encode({
+                                      "title": title,
+                                      "dimensions": 0,
+                                      "source": from,
+                                      "destination": to,
+                                      "date": DateTime.now().toString().substring(0, 10),
+                                      "address": "ads",
+                                      "weight": weight,
+                                      "price": price,
+                                      "trip": null,
+                                      "description": description
+                                    }))
+                                .then((response) {
+                              Map data = json.decode(response.body);
+                              if (response.statusCode == 201) {
+                                upload(data["id"].toString(), token, orderstripsProvider, context);
+                              } else {
+                                setState(() {
+                                  addItemButton = true;
+                                });
+                                Flushbar(
+                                  title: "Warning!",
+                                  message: "Item couldn't be added, try again.",
+                                  padding: const EdgeInsets.all(8),
+                                  borderRadius: 10,
+                                  duration: Duration(seconds: 3),
+                                )..show(context);
+                              }
+                            });
+                          }
+                        },
                       ),
-                      onPressed: () {
-                        var token = Provider.of<Auth>(context, listen: false).token;
-                        var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                        String url = Api.orders;
-                        if (title == null || from == null || to == null || weight == null || price == null) {
-                          setState(() {
-                            addItemButton = true;
-                          });
-                          Flushbar(
-                            title: "Warning!",
-                            message: "Fill all the fields and try again.",
-                            padding: const EdgeInsets.all(8),
-                            borderRadius: 10,
-                            duration: Duration(seconds: 3),
-                          )..show(context);
-                        } else {
-                          setState(() {
-                            addItemButton = false;
-                          });
-                          http
-                              .post(url,
-                                  headers: {
-                                    HttpHeaders.CONTENT_TYPE: "application/json",
-                                    "Authorization": "Token " + token,
-                                  },
-                                  body: json.encode({
-                                    "title": title,
-                                    "dimensions": 0,
-                                    "source": from,
-                                    "destination": to,
-                                    "date": DateTime.now().toString().substring(0, 10),
-                                    "address": "ads",
-                                    "weight": weight,
-                                    "price": price,
-                                    "trip": null,
-                                    "description": description
-                                  }))
-                              .then((response) {
-                            Map data = json.decode(response.body);
-                            if (response.statusCode == 201) {
-                              upload(data["id"].toString(), token, orderstripsProvider, context);
-                            } else {
-                              setState(() {
-                                addItemButton = true;
-                              });
-                              Flushbar(
-                                title: "Warning!",
-                                message: "Item couldn't be added, try again.",
-                                padding: const EdgeInsets.all(8),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context);
-                            }
-                          });
-                        }
-                      },
                     )
                   : ProgressIndicatorWidget(show: true),
             ],
