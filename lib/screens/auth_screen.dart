@@ -322,12 +322,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         onPressed: () {
                           _submit();
-                          if (_authMode == AuthMode.Signup) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
-                            );
-                          }
                         },
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
