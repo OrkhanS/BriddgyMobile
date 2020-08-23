@@ -98,7 +98,7 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       if (_authMode == AuthMode.Login) {
         // Log user in
-        await Provider.of<Auth>(context, listen: false).login(_authData['email'], _authData['password'], deviceToken);
+        await Provider.of<Auth>(context, listen: false).login(_authData['email'], _authData['password'], deviceToken, context);
       } else {
         // Sign user up
         await Provider.of<Auth>(context, listen: false)

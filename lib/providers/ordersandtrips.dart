@@ -231,6 +231,13 @@ class OrdersTripsProvider with ChangeNotifier {
 
   Future fetchAndSetMyTrips(myToken) async {
     var token = myToken;
+    if(token==null){
+      final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+      token = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    }
     const url = Api.myTrips;
     http.get(
       url,

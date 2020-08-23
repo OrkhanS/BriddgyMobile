@@ -36,24 +36,27 @@ class _FilterBarState extends State<FilterBar> {
   bool flagFrom = false;
   bool flagTo = false;
   bool flagWeight = false;
-  String urlFilter = "";
+  String urlFilter;
   var _expanded = false;
 
   Future filterAndSetOrders() async {
-    widget.ordersProvider.isLoadingOrders = true;
-    urlFilter = Api.orders + "?";
+    var provider = widget.ordersProvider; 
+    provider.isLoadingOrders = true;provider.notify();
+    if(urlFilter==null)urlFilter = Api.orders + "?";
     if (widget.from != null) {
-      urlFilter = urlFilter + "origin=" + widget.from;
+      flagWeight == false && flagTo == false && flagFrom == false 
+          ? urlFilter = urlFilter + "origin=" + widget.from 
+          : urlFilter = urlFilter + "&origin=" + widget.from;
       flagFrom = true;
     }
     if (widget.to != null) {
-      flagFrom == false
+      flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "dest=" + widget.to.toString()
           : urlFilter = urlFilter + "&dest=" + widget.to.toString();
       flagTo = true;
     }
     if (widget.weight != null) {
-      flagTo == false && flagFrom == false
+      flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "weight=" + widget.weight.toString()
           : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
       flagWeight = true;
@@ -79,14 +82,14 @@ class _FilterBarState extends State<FilterBar> {
           () {
             Map<String, dynamic> data =
                 json.decode(response.body) as Map<String, dynamic>;
-
+            _suggested=[];
             for (var i = 0; i < data["results"].length; i++) {
               _suggested.add(Order.fromJson(data["results"][i]));
             }
-            widget.ordersProvider.orders = []; widget.ordersProvider.orders = _suggested;
-            widget.ordersProvider.allOrdersDetails = {"next": data["next"], "count": data["count"]};
-            widget.ordersProvider.isLoadingOrders = false;
-            widget.ordersProvider.notify();
+            provider.orders = []; provider.orders = _suggested;
+            provider.allOrdersDetails = {"next": data["next"], "count": data["count"]};
+            provider.isLoadingOrders = false;
+            provider.notify();
           },
         );
       });
@@ -429,14 +432,48 @@ class _FilterBarState extends State<FilterBar> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  Provider.of<OrdersTripsProvider>(context,
-                                          listen: false)
-                                      .startLoading = true;
                                   filterAndSetOrders();
                                   setState(() {
                                     _expanded = !_expanded;
                                   });
 //    filterAndSetOrders(from, to, weight, price);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 15),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: RaisedButton(
+                                color: Theme.of(context).primaryColor,
+                                elevation: 2,
+                                child: Container(
+                                  decoration: BoxDecoration(),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Center(
+                                    child: Text(
+                                      "Reset",
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  var provider = Provider.of<OrdersTripsProvider>(context,listen:false);
+                                  widget.from=null; widget.to=null;
+                                  widget.weight=null; widget.price=null;
+                                  provider.isLoadingTrips=true; 
+                                  provider.fetchAndSetMyOrders(Provider.of<Auth>(context,listen:false));
+                                  urlFilter=null;
+                                  setState(() {
+                                    _expanded = !_expanded;
+                                  });
                                 },
                               ),
                             ),

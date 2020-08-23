@@ -287,7 +287,7 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> login(String email, String password, String deviceID) async {
+  Future<void> login(String email, String password, String deviceID,context) async {
     const url = Api.login;
     deviceToken = deviceID;
     try {
@@ -303,6 +303,10 @@ class Auth with ChangeNotifier {
         ),
       );
       final responseData = json.decode(response.body);
+      Provider.of<OrdersTripsProvider>(context, listen: false)
+        .removeAllDataOfProvider();
+      Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
+      removeAllDataOfProvider();
       _token = responseData;
       myToken = responseData;
       myTokenFromStorage = responseData;

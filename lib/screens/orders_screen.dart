@@ -12,6 +12,7 @@ import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/add_order_screen.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
+import 'package:optisend/widgets/order_filter_bottom.dart';
 import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
@@ -59,6 +60,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _myActivityResult;
 
   Future sortData(value, OrdersTripsProvider provider) async {
+    provider.isLoadingOrders = true;
+    provider.notify();
     String url = Api.orders + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
@@ -74,13 +77,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
       url = url + "weight";
     }
     provider.isLoadingOrders = true;
-    await http.get(
+    await http
+        .get(
       url,
-      headers: {
-        HttpHeaders.contentTypeHeader: "application/json",
-        "Authorization": "Token " + widget.token,
-      },
-    ).then((response) {
+      headers: Provider.of<Auth>(context, listen: false).isAuth
+          ? {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+            }
+          : {
+              HttpHeaders.contentTypeHeader: "application/json",
+            },
+    )
+        .then((response) {
       setState(
         () {
           Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
@@ -88,8 +97,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
           for (var i = 0; i < data["results"].length; i++) {
             _orders.add(Order.fromJson(data["results"][i]));
           }
+          provider.orders = _orders;
           nextOrderURL = data["next"];
           provider.isLoadingOrders = false;
+          provider.notify();
         },
       );
     });
@@ -210,34 +221,64 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           resizeToAvoidBottomPadding: true,
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          floatingActionButton: OpenContainer(
-            openElevation: 5,
-            transitionDuration: Duration(milliseconds: 500),
-            transitionType: ContainerTransitionType.fadeThrough,
-            openBuilder: (BuildContext context, VoidCallback _) {
-              return AddItemScreen();
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              if (widget.auth.isAuth) {
+                if (widget.auth.userdetail.isEmailVerified == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => AddItemScreen()),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                  );
+                }
+              } else {
+                Flushbar(
+                  title: "Warning",
+                  message: "You need to Log in to add Item!",
+                  padding: const EdgeInsets.all(8),
+                  borderRadius: 10,
+                  duration: Duration(seconds: 3),
+                )..show(context);
+              }
             },
-            closedElevation: 6.0,
-            closedShape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(56 / 2),
-              ),
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.add,
+              color: Theme.of(context).primaryColor,
             ),
-            closedColor: Colors.white,
-            closedBuilder: (BuildContext context, VoidCallback openContainer) {
-              return SizedBox(
-                height: 56,
-                width: 56,
-                child: Center(
-                  child: Icon(
-                    Icons.add,
-                    size: 30,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              );
-            },
           ),
+          // OpenContainer(
+          //   openElevation: 5,
+          //   transitionDuration: Duration(milliseconds: 500),
+          //   transitionType: ContainerTransitionType.fadeThrough,
+          //   openBuilder: (BuildContext context, VoidCallback _) {
+          //     return
+          //   },
+          //   closedElevation: 6.0,
+          //   closedShape: const RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.all(
+          //       Radius.circular(56 / 2),
+          //     ),
+          //   ),
+          //   closedColor: Colors.white,
+          //   closedBuilder: (BuildContext context, VoidCallback openContainer) {
+          //     return SizedBox(
+          //       height: 56,
+          //       width: 56,
+          //       child: Center(
+          //         child: Icon(
+          //           Icons.add,
+          //           size: 30,
+          //           color: Theme.of(context).primaryColor,
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
           body: SafeArea(
             child: Stack(
               children: <Widget>[

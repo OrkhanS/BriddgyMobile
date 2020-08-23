@@ -4,6 +4,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/trip.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:optisend/widgets/filter_bar_trips.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
@@ -57,25 +58,33 @@ class _TripScreenState extends State<TripsScreen> {
   List _trips = [];
 
   Future sortData(value, OrdersTripsProvider provider) async {
+    provider.isLoadingTrips = true;
+    provider.notify();
     String url = Api.trips + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
     if (value == 0) {
-      url = Api.orders + "?order_by=-date";
+      url = Api.trips + "?order_by=-date";
       nextTripURL = "FirstCall";
     } else if (value == 2) {
       url = url + "-owner";
     } else if (value == 3) {
-      url = url + "-weight_limit";
+      url = url + "weight_limit";
     }
-    await http.get(
+    await http
+        .get(
       url,
-      headers: {
-        HttpHeaders.contentTypeHeader: "application/json",
-        "Authorization": "Token " + widget.token,
-      },
-    ).then((response) {
+      headers: Provider.of<Auth>(context, listen: false).isAuth
+          ? {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+            }
+          : {
+              HttpHeaders.contentTypeHeader: "application/json",
+            },
+    )
+        .then((response) {
       setState(
         () {
           Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
@@ -83,6 +92,8 @@ class _TripScreenState extends State<TripsScreen> {
           for (var i = 0; i < data["results"].length; i++) {
             _trips.add(Trip.fromJson(data["results"][i]));
           }
+          provider.trips = _trips;
+          provider.notify();
           nextTripURL = data["next"];
           provider.isLoadingTrips = false;
         },
@@ -209,28 +220,21 @@ class _TripScreenState extends State<TripsScreen> {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               if (widget.auth.isAuth) {
-                Navigator.push(
+                if (widget.auth.userdetail.isEmailVerified == true) {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (__) => AddTripScreen(
                               token: widget.token,
                               orderstripsProvider: widget.orderstripsProvider,
-                            )));
-                // if (widget.auth.userdetail.isEmailVerified == true) {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (__) => AddTripScreen(
-                //               token: widget.token,
-                //               orderstripsProvider: widget.orderstripsProvider,
-                //             )),
-                //   );
-                // } else {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
-                //   );
-                // }
+                            )),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => VerifyEmailScreen()),
+                  );
+                }
               } else {
                 Flushbar(
                   title: "Warning",
@@ -275,7 +279,7 @@ class _TripScreenState extends State<TripsScreen> {
                             DropdownMenuItem(
                               value: 2,
                               child: Text(
-                                "Weight Limit",
+                                "Weight",
                               ),
                             ),
                           ],
