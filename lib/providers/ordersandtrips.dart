@@ -16,7 +16,7 @@ class OrdersTripsProvider with ChangeNotifier {
   List _trips = [];
   List _mytrips = [];
   bool isLoadingOrders = true;
-  bool isLoading = true;
+  bool isLoadingTrips = true;
   bool isLoadingMyOrders = true;
   bool isLoadingMyTrips = true;
   String token;
@@ -34,7 +34,7 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 
   bool get notLoaded {
-    return isLoading;
+    return isLoadingTrips;
   }
 
   List get orders {
@@ -67,6 +67,10 @@ class OrdersTripsProvider with ChangeNotifier {
 
   set myorders(List temporders) {
     _myorders = temporders;
+    notifyListeners();
+  }
+
+  notify(){
     notifyListeners();
   }
 
@@ -218,9 +222,9 @@ class OrdersTripsProvider with ChangeNotifier {
         for (var i = 0; i < data["results"].length; i++) {
           trips.add(Trip.fromJson(data["results"][i]));
         }
-        isLoading = false;
-        notifyListeners();
+        isLoadingTrips = false;        
         allTripsDetails = {"next": data["next"], "count": data["count"]};
+        notifyListeners();
       },
     );
   }
@@ -253,7 +257,7 @@ class OrdersTripsProvider with ChangeNotifier {
     _trips = [];
     _mytrips = [];
     isLoadingOrders = true;
-    isLoading = true;
+    isLoadingTrips = true;
     isLoadingMyOrders = true;
     token = null;
     allTripsDetails = {};

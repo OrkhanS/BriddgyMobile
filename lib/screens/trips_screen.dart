@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:animations/animations.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
-import 'package:optisend/widgets/filter_bar.dart';
+import 'package:optisend/widgets/filter_bar_trips.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 import 'dart:async';
@@ -57,54 +56,19 @@ class _TripScreenState extends State<TripsScreen> {
 
   List _trips = [];
 
-  Future filterAndSetTrips(from, to, weight, _endtime) async {
-    var provider = widget.orderstripsProvider;
-    _endtime = null;
-    urlFilter = Api.trips + "?";
-    if (from != null) {
-      urlFilter = urlFilter + "origin=" + from;
-      flagFrom = true;
-    }
-    if (to != null) {
-      flagFrom == false ? urlFilter = urlFilter + "dest=" + to.toString() : urlFilter = urlFilter + "&dest=" + to.toString();
-      flagTo = true;
-    }
-    if (weight != null) {
-      flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "weight=" + weight.toString()
-          : urlFilter = urlFilter + "&weight=" + weight.toString();
-      flagWeight = true;
-    }
-
-    if (_endtime != null) {
-      flagWeight == false && flagTo == false && flagFrom == false && flagStart == false
-          ? urlFilter = urlFilter + "end_date=" + _endtime.toString()
-          : urlFilter = urlFilter + "&end_date=" + _endtime.toString();
-      flagStart = true;
-    }
-    await http.get(
-      urlFilter,
-      headers: {HttpHeaders.contentTypeHeader: "application/json"},
-    ).then((response) {
-      setState(
-        () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          provider.trips = dataOrders["results"];
-          provider.isLoading = false;
-        },
-      );
-    });
-  }
 
   Future sortData(value, OrdersTripsProvider provider) async {
     String url = Api.trips + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if (value.toString().compareTo("WeightMax") == 0) {
-      url = url + "-weight_limit";
-    } else if (value.toString().compareTo("Ranking") == 0) {
+    if(value == 0){
+      url = Api.orders + "?order_by=-date";
+      nextTripURL = "FirstCall";
+    } else if (value == 2) {
       url = url + "-owner";
+    } else if (value == 3) {
+      url = url + "-weight_limit";
     }
     await http.get(
       url,
@@ -115,9 +79,14 @@ class _TripScreenState extends State<TripsScreen> {
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          provider.trips = dataOrders["results"];
-          provider.isLoading = false;
+          Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+          _trips = [];
+          for (var i = 0; i < data["results"].length; i++) {
+            _trips.add(Trip.fromJson(data["results"][i]));
+          }
+          nextTripURL = data["next"];
+          provider.isLoadingTrips = false;
         },
       );
     });
@@ -139,7 +108,11 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() +
+          ", " +
+          _suggested[i]["country"].toString() +
+          ", " +
+          _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -168,7 +141,8 @@ class _TripScreenState extends State<TripsScreen> {
   }
 
   Future _loadData() async {
-    if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
+    if (nextTripURL.toString() != "null" &&
+        nextTripURL.toString() != "FristCall") {
       String url = nextTripURL;
       try {
         await http.get(
@@ -178,7 +152,8 @@ class _TripScreenState extends State<TripsScreen> {
             "Authorization": "Token " + widget.token,
           },
         ).then((response) {
-          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data =
+              json.decode(response.body) as Map<String, dynamic>;
 
           for (var i = 0; i < data["results"].length; i++) {
             _trips.add(Trip.fromJson(data["results"][i]));
@@ -219,7 +194,7 @@ class _TripScreenState extends State<TripsScreen> {
             ),
           ),
           onPressed: () {
-            filterAndSetTrips(from, to, weight, _endtime);
+            //filterAndSetTrips(from, to, weight, _endtime);
             build(context);
           },
         ),
@@ -239,16 +214,16 @@ class _TripScreenState extends State<TripsScreen> {
         }
         return Scaffold(
           resizeToAvoidBottomPadding: true,
-          floatingActionButton: OpenContainer(
-            openElevation: 5,
-            transitionDuration: Duration(milliseconds: 500),
-            transitionType: ContainerTransitionType.fadeThrough,
-            openBuilder: (BuildContext context, VoidCallback _) {
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
               if (widget.auth.isAuth) {
-                return AddTripScreen(
-                  token: widget.token,
-                  orderstripsProvider: widget.orderstripsProvider,
-                );
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (__) => AddTripScreen(
+                              token: widget.token,
+                              orderstripsProvider: widget.orderstripsProvider,
+                            )));
                 // if (widget.auth.userdetail.isEmailVerified == true) {
                 //   Navigator.push(
                 //     context,
@@ -265,7 +240,7 @@ class _TripScreenState extends State<TripsScreen> {
                 //   );
                 // }
               } else {
-                return Flushbar(
+                Flushbar(
                   title: "Warning",
                   message: "You need to Log in to add Item!",
                   padding: const EdgeInsets.all(8),
@@ -274,61 +249,47 @@ class _TripScreenState extends State<TripsScreen> {
                 )..show(context);
               }
             },
-            closedElevation: 6.0,
-            closedShape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(56 / 2),
-              ),
-            ),
-            closedColor: Colors.white,
-            closedBuilder: (BuildContext context, VoidCallback openContainer) {
-              return SizedBox(
-                height: 56,
-                width: 56,
-                child: Center(
-                  child: Icon(
-                    Icons.add,
-                    size: 30,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-              );
-            },
+            backgroundColor: Theme.of(context).primaryColor,
+            child: Icon(Icons.add),
           ),
           body: SafeArea(
             child: Stack(
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+                    FilterBarTrip(
+                        ordersProvider: widget.orderstripsProvider,
+                        from: from,
+                        to: to,
+                        weight: weight),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                        Text(
-                          orderstripsProvider.detailsTrip.isEmpty ? "Results: 0" : "Results: " + orderstripsProvider.detailsTrip["count"].toString(),
-                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                        ),
-                        DropdownButton(
-                          hint: Text(_value),
-                          items: [
-                            DropdownMenuItem(
-                              value: "Ranking",
-                              child: Text(
-                                "Ranking",
-                              ),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              orderstripsProvider.detailsTrip.isEmpty
+                                  ? "Results: 0"
+                                  : "Results: " +
+                                      orderstripsProvider.detailsTrip["count"]
+                                          .toString(),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.bold),
                             ),
-                            DropdownMenuItem(
-                              value: "WeightMax",
-                              child: Text(
-                                "Weight Limit",
-                              ),
+                            DropdownButton(
+                              hint: Text(_value),
+                              items: [
+                                DropdownMenuItem(value: 0, child: Text("Reset",),),
+                                DropdownMenuItem(value: 1, child: Text("Ranking",),),
+                                DropdownMenuItem(value: 2, child: Text("Weight Limit",),),
+                              ],
+                              onChanged: (value) {
+                                sortData(value, orderstripsProvider);
+                              },
                             ),
-                          ],
-                          onChanged: (value) {
-                            sortData(value, orderstripsProvider);
-                          },
-                        ),
-                      ]),
+                          ]),
                     ),
                     Expanded(
                       child: orderstripsProvider.notLoaded != false
@@ -339,7 +300,9 @@ class _TripScreenState extends State<TripsScreen> {
                             )
                           : NotificationListener<ScrollNotification>(
                               onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                if (!_isfetchingnew &&
+                                    scrollInfo.metrics.pixels ==
+                                        scrollInfo.metrics.maxScrollExtent) {
                                   // start loading data
                                   setState(() {
                                     _isfetchingnew = true;

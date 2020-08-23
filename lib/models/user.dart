@@ -33,7 +33,7 @@ class User {
   bool isActive;
   bool isStaff;
   double rating;
-  String isNumberVerified;
+  bool isNumberVerified;
   bool isEmailVerified;
   bool isPhotoVerified;
   dynamic avatarpic;

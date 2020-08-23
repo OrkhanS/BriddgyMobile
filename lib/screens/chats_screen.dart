@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/chats.dart';
-import 'file:///C:/Users/rasse/StudioProjects/BriddgyMobile/lib/widgets/generators.dart';
+import 'package:optisend/widgets/generators.dart';
 import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/chat_window.dart';
