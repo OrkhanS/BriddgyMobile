@@ -63,11 +63,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if(value == 0){
+    if (value == 0) {
       url = Api.orders + "?order_by=-date";
       nextOrderURL = "FirstCall";
-    }
-    else if (value == 1) {
+    } else if (value == 1) {
       url = url + "-owner";
     } else if (value == 2) {
       url = url + "-price";
@@ -84,9 +83,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     ).then((response) {
       setState(
         () {
-          Map<String, dynamic> data =
-          json.decode(response.body) as Map<String, dynamic>;
-          _orders=[];
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+          _orders = [];
           for (var i = 0; i < data["results"].length; i++) {
             _orders.add(Order.fromJson(data["results"][i]));
           }
@@ -142,6 +140,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   void dispose() {
     super.dispose();
   }
+
 //    return Form(
   Future _loadData() async {
     if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
@@ -189,7 +188,28 @@ class _OrdersScreenState extends State<OrdersScreen> {
         }
 
         return Scaffold(
+          bottomNavigationBar: BottomAppBar(
+            notchMargin: 10,
+            shape: CircularNotchedRectangle(),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price)),
+//                IconButton(
+//                  icon: Icon(
+//                    Icons.search,
+////                    color: Colors.white,
+//                  ),
+//                  onPressed: () {},
+//                ),
+              ],
+            ),
+          ),
           resizeToAvoidBottomPadding: true,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           floatingActionButton: OpenContainer(
             openElevation: 5,
             transitionDuration: Duration(milliseconds: 500),
@@ -223,7 +243,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+//                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
@@ -236,10 +256,23 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         DropdownButton(
                           hint: Text(_value),
                           items: [
-                            DropdownMenuItem(value: 0,child: Text("Reset",),),
-                            DropdownMenuItem(value: 1,child: Text("Highest Ranking"),),
-                            DropdownMenuItem(value: 2,child: Text("Highest Reward")),
-                            DropdownMenuItem(value: 3,child: Text("Lowest Weight", ),),
+                            DropdownMenuItem(
+                              value: 0,
+                              child: Text(
+                                "Reset",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 1,
+                              child: Text("Highest Ranking"),
+                            ),
+                            DropdownMenuItem(value: 2, child: Text("Highest Reward")),
+                            DropdownMenuItem(
+                              value: 3,
+                              child: Text(
+                                "Lowest Weight",
+                              ),
+                            ),
                           ],
                           onChanged: (value) {
                             sortData(value, orderstripsProvider);
