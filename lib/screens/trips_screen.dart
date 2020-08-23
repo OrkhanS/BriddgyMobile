@@ -94,7 +94,7 @@ class _TripScreenState extends State<TripsScreen> {
         () {
           final dataOrders = json.decode(response.body) as Map<String, dynamic>;
           provider.trips = dataOrders["results"];
-          provider.isLoading = false;
+          provider.isLoadingTrips = false;
         },
       );
     });
@@ -105,11 +105,14 @@ class _TripScreenState extends State<TripsScreen> {
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if (value.toString().compareTo("WeightMax") == 0) {
-      url = url + "-weight_limit";
-    } else if (value.toString().compareTo("Ranking") == 0) {
+    if(value == 0){
+      url = Api.orders + "?order_by=-date";
+      nextTripURL = "FirstCall";
+    } else if (value == 2) {
       url = url + "-owner";
-    }
+    } else if (value == 3) {
+      url = url + "-weight_limit";
+    } 
     await http.get(
       url,
       headers: {
@@ -119,9 +122,14 @@ class _TripScreenState extends State<TripsScreen> {
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          provider.trips = dataOrders["results"];
-          provider.isLoading = false;
+          Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+          _trips = [];
+          for (var i = 0; i < data["results"].length; i++) {
+            _trips.add(Trip.fromJson(data["results"][i]));
+          }
+          nextTripURL = data["next"];
+          provider.isLoadingTrips = false;
         },
       );
     });
@@ -316,18 +324,9 @@ class _TripScreenState extends State<TripsScreen> {
                             DropdownButton(
                               hint: Text(_value),
                               items: [
-                                DropdownMenuItem(
-                                  value: "Ranking",
-                                  child: Text(
-                                    "Ranking",
-                                  ),
-                                ),
-                                DropdownMenuItem(
-                                  value: "WeightMax",
-                                  child: Text(
-                                    "Weight Limit",
-                                  ),
-                                ),
+                                DropdownMenuItem(value: 0, child: Text("Reset",),),
+                                DropdownMenuItem(value: 1, child: Text("Ranking",),),
+                                DropdownMenuItem(value: 2, child: Text("Weight Limit",),),
                               ],
                               onChanged: (value) {
                                 sortData(value, orderstripsProvider);

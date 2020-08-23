@@ -63,15 +63,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if (value.toString().compareTo("WeightLow") == 0) {
-      url = url + "weight";
-    } else if (value.toString().compareTo("WeightMax") == 0) {
-      url = url + "-weight";
-    } else if (value.toString().compareTo("Price") == 0) {
-      url = url + "-price";
-    } else if (value.toString().compareTo("Ranking") == 0) {
-      url = url + "-owner";
+    if(value == 0){
+      url = Api.orders + "?order_by=-date";
+      nextOrderURL = "FirstCall";
     }
+    else if (value == 1) {
+      url = url + "-owner";
+    } else if (value == 2) {
+      url = url + "-price";
+    } else if (value == 3) {
+      url = url + "weight";
+    }
+    provider.isLoadingOrders = true;
     await http.get(
       url,
       headers: {
@@ -81,9 +84,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          provider.orders = dataOrders["results"];
-          provider.isLoading = false;
+          Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+          _orders=[];
+          for (var i = 0; i < data["results"].length; i++) {
+            _orders.add(Order.fromJson(data["results"][i]));
+          }
+          nextOrderURL = data["next"];
+          provider.isLoadingOrders = false;
         },
       );
     });
@@ -265,23 +273,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         DropdownButton(
                           hint: Text(_value),
                           items: [
-                            DropdownMenuItem(
-                              value: "Ranking",
-                              child: Text("Highest Ranking"),
-                            ),
-                            DropdownMenuItem(value: "Price", child: Text("Highest Reward")),
-                            DropdownMenuItem(
-                              value: "WeightLow",
-                              child: Text(
-                                "Lowest Weight",
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "WeightMax",
-                              child: Text(
-                                "Highest Weight",
-                              ),
-                            ),
+                            DropdownMenuItem(value: 0,child: Text("Reset",),),
+                            DropdownMenuItem(value: 1,child: Text("Highest Ranking"),),
+                            DropdownMenuItem(value: 2,child: Text("Highest Reward")),
+                            DropdownMenuItem(value: 3,child: Text("Lowest Weight", ),),
                           ],
                           onChanged: (value) {
                             sortData(value, orderstripsProvider);
