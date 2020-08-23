@@ -10,8 +10,9 @@ import 'package:flutter/widgets.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
-import 'package:optisend/screens/add_item_screen.dart';
+import 'package:optisend/screens/add_order_screen.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
+import 'package:optisend/widgets/order_filter_bottom.dart';
 import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
@@ -59,44 +60,47 @@ class _OrdersScreenState extends State<OrdersScreen> {
   String _myActivityResult;
 
   Future sortData(value, OrdersTripsProvider provider) async {
-    provider.isLoadingOrders = true; provider.notify();
+    provider.isLoadingOrders = true;
+    provider.notify();
     String url = Api.orders + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if(value == 0){
+    if (value == 0) {
       url = Api.orders + "?order_by=-date";
       nextOrderURL = "FirstCall";
-    }
-    else if (value == 1) {
+    } else if (value == 1) {
       url = url + "-owner";
     } else if (value == 2) {
       url = url + "-price";
     } else if (value == 3) {
       url = url + "weight";
     }
-    await http.get(
+    provider.isLoadingOrders = true;
+    await http
+        .get(
       url,
-      headers:Provider.of<Auth>(context, listen: false).isAuth
+      headers: Provider.of<Auth>(context, listen: false).isAuth
           ? {
               HttpHeaders.contentTypeHeader: "application/json",
               "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
             }
           : {
               HttpHeaders.contentTypeHeader: "application/json",
-            }, 
-    ).then((response) {
+            },
+    )
+        .then((response) {
       setState(
         () {
-          Map<String, dynamic> data =
-          json.decode(response.body) as Map<String, dynamic>;
-          _orders=[];
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+          _orders = [];
           for (var i = 0; i < data["results"].length; i++) {
             _orders.add(Order.fromJson(data["results"][i]));
           }
           provider.orders = _orders;
           nextOrderURL = data["next"];
-          provider.isLoadingOrders = false; provider.notify();
+          provider.isLoadingOrders = false;
+          provider.notify();
         },
       );
     });
@@ -147,6 +151,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   void dispose() {
     super.dispose();
   }
+
 //    return Form(
   Future _loadData() async {
     if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
@@ -194,15 +199,35 @@ class _OrdersScreenState extends State<OrdersScreen> {
         }
 
         return Scaffold(
+          bottomNavigationBar: BottomAppBar(
+            notchMargin: 10,
+            shape: CircularNotchedRectangle(),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price)),
+//                IconButton(
+//                  icon: Icon(
+//                    Icons.search,
+////                    color: Colors.white,
+//                  ),
+//                  onPressed: () {},
+//                ),
+              ],
+            ),
+          ),
           resizeToAvoidBottomPadding: true,
-          floatingActionButton:  FloatingActionButton(
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+          floatingActionButton: FloatingActionButton(
             onPressed: () {
               if (widget.auth.isAuth) {
                 if (widget.auth.userdetail.isEmailVerified == true) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (__) => AddItemScreen()),
+                    MaterialPageRoute(builder: (__) => AddItemScreen()),
                   );
                 } else {
                   Provider.of<Auth>(context,listen:false).requestEmailVerification();
@@ -228,15 +253,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 )..show(context);
               }
             },
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(Icons.add),
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.add,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           // OpenContainer(
           //   openElevation: 5,
           //   transitionDuration: Duration(milliseconds: 500),
           //   transitionType: ContainerTransitionType.fadeThrough,
           //   openBuilder: (BuildContext context, VoidCallback _) {
-          //     return 
+          //     return
           //   },
           //   closedElevation: 6.0,
           //   closedShape: const RoundedRectangleBorder(
@@ -264,7 +292,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+//                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
@@ -277,10 +305,23 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         DropdownButton(
                           hint: Text(_value),
                           items: [
-                            DropdownMenuItem(value: 0,child: Text("Reset",),),
-                            DropdownMenuItem(value: 1,child: Text("Highest Ranking"),),
-                            DropdownMenuItem(value: 2,child: Text("Highest Reward")),
-                            DropdownMenuItem(value: 3,child: Text("Lowest Weight", ),),
+                            DropdownMenuItem(
+                              value: 0,
+                              child: Text(
+                                "Reset",
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 1,
+                              child: Text("Highest Ranking"),
+                            ),
+                            DropdownMenuItem(value: 2, child: Text("Highest Reward")),
+                            DropdownMenuItem(
+                              value: 3,
+                              child: Text(
+                                "Lowest Weight",
+                              ),
+                            ),
                           ],
                           onChanged: (value) {
                             sortData(value, orderstripsProvider);

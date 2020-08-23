@@ -85,7 +85,7 @@ class _AccountPageState extends State<AccountPage> {
                             imageUrl == Api.noPictureImage
                                 ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
                                 : ClipRRect(
-                                    borderRadius: BorderRadius.circular(25.0),
+                                    borderRadius: BorderRadius.circular(35.0),
                                     child: Image.network(
                                       imageUrl,
                                       errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {

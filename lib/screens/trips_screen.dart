@@ -57,22 +57,23 @@ class _TripScreenState extends State<TripsScreen> {
 
   List _trips = [];
 
- 
   Future sortData(value, OrdersTripsProvider provider) async {
-    provider.isLoadingTrips = true; provider.notify();
+    provider.isLoadingTrips = true;
+    provider.notify();
     String url = Api.trips + "?order_by=";
     if (urlFilter.isNotEmpty) {
       url = urlFilter + "&order_by=";
     }
-    if(value == 0){
+    if (value == 0) {
       url = Api.trips + "?order_by=-date";
       nextTripURL = "FirstCall";
     } else if (value == 2) {
       url = url + "-owner";
     } else if (value == 3) {
       url = url + "weight_limit";
-    } 
-    await http.get(
+    }
+    await http
+        .get(
       url,
       headers: Provider.of<Auth>(context, listen: false).isAuth
           ? {
@@ -81,17 +82,18 @@ class _TripScreenState extends State<TripsScreen> {
             }
           : {
               HttpHeaders.contentTypeHeader: "application/json",
-            }, 
-    ).then((response) {
+            },
+    )
+        .then((response) {
       setState(
         () {
-          Map<String, dynamic> data =
-          json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
           _trips = [];
           for (var i = 0; i < data["results"].length; i++) {
             _trips.add(Trip.fromJson(data["results"][i]));
           }
-          provider.trips = _trips; provider.notify();
+          provider.trips = _trips;
+          provider.notify();
           nextTripURL = data["next"];
           provider.isLoadingTrips = false;
         },
@@ -115,11 +117,7 @@ class _TripScreenState extends State<TripsScreen> {
     });
     _cities = [];
     for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() +
-          ", " +
-          _suggested[i]["country"].toString() +
-          ", " +
-          _suggested[i]["id"].toString());
+      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
     }
     return _cities;
   }
@@ -148,8 +146,7 @@ class _TripScreenState extends State<TripsScreen> {
   }
 
   Future _loadData() async {
-    if (nextTripURL.toString() != "null" &&
-        nextTripURL.toString() != "FristCall") {
+    if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
       String url = nextTripURL;
       try {
         await http.get(
@@ -159,8 +156,7 @@ class _TripScreenState extends State<TripsScreen> {
             "Authorization": "Token " + widget.token,
           },
         ).then((response) {
-          Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
 
           for (var i = 0; i < data["results"].length; i++) {
             _trips.add(Trip.fromJson(data["results"][i]));
@@ -265,39 +261,41 @@ class _TripScreenState extends State<TripsScreen> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBarTrip(
-                        ordersProvider: widget.orderstripsProvider,
-                        from: from,
-                        to: to,
-                        weight: weight),
+                    FilterBarTrip(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              orderstripsProvider.detailsTrip.isEmpty
-                                  ? "Results: 0"
-                                  : "Results: " +
-                                      orderstripsProvider.detailsTrip["count"]
-                                          .toString(),
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[500],
-                                  fontWeight: FontWeight.bold),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                        Text(
+                          orderstripsProvider.detailsTrip.isEmpty ? "Results: 0" : "Results: " + orderstripsProvider.detailsTrip["count"].toString(),
+                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
+                        ),
+                        DropdownButton(
+                          hint: Text(_value),
+                          items: [
+                            DropdownMenuItem(
+                              value: 0,
+                              child: Text(
+                                "Reset",
+                              ),
                             ),
-                            DropdownButton(
-                              hint: Text(_value),
-                              items: [
-                                DropdownMenuItem(value: 0, child: Text("Reset",),),
-                                DropdownMenuItem(value: 1, child: Text("Ranking",),),
-                                DropdownMenuItem(value: 2, child: Text("Weight",),),
-                              ],
-                              onChanged: (value) {
-                                sortData(value, orderstripsProvider);
-                              },
+                            DropdownMenuItem(
+                              value: 1,
+                              child: Text(
+                                "Ranking",
+                              ),
                             ),
-                          ]),
+                            DropdownMenuItem(
+                              value: 2,
+                              child: Text(
+                                "Weight",
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            sortData(value, orderstripsProvider);
+                          },
+                        ),
+                      ]),
                     ),
                     Expanded(
                       child: orderstripsProvider.notLoaded != false
@@ -308,9 +306,7 @@ class _TripScreenState extends State<TripsScreen> {
                             )
                           : NotificationListener<ScrollNotification>(
                               onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew &&
-                                    scrollInfo.metrics.pixels ==
-                                        scrollInfo.metrics.maxScrollExtent) {
+                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                                   // start loading data
                                   setState(() {
                                     _isfetchingnew = true;

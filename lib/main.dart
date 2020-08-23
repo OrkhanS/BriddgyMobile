@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/screens/add_item_screen.dart';
+import 'package:optisend/screens/add_order_screen.dart';
 import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/auth_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
@@ -234,7 +234,7 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth,false);
+        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
