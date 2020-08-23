@@ -222,9 +222,9 @@ class OrdersTripsProvider with ChangeNotifier {
         for (var i = 0; i < data["results"].length; i++) {
           trips.add(Trip.fromJson(data["results"][i]));
         }
-        isLoadingTrips = false;
-        notifyListeners();
+        isLoadingTrips = false;        
         allTripsDetails = {"next": data["next"], "count": data["count"]};
+        notifyListeners();
       },
     );
   }
