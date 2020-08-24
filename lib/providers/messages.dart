@@ -168,7 +168,7 @@ class Messages extends ChangeNotifier {
     }
   }
 
-  //______________________________________________________________________________________
+  //______________________________________________CHATS________________________________________
 
   Future createRooms(id, auth) async {
     String tokenforROOM = auth.myTokenFromStorage;
@@ -308,6 +308,33 @@ class Messages extends ChangeNotifier {
   Map get userDetails {
     return user_detail;
   }
+
+//________________________________________________CONTRACTS________________________________________________
+
+ Future createContract(id, auth) async {
+    String token = auth.myTokenFromStorage;
+    if (token != null) {
+      String url = Api.contracts;
+      await http.get(
+        url,
+        headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          "Authorization": "Token " + token,
+        },
+      ).then((value) {
+        if (value.statusCode == 200) {
+          isChatsLoading = true;
+          isChatRoomCreated = true;
+          _chatRooms = [];
+          fetchAndSetRooms(auth, false);
+        } else {
+          isChatRoomCreated = false;
+        }
+        notifyListeners();
+      });
+    }
+  }
+
 
   removeAllDataOfProvider() {
     roomIDsWhileChatRoomActive = [];

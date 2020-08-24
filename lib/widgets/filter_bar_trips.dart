@@ -436,14 +436,20 @@ class _FilterBarStateTrip extends State<FilterBarTrip> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  var provider = Provider.of<OrdersTripsProvider>(context,listen:false);
-                                  widget.from=null; widget.to=null;
-                                  widget.weight=null; widget.date=null;
-                                  provider.isLoadingTrips=true; provider.fetchAndSetTrips();
-                                  urlFilter=null;
                                   setState(() {
+                                    widget.from = null;
+                                    widget.to = null;
+                                    widget.weight = null;
+                                    _searchBarFrom = "Anywhere";
+                                    _searchBarTo = "Anywhere";
+                                    _searchBarDate = "Any";
                                     _expanded = !_expanded;
                                   });
+                                  var provider = Provider.of<OrdersTripsProvider>(context,listen:false);
+                                  provider.isLoadingTrips=true; 
+                                  provider.notify();
+                                  provider.fetchAndSetTrips();
+                                  urlFilter=null;
                                 },
                               ),
                             ),

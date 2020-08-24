@@ -10,8 +10,12 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
+import 'package:optisend/providers/auth.dart';
+import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/screens/verify_phone_screen.dart';
 import 'package:optisend/widgets/generators.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';

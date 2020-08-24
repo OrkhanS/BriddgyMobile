@@ -31,47 +31,94 @@ class _AddItemScreenState extends State<AddItemScreen> {
   List _suggested = [];
   List _cities = [];
   bool isLoading = true;
-  var imageFile;
+  var imageFile1,imageFile2,imageFile3;
+  List imageFiles = [];
   bool addItemButton = true;
+  bool errorInImageUpload = false;
+  String orderId;
 
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
 
   Future upload(id, token, orderstripsProvider, context) async {
-    var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-    var length = await imageFile.length();
-
+    var stream,length,multipartFile;
     var uri = Uri.parse(Api.addOrderImage);
-
-    var request = new http.MultipartRequest("PUT", uri);
-    var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
+    var request = new http.MultipartRequest("PUT", uri);     
     request.headers['Authorization'] = "Token " + token;
     request.fields["order_id"] = id.toString();
+    orderId = id.toString();
+  
+    for(var i = 0; i < imageFiles.length;i++){
+        stream = new http.ByteStream(DelegatingStream.typed(imageFiles[i].openRead()));
+        length = await imageFiles[i].length();
+        multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFiles[i].path));
+        request.files.add(multipartFile);
+    }
 
-    request.files.add(multipartFile);
-    var response = await request.send().whenComplete(() {
-      orderstripsProvider.myorders = [];
-      orderstripsProvider.isLoadingMyOrders = true;
-      Navigator.pop(context);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (__) => MyItems(
-              token: token,
-              orderstripsProvider: orderstripsProvider,
-            ),
-          ));
-      Flushbar(
-        title: "Success!",
-        message: "Item added.",
-        padding: const EdgeInsets.all(8),
-        borderRadius: 10,
-        duration: Duration(seconds: 3),
-      )..show(context);
+    await request.send().then((response){
+      if(response.statusCode == 201){
+        errorInImageUpload = false;
+        orderstripsProvider.myorders = [];
+        orderstripsProvider.isLoadingMyOrders = true;
+        Navigator.pop(context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (__) => MyItems(
+                token: token,
+                orderstripsProvider: orderstripsProvider,
+              ),
+            ));
+        Flushbar(
+          title: "Success!",
+          message: "Item added.",
+          padding: const EdgeInsets.all(8),
+          borderRadius: 10,
+          duration: Duration(seconds: 3),
+        )..show(context);
+      } else{
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text("Image couldn't be added!"),
+            content: Text("Do you want to add another image?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  setState(() {
+                    addItemButton = true;
+                    imageFiles = [];
+                    errorInImageUpload = true;
+                  });
+                  Navigator.of(ctx).pop();
+                },
+              ),
+              FlatButton(
+                child: Text('No'),
+                onPressed: () {
+                  orderstripsProvider.myorders = [];
+                  orderstripsProvider.isLoadingMyOrders = true;
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (__) => MyItems(
+                        token: token,
+                        orderstripsProvider: orderstripsProvider,
+                      ),
+                  ));
+                },
+              )
+            ],
+          ),
+        );
+      }
+
     });
   }
 
-  Future<void> _showSelectionDialog(BuildContext context) {
+  Future<void> _showSelectionDialog(BuildContext context,i) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -83,14 +130,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     GestureDetector(
                       child: Text("Gallery"),
                       onTap: () {
-                        _openGallery(context);
+                        _openGallery(context,i);
                       },
                     ),
                     Divider(),
                     GestureDetector(
                       child: Text("Camera"),
                       onTap: () {
-                        _openCamera(context);
+                        _openCamera(context,i);
                       },
                     )
                   ],
@@ -99,26 +146,32 @@ class _AddItemScreenState extends State<AddItemScreen> {
         });
   }
 
-  void _openGallery(BuildContext context) async {
+  void _openGallery(BuildContext context,i) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
     this.setState(() {
-      imageFile = picture;
+      if(i==1)imageFile1=picture;
+      else if(i==2)imageFile2=picture;
+      else imageFile3=picture;
+      imageFiles.add(picture);
     });
     Navigator.of(context).pop();
   }
 
-  void _openCamera(BuildContext context) async {
+  void _openCamera(BuildContext context,i) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.camera);
     this.setState(() {
-      imageFile = picture;
+      if(i==1)imageFile1=picture;
+      else if(i==2)imageFile2=picture;
+      else imageFile3=picture;
+      imageFiles.add(picture);
     });
     Navigator.of(context).pop();
   }
 
-  Widget _setImageView() {
-    if (imageFile != null) {
+  Widget _setImageView(image) {
+    if (image != null) {
       return Image.file(
-        imageFile,
+        image,
         fit: BoxFit.fitWidth,
       );
     } else {
@@ -182,314 +235,351 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   elevation: 1,
                 ),
               ),
-//              Padding(
-//                padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
-//                child: Text(
-//                  "Item Details",
-////                  textAlign: TextAlign.center,
-//                  style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
-//                ),
-//              ),
               SizedBox(
                 height: 20,
               ),
-              InkWell(
-                child: Container(
-                  height: 80,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey, width: .5),
-                  ),
-                  child: imageFile == null
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 30,
-                              color: Colors.grey,
-                            ),
-                            Text(
-                              "Add image",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        )
-                      : _setImageView(),
-                ),
-                onTap: () {
-                  _showSelectionDialog(context);
-                },
-              ),
-              Container(
-//              alignment: Alignment.center,
-                width: deviceWidth * 0.8,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Title',
-                    icon: Icon(MdiIcons.bagCarryOn),
-                  ),
-                  onChanged: (String val) {
-                    title = val;
-                  },
-                ),
-              ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                child: Row(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                        InkWell(
+                          child: Container(
+                            height: 80,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey, width: .5),
+                            ),
+                            child: imageFile1 == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        size: 30,
+                                        color: Colors.grey,
+                                      ),
+                                      Text(
+                                        "Add image",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  )
+                                : 
+                            _setImageView(imageFile1),
+
+                          ),
+                          onTap: () {
+                            _showSelectionDialog(context,1);
+                          },
+                        ),
+                        InkWell(
+                          child: Container(
+                            height: 80,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey, width: .5),
+                            ),
+                            child: imageFile2 == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        size: 30,
+                                        color: Colors.grey,
+                                      ),
+                                      Text(
+                                        "Add image",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  )
+                                : _setImageView(imageFile2),
+                          ),
+                          onTap: () {
+                            _showSelectionDialog(context,2);
+                          },
+                        ),
+                        InkWell(
+                          child: Container(
+                            height: 80,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey, width: .5),
+                            ),
+                            child: imageFile3 == null
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        size: 30,
+                                        color: Colors.grey,
+                                      ),
+                                      Text(
+                                        "Add image",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  )
+                                : _setImageView(imageFile3),
+                          ),
+                          onTap: () {
+                            _showSelectionDialog(context,3);
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              
+            errorInImageUpload ? SizedBox() :
+                Column(
                   children: [
                     Container(
-                      width: deviceWidth * 0.4,
-                      child: TypeAheadFormField(
-                        keepSuggestionsOnLoading: false,
-                        debounceDuration: const Duration(milliseconds: 200),
-                        textFieldConfiguration: TextFieldConfiguration(
-                          onSubmitted: (val) {
-                            from = val;
-                          },
-                          controller: this._typeAheadController,
-                          decoration: InputDecoration(labelText: 'From', icon: Icon(MdiIcons.bridge)),
+                     alignment: Alignment.center,
+                      width: deviceWidth * 0.8,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Title',
+                          icon: Icon(MdiIcons.bagCarryOn),
                         ),
-                        suggestionsCallback: (pattern) {
-                          return getSuggestions(pattern);
+                        onChanged: (String val) {
+                          title = val;
                         },
-                        itemBuilder: (context, suggestion) {
-                          return ListTile(
-                            title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
-                          );
-                        },
-                        transitionBuilder: (context, suggestionsBox, controller) {
-                          return suggestionsBox;
-                        },
-                        onSuggestionSelected: (suggestion) {
-                          this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                          from = suggestion.toString().split(", ")[2];
-                        },
-                        validator: (value) {
-                          from = value;
-                          if (value.isEmpty) {
-                            return 'Please select a city';
-                          }
-                        },
-                        onSaved: (value) => from = value,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: deviceWidth * 0.4,
+                            child: TypeAheadFormField(
+                              keepSuggestionsOnLoading: false,
+                              debounceDuration: const Duration(milliseconds: 200),
+                              textFieldConfiguration: TextFieldConfiguration(
+                                onSubmitted: (val) {
+                                  from = val;
+                                },
+                                controller: this._typeAheadController,
+                                decoration: InputDecoration(labelText: 'From', icon: Icon(MdiIcons.bridge)),
+                              ),
+                              suggestionsCallback: (pattern) {
+                                return getSuggestions(pattern);
+                              },
+                              itemBuilder: (context, suggestion) {
+                                return ListTile(
+                                  title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                                );
+                              },
+                              transitionBuilder: (context, suggestionsBox, controller) {
+                                return suggestionsBox;
+                              },
+                              onSuggestionSelected: (suggestion) {
+                                this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                                from = suggestion.toString().split(", ")[2];
+                              },
+                              validator: (value) {
+                                from = value;
+                                if (value.isEmpty) {
+                                  return 'Please select a city';
+                                }
+                              },
+                              onSaved: (value) => from = value,
+                            ),
+                          ),
+                          Container(
+                            width: deviceWidth * 0.4,
+                            child: TypeAheadFormField(
+                              keepSuggestionsOnLoading: false,
+                              debounceDuration: const Duration(milliseconds: 200),
+                              textFieldConfiguration: TextFieldConfiguration(
+                                onSubmitted: (val) {
+                                  to = val;
+                                },
+                                controller: this._typeAheadController2,
+                                decoration: InputDecoration(labelText: 'To', icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
+                              ),
+                              suggestionsCallback: (pattern) {
+                                return getSuggestions(pattern);
+                              },
+                              itemBuilder: (context, suggestion) {
+                                return ListTile(
+                                  title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                                );
+                              },
+                              transitionBuilder: (context, suggestionsBox, controller) {
+                                return suggestionsBox;
+                              },
+                              onSuggestionSelected: (suggestion) {
+                                this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
+                                to = suggestion.toString().split(", ")[2];
+                              },
+                              validator: (value) {
+                                to = value;
+                                if (value.isEmpty) {
+                                  return 'Please select a city';
+                                }
+                              },
+                              onSaved: (value) => to = value,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Container(
-                      width: deviceWidth * 0.4,
-                      child: TypeAheadFormField(
-                        keepSuggestionsOnLoading: false,
-                        debounceDuration: const Duration(milliseconds: 200),
-                        textFieldConfiguration: TextFieldConfiguration(
-                          onSubmitted: (val) {
-                            to = val;
-                          },
-                          controller: this._typeAheadController2,
-                          decoration: InputDecoration(labelText: 'To', icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
+                      width: deviceWidth * 0.8,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Reward (in USD)',
+                          icon: Icon(Icons.attach_money),
                         ),
-                        suggestionsCallback: (pattern) {
-                          return getSuggestions(pattern);
+                        keyboardType: TextInputType.number,
+                        onChanged: (String val) {
+                          price = val;
                         },
-                        itemBuilder: (context, suggestion) {
-                          return ListTile(
-                            title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
-                          );
+                      ),
+                    ),
+                    Container(
+                      width: deviceWidth * 0.8,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Weight',
+                          icon: Icon(MdiIcons.weightKilogram),
+                        ),
+                        maxLength: 4,
+                        keyboardType: TextInputType.number,
+                        onChanged: (String val) {
+                          weight = val;
                         },
-                        transitionBuilder: (context, suggestionsBox, controller) {
-                          return suggestionsBox;
-                        },
-                        onSuggestionSelected: (suggestion) {
-                          this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                          to = suggestion.toString().split(", ")[2];
-                        },
-                        validator: (value) {
-                          to = value;
-                          if (value.isEmpty) {
-                            return 'Please select a city';
-                          }
-                        },
-                        onSaved: (value) => to = value,
+                      ),
+                    ),
+                    Container(
+                      width: deviceWidth * 0.8,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: 300.0,
+                        ),
+                        child: TextField(
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            labelText: 'Description',
+                            icon: Icon(MdiIcons.informationOutline),
+                          ),
+                          onChanged: (String val) {
+                            description = val;
+                          },
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Reward (in USD)',
-                    icon: Icon(Icons.attach_money),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (String val) {
-                    price = val;
-                  },
-                ),
-              ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Weight',
-                    icon: Icon(MdiIcons.weightKilogram),
-                  ),
-                  maxLength: 4,
-                  keyboardType: TextInputType.number,
-                  onChanged: (String val) {
-                    weight = val;
-                  },
-                ),
-              ),
-              Container(
-                width: deviceWidth * 0.8,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: 300.0,
-                  ),
-                  child: TextField(
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      labelText: 'Description',
-                      icon: Icon(MdiIcons.informationOutline),
-                    ),
-                    onChanged: (String val) {
-                      description = val;
-                    },
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+        
+                    ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    // InkWell(
-                    //   child: Container(
-                    //     height: 100,
-                    //     width: 100,
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       border: Border.all(color: Colors.grey, width: 1),
-                    //     ),
-                    //     child: imageFile == null
-                    //         ? Icon(
-                    //             Icons.add,
-                    //             size: 30,
-                    //             color: Colors.grey,
-                    //           )
-                    //         : _setImageView(),
-                    //   ),
-                    //   onTap: () {
-                    //     _showSelectionDialog(context);
-                    //   },
-                    // ),
-                    // InkWell(
-                    //   child: Container(
-                    //     height: 100,
-                    //     width: 100,
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.white,
-                    //       border: Border.all(color: Colors.grey, width: 1),
-                    //     ),
-                    //     child: imageFile == null
-                    //         ? Icon(
-                    //             Icons.add,
-                    //             size: 30,
-                    //             color: Colors.grey,
-                    //           )
-                    //         : _setImageView(),
-                    //   ),
-                    //   onTap: () {
-                    //     _showSelectionDialog(context);
-                    //   },
-                    // ),
-                  ],
-                ),
-              ),
-              addItemButton
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 60),
-                      child: RaisedButton(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        color: Colors.green,
-//                      elevation: 3,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        child: Container(
-                          width: double.infinity,
-                          child: Text(
-                            "Add Order",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                              fontSize: 19,
+                addItemButton
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 60),
+                        child: RaisedButton(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          color: Colors.green,
+  //                      elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          child: Container(
+                            width: double.infinity,
+                            child: Text(
+                              "Add Order",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontSize: 19,
+                              ),
                             ),
                           ),
+                          onPressed: () {
+                            var token = Provider.of<Auth>(context, listen: false).token;
+                            var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                            if(errorInImageUpload){
+                              setState(() {
+                                  addItemButton = false;
+                              });
+                              upload(orderId.toString(), token, orderstripsProvider, context);
+                            }else{
+                                String url = Api.orders;
+                                if (title == null || from == null || to == null || weight == null || price == null) {
+                                  setState(() {
+                                    addItemButton = true;
+                                  });
+                                  Flushbar(
+                                    title: "Warning!",
+                                    message: "Fill all the fields and try again.",
+                                    padding: const EdgeInsets.all(8),
+                                    margin: const EdgeInsets.all(20),
+                                    borderRadius: 10,
+                                    duration: Duration(seconds: 3),
+                                  )..show(context);
+                                } else {
+                                  setState(() {
+                                    addItemButton = false;
+                                  });
+                                  http
+                                      .post(url,
+                                          headers: {
+                                            HttpHeaders.CONTENT_TYPE: "application/json",
+                                            "Authorization": "Token " + token,
+                                          },
+                                          body: json.encode({
+                                            "title": title,
+                                            "dimensions": 0,
+                                            "source": from,
+                                            "destination": to,
+                                            "date": DateTime.now().toString().substring(0, 10),
+                                            "address": "ads",
+                                            "weight": weight,
+                                            "price": price,
+                                            "trip": null,
+                                            "description": description
+                                          }))
+                                      .then((response) {
+                                    Map data = json.decode(response.body);
+                                    if (response.statusCode == 201) {
+                                      upload(data["id"].toString(), token, orderstripsProvider, context);
+                                    } else {
+                                      setState(() {
+                                        addItemButton = true;
+                                      });
+                                      Flushbar(
+                                        title: "Warning!",
+                                        message: "Item couldn't be added, try again.",
+                                        padding: const EdgeInsets.all(8),
+                                        borderRadius: 10,
+                                        duration: Duration(seconds: 3),
+                                      )..show(context);
+                                    }
+                                  });
+                                }
+                            }
+                          },
                         ),
-                        onPressed: () {
-                          var token = Provider.of<Auth>(context, listen: false).token;
-                          var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                          String url = Api.orders;
-                          if (title == null || from == null || to == null || weight == null || price == null) {
-                            setState(() {
-                              addItemButton = true;
-                            });
-                            Flushbar(
-                              title: "Warning!",
-                              message: "Fill all the fields and try again.",
-                              padding: const EdgeInsets.all(8),
-                              margin: const EdgeInsets.all(20),
-                              borderRadius: 10,
-                              duration: Duration(seconds: 3),
-                            )..show(context);
-                          } else {
-                            setState(() {
-                              addItemButton = false;
-                            });
-                            http
-                                .post(url,
-                                    headers: {
-                                      HttpHeaders.CONTENT_TYPE: "application/json",
-                                      "Authorization": "Token " + token,
-                                    },
-                                    body: json.encode({
-                                      "title": title,
-                                      "dimensions": 0,
-                                      "source": from,
-                                      "destination": to,
-                                      "date": DateTime.now().toString().substring(0, 10),
-                                      "address": "ads",
-                                      "weight": weight,
-                                      "price": price,
-                                      "trip": null,
-                                      "description": description
-                                    }))
-                                .then((response) {
-                              Map data = json.decode(response.body);
-                              if (response.statusCode == 201) {
-                                upload(data["id"].toString(), token, orderstripsProvider, context);
-                              } else {
-                                setState(() {
-                                  addItemButton = true;
-                                });
-                                Flushbar(
-                                  title: "Warning!",
-                                  message: "Item couldn't be added, try again.",
-                                  padding: const EdgeInsets.all(8),
-                                  borderRadius: 10,
-                                  duration: Duration(seconds: 3),
-                                )..show(context);
-                              }
-                            });
-                          }
-                        },
-                      ),
-                    )
-                  : ProgressIndicatorWidget(show: true),
+                      )
+                    : ProgressIndicatorWidget(show: true),
+              
             ],
           ),
         ),

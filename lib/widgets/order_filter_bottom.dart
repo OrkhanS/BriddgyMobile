@@ -393,48 +393,46 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                       ],
                     ),
                   ),
-//                  SizedBox(
-//                    height: _expanded ? 10 : 0,
-//                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(flex: 2, child: SizedBox()),
-                        GestureDetector(
-                          child: Container(
-                            height: _expanded ? 40 : 0,
-                            width: 40,
-                            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.red[200],
-                              ),
-                              borderRadius: BorderRadius.circular(50),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        child: Container(
+                          height: _expanded ? 40 : 0,
+                          width: 40,
+                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.red[200],
                             ),
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.red[400],
-                            ),
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                          onTap: () {
-                            var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.red[400],
+                          ),
+                        ),
+                        onTap: () {
+                          setState(() {
                             widget.from = null;
                             widget.to = null;
                             widget.weight = null;
                             widget.price = null;
-                            provider.isLoadingTrips = true;
-                            provider.fetchAndSetMyOrders(Provider.of<Auth>(context, listen: false));
-                            urlFilter = null;
-                            setState(() {
-                              _expanded = !_expanded;
-                            });
-                          },
-                        ),
-                        Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-                            child: RaisedButton(
+                            _searchBarFrom = "Anywhere";
+                            _searchBarTo = "Anywhere";
+                            _searchBarWeight = "Any";
+                            _expanded = !_expanded;
+                          });
+                          var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                          provider.isLoadingOrders = true;
+                          provider.notify();
+                          provider.fetchAndSetOrders();
+                          urlFilter = null;
+                        },
+                      ),
+                      Expanded(flex: 2, child: SizedBox()),
+                      Expanded(
+                        flex: 3,
+                        child: RaisedButton(
 //                          color: Theme.of(context).primaryColor,
 
                               color: Colors.green,

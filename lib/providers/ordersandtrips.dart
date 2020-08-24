@@ -95,6 +95,7 @@ class OrdersTripsProvider with ChangeNotifier {
             },
     )
         .then((onValue) {
+      orders = [];
       Map<String, dynamic> data =
           json.decode(onValue.body) as Map<String, dynamic>;
       for (var i = 0; i < data["results"].length; i++) {
@@ -218,7 +219,7 @@ class OrdersTripsProvider with ChangeNotifier {
       (response) {
         Map<String, dynamic> data =
             json.decode(response.body) as Map<String, dynamic>;
-
+        trips = [];
         for (var i = 0; i < data["results"].length; i++) {
           trips.add(Trip.fromJson(data["results"][i]));
         }

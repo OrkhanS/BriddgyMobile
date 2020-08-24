@@ -63,6 +63,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       .whenComplete(() {
                     if (Provider.of<Auth>(context, listen: false)
                         .verificationStatus) {
+                          Provider.of<Auth>(context, listen: false).user.isEmailVerified = true;
                       Navigator.pop(context);
                       Flushbar(
                         title: "Success",
