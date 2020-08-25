@@ -80,7 +80,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text("Image couldn't be added!"),
+            title: Text("Image size is too big!"),
             content: Text("Do you want to add another image?"),
             actions: <Widget>[
               FlatButton(
@@ -99,7 +99,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 onPressed: () {
                   orderstripsProvider.myorders = [];
                   orderstripsProvider.isLoadingMyOrders = true;
-                  Navigator.pop(context);
+                  Navigator.pop(context);Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -147,23 +147,36 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   void _openGallery(BuildContext context,i) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var picture;
+    try {
+      picture = await ImagePicker.pickImage(source: ImageSource.gallery,imageQuality: 50);
+    } catch (e) {
+      //if compression not supported for this image file.
+      picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    }
     this.setState(() {
       if(i==1)imageFile1=picture;
       else if(i==2)imageFile2=picture;
       else imageFile3=picture;
-      imageFiles.add(picture);
+      if(! imageFiles.contains(picture))imageFiles.add(picture);
+      
     });
     Navigator.of(context).pop();
   }
 
   void _openCamera(BuildContext context,i) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    var picture;
+    try {
+      picture = await ImagePicker.pickImage(source: ImageSource.camera,imageQuality: 70);
+    } catch (e) {
+      //if compression not supported for this image file.
+      picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    }
     this.setState(() {
       if(i==1)imageFile1=picture;
       else if(i==2)imageFile2=picture;
       else imageFile3=picture;
-      imageFiles.add(picture);
+      if(! imageFiles.contains(picture))imageFiles.add(picture);
     });
     Navigator.of(context).pop();
   }
