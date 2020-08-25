@@ -118,7 +118,6 @@ class Messages extends ChangeNotifier {
         // Checking if FCM sends the same notification twice
         if (_messages[roomid]["data"][0].id != tempMessage.id) {
           _messages[roomid]["data"].insert(0, tempMessage);
-          notifyListeners();
         }
       }
     } catch (e) {
