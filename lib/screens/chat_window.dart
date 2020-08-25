@@ -52,13 +52,13 @@ class _ChatWindowState extends State<ChatWindow> {
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
   void initState() {
-    widget.provider.roomIDofActiveChatroom = id;
     textEditingController = TextEditingController();
     scrollController = ScrollController();
     id = widget.room.toString();
     token = widget.auth.myTokenFromStorage;
     me = widget.auth.user;
     widget.provider.isChatRoomPageActive = true;
+    widget.provider.roomIDofActiveChatroom = id;
     initCommunication(id);
     super.initState();
   }
@@ -103,7 +103,7 @@ class _ChatWindowState extends State<ChatWindow> {
       "id": 200,
       "date_created": DateTime.now().toString(),
       "date_modified": DateTime.now().toString(),
-      "text": text,
+      "text": text.toString(),
       "sender": widget.auth.user.id,
       "recipients": []
     });
@@ -156,12 +156,12 @@ class _ChatWindowState extends State<ChatWindow> {
     }
     var textInput = Row(
       children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.camera_alt),
-          onPressed: () {
-            _choose();
-          },
-        ),
+//        IconButton(
+//          icon: Icon(Icons.camera_alt),
+//          onPressed: () {
+//            _choose();
+//          },
+//        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -457,12 +457,13 @@ class _ChatWindowState extends State<ChatWindow> {
                               itemBuilder: (context, index) {
                                 bool iscontract = false;
 
-                                try {
-                                  var check = json.decode(_messages[index].text.toString()) as Map<String, dynamic>;
-                                  iscontract = true;
-                                } on FormatException catch (_) {
-                                  iscontract = false;
-                                }
+                                // try {
+                                //   var check = json.decode(_messages[index].text) as Map<String, dynamic>;
+                                //   iscontract = true;
+                                // } on FormatException catch (_) {
+                                //   iscontract = false;
+                                // }
+                                iscontract = false;
 
                                 bool reverse = false;
                                 if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {

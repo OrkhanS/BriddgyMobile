@@ -11,10 +11,12 @@ import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
 import 'package:optisend/screens/chats_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/verify_phone_screen.dart';
 import 'package:optisend/widgets/generators.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import '../main.dart';
@@ -34,6 +36,7 @@ class _TripScreenState extends State<TripScreen> {
   var _current;
   Trip trip;
   var imageUrl;
+  bool messageDeliveryButton = true;
   @override
   void initState() {
     trip = widget.trip;
@@ -362,11 +365,12 @@ class _TripScreenState extends State<TripScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
+                    messageDeliveryButton
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
 //                                RaisedButton.icon(
 //                                  padding: EdgeInsets.symmetric(horizontal: 20),
 ////                            color: Theme.of(context).scaffoldBackgroundColor,
@@ -397,36 +401,79 @@ class _TripScreenState extends State<TripScreen> {
 //                                    );
 //                                  },
 //                                ),
-                          Expanded(
-                            child: SizedBox(),
-                          ),
-                          RaisedButton.icon(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            color: Colors.green,
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            icon: Icon(
-                              MdiIcons.chatOutline,
-                              color: Colors.white,
+                                Expanded(
+                                  child: SizedBox(),
+                                ),
+                                RaisedButton.icon(
+                                    padding: EdgeInsets.symmetric(horizontal: 20),
+                                    color: Colors.green,
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    icon: Icon(
+                                      MdiIcons.chatOutline,
+                                      color: Colors.white,
 //                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                            label: Text(
-                              " Message",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+                                      size: 18,
+                                    ),
+                                    label: Text(
+                                      " Message",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
-                              ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        messageDeliveryButton = false;
+                                      });
+                                      var auth = Provider.of<Auth>(context, listen: false);
+                                      var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                                      messageProvider.createRooms(trip.owner.id, auth).whenComplete(() => {
+                                            if (messageProvider.isChatRoomCreated)
+                                              {
+                                                setState(() {
+                                                  messageDeliveryButton = true;
+                                                }),
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (__) => ChatsScreen(
+                                                            provider: messageProvider,
+                                                            auth: auth,
+                                                            shouldOpenTop: true,
+                                                          )),
+                                                ),
+                                                Flushbar(
+                                                  title: "Success",
+                                                  message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+                                                  padding: const EdgeInsets.all(20),
+                                                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                  borderRadius: 10,
+                                                  duration: Duration(seconds: 3),
+                                                )..show(context)
+                                              }
+                                            else
+                                              {
+                                                setState(() {
+                                                  messageDeliveryButton = true;
+                                                }),
+                                                Flushbar(
+                                                  title: "Failure",
+                                                  message: "Please try again",
+                                                  padding: const EdgeInsets.all(8),
+                                                  borderRadius: 10,
+                                                  duration: Duration(seconds: 3),
+                                                )..show(context)
+                                              }
+                                          });
+                                    }),
+                              ],
                             ),
-                            onPressed: () {
-                              //todo Orxan
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                          )
+                        : ProgressIndicatorWidget(show: true),
                   ],
                 ),
               ),

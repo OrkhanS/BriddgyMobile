@@ -102,7 +102,7 @@ class Messages extends ChangeNotifier {
       if (_messages[roomid] == null || _messages[roomid].isEmpty) {
         bool fetchRoom = true;
         if (_messages[roomid] == null) {
-          for (var i; i < chats.length; i++) {
+          for (var i=0; i < chats.length; i++) {
             if (chats[i].id == roomid) {
               fetchRoom = false;
             }
@@ -113,15 +113,16 @@ class Messages extends ChangeNotifier {
         // cannot directly add Message object to Map. So need TemporaryList
         List<Message> temporary = [];
         temporary.add(tempMessage);
-        _messages[roomid] = temporary;
+        _messages[roomid]["data"] = temporary;
       } else {
         // Checking if FCM sends the same notification twice
-        if (_messages[roomid][0].id.toString() != message["session_id"].toString()) {
-          _messages[roomid].insert(0, tempMessage);
+        if (_messages[roomid]["data"][0].id != tempMessage.id) {
+          _messages[roomid]["data"].insert(0, tempMessage);
+          notifyListeners();
         }
       }
     } catch (e) {
-      print(e + "124");
+      print(e);
     }
 
     // Checking if Message is sent by ME, if not add it to newMessage list
@@ -138,8 +139,9 @@ class Messages extends ChangeNotifier {
           notifyListeners();
         } else {
           // Checking if FCM sends the same notification twice
-          if (newMessage[roomid][0].id.toString() != message["session_id"].toString()) {
+          if (_messages[roomid]["data"][0].id == tempMessage.id) {
             newMessage[roomid].insert(0, tempMessage);
+            notifyListeners();
           }
         }
         if (isChatRoomPageActive) {

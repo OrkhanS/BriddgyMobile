@@ -279,10 +279,10 @@ class _AuthScreenState extends State<AuthScreen> {
 //                        height: 36,
 //                      )),
 //                ),
-                  Text(
-                    "Or",
-                    style: TextStyle(color: Colors.grey[500], fontSize: 20),
-                  ),
+//                  Text(
+//                    "Or",
+//                    style: TextStyle(color: Colors.grey[500], fontSize: 20),
+//                  ),
 //                Expanded(
 //                  child: new Container(
 //                      margin: const EdgeInsets.only(left: 20.0, right: 10.0),
@@ -292,20 +292,20 @@ class _AuthScreenState extends State<AuthScreen> {
 //                      )),
 //                ),
                 ]),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _facebook(),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    _google(),
-                  ],
-                ),
+//                SizedBox(
+//                  height: 10,
+//                ),
+//                Row(
+//                  mainAxisSize: MainAxisSize.max,
+//                  mainAxisAlignment: MainAxisAlignment.center,
+//                  children: <Widget>[
+//                    _facebook(),
+//                    SizedBox(
+//                      width: 15,
+//                    ),
+//                    _google(),
+//                  ],
+//                ),
                 SizedBox(
                   height: 20,
                 ),

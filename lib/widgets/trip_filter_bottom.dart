@@ -7,19 +7,20 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
+import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 
-class FilterBottomBar extends StatefulWidget {
-  var from, to, weight, price;
+class TripFilterBottomBar extends StatefulWidget {
+  var from, to, weight, date;
   OrdersTripsProvider ordersProvider;
-  FilterBottomBar({this.ordersProvider, this.from, this.to, this.weight, this.price});
+  TripFilterBottomBar({this.ordersProvider, this.from, this.to, this.weight, this.date});
   @override
-  _FilterBottomBarState createState() => _FilterBottomBarState();
+  _TripFilterBottomBarState createState() => _TripFilterBottomBarState();
 }
 
-class _FilterBottomBarState extends State<FilterBottomBar> {
+class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
   final TextEditingController _typeAheadController3 = TextEditingController();
@@ -27,7 +28,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
 
   String _searchBarFrom = "Anywhere";
   String _searchBarTo = "Anywhere";
-  String _searchBarWeight = "Any";
+  String _searchBarDate = "Any";
 
   List _suggested = [];
   List _cities = [];
@@ -39,11 +40,12 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
   String urlFilter;
   var _expanded = false;
 
-  Future filterAndSetOrders() async {
+  Future filterAndSetTrips() async {
     var provider = widget.ordersProvider;
-    provider.isLoadingOrders = true;
+    provider.isLoadingTrips = true;
     provider.notify();
-    if (urlFilter == null) urlFilter = Api.orders + "?";
+
+    if (urlFilter == null) urlFilter = Api.trips + "?";
     if (widget.from != null) {
       flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "origin=" + widget.from
@@ -62,12 +64,6 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
           : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
       flagWeight = true;
     }
-    if (widget.price != null) {
-      flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "min_price=" + widget.price.toString()
-          : urlFilter = urlFilter + "&min_price=" + widget.price.toString();
-    }
-
     await http
         .get(
       urlFilter,
@@ -86,20 +82,34 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
           Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
           _suggested = [];
           for (var i = 0; i < data["results"].length; i++) {
-            _suggested.add(Order.fromJson(data["results"][i]));
+            _suggested.add(Trip.fromJson(data["results"][i]));
           }
-          provider.orders = [];
-          provider.orders = _suggested;
-          provider.allOrdersDetails = {"next": data["next"], "count": data["count"]};
-          provider.isLoadingOrders = false;
-          provider.notify();
+          widget.ordersProvider.trips = [];
+          widget.ordersProvider.trips = _suggested;
+          widget.ordersProvider.allTripsDetails = {"next": data["next"], "count": data["count"]};
+          widget.ordersProvider.isLoadingTrips = false;
+          widget.ordersProvider.notify();
         },
       );
     });
+
+    // await http.get(
+    //   urlFilter,
+    //   headers: {HttpHeaders.contentTypeHeader: "application/json"},
+    // ).then((response) {
+    //   setState(
+    //     () {
+    //       final dataOrders = json.decode(response.body) as Map<String, dynamic>;
+    //       widget.ordersProvider.orders = dataOrders["results"];
+    //       isLoading = false;
+    //       //itemCount = dataOrders["count"];
+    //     },
+    //   );
+    // });
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = Api.getSuggestions + pattern;
+    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.contentTypeHeader: "application/json"},
@@ -123,7 +133,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 200),
-      height: _expanded ? 255 : 55,
+      height: _expanded ? 195 : 55,
       child: Column(
         children: <Widget>[
           Container(
@@ -153,7 +163,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           Icon(Icons.search, color: Theme.of(context).primaryColor),
                           SizedBox(width: 10),
                           Text(
-                            _searchBarFrom + " - " + _searchBarTo + " , " + _searchBarWeight + " kg ",
+                            _searchBarFrom + " - " + _searchBarTo + " , " + _searchBarDate,
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 // fontWeight: FontWeight.bold,
@@ -170,7 +180,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
           AnimatedContainer(
             duration: Duration(milliseconds: 200),
             padding: EdgeInsets.symmetric(horizontal: 15),
-            height: _expanded ? 200 : 0,
+            height: _expanded ? 140 : 0,
             child: Form(
               child: Column(
                 children: <Widget>[
@@ -300,91 +310,91 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: _expanded ? 20 : 0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _typeAheadController3,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            prefixIcon: Icon(MdiIcons.weightKilogram),
-                            labelText: 'Weight maximum (in kg):',
-                            hintText: ' 3kg',
-                            hintStyle: TextStyle(color: Colors.grey[300]),
-                            suffixIcon: IconButton(
-                              padding: EdgeInsets.only(
-                                top: 5,
-                              ),
-                              icon: Icon(
-                                Icons.close,
-                                size: 15,
-                              ),
-                              onPressed: () {
-                                this._typeAheadController3.text = '';
-                                widget.weight = null;
-                              },
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
+//                  SizedBox(
+//                    height: _expanded ? 20 : 0,
+//                  ),
+//                  Row(
+//                    children: [
+//                      Expanded(
+//                        child: TextFormField(
+//                          controller: _typeAheadController3,
+//                          decoration: InputDecoration(
+//                            border: OutlineInputBorder(
+//                              borderRadius: BorderRadius.circular(20),
+//                            ),
+//                            prefixIcon: Icon(MdiIcons.weightKilogram),
+//                            labelText: 'Weight Limit (in kg):',
+//                            hintText: ' 3kg',
+//                            hintStyle: TextStyle(color: Colors.grey[300]),
+//                            suffixIcon: IconButton(
+//                              padding: EdgeInsets.only(
+//                                top: 5,
+//                              ),
+//                              icon: Icon(
+//                                Icons.close,
+//                                size: 15,
+//                              ),
+//                              onPressed: () {
+//                                this._typeAheadController3.text = '';
+//                                widget.weight = null;
+//                              },
+//                            ),
+//                          ),
+//                          keyboardType: TextInputType.number,
+////
+//                          onChanged: (String val) {
+//                            widget.weight = val;
+//                          },
+//                          onSaved: (value) {
+////                        _authData['email'] = value;
+//                          },
+//                        ),
+//                      ),
+//                      SizedBox(
+//                        width: 10,
+//                      ),
+//                      Expanded(
+//                        child: TextFormField(
+//                          controller: _typeAheadController4,
+//                          decoration: InputDecoration(
+//                            prefixIcon: Icon(
+//                              Icons.calendar_today,
+//                            ),
+//                            border: OutlineInputBorder(
+//                              borderRadius: BorderRadius.circular(20),
+//                            ),
 //
-                          onChanged: (String val) {
-                            _searchBarWeight = val;
-                            widget.weight = val;
-                          },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _typeAheadController4,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              MdiIcons.currencyUsd,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-
-                            labelText: 'Reward minimum (in usd):',
-                            hintText: ' 10\$',
-                            hintStyle: TextStyle(color: Colors.grey[300]),
-
-                            suffixIcon: IconButton(
-                              padding: EdgeInsets.only(
-                                top: 5,
-                              ),
-                              icon: Icon(
-                                Icons.close,
-                                size: 15,
-                              ),
-                              onPressed: () {
-                                this._typeAheadController4.text = '';
-                                widget.price = null;
-                              },
-                            ),
-                            //icon: Icon(Icons.location_on),
-                          ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (String val) {
-                            widget.price = val;
-                          },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+//                            labelText: 'Date:',
+//                            hintText: ' 1 January',
+//                            hintStyle: TextStyle(color: Colors.grey[300]),
+//
+//                            suffixIcon: IconButton(
+//                              padding: EdgeInsets.only(
+//                                top: 5,
+//                              ),
+//                              icon: Icon(
+//                                Icons.close,
+//                                size: 15,
+//                              ),
+//                              onPressed: () {
+//                                this._typeAheadController4.text = '';
+//                                widget.date = null;
+//                              },
+//                            ),
+//                            //icon: Icon(Icons.location_on),
+//                          ),
+//                          keyboardType: TextInputType.number,
+//                          onChanged: (String val) {
+//                            _searchBarDate = val;
+//                            widget.date = val;
+//                          },
+//                          onSaved: (value) {
+////                        _authData['email'] = value;
+//                          },
+//                        ),
+//                      ),
+//                    ],
+//                  ),
                   Row(
                     children: [
                       GestureDetector(
@@ -408,12 +418,9 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           widget.from = null;
                           widget.to = null;
                           widget.weight = null;
-                          widget.price = null;
+                          widget.date = null;
                           provider.isLoadingTrips = true;
                           provider.fetchAndSetMyOrders(Provider.of<Auth>(context, listen: false));
-                          _searchBarFrom = "Anywhere";
-                          _searchBarTo = "Anywhere";
-                          _searchBarWeight = "Any";
                           urlFilter = null;
                           setState(() {
                             _expanded = !_expanded;
@@ -432,7 +439,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                             width: MediaQuery.of(context).size.width,
                             child: Center(
                               child: Text(
-                                "Find Orders",
+                                "Find Trips",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -443,7 +450,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                             ),
                           ),
                           onPressed: () {
-                            filterAndSetOrders();
+                            filterAndSetTrips();
                             setState(() {
                               _expanded = !_expanded;
                             });

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
@@ -287,9 +288,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     : Center(
                         child: Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          'To be able to Chat, Please Log In.',
-                          style: TextStyle(fontSize: 30),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 400,
+                              width: 200,
+                              padding: EdgeInsets.all(10),
+                              child: SvgPicture.asset(
+                                "assets/photos/chat_bubbles.svg",
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(40.0),
+                              child: Text(
+                                'To be able to chat, \nplease log in.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ))
 

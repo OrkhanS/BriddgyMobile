@@ -29,7 +29,7 @@ class Message {
         id: json["id"],
         dateCreated: DateTime.parse(json["date_created"]),
         dateModified: DateTime.parse(json["date_modified"]),
-        text: json["text"],
+        text: json["text"].toString(),
         sender: json["sender"],
         recipients: List<dynamic>.from(json["recipients"].map((x) => x)),
       );
@@ -38,7 +38,7 @@ class Message {
         "id": id,
         "date_created": dateCreated.toIso8601String(),
         "date_modified": dateModified.toIso8601String(),
-        "text": text,
+        "text": text.toString(),
         "sender": sender,
         "recipients": List<dynamic>.from(recipients.map((x) => x)),
       };

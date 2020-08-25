@@ -39,18 +39,17 @@ class TripWidget extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-            height: 100,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            height: 80,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 imageUrl == Api.noPictureImage
                     ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
                         child: InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0),
                       )
                     : Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(40.0),
                           child: Image.network(
@@ -86,21 +85,23 @@ class TripWidget extends StatelessWidget {
                           maxLines: 1,
                           style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              Icons.location_on,
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
-                            Text(
-                              "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
-                            ),
-                          ],
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(
+                                Icons.location_on,
+                                color: Theme.of(context).primaryColor,
+                                size: 16,
+                              ),
+                              Text(
+                                "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                              ),
+                            ],
+                          ),
                         ),
                         Row(
                           children: <Widget>[
@@ -113,10 +114,9 @@ class TripWidget extends StatelessWidget {
                               "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
                               style: TextStyle(color: Colors.grey[600]),
                             ),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
+                            Expanded(
+                              child: SizedBox(),
+                            ),
                             Icon(
                               MdiIcons.weightKilogram,
                               color: Theme.of(context).primaryColor,
@@ -127,6 +127,9 @@ class TripWidget extends StatelessWidget {
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
+                        ),
+                        Row(
+                          children: <Widget>[],
                         )
                       ],
                     ),
@@ -134,44 +137,63 @@ class TripWidget extends StatelessWidget {
                 ),
                 //todo check if I am the owner
                 //todo if user is the owner, then replace the button below with delete button
-                Expanded(
-                  flex: 3,
-                  child: RaisedButton.icon(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    elevation: 1,
-                    icon: Icon(
-                      MdiIcons.chatOutline,
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.grey[200],
+//                    border: Border.all(
+////                      color: Colors.grey[400],
+//                      width: 0.8,
+//                      color: Theme.of(context).primaryColor,
+//                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: Icon(
+                      Icons.chevron_right,
+                      size: 25,
                       color: Theme.of(context).primaryColor,
-                      size: 18,
                     ),
-                    label: Text(
-                      " Message",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                    onPressed: () {
-                      var auth = Provider.of<Auth>(context, listen: false);
-                      var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                      messageProvider.createRooms(trip.owner.id, auth);
-                      messageProvider.isChatsLoading = true;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
-                      );
-                      Flushbar(
-                        title: "Success",
-                        message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-                        padding: const EdgeInsets.all(8),
-                        borderRadius: 10,
-                        duration: Duration(seconds: 3),
-                      )..show(context);
-                    },
                   ),
                 ),
+//                Expanded(
+//                  flex: 3,
+//                  child: RaisedButton.icon(
+//                    padding: EdgeInsets.symmetric(horizontal: 10),
+//                    color: Theme.of(context).scaffoldBackgroundColor,
+//                    elevation: 1,
+//                    icon: Icon(
+//                      MdiIcons.chatOutline,
+//                      color: Theme.of(context).primaryColor,
+//                      size: 18,
+//                    ),
+//                    label: Text(
+//                      " Message",
+//                      style: TextStyle(
+//                        fontWeight: FontWeight.bold,
+//                        color: Theme.of(context).primaryColor,
+//                      ),
+//                    ),
+//                    onPressed: () {
+//                      var auth = Provider.of<Auth>(context, listen: false);
+//                      var messageProvider = Provider.of<Messages>(context, listen: false);
+//
+//                      messageProvider.createRooms(trip.owner.id, auth);
+//                      messageProvider.isChatsLoading = true;
+//                      Navigator.push(
+//                        context,
+//                        MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+//                      );
+//                      Flushbar(
+//                        title: "Success",
+//                        message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+//                        padding: const EdgeInsets.all(8),
+//                        borderRadius: 10,
+//                        duration: Duration(seconds: 3),
+//                      )..show(context);
+//                    },
+//                  ),
+//                ),
                 SizedBox(width: 10),
               ],
             ),

@@ -8,6 +8,7 @@ import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:optisend/widgets/filter_bar_trips.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:optisend/widgets/trip_filter_bottom.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -217,6 +218,7 @@ class _TripScreenState extends State<TripsScreen> {
         }
         return Scaffold(
           resizeToAvoidBottomPadding: true,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               if (widget.auth.isAuth) {
@@ -230,7 +232,7 @@ class _TripScreenState extends State<TripsScreen> {
                             )),
                   );
                 } else {
-                  Provider.of<Auth>(context,listen:false).requestEmailVerification();
+                  Provider.of<Auth>(context, listen: false).requestEmailVerification();
                   Flushbar(
                     title: "Email Sent",
                     message: "Please check your email for code!",
@@ -256,12 +258,18 @@ class _TripScreenState extends State<TripsScreen> {
             backgroundColor: Theme.of(context).primaryColor,
             child: Icon(Icons.add),
           ),
+          bottomNavigationBar: BottomAppBar(
+            notchMargin: 10,
+            shape: CircularNotchedRectangle(),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+          ),
           body: SafeArea(
             child: Stack(
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FilterBarTrip(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+//                    FilterBarTrip(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
@@ -269,32 +277,32 @@ class _TripScreenState extends State<TripsScreen> {
                           orderstripsProvider.detailsTrip.isEmpty ? "Results: 0" : "Results: " + orderstripsProvider.detailsTrip["count"].toString(),
                           style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
                         ),
-                        DropdownButton(
-                          hint: Text(_value),
-                          items: [
-                            DropdownMenuItem(
-                              value: 0,
-                              child: Text(
-                                "Reset",
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 1,
-                              child: Text(
-                                "Ranking",
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 2,
-                              child: Text(
-                                "Weight",
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            sortData(value, orderstripsProvider);
-                          },
-                        ),
+//                        DropdownButton(
+//                          hint: Text(_value),
+//                          items: [
+//                            DropdownMenuItem(
+//                              value: 0,
+//                              child: Text(
+//                                "Reset",
+//                              ),
+//                            ),
+//                            DropdownMenuItem(
+//                              value: 1,
+//                              child: Text(
+//                                "Ranking",
+//                              ),
+//                            ),
+//                            DropdownMenuItem(
+//                              value: 2,
+//                              child: Text(
+//                                "Weight",
+//                              ),
+//                            ),
+//                          ],
+//                          onChanged: (value) {
+//                            sortData(value, orderstripsProvider);
+//                          },
+//                        ),
                       ]),
                     ),
                     Expanded(

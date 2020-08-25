@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
+import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/order_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class OrderWidget extends StatefulWidget {
@@ -152,6 +154,50 @@ class _OrderWidgetState extends State<OrderWidget> {
                     ],
                   ),
                 ),
+                if (Provider.of<Auth>(context, listen: false).isAuth)
+                  if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text("Are you sure you want to delete this order?"),
+                            content: Text("This action cannot be undone"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text('Yes,delete!'),
+                                onPressed: () {
+                                  //todo Orxan
+                                  Navigator.of(ctx).pop();
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.red[200],
+                          ),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.red[400],
+                        ),
+                      ),
+                    )
               ],
             ),
           ),

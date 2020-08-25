@@ -51,7 +51,7 @@ class Order {
         source: Destination.fromJson(json["source"]),
         destination: Destination.fromJson(json["destination"]),
         date: DateTime.parse(json["date"]),
-        address: json["address"],
+        address: utf8.decode(json["address"].toString().codeUnits),
         weight: json["weight"],
         price: json["price"],
         trip: json["trip"],

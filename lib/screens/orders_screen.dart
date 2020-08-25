@@ -230,7 +230,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     MaterialPageRoute(builder: (__) => AddItemScreen()),
                   );
                 } else {
-                  Provider.of<Auth>(context,listen:false).requestEmailVerification();
+                  Provider.of<Auth>(context, listen: false).requestEmailVerification();
                   Flushbar(
                     title: "Email Sent",
                     message: "Please check your email for code!",
@@ -294,39 +294,40 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   children: <Widget>[
 //                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+//                        Expanded(child: SizedBox()),
                         Text(
                           orderstripsProvider.detailsOrder.isEmpty
                               ? "Results: 0"
                               : "Results: " + orderstripsProvider.detailsOrder["count"].toString(),
                           style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
                         ),
-                        DropdownButton(
-                          hint: Text(_value),
-                          items: [
-                            DropdownMenuItem(
-                              value: 0,
-                              child: Text(
-                                "Reset",
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 1,
-                              child: Text("Highest Ranking"),
-                            ),
-                            DropdownMenuItem(value: 2, child: Text("Highest Reward")),
-                            DropdownMenuItem(
-                              value: 3,
-                              child: Text(
-                                "Lowest Weight",
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            sortData(value, orderstripsProvider);
-                          },
-                        ),
+//                        DropdownButton(
+//                          hint: Text(_value),
+//                          items: [
+//                            DropdownMenuItem(
+//                              value: 0,
+//                              child: Text(
+//                                "Reset",
+//                              ),
+//                            ),
+//                            DropdownMenuItem(
+//                              value: 1,
+//                              child: Text("Highest Ranking"),
+//                            ),
+//                            DropdownMenuItem(value: 2, child: Text("Highest Reward")),
+//                            DropdownMenuItem(
+//                              value: 3,
+//                              child: Text(
+//                                "Lowest Weight",
+//                              ),
+//                            ),
+//                          ],
+//                          onChanged: (value) {
+//                            sortData(value, orderstripsProvider);
+//                          },
+//                        ),
                       ]),
                     ),
                     Expanded(

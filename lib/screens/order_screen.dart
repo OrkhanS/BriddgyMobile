@@ -16,6 +16,7 @@ import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/messages.dart';
 import 'package:optisend/screens/apply_for_order.dart';
 import 'package:optisend/screens/chats_screen.dart';
+import 'package:optisend/screens/edit_order_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/widgets/generators.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
@@ -484,73 +485,128 @@ class _OrderScreenState extends State<OrderScreen> {
                                 Expanded(
                                   child: SizedBox(),
                                 ),
-                                RaisedButton.icon(
-                                  padding: EdgeInsets.symmetric(horizontal: 20),
-                                  color: Colors.green,
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  icon: Icon(
-                                    MdiIcons.chatOutline,
-                                    color: Colors.white,
+                                if (Provider.of<Auth>(context, listen: false).isAuth)
+                                  if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
+                                    RaisedButton.icon(
+                                      padding: EdgeInsets.symmetric(horizontal: 20),
+                                      color: Colors.red,
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      icon: Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.white,
 //                              color: Theme.of(context).primaryColor,
-                                    size: 18,
-                                  ),
-                                  label: Text(
-                                    " Message",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+                                        size: 18,
+                                      ),
+                                      label: Text(
+                                        " Delete Order",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      messageDeliveryButton = false;
-                                    });
-                                    var auth = Provider.of<Auth>(context, listen: false);
-                                    var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                                    messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
-                                          if (messageProvider.isChatRoomCreated)
-                                            {
-                                              setState(() {
-                                                messageDeliveryButton = true;
-                                              }),
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (__) => ChatsScreen(
-                                                          provider: messageProvider,
-                                                          auth: auth,
-                                                          shouldOpenTop: true,
-                                                        )),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: Text("Are you sure you want to delete this order?"),
+                                            content: Text("This action cannot be undone"),
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(color: Colors.red),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.of(ctx).pop();
+                                                },
                                               ),
-                                              Flushbar(
-                                                title: "Success",
-                                                message: "Chat with " + order.owner.firstName.toString() + " has been started!",
-                                                padding: const EdgeInsets.all(20),
-                                                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                                borderRadius: 10,
-                                                duration: Duration(seconds: 3),
-                                              )..show(context)
-                                            }
-                                          else
-                                            {
-                                              setState(() {
-                                                messageDeliveryButton = true;
-                                              }),
-                                              Flushbar(
-                                                title: "Failure",
-                                                message: "Please try again",
-                                                padding: const EdgeInsets.all(8),
-                                                borderRadius: 10,
-                                                duration: Duration(seconds: 3),
-                                              )..show(context)
-                                            }
+                                              FlatButton(
+                                                child: Text('Yes,delete!'),
+                                                onPressed: () {
+                                                  //todo Orxan
+                                                  Navigator.of(ctx).pop();
+                                                },
+                                              )
+                                            ],
+                                          ),
+                                        );
+//                                      Navigator.push(
+//                                        context,
+//                                        MaterialPageRoute(builder: (__) => EditOrderScreen(order)),
+//                                      );
+                                      },
+                                    )
+                                  else
+                                    RaisedButton.icon(
+                                      padding: EdgeInsets.symmetric(horizontal: 20),
+                                      color: Colors.green,
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                      ),
+                                      icon: Icon(
+                                        MdiIcons.chatOutline,
+                                        color: Colors.white,
+//                              color: Theme.of(context).primaryColor,
+                                        size: 18,
+                                      ),
+                                      label: Text(
+                                        " Message",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+//                                    color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          messageDeliveryButton = false;
                                         });
-                                  },
-                                ),
+                                        var auth = Provider.of<Auth>(context, listen: false);
+                                        var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                                        messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
+                                              if (messageProvider.isChatRoomCreated)
+                                                {
+                                                  setState(() {
+                                                    messageDeliveryButton = true;
+                                                  }),
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (__) => ChatsScreen(
+                                                              provider: messageProvider,
+                                                              auth: auth,
+                                                              shouldOpenTop: true,
+                                                            )),
+                                                  ),
+                                                  Flushbar(
+                                                    title: "Success",
+                                                    message: "Chat with " + order.owner.firstName.toString() + " has been started!",
+                                                    padding: const EdgeInsets.all(20),
+                                                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                    borderRadius: 10,
+                                                    duration: Duration(seconds: 3),
+                                                  )..show(context)
+                                                }
+                                              else
+                                                {
+                                                  setState(() {
+                                                    messageDeliveryButton = true;
+                                                  }),
+                                                  Flushbar(
+                                                    title: "Failure",
+                                                    message: "Please try again",
+                                                    padding: const EdgeInsets.all(8),
+                                                    borderRadius: 10,
+                                                    duration: Duration(seconds: 3),
+                                                  )..show(context)
+                                                }
+                                            });
+                                      },
+                                    ),
                               ],
                             ),
                           )
