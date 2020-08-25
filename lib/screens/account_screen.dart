@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/screens/contracts.dart';
-import 'package:optisend/screens/my_items.dart';
+import 'package:optisend/screens/my_orders.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/profile_screen.dart';
 import 'package:optisend/screens/test.dart';

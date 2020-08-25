@@ -22,7 +22,7 @@ import 'package:optisend/screens/order_screen.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:optisend/screens/my_items.dart';
+import 'package:optisend/screens/my_orders.dart';
 import 'package:optisend/screens/contracts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

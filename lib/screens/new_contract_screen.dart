@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
@@ -16,6 +19,8 @@ import 'package:provider/provider.dart';
 bool _iAmOrderer = true;
 Trip _trip;
 Order _order;
+User _requestingUser;
+User _proposedUser;
 
 class NewContactScreen extends StatefulWidget {
   final User user;
@@ -26,12 +31,17 @@ class NewContactScreen extends StatefulWidget {
 }
 
 class _NewContactScreenState extends State<NewContactScreen> {
-  int currentStep = 1;
+  int currentStep;
+  @override
+  void initState() {
+    currentStep = 1;
+    _requestingUser = Provider.of<Auth>(context, listen: false).user;
+    _proposedUser = widget.user;
+    super.initState();
+  }
 
-  bool complete = false;
   @override
   Widget build(BuildContext context) {
-    int myId = Provider.of<Auth>(context, listen: false).user.id;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -134,8 +144,8 @@ class _NewContactScreenState extends State<NewContactScreen> {
               ),
             ),
             if (currentStep == 1) Step1(stepIncrement, setOrderer),
-            if (currentStep == 2) Step2(stepIncrement, widget.user, myId),
-            if (currentStep == 3) Step3(stepIncrement, widget.user, myId),
+            if (currentStep == 2) Step2(stepIncrement),
+            if (currentStep == 3) Step3(stepIncrement),
             if (currentStep == 4) Step4(),
           ],
         ),
@@ -173,63 +183,62 @@ class Step1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          RaisedButton(
-            padding: EdgeInsets.all(10),
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).primaryColor,
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(200)),
-                  child: Icon(
-                    MdiIcons.packageVariantClosed,
-                    color: Theme.of(context).primaryColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton(
+              padding: EdgeInsets.all(10),
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Container(
+                    height: 150,
+                    width: 150,
+                    padding: EdgeInsets.all(10),
+                    child: SvgPicture.asset(
+                      "assets/photos/orderer.svg",
+                    ),
                   ),
-                ),
-                Text("I am orderer"),
-              ],
-            ),
-            onPressed: () {
-              next();
-              setOrderer(true);
-            },
-          ),
-          RaisedButton(
-            padding: EdgeInsets.all(10),
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).primaryColor,
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(200)),
-                  child: Icon(
-                    MdiIcons.roadVariant,
-                    color: Theme.of(context).primaryColor,
+                  Text(
+                    "I am orderer",
+                    style: TextStyle(fontSize: 20),
                   ),
-                ),
-                Text("I am traveler"),
-              ],
+                ],
+              ),
+              onPressed: () {
+                next();
+                setOrderer(true);
+              },
             ),
-            onPressed: () {
-              next();
-              setOrderer(false);
-            },
-          ),
-        ],
+            RaisedButton(
+              padding: EdgeInsets.all(10),
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Container(
+                    height: 150,
+                    width: 150,
+                    padding: EdgeInsets.all(10),
+                    child: SvgPicture.asset("assets/photos/traveler.svg"),
+                  ),
+                  Text(
+                    "I am traveler",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+              onPressed: () {
+                next();
+                setOrderer(false);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -237,9 +246,7 @@ class Step1 extends StatelessWidget {
 
 class Step2 extends StatefulWidget {
   final Function next;
-  final User user;
-  final int myId;
-  Step2(this.next, this.user, this.myId);
+  Step2(this.next);
 
   @override
   _Step2State createState() => _Step2State();
@@ -247,14 +254,12 @@ class Step2 extends StatefulWidget {
 
 class _Step2State extends State<Step2> {
   List<Trip> trips = [];
-  User user;
   bool tripsFetched = false;
   bool ordersFetched = false;
 
   @override
   void initState() {
-    user = widget.user;
-    loadTrips(trips, _iAmOrderer ? user.id : widget.myId, tripFetchDone);
+    loadTrips(trips, _iAmOrderer ? _proposedUser.id : _requestingUser.id, tripFetchDone);
 
     super.initState();
   }
@@ -273,8 +278,11 @@ class _Step2State extends State<Step2> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _iAmOrderer ? Text("Select Trip of " + widget.user.firstName) : Text("Select Your trip"),
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            child: Text(
+              _iAmOrderer ? "Select Trip of " + _proposedUser.firstName + " " + _proposedUser.lastName : "Select Your Trip",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Expanded(
             child: tripsFetched
@@ -305,9 +313,7 @@ class _Step2State extends State<Step2> {
 
 class Step3 extends StatefulWidget {
   final Function next;
-  final User user;
-  final int myId;
-  Step3(this.next, this.user, this.myId);
+  Step3(this.next);
 
   @override
   _Step3State createState() => _Step3State();
@@ -315,14 +321,12 @@ class Step3 extends StatefulWidget {
 
 class _Step3State extends State<Step3> {
   List<Order> orders = [];
-  User user;
   bool tripsFetched = false;
   bool ordersFetched = false;
 
   @override
   void initState() {
-    user = widget.user;
-    loadOrders(orders, !_iAmOrderer ? user.id : widget.myId, orderFetchDone);
+    loadOrders(orders, !_iAmOrderer ? _proposedUser.id : _requestingUser.id, orderFetchDone);
 
     super.initState();
   }
@@ -341,8 +345,11 @@ class _Step3State extends State<Step3> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: !_iAmOrderer ? Text("Select Order of " + widget.user.firstName) : Text("Select Your Order"),
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            child: Text(
+              !_iAmOrderer ? "Select Order of " + _proposedUser.firstName + " " + _proposedUser.lastName : "Select Your Order",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Expanded(
             child: ordersFetched
@@ -376,60 +383,249 @@ class _Step3State extends State<Step3> {
 }
 
 class Step4 extends StatelessWidget {
+  Step4();
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-//        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Summary",
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-          TripSimpleWidget(
-            trip: _trip,
-          ),
-          OrderSimpleWidget(
-            order: _order,
-          ),
-          Expanded(
-            child: SizedBox(
-              width: 1,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: RaisedButton.icon(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
-              color: Colors.green,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+//        mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+//            Expanded(child: SizedBox()),
 
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: SvgPicture.asset(
+                "assets/photos/handshake.svg",
+                height: 150,
+                width: 250,
               ),
-              icon: Icon(
-                MdiIcons.textBoxCheckOutline,
-                color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
-                size: 18,
-              ),
-              label: Text(
-                "Confirm & Propose",
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Summary",
                 style: TextStyle(
+                  fontSize: 22,
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
-//                                    color: Theme.of(context).primaryColor,
                 ),
               ),
-              onPressed: () {},
             ),
-          )
-        ],
+            Row(
+              children: <Widget>[
+                Text(
+                  "Contract Proposed by:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(
+                  child: SizedBox(
+                    height: 1,
+                  ),
+                ),
+                Text(
+                  "${_requestingUser.firstName} ${_requestingUser.lastName}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Order Owner:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  " ${_order.owner.firstName} ${_order.owner.lastName}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Order :",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  " ${_order.title}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Deliverer:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  " ${_trip.owner.firstName} ${_trip.owner.lastName}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "From:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  " ${_trip.source.cityAscii}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "To:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  "${_trip.destination.cityAscii}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Trip Date:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  DateFormat('d MMMM yyyy').format(_trip.date),
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "Reward:",
+                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  "\$${_order.price}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+//            TripSimpleWidget(
+//              trip: _trip,
+//            ),
+//            OrderSimpleWidget(
+//              order: _order,
+//            ),
+
+            Expanded(
+              child: SizedBox(
+                width: 1,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: RaisedButton.icon(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+//                            color: Theme.of(context).scaffoldBackgroundColor,
+                    color: Colors.white,
+
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    icon: Icon(
+                      MdiIcons.cancel,
+                      color: Colors.red,
+//                              color: Theme.of(context).primaryColor,
+                      size: 18,
+                    ),
+                    label: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+//                                    color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: Text("Are you sure you want to cancel the Contract Proposal?"),
+                          content: Text("This action cannot be undone"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text(
+                                'No',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () {
+                                Navigator.of(ctx).pop();
+                              },
+                            ),
+                            FlatButton(
+                              child: Text('Yes'),
+                              onPressed: () {
+                                //todo Orxan
+                                Navigator.of(ctx).pop();
+                              },
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: RaisedButton.icon(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+//                            color: Theme.of(context).scaffoldBackgroundColor,
+                    color: Colors.green,
+
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    icon: Icon(
+                      MdiIcons.textBoxCheckOutline,
+                      color: Colors.white,
+//                              color: Theme.of(context).primaryColor,
+                      size: 18,
+                    ),
+                    label: Text(
+                      "Confirm & Propose",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+//                                    color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    onPressed: () {
+                      //todo ORxan
+                    },
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

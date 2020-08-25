@@ -44,8 +44,8 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
-        firstName: json["first_name"],
-        lastName: json["last_name"],
+        firstName: utf8.decode(json["first_name"].toString().codeUnits),
+        lastName: utf8.decode(json["last_name"].toString().codeUnits),
         email: json["email"],
         isActive: json["is_active"],
         isStaff: json["is_staff"],

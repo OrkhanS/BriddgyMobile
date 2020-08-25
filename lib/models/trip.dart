@@ -62,8 +62,8 @@ class Destination {
   int id;
 
   factory Destination.fromJson(Map<String, dynamic> json) => Destination(
-        cityAscii: json["city_ascii"],
-        country: json["country"],
+        cityAscii: utf8.decode(json["city_ascii"].toString().codeUnits),
+        country: utf8.decode(json["country"].toString().codeUnits),
         id: json["id"],
       );
 

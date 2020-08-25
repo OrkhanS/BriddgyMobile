@@ -156,12 +156,12 @@ class _ChatWindowState extends State<ChatWindow> {
     }
     var textInput = Row(
       children: <Widget>[
-        IconButton(
-          icon: Icon(Icons.camera_alt),
-          onPressed: () {
-            _choose();
-          },
-        ),
+//        IconButton(
+//          icon: Icon(Icons.camera_alt),
+//          onPressed: () {
+//            _choose();
+//          },
+//        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),

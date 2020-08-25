@@ -39,18 +39,17 @@ class TripWidget extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-            height: 100,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            height: 80,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 imageUrl == Api.noPictureImage
                     ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
                         child: InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0),
                       )
                     : Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(40.0),
                           child: Image.network(
@@ -115,10 +114,9 @@ class TripWidget extends StatelessWidget {
                               "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
                               style: TextStyle(color: Colors.grey[600]),
                             ),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
+                            Expanded(
+                              child: SizedBox(),
+                            ),
                             Icon(
                               MdiIcons.weightKilogram,
                               color: Theme.of(context).primaryColor,
@@ -129,6 +127,9 @@ class TripWidget extends StatelessWidget {
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
+                        ),
+                        Row(
+                          children: <Widget>[],
                         )
                       ],
                     ),
