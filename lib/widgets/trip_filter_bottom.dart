@@ -420,7 +420,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           widget.weight = null;
                           widget.date = null;
                           provider.isLoadingTrips = true;
-                          provider.fetchAndSetMyOrders(Provider.of<Auth>(context, listen: false));
+                          provider.notify();
+                          provider.fetchAndSetTrips();
                           urlFilter = null;
                           setState(() {
                             _expanded = !_expanded;

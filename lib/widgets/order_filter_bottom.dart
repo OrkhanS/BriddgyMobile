@@ -409,8 +409,9 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           widget.to = null;
                           widget.weight = null;
                           widget.price = null;
-                          provider.isLoadingTrips = true;
-                          provider.fetchAndSetMyOrders(Provider.of<Auth>(context, listen: false));
+                          provider.isLoadingOrders = true;
+                          provider.notify();
+                          provider.fetchAndSetOrders();
                           _searchBarFrom = "Anywhere";
                           _searchBarTo = "Anywhere";
                           _searchBarWeight = "Any";
