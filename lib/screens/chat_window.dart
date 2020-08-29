@@ -8,6 +8,7 @@ import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/new_contract_screen.dart';
 import 'package:optisend/screens/profile_screen_another.dart';
+import 'package:optisend/screens/verify_phone_screen.dart';
 import 'package:optisend/widgets/generators.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:web_socket_channel/io.dart';
@@ -48,6 +49,7 @@ class _ChatWindowState extends State<ChatWindow> {
   bool isMessageSent = false;
   var file;
   User me;
+  String imageUrlMe, imageUrlUser;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
@@ -59,6 +61,9 @@ class _ChatWindowState extends State<ChatWindow> {
     me = widget.auth.user;
     widget.provider.isChatRoomPageActive = true;
     widget.provider.roomIDofActiveChatroom = id;
+    imageUrlMe = me.avatarpic == null ? Api.noPictureImage : Api.storageBucket + me.avatarpic.toString();
+    imageUrlUser = widget.user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + widget.user.avatarpic.toString();
+  
     initCommunication(id);
     super.initState();
   }
@@ -130,7 +135,7 @@ class _ChatWindowState extends State<ChatWindow> {
   );
 
   void _choose() async {
-    file = await ImagePicker.pickImage(source: ImageSource.camera);
+    file = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 400, maxWidth: 400);
     //file = await ImagePicker.pickImage(source: ImageSource.gallery);
   }
 
@@ -322,56 +327,21 @@ class _ChatWindowState extends State<ChatWindow> {
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(
-                                children: <Widget>[
-//                                  imageUrl == Api.noPictureImage
-//                                      ?
-                                  InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
-//                                      : ClipRRect(
-//                                    borderRadius: BorderRadius.circular(25.0),
-//                                    child: Image.network(
-//                                      imageUrl,
-//                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-//                                        return InitialsAvatarWidget(_rooms[index].members[0].user.firstName.toString(),
-//                                            _rooms[index].members[0].user.lastName.toString());
-//                                      },
-//                                      height: 50,
-//                                      width: 50,
-//                                      fit: BoxFit.fitWidth,
-//                                    ),
-//                                  )
-//                              Positioned(
-//                                left: 0,
-//                                bottom: 5,
-//                                child: Container(
-//                                  width: 35,
-//                                  height: 30,
-//                                  decoration: BoxDecoration(
-//                                    color: Color.fromRGBO(255, 255, 255, 80),
-//                                    border: Border.all(color: Colors.green, width: 1),
-//                                    borderRadius: BorderRadius.all(
-//                                      Radius.circular(20),
-//                                    ),
-//                                  ),
-//                                  child: Row(
-//                                    mainAxisSize: MainAxisSize.max,
-//                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                                    children: <Widget>[
-//                                      Icon(
-//                                        Icons.star,
-//                                        size: 12,
-//                                        color: Colors.green,
-//                                      ),
-//                                      Text(
-//                                        widget.user.rating.toString(),
-//                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-//                                      )
-//                                    ],
-//                                  ),
-//                                ),
-//                              ),
-                                ],
-                              ),
+                              child: 
+                                    imageUrlUser == Api.noPictureImage
+                                      ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+                                      : ClipRRect(
+                                          borderRadius: BorderRadius.circular(25.0),
+                                          child: Image.network(
+                                            imageUrlUser,
+                                            errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                              return InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
+                                            },
+                                            height: 50,
+                                            width: 50,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
                             ),
                           ],
                         ),
@@ -381,7 +351,8 @@ class _ChatWindowState extends State<ChatWindow> {
                         transitionDuration: Duration(milliseconds: 500),
                         transitionType: ContainerTransitionType.fadeThrough,
                         openBuilder: (BuildContext context, VoidCallback _) {
-                          return NewContactScreen(widget.user);
+                          return 
+                              me.isNumberVerified ? NewContactScreen(widget.user) : VerifyPhoneScreen();
                         },
                         closedElevation: 6.0,
                         closedShape: const RoundedRectangleBorder(
@@ -395,7 +366,6 @@ class _ChatWindowState extends State<ChatWindow> {
                             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
-//                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Icon(
                                   MdiIcons.scriptTextOutline,
@@ -477,15 +447,36 @@ class _ChatWindowState extends State<ChatWindow> {
                                           //ToDo navigate to user profile
                                           print("check");
                                         },
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          child: InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 35.0),
-                                        ),
-                                      )
-                                    : Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                        child: InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 35.0),
-                                      );
+                                        child: 
+                                          imageUrlUser == Api.noPictureImage
+                                              ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+                                              : ClipRRect(
+                                                  borderRadius: BorderRadius.circular(25.0),
+                                                  child: Image.network(
+                                                    imageUrlUser,
+                                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                      return InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
+                                                    },
+                                                    height: 50,
+                                                    width: 50,
+                                                    fit: BoxFit.fitWidth,
+                                                  ),
+                                                ),
+                                            )
+                                          : imageUrlMe == Api.noPictureImage
+                                              ? InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0)
+                                              : ClipRRect(
+                                                  borderRadius: BorderRadius.circular(25.0),
+                                                  child: Image.network(
+                                                    imageUrlMe,
+                                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                      return InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0);
+                                                    },
+                                                    height: 50,
+                                                    width: 50,
+                                                    fit: BoxFit.fitWidth,
+                                                  ),
+                                                );
 
                                 var messagebody = !iscontract
                                     ? Menu(

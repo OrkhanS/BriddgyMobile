@@ -156,7 +156,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
   }
 
   void _openGallery(BuildContext context, i) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 400, maxWidth: 400);
     this.setState(() {
       if (i == 1)
         imageFile1 = picture;
@@ -170,7 +170,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
   }
 
   void _openCamera(BuildContext context, i) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    var picture = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 400, maxWidth: 400);
     this.setState(() {
       if (i == 1)
         imageFile1 = picture;
@@ -195,10 +195,10 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = Api.getSuggestions + pattern;
+    String url = Api.getCities + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {

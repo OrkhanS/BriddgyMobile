@@ -9,6 +9,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/city.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/messages.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
@@ -42,23 +43,23 @@ class _AddTripScreenState extends State<AddTripScreen> {
   final TextEditingController _typeAheadController2 = TextEditingController();
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = Api.getSuggestions + pattern;
+    String url = Api.getCities + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          _suggested = dataOrders["results"];
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;          
           isLoading = false;
+          _cities = [];
+          for (var i = 0; i < data["results"].length; i++) {
+            _cities.add(City.fromJson(data["results"][i]));
+          }
         },
       );
     });
-    _cities = [];
-    for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
-    }
+    
     return _cities;
   }
 
@@ -125,15 +126,15 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       },
                       itemBuilder: (context, suggestion) {
                         return ListTile(
-                          title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                          title: Text(suggestion.cityAscii + ", "+suggestion.country),
                         );
                       },
                       transitionBuilder: (context, suggestionsBox, controller) {
                         return suggestionsBox;
                       },
                       onSuggestionSelected: (suggestion) {
-                        this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                        from = suggestion.toString().split(", ")[2];
+                        this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
+                        from = suggestion.id;
                       },
                       validator: (value) {
                         from = value;
@@ -161,15 +162,15 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       },
                       itemBuilder: (context, suggestion) {
                         return ListTile(
-                          title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                          title: Text(suggestion.cityAscii + ", "+suggestion.country),
                         );
                       },
                       transitionBuilder: (context, suggestionsBox, controller) {
                         return suggestionsBox;
                       },
                       onSuggestionSelected: (suggestion) {
-                        this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                        to = suggestion.toString().split(", ")[2];
+                        this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
+                        to = suggestion.id;
                       },
                       validator: (value) {
                         to = value;

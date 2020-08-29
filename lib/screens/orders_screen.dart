@@ -12,11 +12,11 @@ import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/add_order_screen.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
+import 'package:optisend/screens/verify_phone_screen.dart';
 import 'package:optisend/widgets/order_filter_bottom.dart';
 import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:optisend/widgets/filter_bar.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 
 class OrdersScreen extends StatefulWidget {
@@ -124,7 +124,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = Api.getSuggestions + pattern;
+    String url = Api.getCities + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.contentTypeHeader: "application/json"},

@@ -56,7 +56,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               margin: EdgeInsets.symmetric(horizontal: 30),
               padding: EdgeInsets.all(20),
               child: PinPut(
-                fieldsCount: 5,
+                fieldsCount: 4,
                 onSubmit: (String pin) {
                   Provider.of<Auth>(context, listen: false)
                       .verifyEmailCode(pin)

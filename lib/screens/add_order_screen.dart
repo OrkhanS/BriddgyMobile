@@ -8,6 +8,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:http/http.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/city.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
@@ -149,13 +150,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   void _openGallery(BuildContext context,i) async {
-    var picture;
-    try {
-      picture = await ImagePicker.pickImage(source: ImageSource.gallery,imageQuality: 50);
-    } catch (e) {
-      //if compression not supported for this image file.
-      picture = await ImagePicker.pickImage(source: ImageSource.gallery);
-    }
+    // ignore: deprecated_member_use
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 400, maxWidth: 400);
+
     this.setState(() {
       if(i==1)imageFile1=picture;
       else if(i==2)imageFile2=picture;
@@ -169,7 +166,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   void _openCamera(BuildContext context,i) async {
     var picture;
     try {
-      picture = await ImagePicker.pickImage(source: ImageSource.camera,imageQuality: 70);
+      picture = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 400, maxWidth: 400);
     } catch (e) {
       //if compression not supported for this image file.
       picture = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -194,24 +191,24 @@ class _AddItemScreenState extends State<AddItemScreen> {
     }
   }
 
-  FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = Api.getSuggestions + pattern;
+   FutureOr<Iterable> getSuggestions(String pattern) async {
+    String url = Api.getCities + pattern;
     await http.get(
       url,
-      headers: {HttpHeaders.CONTENT_TYPE: "application/json"},
+      headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          _suggested = dataOrders["results"];
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;          
           isLoading = false;
+          _cities = [];
+          for (var i = 0; i < data["results"].length; i++) {
+            _cities.add(City.fromJson(data["results"][i]));
+          }
         },
       );
     });
-    _cities = [];
-    for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
-    }
+    
     return _cities;
   }
 
@@ -389,16 +386,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   },
                                   itemBuilder: (context, suggestion) {
                                     return ListTile(
-                                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                                      title: Text(suggestion.cityAscii + ", "+suggestion.country),
                                     );
                                   },
                                   transitionBuilder: (context, suggestionsBox, controller) {
                                     return suggestionsBox;
                                   },
                                   onSuggestionSelected: (suggestion) {
-                                    this._typeAheadController.text =
-                                        suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                                    from = suggestion.toString().split(", ")[2];
+                                    this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
+                                    from = suggestion.id;
                                   },
                                   validator: (value) {
                                     from = value;
@@ -426,16 +422,15 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   },
                                   itemBuilder: (context, suggestion) {
                                     return ListTile(
-                                      title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                                      title: Text(suggestion.cityAscii + ", "+suggestion.country),
                                     );
                                   },
                                   transitionBuilder: (context, suggestionsBox, controller) {
                                     return suggestionsBox;
                                   },
                                   onSuggestionSelected: (suggestion) {
-                                    this._typeAheadController2.text =
-                                        suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                                    to = suggestion.toString().split(", ")[2];
+                                    this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
+                                    to = suggestion.id;
                                   },
                                   validator: (value) {
                                     to = value;

@@ -259,6 +259,9 @@ class OrdersTripsProvider with ChangeNotifier {
     });
   }
 
+
+
+
   removeAllDataOfProvider() {
     _orders = [];
     _myorders = [];

@@ -28,8 +28,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   var imageUrl;
   User user;
   bool picturePosting = false;
+  bool changeInFields = false;
   void _openGallery(BuildContext context) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 400, maxWidth: 400);
     this.setState(() {
       imageFile = picture;
     });
@@ -66,6 +67,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
           });
         });
+        Flushbar(
+          title: "Success!",
+          backgroundColor: Colors.green[800],
+          message: "Picture changed.",
+          padding: const EdgeInsets.all(8),
+          borderRadius: 10,
+          duration: Duration(seconds: 2
+          ),
+        )..show(context);
       }
     });
   }
@@ -167,7 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Text(
                           "Edit",
                           style: TextStyle(
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w500,
                             fontSize: 20,
                             color: Theme.of(context).primaryColor,
                           ),
@@ -179,7 +189,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Container(
                         decoration: BoxDecoration(color: Colors.white54),
                         child: TextField(
-//                          enabled: false,
+                          onChanged:(val){
+                            // todo patch request
+                            setState(() {
+                              changeInFields = true;
+                            });
+                          },
                           decoration: InputDecoration(
                               fillColor: Colors.blue,
                               border: InputBorder.none,
@@ -196,25 +211,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-            picturePosting
-                ? ProgressIndicatorWidget(show: true)
-                : RaisedButton.icon(
-                    icon: Icon(
-                      Icons.save,
-                      size: 20,
-                    ),
-                    label: Text(
-                      'Save',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    onPressed: () {},
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).primaryTextTheme.button.color,
-                  ),
+            if(picturePosting) ProgressIndicatorWidget(show: true),
+
+            if(changeInFields && !picturePosting)
+            RaisedButton.icon(
+              icon: Icon(
+                Icons.save,
+                size: 20,
+              ),
+              label: Text(
+                'Save',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+              color: Theme.of(context).primaryColor,
+              textColor: Theme.of(context).primaryTextTheme.button.color,
+            ),
             SizedBox(
               height: 20,
             ),

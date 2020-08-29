@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
+import 'package:optisend/models/city.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
@@ -48,8 +49,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
     if (urlFilter == null) urlFilter = Api.trips + "?";
     if (widget.from != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "origin=" + widget.from
-          : urlFilter = urlFilter + "&origin=" + widget.from;
+          ? urlFilter = urlFilter + "origin=" + widget.from.toString()
+          : urlFilter = urlFilter + "&origin=" + widget.from.toString();
       flagFrom = true;
     }
     if (widget.to != null) {
@@ -84,6 +85,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
           for (var i = 0; i < data["results"].length; i++) {
             _suggested.add(Trip.fromJson(data["results"][i]));
           }
+
           widget.ordersProvider.trips = [];
           widget.ordersProvider.trips = _suggested;
           widget.ordersProvider.allTripsDetails = {"next": data["next"], "count": data["count"]};
@@ -108,24 +110,24 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
     // });
   }
 
-  FutureOr<Iterable> getSuggestions(String pattern) async {
-    String url = "https://briddgy.herokuapp.com/api/cities/?search=" + pattern;
+ FutureOr<Iterable> getSuggestions(String pattern) async {
+    String url = Api.getCities + pattern;
     await http.get(
       url,
       headers: {HttpHeaders.contentTypeHeader: "application/json"},
     ).then((response) {
       setState(
         () {
-          final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-          _suggested = dataOrders["results"];
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;          _suggested = data["results"];
           isLoading = false;
+          _cities = [];
+          for (var i = 0; i < data["results"].length; i++) {
+            _cities.add(City.fromJson(data["results"][i]));
+          }
         },
       );
     });
-    _cities = [];
-    for (var i = 0; i < _suggested.length; i++) {
-      _cities.add(_suggested[i]["city_ascii"].toString() + ", " + _suggested[i]["country"].toString() + ", " + _suggested[i]["id"].toString());
-    }
+    
     return _cities;
   }
 
@@ -225,16 +227,16 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           },
                           itemBuilder: (context, suggestion) {
                             return ListTile(
-                              title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                              title: Text(suggestion.cityAscii + ", "+suggestion.country),
                             );
                           },
                           transitionBuilder: (context, suggestionsBox, controller) {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                            widget.from = suggestion.toString().split(", ")[2];
-                            _searchBarFrom = suggestion.toString().split(", ")[0];
+                            this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
+                            widget.from = suggestion.id;
+                            _searchBarFrom = suggestion.cityAscii;
                           },
                           validator: (value) {
                             widget.from = value;
@@ -288,16 +290,16 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           },
                           itemBuilder: (context, suggestion) {
                             return ListTile(
-                              title: Text(suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1]),
+                              title: Text(suggestion.cityAscii + ", "+suggestion.country),
                             );
                           },
                           transitionBuilder: (context, suggestionsBox, controller) {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController2.text = suggestion.toString().split(", ")[0] + ", " + suggestion.toString().split(", ")[1];
-                            widget.to = suggestion.toString().split(", ")[2];
-                            _searchBarTo = suggestion.toString().split(", ")[0];
+                            this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
+                            widget.to = suggestion.id;
+                            _searchBarTo = suggestion.cityAscii;
                           },
                           validator: (value) {
                             widget.to = value;

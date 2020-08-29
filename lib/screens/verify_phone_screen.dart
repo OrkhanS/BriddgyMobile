@@ -183,7 +183,9 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                                   }))
                               .then((response) {
                             if (response.statusCode == 200) {
-                              Navigator.of(context).pop();
+                              setState(() {
+                                missCallmeButton = true;
+                              });
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -293,6 +295,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
           .then((response) {
         if (response.statusCode == 200) {
           Provider.of<Auth>(context, listen: false).user.isNumberVerified = true;
+          Navigator.of(context).pop();
           Navigator.of(context).pop();
           Flushbar(
             title: "Success!",
