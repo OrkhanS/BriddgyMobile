@@ -14,6 +14,7 @@ import 'package:optisend/screens/profile_screen_another.dart';
 import 'package:optisend/screens/report_user_screen.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:optisend/models/user.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'chat_window.dart';
 import 'package:optisend/providers/messages.dart';
@@ -136,9 +137,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                     ListView.builder(
                                       itemCount: _rooms.length,
                                       itemBuilder: (context, int index) {
-                                        User user = _rooms[index].members[1].user.id.toString() == myid
+                                        User user;
+                                          user = _rooms[index].members[1].user.id.toString() == myid
                                             ? _rooms[index].members[0].user
                                             : _rooms[index].members[1].user;
+                                      
 
                                         imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
 
