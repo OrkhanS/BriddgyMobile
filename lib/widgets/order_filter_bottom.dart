@@ -410,7 +410,8 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           widget.weight = null;
                           widget.price = null;
                           provider.isLoadingOrders = true;
-                          provider.fetchAndSetMyOrders(Provider.of<Auth>(context, listen: false));
+                          provider.notify();
+                          provider.fetchAndSetOrders();
                           _searchBarFrom = "Anywhere";
                           _searchBarTo = "Anywhere";
                           _searchBarWeight = "Any";
