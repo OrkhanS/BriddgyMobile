@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/message.dart';
+import 'package:optisend/models/order.dart';
+import 'package:optisend/models/trip.dart';
 import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/screens/new_contract_screen.dart';
@@ -50,6 +52,7 @@ class _ChatWindowState extends State<ChatWindow> {
   var file;
   User me;
   String imageUrlMe, imageUrlUser;
+  var contract, order,trip;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
@@ -477,7 +480,16 @@ class _ChatWindowState extends State<ChatWindow> {
                                                     fit: BoxFit.fitWidth,
                                                   ),
                                                 );
-
+                                    if(iscontract){
+                                        contract = json.decode(_messages[index].text);
+                                        if(contract["my"]["orderimage"] == null){
+                                            order = Order.fromJson(contract["opp"]); trip = Trip.fromJson(contract["my"]); 
+                                        } else{
+                                          order = Order.fromJson(contract["my"]); trip = Trip.fromJson(contract["opp"]);
+                                        }
+                                    }
+                                //For Rasul
+                                //use order and trip for filling below
                                 var messagebody = !iscontract
                                     ? Menu(
                                         child: Container(
@@ -547,8 +559,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                           children: [
                                             Text("I am traveling"),
                                             ListTile(
-                                              leading: Text("From"),
-                                              trailing: Text("Set"),
+                                              leading: Text(order.source.cityAscii),
+                                              trailing: Text(order.destination.cityAscii),
                                             ),
                                             RaisedButton(
                                               color: Colors.blue,
@@ -557,13 +569,6 @@ class _ChatWindowState extends State<ChatWindow> {
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               onPressed: () {
-                                                var contract = json.decode(_messages[index].text);
-                                                var order,trip;
-                                                if(contract["my"]["orderimage"] == null){
-                                                    order = contract["opp"]; trip = contract["my"]; 
-                                                } else{
-                                                  order = contract["my"]; trip = contract["opp"];
-                                                }
                                                 final url = Api.applyForDelivery;
                                                 http.put(
                                                 url,
@@ -573,8 +578,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                                 },
                                                 body: json.encode(
                                                   {
-                                                    'order': order["id"],
-                                                    'trip': trip["id"],
+                                                    'order': order.id,
+                                                    'trip': trip.id,
                                                     'idOfmessage': _messages[index].id
                                                   },
                                                 ),
