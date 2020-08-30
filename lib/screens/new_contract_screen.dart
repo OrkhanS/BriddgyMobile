@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +14,9 @@ import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/models/user.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/messages.dart';
 import 'package:optisend/widgets/order_widget.dart';
+import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:optisend/widgets/trip_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -355,8 +359,6 @@ class _Step3State extends State<Step3> {
             child: ordersFetched
                 ? ListView.builder(
                     itemBuilder: (context, int i) {
-                      //todo fix Rasul
-//                      if (orders[i].source.cityAscii == _trip.source.cityAscii)
                       if (true)
                         return GestureDetector(
                           onTap: () {
@@ -382,8 +384,61 @@ class _Step3State extends State<Step3> {
   }
 }
 
-class Step4 extends StatelessWidget {
+class Step4 extends StatefulWidget {
   Step4();
+
+  @override
+  _Step4State createState() => _Step4State();
+}
+
+class _Step4State extends State<Step4> {
+  bool proposingContract=false;
+  
+  
+  Future signContract() async{
+      setState(() {
+        proposingContract = true;
+      });
+      final url = Api.applyForDelivery;
+      http.put(
+      url,
+      headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          "Authorization": "Token " + Provider.of<Auth>(context,listen:false).myTokenFromStorage,
+      },
+      body: json.encode(
+        {
+          'order': _order.id,
+          'trip': _trip.id,
+        },
+      ),
+    ).then((response) {
+        if(response.statusCode == 201){
+          var my,opp;
+          if(_order.id == _requestingUser.id){
+            my = _order;
+            opp = _trip; 
+          }
+          else{
+            my = _trip;
+            opp = _order;
+          }
+          Map body = {
+            "type":
+                _iAmOrderer ? "order" : "trip",
+                "my": my,
+                "opp": opp
+          };
+          Provider.of<Messages>(context,listen:false).contractBody = json.encode(body);
+          Navigator.pop(context);
+          Navigator.pop(context);
+
+        }
+        else{
+          print(response.body);
+        }
+    });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -538,6 +593,7 @@ class Step4 extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                if(!proposingContract)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: RaisedButton.icon(
@@ -582,7 +638,7 @@ class Step4 extends StatelessWidget {
                             FlatButton(
                               child: Text('Yes'),
                               onPressed: () {
-                                //todo Orxan
+                                Navigator.of(ctx).pop();
                                 Navigator.of(ctx).pop();
                               },
                             )
@@ -592,6 +648,8 @@ class Step4 extends StatelessWidget {
                     },
                   ),
                 ),
+                
+                if(!proposingContract)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: RaisedButton.icon(
@@ -606,7 +664,6 @@ class Step4 extends StatelessWidget {
                     icon: Icon(
                       MdiIcons.textBoxCheckOutline,
                       color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
                       size: 18,
                     ),
                     label: Text(
@@ -614,14 +671,14 @@ class Step4 extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
-//                                    color: Theme.of(context).primaryColor,
                       ),
                     ),
                     onPressed: () {
-                      //todo ORxan
+                      signContract();
                     },
                   ),
                 ),
+                if(proposingContract)ProgressIndicatorWidget(show: true)
               ],
             )
           ],
@@ -642,7 +699,6 @@ void loadTrips(List<Trip> trips, int id, Function fetch) async {
     Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
     for (var i = 0; i < data["results"].length; i++) {
-//      print(data["results"][i]);
       trips.add(Trip.fromJson(data["results"][i]));
     }
     fetch();
@@ -650,7 +706,7 @@ void loadTrips(List<Trip> trips, int id, Function fetch) async {
 }
 
 void loadOrders(List<Order> orders, int id, Function fetch) async {
-  final url = Api.orderById + id.toString() + "/orders/";
+  final url = Api.orderById + id.toString() + "/orders/?origin="+_trip.source.id.toString()+"&dest="+_trip.destination.id.toString();
   http.get(
     url,
     headers: {
@@ -660,7 +716,6 @@ void loadOrders(List<Order> orders, int id, Function fetch) async {
     Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
     for (var i = 0; i < data["results"].length; i++) {
-//      print(data["results"][i]);
       orders.add(Order.fromJson(data["results"][i]));
     }
     fetch();

@@ -116,7 +116,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       debounceDuration: const Duration(milliseconds: 200),
                       textFieldConfiguration: TextFieldConfiguration(
                         onSubmitted: (val) {
-                          from = val;
+                          from = val.toString();
                         },
                         controller: this._typeAheadController,
                         decoration: InputDecoration(labelText: 'From', icon: Icon(MdiIcons.bridge)),
@@ -134,10 +134,10 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       },
                       onSuggestionSelected: (suggestion) {
                         this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
-                        from = suggestion.id;
+                        from = suggestion.id.toString();
                       },
                       validator: (value) {
-                        from = value;
+                        from = value.toString();
                         if (value.isEmpty) {
                           return 'Please select a city';
                         }
@@ -152,7 +152,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       debounceDuration: const Duration(milliseconds: 200),
                       textFieldConfiguration: TextFieldConfiguration(
                         onSubmitted: (val) {
-                          to = val;
+                          to = val.toString();
                         },
                         controller: this._typeAheadController2,
                         decoration: InputDecoration(labelText: 'To', icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
@@ -170,10 +170,10 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       },
                       onSuggestionSelected: (suggestion) {
                         this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
-                        to = suggestion.id;
+                        to = suggestion.id.toString();
                       },
                       validator: (value) {
-                        to = value;
+                        to = value.toString();
                         if (value.isEmpty) {
                           return 'Please select a city';
                         }

@@ -223,8 +223,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              if (widget.auth.isAuth) {
-                if (widget.auth.userdetail.isEmailVerified == true) {
+              if (widget.auth.isAuth && !widget.auth.isLoadingUserDetails) {
+                if (widget.auth.userdetail.isEmailVerified) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (__) => AddItemScreen()),

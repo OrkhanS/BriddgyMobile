@@ -224,11 +224,11 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           },
                           onSuggestionSelected: (suggestion) {
                             this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
-                            widget.from = suggestion.id;
+                            widget.from = suggestion.id.toString();
                             _searchBarFrom = suggestion.cityAscii;
                           },
                           validator: (value) {
-                            widget.from = value;
+                            widget.from = value.toString();
 
                             if (value.isEmpty) {
                               return 'Please select a city';
@@ -287,11 +287,11 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           },
                           onSuggestionSelected: (suggestion) {
                             this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
-                            widget.to = suggestion.id;
+                            widget.to = suggestion.id.toString();
                             _searchBarTo = suggestion.cityAscii;
                           },
                           validator: (value) {
-                            widget.to = value;
+                            widget.to = value.toString();
                             if (value.isEmpty) {
                               return 'Please select a city';
                             }

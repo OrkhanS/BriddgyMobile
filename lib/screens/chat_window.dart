@@ -427,13 +427,13 @@ class _ChatWindowState extends State<ChatWindow> {
                               itemBuilder: (context, index) {
                                 bool iscontract = false;
 
-                                // try {
-                                //   var check = json.decode(_messages[index].text) as Map<String, dynamic>;
-                                //   iscontract = true;
-                                // } on FormatException catch (_) {
-                                //   iscontract = false;
-                                // }
-                                iscontract = false;
+                                try {
+                                  var check = json.decode(_messages[index].text) as Map<String, dynamic>;
+                                  iscontract = true;
+                                } on FormatException catch (_) {
+                                  iscontract = false;
+                                }
+                                //iscontract = false;
 
                                 bool reverse = false;
                                 if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
@@ -556,7 +556,44 @@ class _ChatWindowState extends State<ChatWindow> {
                                                 "Accept",
                                                 style: TextStyle(color: Colors.white),
                                               ),
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                var contract = json.decode(_messages[index].text);
+                                                var order,trip;
+                                                if(contract["my"]["orderimage"] == null){
+                                                    order = contract["opp"]; trip = contract["my"]; 
+                                                } else{
+                                                  order = contract["my"]; trip = contract["opp"];
+                                                }
+                                                final url = Api.applyForDelivery;
+                                                http.put(
+                                                url,
+                                                headers: {
+                                                    HttpHeaders.contentTypeHeader: "application/json",
+                                                    "Authorization": "Token " + Provider.of<Auth>(context,listen:false).myTokenFromStorage,
+                                                },
+                                                body: json.encode(
+                                                  {
+                                                    'order': order["id"],
+                                                    'trip': trip["id"],
+                                                    'idOfmessage': _messages[index].id
+                                                  },
+                                                ),
+                                              ).then((response) {
+                                                  if(response.statusCode == 200){
+                                                      print("Accepted");
+                                                      //todo Rasul
+                                                      //What should we do?
+                                                       
+                                                  }
+                                                  else{
+                                                    //todo Rasul                            
+                                                    // Here show an error message how you want                        
+                                                    print(json.decode(response.body)["detail"]);
+                                                  }
+                                              });
+
+                                                
+                                              },
                                             ),
                                             RaisedButton(
                                               color: Colors.red,

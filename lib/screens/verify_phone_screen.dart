@@ -299,6 +299,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
           Navigator.of(context).pop();
           Flushbar(
             title: "Success!",
+            backgroundColor: Colors.green[800],
             message: "You are now verified.",
             padding: const EdgeInsets.all(8),
             borderRadius: 10,

@@ -67,6 +67,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       Navigator.pop(context);
                       Flushbar(
                         title: "Success",
+                        backgroundColor: Colors.green[800],
                         message: "You are now verified!",
                         padding: const EdgeInsets.all(8),
                         borderRadius: 10,

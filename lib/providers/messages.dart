@@ -27,6 +27,7 @@ class Messages extends ChangeNotifier {
   bool isChatRoomPageActive = false;
   List roomIDsWhileChatRoomActive = [];
   String roomIDofActiveChatRoom = " ";
+  String contractBody = "";
   var auth;
 
   String get getToken {
