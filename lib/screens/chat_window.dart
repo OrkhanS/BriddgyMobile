@@ -155,21 +155,45 @@ class _ChatWindowState extends State<ChatWindow> {
     widget.provider.notifFun();
     return true;
   }
+  void contractMessage(){
+    var tempMessage = Message.fromJson({
+      "id": 200,
+      "date_created": DateTime.now().toString(),
+      "date_modified": DateTime.now().toString(),
+      "text": widget.provider.contractBody.toString(),
+      "sender": widget.auth.user.id,
+      "recipients": []
+    });
+
+    if (_channelRoom != null) {
+      try {
+        if (_channelRoom.sink != null) {
+          _channelRoom.sink.add(widget.provider.contractBody);
+          widget.provider.changeChatRoomPlace(id);
+          widget.provider.contractBody = "";
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+    if(widget.provider.messages[widget.room] == null){
+      List<Message> temp = []; temp.add(tempMessage);
+      widget.provider.messages[widget.room] = {"next": null, "data": temp};
+    } else{
+        widget.provider.messages[widget.room]["data"].insert(0,tempMessage); 
+    }
+    widget.provider.notifFun();
+  }
 
   @override
   Widget build(BuildContext context) {
+     
     if (widget.provider.isChatRoomPageActive == false) {
       widget.provider.isChatRoomPageActive = true;
       widget.provider.roomIDofActiveChatroom = id;
     }
     var textInput = Row(
       children: <Widget>[
-//        IconButton(
-//          icon: Icon(Icons.camera_alt),
-//          onPressed: () {
-//            _choose();
-//          },
-//        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -225,8 +249,6 @@ class _ChatWindowState extends State<ChatWindow> {
           });
         } catch (e) {}
         setState(() {
-//        items.addAll( ['item 1']);
-//        print('items: '+ items.toString());
           _isloading = false;
         });
       } else {
@@ -241,7 +263,7 @@ class _ChatWindowState extends State<ChatWindow> {
           bool messageLoader = provider.messagesLoading;
           if (widget.provider.messages[widget.room] != null && !messageLoader) {
             if (widget.provider.messages[widget.room].isNotEmpty) {
-              _messages = widget.provider.messages[widget.room]["data"];
+              _messages =  widget.provider.messages[widget.room]["data"];
               if (nextMessagesURL == "FirstCall") {
                 nextMessagesURL = widget.provider.messages[widget.room]["next"];
               }
@@ -250,6 +272,7 @@ class _ChatWindowState extends State<ChatWindow> {
               messageLoader = true;
             }
           }
+          if(widget.provider.contractBody != "")contractMessage();
           return Scaffold(
             resizeToAvoidBottomPadding: true,
             body: SafeArea(
@@ -587,12 +610,14 @@ class _ChatWindowState extends State<ChatWindow> {
                                                   if(response.statusCode == 200){
                                                       print("Accepted");
                                                       //todo Rasul
-                                                      //What should we do?
+                                                      // need to show that contract approved or how?
                                                        
                                                   }
                                                   else{
                                                     //todo Rasul                            
-                                                    // Here show an error message how you want                        
+                                                    // Here show an error message how you want  
+                                                    // use  below code to give detailed                       
+
                                                     print(json.decode(response.body)["detail"]);
                                                   }
                                               });

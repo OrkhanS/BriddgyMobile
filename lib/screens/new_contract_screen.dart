@@ -63,6 +63,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
+                    Provider.of<Messages>(context,listen: false).notifFun();
                   },
                 ),
                 title: Text(
@@ -430,9 +431,8 @@ class _Step4State extends State<Step4> {
                 "opp": opp
           };
           Provider.of<Messages>(context,listen:false).contractBody = json.encode(body);
+          Provider.of<Messages>(context,listen:false).notifFun();
           Navigator.pop(context);
-          Navigator.pop(context);
-
         }
         else{
           print(response.body);
