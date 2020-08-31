@@ -20,6 +20,7 @@ class AccountScreen extends StatelessWidget {
   var token, orderstripsProvider, auth;
   AccountScreen({this.token, this.orderstripsProvider, this.auth});
   @override
+  //todo javid
   Widget build(BuildContext context) {
     var auth = Provider.of<Auth>(context, listen: false);
     return Scaffold(
