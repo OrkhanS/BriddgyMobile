@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/demo_localization.dart';
+import 'package:optisend/localization/localization_constants.dart';
+import 'package:optisend/main.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/screens/contracts.dart';
 import 'package:optisend/screens/my_orders.dart';
@@ -14,13 +17,13 @@ import 'package:optisend/models/user.dart';
 import 'splash_screen.dart';
 import 'package:share/share.dart';
 import 'package:optisend/screens/customer_support.dart';
+import '../models/language.dart';
 
 class AccountScreen extends StatelessWidget {
   static const routeName = '/accountscreen';
   var token, orderstripsProvider, auth;
   AccountScreen({this.token, this.orderstripsProvider, this.auth});
   @override
-  //todo javid
   Widget build(BuildContext context) {
     var auth = Provider.of<Auth>(context, listen: false);
     return Scaffold(
@@ -54,6 +57,21 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  _changeLanguage(Language language) {
+    Locale _temp;
+    switch (language.languageCode) {
+      case 'en':
+        _temp = Locale(language.languageCode, 'US');
+        break;
+      case 'ru':
+        _temp = Locale(language.languageCode, 'RU');
+        break;
+      default:
+        _temp = Locale(language.languageCode, 'US');
+    }
+    MyApp.setLocale(context, _temp);
   }
 
   @override
@@ -122,8 +140,34 @@ class _AccountPageState extends State<AccountPage> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 8.0),
+                      child: Row(
+                        children: [
+                          DropdownButton(
+                            underline: SizedBox(),
+                            icon: Icon(
+                              MdiIcons.earth,
+                              color: Colors.grey[600],
+                            ),
+                            items: Language.languageList()
+                                .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
+                                      value: lang,
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text(lang.name),
+                                          Text(lang.flag),
+                                        ],
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: (Language language) {
+                              _changeLanguage(language);
+                            },
+                          ),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.end,
+                      ),
                     ),
                     Card(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -137,7 +181,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.mailboxOpenOutline),
                             title: Text(
-                              "My Orders",
+                              t(context, 'my-orders'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],

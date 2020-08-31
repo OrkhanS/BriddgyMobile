@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:optisend/localization/demo_localization.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
@@ -203,21 +205,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
             notchMargin: 10,
             shape: CircularNotchedRectangle(),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price)),
-//                IconButton(
-//                  icon: Icon(
-//                    Icons.search,
-////                    color: Colors.white,
-//                  ),
-//                  onPressed: () {},
-//                ),
-              ],
-            ),
+            child: Container(
+                width: MediaQuery.of(context).size.width,
+                child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price)),
           ),
           resizeToAvoidBottomPadding: true,
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -291,8 +281,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                        Expanded(child: SizedBox()),
                         Text(
                           orderstripsProvider.detailsOrder.isEmpty
-                              ? "Results: 0"
-                              : "Results: " + orderstripsProvider.detailsOrder["count"].toString(),
+                              ? t(context, 'result_plural') + ': 0'
+                              : t(context, 'result_plural') + ": " + orderstripsProvider.detailsOrder["count"].toString(),
                           style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
                         ),
 //                        DropdownButton(

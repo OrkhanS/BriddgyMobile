@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/city.dart';
 import 'package:optisend/models/order.dart';
@@ -107,7 +108,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
     ).then((response) {
       setState(
         () {
-          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;          
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
           isLoading = false;
           _cities = [];
           for (var i = 0; i < data["results"].length; i++) {
@@ -116,15 +117,23 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
         },
       );
     });
-    
+
     return _cities;
+  }
+
+  @override
+  void didChangeDependencies() {
+    _searchBarFrom = t(context, 'anywhere');
+    _searchBarTo = t(context, 'anywhere');
+    _searchBarWeight = t(context, 'any');
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 200),
-      height: _expanded ? 255 : 55,
+      height: _expanded ? 265 : 55,
       child: Column(
         children: <Widget>[
           Container(
@@ -154,7 +163,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           Icon(Icons.search, color: Theme.of(context).primaryColor),
                           SizedBox(width: 10),
                           Text(
-                            _searchBarFrom + " - " + _searchBarTo + " , " + _searchBarWeight + " kg ",
+                            _searchBarFrom + " - " + _searchBarTo + " , " + _searchBarWeight + " ${t(context, 'kg')} ",
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 // fontWeight: FontWeight.bold,
@@ -171,7 +180,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
           AnimatedContainer(
             duration: Duration(milliseconds: 200),
             padding: EdgeInsets.symmetric(horizontal: 15),
-            height: _expanded ? 200 : 0,
+            height: _expanded ? 210 : 0,
             child: Form(
               child: Column(
                 children: <Widget>[
@@ -187,8 +196,8 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                             },
                             controller: this._typeAheadController,
                             decoration: InputDecoration(
-                              labelText: 'From',
-                              hintText: ' Paris',
+                              labelText: t(context, 'from'),
+                              hintText: ' ${t(context, 'paris')}',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -216,14 +225,14 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           },
                           itemBuilder: (context, suggestion) {
                             return ListTile(
-                              title: Text(suggestion.cityAscii + ", "+suggestion.country),
+                              title: Text(suggestion.cityAscii + ", " + suggestion.country),
                             );
                           },
                           transitionBuilder: (context, suggestionsBox, controller) {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
+                            this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
                             widget.from = suggestion.id.toString();
                             _searchBarFrom = suggestion.cityAscii;
                           },
@@ -231,7 +240,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                             widget.from = value.toString();
 
                             if (value.isEmpty) {
-                              return 'Please select a city';
+                              return t(context, 'select_city');
                             }
                           },
                           onSaved: (value) {
@@ -250,8 +259,8 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                             },
                             controller: this._typeAheadController2,
                             decoration: InputDecoration(
-                              labelText: 'To',
-                              hintText: ' Berlin',
+                              labelText: t(context, 'to'),
+                              hintText: ' ${t(context, 'berlin')}',
                               hintStyle: TextStyle(color: Colors.grey[300]),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
@@ -279,21 +288,21 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           },
                           itemBuilder: (context, suggestion) {
                             return ListTile(
-                              title: Text(suggestion.cityAscii + ", "+suggestion.country),
+                              title: Text(suggestion.cityAscii + ", " + suggestion.country),
                             );
                           },
                           transitionBuilder: (context, suggestionsBox, controller) {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
+                            this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
                             widget.to = suggestion.id.toString();
                             _searchBarTo = suggestion.cityAscii;
                           },
                           validator: (value) {
                             widget.to = value.toString();
                             if (value.isEmpty) {
-                              return 'Please select a city';
+                              return t(context, 'select_city');
                             }
                           },
                           onSaved: (value) => widget.to = value,
@@ -314,8 +323,8 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             prefixIcon: Icon(MdiIcons.weightKilogram),
-                            labelText: 'Weight maximum (in kg):',
-                            hintText: ' 3kg',
+                            labelText: t(context, 'max_weight'),
+                            hintText: ' 3 ${t(context, 'kg')}',
                             hintStyle: TextStyle(color: Colors.grey[300]),
                             suffixIcon: IconButton(
                               padding: EdgeInsets.only(
@@ -356,7 +365,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                               borderRadius: BorderRadius.circular(20),
                             ),
 
-                            labelText: 'Reward minimum (in usd):',
+                            labelText: t(context, 'max_reward'),
                             hintText: ' 10\$',
                             hintStyle: TextStyle(color: Colors.grey[300]),
 
@@ -413,9 +422,9 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                           provider.isLoadingOrders = true;
                           provider.notify();
                           provider.fetchAndSetOrders();
-                          _searchBarFrom = "Anywhere";
-                          _searchBarTo = "Anywhere";
-                          _searchBarWeight = "Any";
+                          _searchBarFrom = t(context, 'anywhere');
+                          _searchBarTo = t(context, 'anywhere');
+                          _searchBarWeight = t(context, 'any');
                           urlFilter = null;
                           setState(() {
                             _expanded = !_expanded;
@@ -434,7 +443,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                             width: MediaQuery.of(context).size.width,
                             child: Center(
                               child: Text(
-                                "Find Orders",
+                                t(context, 'find_orders'),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
