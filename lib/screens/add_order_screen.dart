@@ -565,9 +565,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                         "trip": null,
                                         "description": description
                                       }))
-                                  .then((response) {
-                                Map data = json.decode(response.body);
+                                  .then((response) {                                
                                 if (response.statusCode == 201) {
+                                  Map data = json.decode(response.body);
                                   upload(data["id"].toString(), token, orderstripsProvider, context);
                                 } else {
                                   setState(() {
