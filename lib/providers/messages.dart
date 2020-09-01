@@ -98,6 +98,7 @@ class Messages extends ChangeNotifier {
     });
     var roomid = message["room_id"];
 
+
     // Checking if ChatRoom is already exists
     try {
       if (_messages[roomid] == null || _messages[roomid].isEmpty) {
@@ -110,6 +111,21 @@ class Messages extends ChangeNotifier {
           }
           if (fetchRoom) fetchRoomDetails(roomid, auth);
         }
+          try {
+            var c = json.decode(tempMessage.text) as Map<String, dynamic>;
+            for (var i = 0; i < chats.length; i++) {
+            if (chats[i].id == roomid) {
+                chats[i].lastMessage = "Contract";
+              }
+            }
+          } on FormatException catch (_) {
+            for (var i = 0; i < chats.length; i++) {
+              if (chats[i].id == roomid) {
+                chats[i].lastMessage = tempMessage.text;
+              }
+            }
+          }
+          
         _messages[roomid] = {};
         // cannot directly add Message object to Map. So need TemporaryList
         List<Message> temporary = [];
