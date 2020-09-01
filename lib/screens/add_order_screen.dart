@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:http/http.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/city.dart';
 import 'package:optisend/providers/auth.dart';
@@ -71,9 +72,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
             ));
         Flushbar(
-          title: "Success!",
+          title: "${t(context, 'success')}!",
           backgroundColor: Colors.green[800],
-          message: "Item added.",
+          message: t(context, 'item_added'),
           padding: const EdgeInsets.all(8),
           borderRadius: 10,
           duration: Duration(seconds: 3),
@@ -82,12 +83,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text("Image size is too big!"),
-            content: Text("Do you want to add another image?"),
+            title: Text(t(context, 'image_size_error')),
+            content: Text(t(context, 'another_image_prompt')),
             actions: <Widget>[
               FlatButton(
                 child: Text(
-                  'No',
+                  t(context, 'no'),
                   style: TextStyle(color: Colors.red),
                 ),
                 onPressed: () {
@@ -105,7 +106,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 },
               ),
               FlatButton(
-                child: Text('Pick another Image'),
+                child: Text(t(context, 'pick_another_image')),
                 onPressed: () {
                   setState(() {
                     addItemButton = true;
@@ -127,19 +128,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text("Choose Image source"),
+              title: Text(t(context, 'choose_image_source')),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
                     GestureDetector(
-                      child: Text("Gallery"),
+                      child: Text(t(context, 'gallery')),
                       onTap: () {
                         _openGallery(context, i);
                       },
                     ),
                     Divider(),
                     GestureDetector(
-                      child: Text("Camera"),
+                      child: Text(t(context, 'camera')),
                       onTap: () {
                         _openCamera(context, i);
                       },
@@ -150,49 +151,54 @@ class _AddItemScreenState extends State<AddItemScreen> {
         });
   }
 
-  void _openGallery(BuildContext context,i) async {
+  void _openGallery(BuildContext context, i) async {
     // ignore: deprecated_member_use
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 400, maxWidth: 400);
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
 
     this.setState(() {
-      if(i==1)imageFile1=picture;
-      else if(i==2)imageFile2=picture;
-      else imageFile3=picture;
-      if(! imageFiles.contains(picture))imageFiles.add(picture);
-      
+      if (i == 1)
+        imageFile1 = picture;
+      else if (i == 2)
+        imageFile2 = picture;
+      else
+        imageFile3 = picture;
+      if (!imageFiles.contains(picture)) imageFiles.add(picture);
     });
     Navigator.of(context).pop();
   }
 
-  void _openCamera(BuildContext context,i) async {
+  void _openCamera(BuildContext context, i) async {
     var picture;
     try {
-      picture = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 400, maxWidth: 400);
+      picture = await ImagePicker.pickImage(source: ImageSource.camera, maxHeight: 400, maxWidth: 400);
     } catch (e) {
       //if compression not supported for this image file.
       picture = await ImagePicker.pickImage(source: ImageSource.camera);
     }
     this.setState(() {
-      if(i==1)imageFile1=picture;
-      else if(i==2)imageFile2=picture;
-      else imageFile3=picture;
-      if(! imageFiles.contains(picture))imageFiles.add(picture);
+      if (i == 1)
+        imageFile1 = picture;
+      else if (i == 2)
+        imageFile2 = picture;
+      else
+        imageFile3 = picture;
+      if (!imageFiles.contains(picture)) imageFiles.add(picture);
     });
     Navigator.of(context).pop();
   }
 
-  Widget _setImageView(image) {
+  Widget _setImageView(image, context) {
     if (image != null) {
       return Image.file(
         image,
         fit: BoxFit.fitWidth,
       );
     } else {
-      return Text("Please select an image");
+      return Text(t(context, 'select_image'));
     }
   }
 
-   FutureOr<Iterable> getSuggestions(String pattern) async {
+  FutureOr<Iterable> getSuggestions(String pattern) async {
     String url = Api.getCities + pattern;
     await http.get(
       url,
@@ -200,7 +206,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     ).then((response) {
       setState(
         () {
-          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;          
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
           isLoading = false;
           _cities = [];
           for (var i = 0; i < data["results"].length; i++) {
@@ -209,7 +215,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         },
       );
     });
-    
+
     return _cities;
   }
 
@@ -280,7 +286,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   ),
                                 ],
                               )
-                            : _setImageView(imageFile1),
+                            : _setImageView(imageFile1, context),
                       ),
                       onTap: () {
                         _showSelectionDialog(context, 1);
@@ -310,7 +316,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   ),
                                 ],
                               )
-                            : _setImageView(imageFile2),
+                            : _setImageView(imageFile2, context),
                       ),
                       onTap: () {
                         _showSelectionDialog(context, 2);
@@ -340,7 +346,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   ),
                                 ],
                               )
-                            : _setImageView(imageFile3),
+                            : _setImageView(imageFile3, context),
                       ),
                       onTap: () {
                         _showSelectionDialog(context, 3);
@@ -387,14 +393,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   },
                                   itemBuilder: (context, suggestion) {
                                     return ListTile(
-                                      title: Text(suggestion.cityAscii + ", "+suggestion.country),
+                                      title: Text(suggestion.cityAscii + ", " + suggestion.country),
                                     );
                                   },
                                   transitionBuilder: (context, suggestionsBox, controller) {
                                     return suggestionsBox;
                                   },
                                   onSuggestionSelected: (suggestion) {
-                                    this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
+                                    this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
                                     from = suggestion.id.toString();
                                   },
                                   validator: (value) {
@@ -423,14 +429,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   },
                                   itemBuilder: (context, suggestion) {
                                     return ListTile(
-                                      title: Text(suggestion.cityAscii + ", "+suggestion.country),
+                                      title: Text(suggestion.cityAscii + ", " + suggestion.country),
                                     );
                                   },
                                   transitionBuilder: (context, suggestionsBox, controller) {
                                     return suggestionsBox;
                                   },
                                   onSuggestionSelected: (suggestion) {
-                                    this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
+                                    this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
                                     to = suggestion.id.toString();
                                   },
                                   validator: (value) {
@@ -565,7 +571,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                         "trip": null,
                                         "description": description
                                       }))
-                                  .then((response) {                                
+                                  .then((response) {
                                 if (response.statusCode == 201) {
                                   Map data = json.decode(response.body);
                                   upload(data["id"].toString(), token, orderstripsProvider, context);

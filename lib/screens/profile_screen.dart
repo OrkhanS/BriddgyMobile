@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/stats.dart';
@@ -172,7 +173,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Member since " + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
+                              t(context, 'member_since') + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
                               style: GoogleFonts.lato(
                                 color: Colors.grey[700],
 //                                color: Theme.of(context).primaryColor,
@@ -276,7 +277,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             size: 18,
                           ),
                           label: Text(
-                            "Edit",
+                            t(context, 'edit'),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).primaryColor,
@@ -322,7 +323,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       ),
                                     ),
                               Text(
-                                "Earned",
+                                t(context, 'earned'),
                                 style: TextStyle(
                                   //color: Colors.white,
                                   color: Theme.of(context).primaryColor,
@@ -356,7 +357,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       ),
                                     ),
                               Text(
-                                "Orders",
+                                t(context, 'order_plural'),
                                 style: TextStyle(
 //color: Colors.white,
                                   color: Theme.of(context).primaryColor,
@@ -394,7 +395,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       ),
                                     ),
                               Text(
-                                "Delivered",
+                                t(context, 'delivered'),
                                 style: TextStyle(
 //color: Colors.white,
                                   color: Theme.of(context).primaryColor,

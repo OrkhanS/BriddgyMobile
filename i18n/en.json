@@ -213,5 +213,28 @@
     "accept": "Accept",
     "reject": "Reject",
 
-    "error": "Error!"
+    "error": "Error!",
+    "accepted_deals": "Accepted Deals",
+    "invite_friends": "Invite Friends",
+    "share_link": "Join to the Briddgy Family https://briddgy.com",
+    "customer_service": "Customer Service",
+    "rate_leave_suggestion": "Rate/Leave suggestion",
+    "logout_prompt": "Are you sure you want to Log out?",
+    "no": "No.",
+    "yes_let_me_out": "Yes, let me out!",
+
+    "ordered": "Ordered",
+    "member_since": "Member since ",
+    "edit": "Edit",
+    "earned": "Earned",
+    "delivered": "Delivered",
+
+    "item_added": "Item added!",
+    "image_size_error": "Image size is too big!",
+    "another_image_prompt": "Do you want to add another image?",
+    "pick_another_image": "Pick another Image",
+    "choose_image_source": "Choose Image source",
+    "gallery": "Gallery",
+    "camera": "Camera",
+    "select_image": "Please select an image"
 }

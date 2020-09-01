@@ -38,6 +38,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
   List _cities = [];
   bool isLoading = true;
   bool addTripButton = true;
+  String description;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _typeAheadController = TextEditingController();
@@ -212,8 +213,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                     icon: Icon(MdiIcons.informationOutline),
                   ),
                   onChanged: (String val) {
-                    //todo orxan fix
-//                    description = val;
+                    description = val;
                   },
                 ),
               ),
@@ -323,6 +323,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                     "destination": to,
                                     "date": departureDate.toString(),
                                     "weight_limit": weight,
+                                    "description": description
                                   }))
                               .then((value) {
                             if (value.statusCode == 201) {

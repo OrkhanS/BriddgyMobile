@@ -207,7 +207,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.mapMarkerPath),
                             title: Text(
-                              "My Trips",
+                              t(context, 'my-trips'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -233,7 +233,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.scriptTextOutline),
                             title: Text(
-                              "Accepted Deals",
+                              t(context, 'accepted_deals'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -270,7 +270,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.accountMultiplePlus),
                             title: Text(
-                              "Invite Friends",
+                              t(context, 'invite_friends'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -283,13 +283,13 @@ class _AccountPageState extends State<AccountPage> {
                                 ),
                                 child: Icon(Icons.navigate_next)),
                             onTap: () {
-                              Share.share("Join to the Briddgy Family https://briddgy.com");
+                              Share.share(t(context, 'share_link'));
                             },
                           ),
                           ListTile(
                             leading: Icon(MdiIcons.faceAgent),
                             title: Text(
-                              "Customer Support",
+                              t(context, 'customer_service'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -317,7 +317,7 @@ class _AccountPageState extends State<AccountPage> {
                               );
                             },
                             title: Text(
-                              "Rate/Leave suggestion", //Todo: App Rating
+                              t(context, 'rate_leave_suggestion'), //Todo: App Rating
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
@@ -338,17 +338,17 @@ class _AccountPageState extends State<AccountPage> {
                                 builder: (ctx) => AlertDialog(
 //                          title: Text(''),
                                   content: Text(
-                                    "Are you sure you want to Log out?",
+                                    t(context, 'logout_prompt'),
                                   ),
                                   actions: <Widget>[
                                     FlatButton(
-                                      child: Text('No.'),
+                                      child: Text(t(context, 'no')),
                                       onPressed: () {
                                         Navigator.of(ctx).pop();
                                       },
                                     ),
                                     FlatButton(
-                                      child: Text('Yes, let me out!',
+                                      child: Text(t(context, 'yes_let_me_out'),
                                           style: TextStyle(
                                             color: Colors.redAccent,
                                           )),
@@ -361,7 +361,7 @@ class _AccountPageState extends State<AccountPage> {
                               );
                             },
                             title: Text(
-                              "Logout",
+                              t(context, 'logout'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],

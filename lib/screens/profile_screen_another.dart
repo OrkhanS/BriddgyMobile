@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/stats.dart';
@@ -165,7 +166,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Member since " + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
+                              t(context, 'member_since') + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
                               style: GoogleFonts.lato(
                                 color: Colors.grey[700],
 //                                color: Theme.of(context).primaryColor,
@@ -269,7 +270,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                   size: 18,
                                 ),
                                 label: Text(
-                                  "Message",
+                                  t(context, 'message'),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
@@ -293,8 +294,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                               MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
                                             ),
                                             Flushbar(
-                                              title: "Success",
-                                              message: "Chat with " + user.firstName.toString() + " has been started!",
+                                              title: t(context, 'success'),
+                                              message: t(context, 'chat_with') + user.firstName.toString() + t(context, 'has_been_started'),
                                               padding: const EdgeInsets.all(8),
                                               borderRadius: 10,
                                               duration: Duration(seconds: 3),
@@ -306,8 +307,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                               messageButton = true;
                                             }),
                                             Flushbar(
-                                              title: "Failure",
-                                              message: "Please try again",
+                                              title: t(context, 'failure'),
+                                              message: t(context, 'please_try_again'),
                                               padding: const EdgeInsets.all(8),
                                               borderRadius: 10,
                                               duration: Duration(seconds: 3),
@@ -344,7 +345,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                       ),
                                     ),
                               Text(
-                                "Earned",
+                                t(context, 'earned'),
                                 style: TextStyle(
                                   //color: Colors.white,
                                   color: Theme.of(context).primaryColor,
@@ -378,7 +379,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                       ),
                                     ),
                               Text(
-                                "Orders",
+                                t(context, 'order_plural'),
                                 style: TextStyle(
 //color: Colors.white,
                                   color: Theme.of(context).primaryColor,
@@ -416,7 +417,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                       ),
                                     ),
                               Text(
-                                "Delivered",
+                                t(context, 'ordered'),
                                 style: TextStyle(
 //color: Colors.white,
                                   color: Theme.of(context).primaryColor,

@@ -213,5 +213,29 @@
     "accept": "Принять",
     "reject": "Отказать",
 
-    "error": "Ошибка!"
+    "error": "Ошибка!",
+    "accepted_deals": "Принятые сделки",
+    "invite_friends": "Пригласить Друзей",
+    "share_link": "Присоединитесь к Briddgy по ссылке https://briddgy.com",
+    "customer_service": "Служба Поддержки",
+    "rate_leave_suggestion": "Оценить/Предложить идею",
+    "logout_prompt": "Вы уверены, что хотите выйти?",
+    "no": "Нет.",
+    "yes_let_me_out": "Да, я хочу выйти",
+    "member_since": "Зарегистрирован в ",
+
+    "ordered": "Заказано",
+    "edit": "Редактировать",
+    "earned": "Заработано",
+    "delivered": "Доставлено",
+
+    "item_added": "Заказ добавлен!",
+    "image_size_error": "Слишком большая картина",
+    "another_image_prompt": "Хотите добавить новую картину?",
+    "pick_another_image": "Выберите другое фото",
+    "choose_image_source": "Выберите источник фото",
+    "gallery": "Галерея",
+    "camera": "Камера",
+    "select_image": "Выберите фото"
+
 }
