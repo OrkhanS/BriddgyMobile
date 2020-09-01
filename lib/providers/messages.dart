@@ -111,7 +111,19 @@ class Messages extends ChangeNotifier {
           }
           if (fetchRoom) fetchRoomDetails(roomid, auth);
         }
-          try {
+          
+        _messages[roomid] = {};
+        // cannot directly add Message object to Map. So need TemporaryList
+        List<Message> temporary = [];
+        temporary.add(tempMessage);
+        _messages[roomid]["data"] = temporary;
+      } else {
+        // Checking if FCM sends the same notification twice
+        if (_messages[roomid]["data"][0].id != tempMessage.id) {
+          _messages[roomid]["data"].insert(0, tempMessage);
+        }
+      }
+       try {
             var c = json.decode(tempMessage.text) as Map<String, dynamic>;
             for (var i = 0; i < chats.length; i++) {
             if (chats[i].id == roomid) {
@@ -125,18 +137,6 @@ class Messages extends ChangeNotifier {
               }
             }
           }
-          
-        _messages[roomid] = {};
-        // cannot directly add Message object to Map. So need TemporaryList
-        List<Message> temporary = [];
-        temporary.add(tempMessage);
-        _messages[roomid]["data"] = temporary;
-      } else {
-        // Checking if FCM sends the same notification twice
-        if (_messages[roomid]["data"][0].id != tempMessage.id) {
-          _messages[roomid]["data"].insert(0, tempMessage);
-        }
-      }
     } catch (e) {
       print(e);
     }
