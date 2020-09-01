@@ -181,7 +181,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                   subtitle: Row(
                                                     children: <Widget>[
                                                       Text(
-                                                        "Last Message: " + _rooms[index].lastMessage.toString(),
+                                                        _rooms[index].lastMessage.toString(),
                                                         style: TextStyle(fontSize: 15.0),
                                                       ),
                                                     ],
@@ -197,7 +197,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
                                                               /// IF LENGHT IS NOT 0, SHOWING THE BADGE
                                                               Badge(
-                                                                  badgeContent: Text(provider.newMessage[_rooms[index].id].length.toString()),
+                                                                  badgeContent: Text(provider.newMessage[_rooms[index].id].length.toString(),style: TextStyle(color: Colors.white),),
                                                                   child: Icon(Icons.arrow_forward_ios),
                                                                 )
                                                               : Icon(
