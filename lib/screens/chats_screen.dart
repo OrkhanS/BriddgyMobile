@@ -181,17 +181,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                   subtitle: Row(
                                                     children: <Widget>[
                                                       Text(
-                                                        "Last Message:" + "  ",
+                                                        "Last Message: " + _rooms[index].lastMessage.toString(),
                                                         style: TextStyle(fontSize: 15.0),
                                                       ),
-                                                      Text(
-                                                        timeago
-                                                            .format(DateTime.parse(_rooms[index].dateModified.toString().substring(0, 10) +
-                                                                " " +
-                                                                _rooms[index].dateModified.toString().substring(11, 26)))
-                                                            .toString(),
-                                                        style: TextStyle(fontSize: 15.0),
-                                                      )
                                                     ],
                                                   ),
                                                   trailing:
