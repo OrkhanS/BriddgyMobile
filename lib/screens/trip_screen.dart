@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
@@ -108,7 +109,7 @@ class _TripScreenState extends State<TripScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Last online " + DateFormat.yMMMd().format(trip.owner.lastOnline),
+                              t(context, 'last_online') + DateFormat.yMMMd().format(trip.owner.lastOnline),
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -211,7 +212,7 @@ class _TripScreenState extends State<TripScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Travel Information",
+                                t(context, 'travel_information'),
                                 style: TextStyle(
                                   fontSize: 20,
                                   color: Theme.of(context).primaryColor,
@@ -223,9 +224,9 @@ class _TripScreenState extends State<TripScreen> {
                                 ),
                                 onPressed: () {
                                   Share.share(trip.owner.firstName +
-                                      " is traveling from " +
+                                      t(context, 'is_traveling_from') +
                                       trip.source.cityAscii +
-                                      " to " +
+                                      " ${t(context, 'to')} " +
                                       trip.destination.cityAscii +
                                       ".\n" +
                                       Api.tripLink +
@@ -242,7 +243,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "From:",
+                                  "${t(context, 'from')}:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -267,7 +268,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "To:",
+                                  "${t(context, 'to')}:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -292,7 +293,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Departure Date:",
+                                  "${t(context, 'departure_date')}:",
                                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
@@ -314,7 +315,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Weight Limit:",
+                                  "${t(context, 'baggage_allowance')}:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -326,7 +327,7 @@ class _TripScreenState extends State<TripScreen> {
                                   ),
                                 ),
                                 Text(
-                                  trip.weightLimit.toString() + " kg",
+                                  trip.weightLimit.toString() + " ${t(context, 'kg')}",
                                   style: TextStyle(fontSize: 18),
                                 ),
                               ],
@@ -348,7 +349,7 @@ class _TripScreenState extends State<TripScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Description",
+                                  t(context, 'description'),
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Theme.of(context).primaryColor,
@@ -418,7 +419,7 @@ class _TripScreenState extends State<TripScreen> {
                                       size: 18,
                                     ),
                                     label: Text(
-                                      " Message",
+                                      " ${t(context, 'message')}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
@@ -447,8 +448,8 @@ class _TripScreenState extends State<TripScreen> {
                                                           )),
                                                 ),
                                                 Flushbar(
-                                                  title: "Success",
-                                                  message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
+                                                  title: t(context, 'success'),
+                                                  message: t(context, 'chat_with') + trip.owner.firstName.toString() + t(context, 'has_been_started'),
                                                   padding: const EdgeInsets.all(20),
                                                   margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                                   borderRadius: 10,
@@ -461,8 +462,8 @@ class _TripScreenState extends State<TripScreen> {
                                                   messageDeliveryButton = true;
                                                 }),
                                                 Flushbar(
-                                                  title: "Failure",
-                                                  message: "Please try again",
+                                                  title: t(context, 'failure'),
+                                                  message: t(context, 'please_try_again'),
                                                   padding: const EdgeInsets.all(8),
                                                   borderRadius: 10,
                                                   duration: Duration(seconds: 3),

@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/chats.dart';
 import 'package:optisend/widgets/generators.dart';
@@ -112,7 +113,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     provider.chats.isEmpty && provider.chatsLoading == false
                         ?
                         // if chats is empty
-                        Center(child: Text('No Chats'))
+                        Center(child: Text(t(context, 'no_chats')))
                         :
                         //Check if chatsloading or not
                         provider.chatsLoading
@@ -138,10 +139,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                       itemCount: _rooms.length,
                                       itemBuilder: (context, int index) {
                                         User user;
-                                          user = _rooms[index].members[1].user.id.toString() == myid
+                                        user = _rooms[index].members[1].user.id.toString() == myid
                                             ? _rooms[index].members[0].user
                                             : _rooms[index].members[1].user;
-                                      
 
                                         imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
 
@@ -235,17 +235,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 ),
                                               ),
                                               items: [
-                                                MenuItem("Info", () {
+                                                MenuItem(t(context, 'info'), () {
                                                   Alert(
                                                     context: context,
                                                     type: AlertType.info,
-                                                    title: "Conversation started on:  " +
+                                                    title: t(context, 'conservtion_start') +
                                                         _rooms[index]["date_created"].toString().substring(0, 10) +
                                                         "\n",
                                                     buttons: [
                                                       DialogButton(
                                                         child: Text(
-                                                          "Back",
+                                                          t(context, 'back'),
                                                           style: TextStyle(color: Colors.white, fontSize: 20),
                                                         ),
                                                         onPressed: () => Navigator.pop(context),
@@ -253,7 +253,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                       ),
                                                       DialogButton(
                                                         child: Text(
-                                                          "Report",
+                                                          t(context, 'report'),
                                                           style: TextStyle(color: Colors.white, fontSize: 20),
                                                         ),
                                                         onPressed: () => {
@@ -269,8 +269,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                         color: Color.fromRGBO(0, 179, 134, 1.0),
                                                       )
                                                     ],
-                                                    content: Text(
-                                                        "To keep our community more secure and as mentioned in our Privacy&Policy, you cannot remove chats.\n"),
+                                                    content: Text(t(context, 'chats_cant_be_deleted')),
                                                   ).show();
                                                 }),
                                               ],
@@ -304,7 +303,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                             Padding(
                               padding: const EdgeInsets.all(40.0),
                               child: Text(
-                                'To be able to chat, \nplease log in.',
+                                t(context, 'login_to_chat'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 25,

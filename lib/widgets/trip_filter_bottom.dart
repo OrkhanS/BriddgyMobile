@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/city.dart';
 import 'package:optisend/models/order.dart';
@@ -110,7 +111,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
     // });
   }
 
- FutureOr<Iterable> getSuggestions(String pattern) async {
+  FutureOr<Iterable> getSuggestions(String pattern) async {
     String url = Api.getCities + pattern;
     await http.get(
       url,
@@ -118,7 +119,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
     ).then((response) {
       setState(
         () {
-          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;          _suggested = data["results"];
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+          _suggested = data["results"];
           isLoading = false;
           _cities = [];
           for (var i = 0; i < data["results"].length; i++) {
@@ -127,8 +129,16 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
         },
       );
     });
-    
+
     return _cities;
+  }
+
+  @override
+  void didChangeDependencies() {
+    _searchBarFrom = t(context, 'anywhere');
+    _searchBarTo = t(context, 'anywhere');
+    _searchBarDate = t(context, 'any');
+    super.didChangeDependencies();
   }
 
   @override
@@ -198,8 +208,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                             },
                             controller: this._typeAheadController,
                             decoration: InputDecoration(
-                              labelText: 'From',
-                              hintText: ' Paris',
+                              labelText: t(context, 'from'),
+                              hintText: ' ${t(context, 'paris')}',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -227,14 +237,14 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           },
                           itemBuilder: (context, suggestion) {
                             return ListTile(
-                              title: Text(suggestion.cityAscii + ", "+suggestion.country),
+                              title: Text(suggestion.cityAscii + ", " + suggestion.country),
                             );
                           },
                           transitionBuilder: (context, suggestionsBox, controller) {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text = suggestion.cityAscii + ", "+suggestion.country;
+                            this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
                             widget.from = suggestion.id.toString();
                             _searchBarFrom = suggestion.cityAscii;
                           },
@@ -242,7 +252,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                             widget.from = value.toString();
 
                             if (value.isEmpty) {
-                              return 'Please select a city';
+                              return t(context, 'select_city');
                             }
                           },
                           onSaved: (value) {
@@ -261,8 +271,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                             },
                             controller: this._typeAheadController2,
                             decoration: InputDecoration(
-                              labelText: 'To',
-                              hintText: ' Berlin',
+                              labelText: t(context, 'to'),
+                              hintText: ' ${t(context, 'berlin')}',
                               hintStyle: TextStyle(color: Colors.grey[300]),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
@@ -290,21 +300,21 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           },
                           itemBuilder: (context, suggestion) {
                             return ListTile(
-                              title: Text(suggestion.cityAscii + ", "+suggestion.country),
+                              title: Text(suggestion.cityAscii + ", " + suggestion.country),
                             );
                           },
                           transitionBuilder: (context, suggestionsBox, controller) {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController2.text = suggestion.cityAscii + ", "+suggestion.country;
+                            this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
                             widget.to = suggestion.id.toString();
                             _searchBarTo = suggestion.cityAscii;
                           },
                           validator: (value) {
                             widget.to = value.toString();
                             if (value.isEmpty) {
-                              return 'Please select a city';
+                              return t(context, 'select_city');
                             }
                           },
                           onSaved: (value) => widget.to = value,
@@ -442,7 +452,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                             width: MediaQuery.of(context).size.width,
                             child: Center(
                               child: Text(
-                                "Find Trips",
+                                t(context, 'find_trips'),
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

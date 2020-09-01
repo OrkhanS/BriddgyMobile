@@ -103,7 +103,7 @@ class Messages extends ChangeNotifier {
       if (_messages[roomid] == null || _messages[roomid].isEmpty) {
         bool fetchRoom = true;
         if (_messages[roomid] == null) {
-          for (var i=0; i < chats.length; i++) {
+          for (var i = 0; i < chats.length; i++) {
             if (chats[i].id == roomid) {
               fetchRoom = false;
             }
@@ -313,7 +313,7 @@ class Messages extends ChangeNotifier {
 
 //________________________________________________CONTRACTS________________________________________________
 
- Future createContract(id, auth) async {
+  Future createContract(id, auth) async {
     String token = auth.myTokenFromStorage;
     if (token != null) {
       String url = Api.contracts;
@@ -336,7 +336,6 @@ class Messages extends ChangeNotifier {
       });
     }
   }
-
 
   removeAllDataOfProvider() {
     roomIDsWhileChatRoomActive = [];

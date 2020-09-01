@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
@@ -44,11 +45,8 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30.0),
                 child: Text(
-                  "Verify your phone",
-                  style: TextStyle(
-                      fontSize: 30,
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w600),
+                  t(context, 'verify_phone'),
+                  style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
                 ),
               ),
               Container(
@@ -69,13 +67,11 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 height: 20,
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
+                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
                 child: Text(
-                  "Please enter your phone number, so we can verify it.",
+                  t(context, 'phone_enter_prompt'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w100),
+                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
                 ),
               ),
               SizedBox(
@@ -85,7 +81,7 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: IntlPhoneField(
                   decoration: InputDecoration(
-                    labelText: 'Phone Number',
+                    labelText: t(context, 'phone_number'),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(),
                     ),
@@ -148,9 +144,8 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                         size: 20,
                       ),
                       label: Text(
-                        'MissCall Me',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                        t(context, 'call_me'),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       onPressed: () {
                         if (phone == null) {
@@ -158,8 +153,8 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                             missCallmeButton = true;
                           });
                           Flushbar(
-                            title: "Warning!",
-                            message: "Fill in the field and try again.",
+                            title: "${t(context, 'warning')}!",
+                            message: t(context, 'fill_field'),
                             padding: const EdgeInsets.all(8),
                             borderRadius: 10,
                             duration: Duration(seconds: 3),
@@ -168,14 +163,12 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                           setState(() {
                             missCallmeButton = false;
                           });
-                          var token =
-                              Provider.of<Auth>(context, listen: false).token;
+                          var token = Provider.of<Auth>(context, listen: false).token;
                           String url = Api.requestPhoneVerification;
                           http
                               .post(url,
                                   headers: {
-                                    HttpHeaders.contentTypeHeader:
-                                        "application/json",
+                                    HttpHeaders.contentTypeHeader: "application/json",
                                     "Authorization": "Token " + token,
                                   },
                                   body: json.encode({
@@ -188,16 +181,15 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                               });
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (__) => VerifyPhoneNextScreen()),
+                                MaterialPageRoute(builder: (__) => VerifyPhoneNextScreen()),
                               );
                             } else {
                               setState(() {
                                 missCallmeButton = true;
                               });
                               Flushbar(
-                                title: "Error!",
-                                message: "Please try again.",
+                                title: t(context, 'error'),
+                                message: t(context, 'please_try_again'),
                                 padding: const EdgeInsets.all(8),
                                 borderRadius: 10,
                                 duration: Duration(seconds: 3),
@@ -214,11 +206,9 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
                       color: Theme.of(context).primaryColor,
-                      textColor:
-                          Theme.of(context).primaryTextTheme.button.color,
+                      textColor: Theme.of(context).primaryTextTheme.button.color,
                     )
                   : ProgressIndicatorWidget(show: true),
 
@@ -271,8 +261,8 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
         verifymeButton = true;
       });
       Flushbar(
-        title: "Warning!",
-        message: "Fill in the field and try again.",
+        title: "${t(context, 'warning')}!",
+        message: t(context, 'fill_field'),
         padding: const EdgeInsets.all(8),
         borderRadius: 10,
         duration: Duration(seconds: 3),
@@ -310,8 +300,8 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
             verifymeButton = true;
           });
           Flushbar(
-            title: "Error!",
-            message: "Please try again.",
+            title: t(context, 'error'),
+            message: t(context, 'please_try_again'),
             padding: const EdgeInsets.all(8),
             borderRadius: 10,
             duration: Duration(seconds: 3),
@@ -332,11 +322,8 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30.0),
                 child: Text(
-                  "Verify your phone",
-                  style: TextStyle(
-                      fontSize: 30,
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w600),
+                  t(context, 'verify_phone'),
+                  style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
                 ),
               ),
               Container(
@@ -357,13 +344,11 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 height: 20,
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
+                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
                 child: Text(
-                  "Enter the last 4 digits of phone number, which called you.",
+                  t(context, 'last_digits_complete_prompt'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w100),
+                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
                 ),
               ),
               SizedBox(
@@ -382,7 +367,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                   ),
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 1),
                       child: PinPut(
                         fieldsCount: 4,
                         onSubmit: (String pin) {
@@ -393,8 +378,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                         },
                         focusNode: _pinPutFocusNode,
                         controller: _pinPutController,
-                        submittedFieldDecoration: _pinPutDecoration.copyWith(
-                            borderRadius: BorderRadius.circular(20)),
+                        submittedFieldDecoration: _pinPutDecoration.copyWith(borderRadius: BorderRadius.circular(20)),
                         selectedFieldDecoration: _pinPutDecoration,
                         followingFieldDecoration: _pinPutDecoration.copyWith(
                           borderRadius: BorderRadius.circular(5),
@@ -419,9 +403,8 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                         size: 20,
                       ),
                       label: Text(
-                        'Verify',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                        t(context, 'verify'),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       onPressed: () {
                         verifyMe(number);
@@ -429,11 +412,9 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
                       color: Theme.of(context).primaryColor,
-                      textColor:
-                          Theme.of(context).primaryTextTheme.button.color,
+                      textColor: Theme.of(context).primaryTextTheme.button.color,
                     )
                   : ProgressIndicatorWidget(show: true),
               SizedBox(

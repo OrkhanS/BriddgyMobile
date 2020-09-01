@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flushbar/flushbar.dart';
 import 'package:http/http.dart' as http;
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
@@ -145,8 +146,9 @@ class _TripScreenState extends State<TripsScreen> {
     }
   }
 
+//TODO
   Future _loadData() async {
-    if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
+    if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FirstCall") {
       String url = nextTripURL;
       try {
         await http.get(
@@ -238,7 +240,7 @@ class _TripScreenState extends State<TripsScreen> {
                 }
               } else {
                 Flushbar(
-                  title: "Warning",
+                  title: t(context, 'warning'),
                   message: "You need to Log in to add Item!",
                   padding: const EdgeInsets.all(8),
                   borderRadius: 10,
@@ -265,7 +267,9 @@ class _TripScreenState extends State<TripsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
                         Text(
-                          orderstripsProvider.detailsTrip.isEmpty ? "Results: 0" : "Results: " + orderstripsProvider.detailsTrip["count"].toString(),
+                          orderstripsProvider.detailsTrip.isEmpty
+                              ? "${t(context, 'result_plural')}: 0"
+                              : "${t(context, 'result_plural')}: " + orderstripsProvider.detailsTrip["count"].toString(),
                           style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
                         ),
 //                        DropdownButton(

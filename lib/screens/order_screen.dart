@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/locale.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
@@ -126,7 +127,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              "Last online " + DateFormat.yMMMd().format(order.owner.lastOnline),
+                              t(context, 'last_online') + DateFormat.yMMMd().format(order.owner.lastOnline),
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 14,
@@ -273,9 +274,9 @@ class _OrderScreenState extends State<OrderScreen> {
                               IconButton(
                                 icon: Icon(Icons.share),
                                 onPressed: () {
-                                  Share.share("Earn \$" +
+                                  Share.share("${t(context, 'earn')}\$" +
                                       order.price.toString() +
-                                      " by delivering " +
+                                      " ${t(context, 'by_delivering')}" +
                                       order.title +
                                       "\n" +
                                       Api.orderLink +
@@ -292,7 +293,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "From:",
+                                  "${t(context, 'from')}:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -317,7 +318,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "To:",
+                                  "${t(context, 'to')}:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -342,7 +343,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Posten on:",
+                                  t(context, 'posted_on'),
                                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                                 ),
                                 Expanded(
@@ -364,7 +365,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Weight:",
+                                  t(context, 'weight'),
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -376,7 +377,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ),
                                 ),
                                 Text(
-                                  order.weight.toString() + " kg",
+                                  order.weight.toString() + " ${t(context, 'kg')}",
                                   style: TextStyle(fontSize: 18),
                                 ),
                               ],
@@ -389,7 +390,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Reward:",
+                                  "${t(context, 'reward')}:",
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey[600],
@@ -423,7 +424,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  "Description",
+                                  t(context, 'description'),
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Theme.of(context).primaryColor,
@@ -501,7 +502,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         size: 18,
                                       ),
                                       label: Text(
-                                        " Delete Order",
+                                        " ${t(context, 'delete_order')}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
@@ -511,12 +512,12 @@ class _OrderScreenState extends State<OrderScreen> {
                                         showDialog(
                                           context: context,
                                           builder: (ctx) => AlertDialog(
-                                            title: Text("Are you sure you want to delete this order?"),
-                                            content: Text("This action cannot be undone"),
+                                            title: Text(t(context, 'confirm_deletion')),
+                                            content: Text(t(context, 'action_cant_be_undone')),
                                             actions: <Widget>[
                                               FlatButton(
                                                 child: Text(
-                                                  'Cancel',
+                                                  t(context, 'cancel'),
                                                   style: TextStyle(color: Colors.red),
                                                 ),
                                                 onPressed: () {
@@ -554,7 +555,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         size: 18,
                                       ),
                                       label: Text(
-                                        " Message",
+                                        " ${t(context, 'message')}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
@@ -583,8 +584,9 @@ class _OrderScreenState extends State<OrderScreen> {
                                                             )),
                                                   ),
                                                   Flushbar(
-                                                    title: "Success",
-                                                    message: "Chat with " + order.owner.firstName.toString() + " has been started!",
+                                                    title: t(context, 'success'),
+                                                    message:
+                                                        t(context, 'chat_with') + order.owner.firstName.toString() + t(context, "has_been_started"),
                                                     padding: const EdgeInsets.all(20),
                                                     margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                                     borderRadius: 10,
@@ -597,8 +599,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                                     messageDeliveryButton = true;
                                                   }),
                                                   Flushbar(
-                                                    title: "Failure",
-                                                    message: "Please try again",
+                                                    title: t(context, 'failure'),
+                                                    message: t(context, 'please_try_again'),
                                                     padding: const EdgeInsets.all(8),
                                                     borderRadius: 10,
                                                     duration: Duration(seconds: 3),

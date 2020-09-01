@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/message.dart';
 import 'package:optisend/models/order.dart';
@@ -52,7 +53,7 @@ class _ChatWindowState extends State<ChatWindow> {
   var file;
   User me;
   String imageUrlMe, imageUrlUser;
-  var contract, order,trip;
+  var contract, order, trip;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
@@ -66,7 +67,7 @@ class _ChatWindowState extends State<ChatWindow> {
     widget.provider.roomIDofActiveChatroom = id;
     imageUrlMe = me.avatarpic == null ? Api.noPictureImage : Api.storageBucket + me.avatarpic.toString();
     imageUrlUser = widget.user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + widget.user.avatarpic.toString();
-  
+
     initCommunication(id);
     super.initState();
   }
@@ -138,7 +139,7 @@ class _ChatWindowState extends State<ChatWindow> {
   );
 
   void _choose() async {
-    file = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 400, maxWidth: 400);
+    file = await ImagePicker.pickImage(source: ImageSource.camera, maxHeight: 400, maxWidth: 400);
     //file = await ImagePicker.pickImage(source: ImageSource.gallery);
   }
 
@@ -155,7 +156,8 @@ class _ChatWindowState extends State<ChatWindow> {
     widget.provider.notifFun();
     return true;
   }
-  void contractMessage(){
+
+  void contractMessage() {
     var tempMessage = Message.fromJson({
       "id": 200,
       "date_created": DateTime.now().toString(),
@@ -176,18 +178,18 @@ class _ChatWindowState extends State<ChatWindow> {
         print(e);
       }
     }
-    if(widget.provider.messages[widget.room] == null){
-      List<Message> temp = []; temp.add(tempMessage);
+    if (widget.provider.messages[widget.room] == null) {
+      List<Message> temp = [];
+      temp.add(tempMessage);
       widget.provider.messages[widget.room] = {"next": null, "data": temp};
-    } else{
-        widget.provider.messages[widget.room]["data"].insert(0,tempMessage); 
+    } else {
+      widget.provider.messages[widget.room]["data"].insert(0, tempMessage);
     }
     widget.provider.notifFun();
   }
 
   @override
   Widget build(BuildContext context) {
-     
     if (widget.provider.isChatRoomPageActive == false) {
       widget.provider.isChatRoomPageActive = true;
       widget.provider.roomIDofActiveChatroom = id;
@@ -204,7 +206,7 @@ class _ChatWindowState extends State<ChatWindow> {
                 });
               },
               decoration: InputDecoration.collapsed(
-                hintText: "Type a message",
+                hintText: t(context, 'type_message'),
               ),
               controller: textEditingController,
             ),
@@ -263,7 +265,7 @@ class _ChatWindowState extends State<ChatWindow> {
           bool messageLoader = provider.messagesLoading;
           if (widget.provider.messages[widget.room] != null && !messageLoader) {
             if (widget.provider.messages[widget.room].isNotEmpty) {
-              _messages =  widget.provider.messages[widget.room]["data"];
+              _messages = widget.provider.messages[widget.room]["data"];
               if (nextMessagesURL == "FirstCall") {
                 nextMessagesURL = widget.provider.messages[widget.room]["next"];
               }
@@ -272,7 +274,7 @@ class _ChatWindowState extends State<ChatWindow> {
               messageLoader = true;
             }
           }
-          if(widget.provider.contractBody != "")contractMessage();
+          if (widget.provider.contractBody != "") contractMessage();
           return Scaffold(
             resizeToAvoidBottomPadding: true,
             body: SafeArea(
@@ -340,7 +342,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                                     child: Text(
-                                      "Last online " + DateFormat.yMMMd().format(widget.user.lastOnline),
+                                      t(context, 'last_online') + DateFormat.yMMMd().format(widget.user.lastOnline),
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 14,
@@ -353,21 +355,20 @@ class _ChatWindowState extends State<ChatWindow> {
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: 
-                                    imageUrlUser == Api.noPictureImage
-                                      ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
-                                      : ClipRRect(
-                                          borderRadius: BorderRadius.circular(25.0),
-                                          child: Image.network(
-                                            imageUrlUser,
-                                            errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                              return InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
-                                            },
-                                            height: 50,
-                                            width: 50,
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
+                              child: imageUrlUser == Api.noPictureImage
+                                  ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(25.0),
+                                      child: Image.network(
+                                        imageUrlUser,
+                                        errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                          return InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
+                                        },
+                                        height: 50,
+                                        width: 50,
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
                             ),
                           ],
                         ),
@@ -377,8 +378,7 @@ class _ChatWindowState extends State<ChatWindow> {
                         transitionDuration: Duration(milliseconds: 500),
                         transitionType: ContainerTransitionType.fadeThrough,
                         openBuilder: (BuildContext context, VoidCallback _) {
-                          return 
-                              me.isNumberVerified ? NewContactScreen(widget.user) : VerifyPhoneScreen();
+                          return me.isNumberVerified ? NewContactScreen(widget.user) : VerifyPhoneScreen();
                         },
                         closedElevation: 6.0,
                         closedShape: const RoundedRectangleBorder(
@@ -402,7 +402,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                   width: 10,
                                 ),
                                 Text(
-                                  "Propose Contract",
+                                  t(context, 'propose_contract'),
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
@@ -473,44 +473,46 @@ class _ChatWindowState extends State<ChatWindow> {
                                           //ToDo navigate to user profile
                                           print("check");
                                         },
-                                        child: 
-                                          imageUrlUser == Api.noPictureImage
-                                              ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
-                                              : ClipRRect(
-                                                  borderRadius: BorderRadius.circular(25.0),
-                                                  child: Image.network(
-                                                    imageUrlUser,
-                                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                      return InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
-                                                    },
-                                                    height: 50,
-                                                    width: 50,
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
+                                        child: imageUrlUser == Api.noPictureImage
+                                            ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+                                            : ClipRRect(
+                                                borderRadius: BorderRadius.circular(25.0),
+                                                child: Image.network(
+                                                  imageUrlUser,
+                                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                    return InitialsAvatarWidget(
+                                                        widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
+                                                  },
+                                                  height: 50,
+                                                  width: 50,
+                                                  fit: BoxFit.fitWidth,
                                                 ),
-                                            )
-                                          : imageUrlMe == Api.noPictureImage
-                                              ? InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0)
-                                              : ClipRRect(
-                                                  borderRadius: BorderRadius.circular(25.0),
-                                                  child: Image.network(
-                                                    imageUrlMe,
-                                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                      return InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0);
-                                                    },
-                                                    height: 50,
-                                                    width: 50,
-                                                    fit: BoxFit.fitWidth,
-                                                  ),
-                                                );
-                                    if(iscontract){
-                                        contract = json.decode(_messages[index].text);
-                                        if(contract["my"]["orderimage"] == null){
-                                            order = Order.fromJson(contract["opp"]); trip = Trip.fromJson(contract["my"]); 
-                                        } else{
-                                          order = Order.fromJson(contract["my"]); trip = Trip.fromJson(contract["opp"]);
-                                        }
-                                    }
+                                              ),
+                                      )
+                                    : imageUrlMe == Api.noPictureImage
+                                        ? InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0)
+                                        : ClipRRect(
+                                            borderRadius: BorderRadius.circular(25.0),
+                                            child: Image.network(
+                                              imageUrlMe,
+                                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                return InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0);
+                                              },
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          );
+                                if (iscontract) {
+                                  contract = json.decode(_messages[index].text);
+                                  if (contract["my"]["orderimage"] == null) {
+                                    order = Order.fromJson(contract["opp"]);
+                                    trip = Trip.fromJson(contract["my"]);
+                                  } else {
+                                    order = Order.fromJson(contract["my"]);
+                                    trip = Trip.fromJson(contract["opp"]);
+                                  }
+                                }
                                 //For Rasul
                                 //use order and trip for filling below
                                 var messagebody = !iscontract
@@ -536,11 +538,11 @@ class _ChatWindowState extends State<ChatWindow> {
                                           ),
                                         ),
                                         items: [
-                                          MenuItem("Info", () {
+                                          MenuItem(t(context, 'info'), () {
                                             Alert(
                                               context: context,
                                               type: AlertType.info,
-                                              title: "Sent on:  " +
+                                              title: t(context, 'sent_on') +
                                                   _messages[index].dateCreated.toString().substring(0, 10) +
                                                   ",  " +
                                                   _messages[index].dateCreated.toString().substring(11, 16) +
@@ -548,7 +550,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                               buttons: [
                                                 DialogButton(
                                                   child: Text(
-                                                    "Back",
+                                                    t(context, 'back'),
                                                     style: TextStyle(color: Colors.white, fontSize: 20),
                                                   ),
                                                   onPressed: () => Navigator.pop(context),
@@ -556,15 +558,14 @@ class _ChatWindowState extends State<ChatWindow> {
                                                 ),
                                                 DialogButton(
                                                   child: Text(
-                                                    "Report",
+                                                    t(context, 'report'),
                                                     style: TextStyle(color: Colors.white, fontSize: 20),
                                                   ),
                                                   onPressed: () => {},
                                                   color: Color.fromRGBO(0, 179, 134, 1.0),
                                                 )
                                               ],
-                                              content: Text(
-                                                  "To keep our community more secure and as mentioned our Privacy&Policy, you cannot remove messages.\n"),
+                                              content: Text(t(context, 'chats_cant_be_deleted')),
                                             ).show();
                                           }),
                                         ],
@@ -580,7 +581,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                         ),
                                         child: Column(
                                           children: [
-                                            Text("I am traveling"),
+                                            Text(t(context, 'i-am-traveling')),
                                             ListTile(
                                               leading: Text(order.source.cityAscii),
                                               trailing: Text(order.destination.cityAscii),
@@ -588,47 +589,42 @@ class _ChatWindowState extends State<ChatWindow> {
                                             RaisedButton(
                                               color: Colors.blue,
                                               child: Text(
-                                                "Accept",
+                                                t(context, 'accept'),
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               onPressed: () {
                                                 final url = Api.applyForDelivery;
-                                                http.put(
-                                                url,
-                                                headers: {
+                                                http
+                                                    .put(
+                                                  url,
+                                                  headers: {
                                                     HttpHeaders.contentTypeHeader: "application/json",
-                                                    "Authorization": "Token " + Provider.of<Auth>(context,listen:false).myTokenFromStorage,
-                                                },
-                                                body: json.encode(
-                                                  {
-                                                    'order': order.id,
-                                                    'trip': trip.id,
-                                                    'idOfmessage': _messages[index].id
+                                                    "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                                                   },
-                                                ),
-                                              ).then((response) {
-                                                  if(response.statusCode == 200){
-                                                      print("Accepted");
-                                                      //todo Rasul
-                                                      // need to show that contract approved or how?
-                                                       
-                                                  }
-                                                  else{
-                                                    //todo Rasul                            
-                                                    // Here show an error message how you want  
-                                                    // use  below code to give detailed                       
+                                                  body: json.encode(
+                                                    {'order': order.id, 'trip': trip.id, 'idOfmessage': _messages[index].id},
+                                                  ),
+                                                )
+                                                    .then((response) {
+                                                  if (response.statusCode == 200) {
+                                                    print("Accepted");
+                                                    //todo Rasul
+                                                    // need to show that contract approved or how?
+
+                                                  } else {
+                                                    //todo Rasul
+                                                    // Here show an error message how you want
+                                                    // use  below code to give detailed
 
                                                     print(json.decode(response.body)["detail"]);
                                                   }
-                                              });
-
-                                                
+                                                });
                                               },
                                             ),
                                             RaisedButton(
                                               color: Colors.red,
                                               child: Text(
-                                                "Reject",
+                                                t(context, 'reject'),
                                                 style: TextStyle(color: Colors.white),
                                               ),
                                               onPressed: () {},

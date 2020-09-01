@@ -365,7 +365,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                               borderRadius: BorderRadius.circular(20),
                             ),
 
-                            labelText: t(context, 'max_reward'),
+                            labelText: t(context, 'reward_usd'),
                             hintText: ' 10\$',
                             hintStyle: TextStyle(color: Colors.grey[300]),
 
