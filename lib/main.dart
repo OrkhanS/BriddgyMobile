@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/demo_localization.dart';
 import 'package:optisend/screens/add_order_screen.dart';
 import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/auth_screen.dart';
@@ -28,6 +29,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:badges/badges.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'models/api.dart';
 
@@ -40,6 +42,11 @@ class MyApp extends StatefulWidget {
   IOWebSocketChannel _channel;
   ObserverList<Function> _listeners = new ObserverList<Function>();
   var button = ChatsScreen();
+  static void setLocale(BuildContext context, Locale locale) {
+    _MyAppState state = context.findAncestorStateOfType<_MyAppState>();
+    state.setLocale(locale);
+  }
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -55,6 +62,14 @@ class _MyAppState extends State<MyApp> {
   bool socketConnected = false;
   bool socketConnectedFirebase = false;
   var neWMessage, newMessageauth;
+
+  Locale _locale;
+
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   void initState() {
@@ -250,6 +265,26 @@ class _MyAppState extends State<MyApp> {
           statusBarIconBrightness: Brightness.dark,
         ));
         return MaterialApp(
+          locale: _locale,
+          localizationsDelegates: [
+            DemoLocalization.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('en', 'US'), // English, no country code
+            const Locale('ru', 'RU'), // Russian, no country code
+          ],
+          localeResolutionCallback: (deviceLocale, supportedLocales) {
+            for (var locale in supportedLocales) {
+              if (locale.languageCode == deviceLocale.languageCode && locale.countryCode == deviceLocale.countryCode) {
+                return deviceLocale;
+              }
+            }
+
+            return supportedLocales.first;
+          },
           title: 'Optisend',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
