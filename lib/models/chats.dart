@@ -15,15 +15,18 @@ class Chats {
     this.dateCreated,
     this.dateModified,
     this.members,
+    this.lastMessage,
   });
 
   String id;
+  String lastMessage;
   DateTime dateCreated;
   DateTime dateModified;
   List<Member> members;
 
   factory Chats.fromJson(Map<String, dynamic> json) => Chats(
         id: json["id"],
+        lastMessage: json["last_message"],
         dateCreated: DateTime.parse(json["date_created"]),
         dateModified: DateTime.parse(json["date_modified"]),
         members:
@@ -32,6 +35,7 @@ class Chats {
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "last_message": lastMessage,
         "date_created": dateCreated.toIso8601String(),
         "date_modified": dateModified.toIso8601String(),
         "members": List<dynamic>.from(members.map((x) => x.toJson())),
