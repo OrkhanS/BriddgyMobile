@@ -128,10 +128,16 @@ class _ChatWindowState extends State<ChatWindow> {
         print(e);
       }
     }
-
+    
     setState(() {
       _messages.insert(0, tempMessage);
     });
+    
+    for (var i = 0; i < widget.provider.chats.length; i++) {
+      if (widget.provider.chats[i].id == id) {
+        widget.provider.chats[i].lastMessage = tempMessage.text;
+      }
+    }   
   }
 
   var triangle = CustomPaint(
@@ -186,6 +192,11 @@ class _ChatWindowState extends State<ChatWindow> {
       widget.provider.messages[widget.room]["data"].insert(0, tempMessage);
     }
     widget.provider.notifFun();
+    for (var i = 0; i < widget.provider.chats.length; i++) {
+      if (widget.provider.chats[i].id == id) {
+        widget.provider.chats[i].lastMessage = "Contract";
+      }
+    }
   }
 
   @override
