@@ -83,7 +83,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
                     width: deviceWidth * 0.7,
                     child: Center(
                       child: Text(
-                        "Submit",
+                        t(context, 'submit'),
                         style: TextStyle(
                           fontSize: 19,
                           color: Colors.white,

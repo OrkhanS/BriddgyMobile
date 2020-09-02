@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:optisend/widgets/generators.dart';
@@ -68,9 +69,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           });
         });
         Flushbar(
-          title: "Success!",
+          title: "${t(context, 'success')}!",
           backgroundColor: Colors.green[800],
-          message: "Picture changed.",
+          message: "${t(context, 'image_changed')}.",
           padding: const EdgeInsets.all(8),
           borderRadius: 10,
           duration: Duration(seconds: 2
@@ -107,7 +108,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   },
                 ),
                 title: Text(
-                  "Edit Profile",
+                  t(context, 'edit_profile'),
                   style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                 ),
                 elevation: 1,
@@ -123,11 +124,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          "Profile Picture",
+                          t(context, 'pp'),
                           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
                         ),
                         Text(
-                          "Edit",
+                          t(context, 'edit'),
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 20,
@@ -171,11 +172,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          "Phone number",
+                          t(context, 'phone_number'),
                           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
                         ),
                         Text(
-                          "Edit",
+                          t(context, 'edit'),
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 20,
@@ -220,7 +221,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 size: 20,
               ),
               label: Text(
-                'Save',
+                t(context, 'save'),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               onPressed: () {

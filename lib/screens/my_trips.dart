@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/trip.dart';
 import 'package:optisend/providers/auth.dart';
@@ -27,7 +28,7 @@ class _MyTripsState extends State<MyTrips> {
   List _trips = [];
   bool isLoading = true;
   bool _isfetchingnew = false;
-  String nextTripURL = "FristCall";
+  String nextTripURL = "FirstCall";
 
   @override
   void initState() {
@@ -49,7 +50,7 @@ class _MyTripsState extends State<MyTrips> {
   @override
   Widget build(BuildContext context) {
     Future _loadData() async {
-      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FristCall") {
+      if (nextTripURL.toString() != "null" && nextTripURL.toString() != "FirstCall") {
         String url = nextTripURL;
         try {
           await http.get(
@@ -103,7 +104,7 @@ class _MyTripsState extends State<MyTrips> {
                       },
                     ),
                     title: Text(
-                      "My Trips",
+                      t(context, 'my_trips'),
                       style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                     ),
                     elevation: 1,

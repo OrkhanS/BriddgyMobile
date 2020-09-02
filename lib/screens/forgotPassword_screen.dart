@@ -1,5 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 },
               ),
               title: Text(
-                "Forgot Password",
+                t(context, 'forgot'),
                 style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold),
@@ -33,7 +34,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30.0),
               child: Text(
-                "We'll help you recover your password and access your account, no worries.",
+                t(context, 'recover_help'),
                 style: TextStyle(
                     color: Colors.black87, fontWeight: FontWeight.w100),
               ),
@@ -42,13 +43,13 @@ class ForgotPasswordScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  labelText: t(context, 'email'),
                   icon: Icon(Icons.alternate_email),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value.isEmpty || !value.contains('@')) {
-                    return 'Invalid email!';
+                    return t(context, 'invalid_email');
                   } else {
                     email = value;
                   }
@@ -66,7 +67,7 @@ class ForgotPasswordScreen extends StatelessWidget {
             ),
             RaisedButton(
               child: Text(
-                'Send Password Recovery',
+                t(context, 'send_password_recovery'),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () {
@@ -79,16 +80,16 @@ class ForgotPasswordScreen extends StatelessWidget {
                         .passwordResetStatus = false;
                     Navigator.pop(context);
                     Flushbar(
-                      title: "Success",
-                      message: "Instructions has been sent to your Email!",
+                      title: t(context, 'success'),
+                      message: t(context, 'instructions_sent'),
                       padding: const EdgeInsets.all(8),
                       borderRadius: 10,
                       duration: Duration(seconds: 3),
                     )..show(context);
                   } else {
                     Flushbar(
-                      title: "Failed",
-                      message: "Please check the email you have provided!",
+                      title: t(context, 'failed'),
+                      message: t(context, 'check_email'),
                       padding: const EdgeInsets.all(8),
                       borderRadius: 10,
                       duration: Duration(seconds: 3),

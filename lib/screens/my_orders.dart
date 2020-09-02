@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
 import 'package:optisend/widgets/order_widget.dart';
@@ -42,7 +43,7 @@ class _MyItemsState extends State<MyItems> {
 
   Future _loadData() async {
     if (nextOrderURL.toString() != "null" &&
-        nextOrderURL.toString() != "FristCall") {
+        nextOrderURL.toString() != "FirstCall") {
       String url = nextOrderURL;
       print(url);
       try {
@@ -103,7 +104,7 @@ class _MyItemsState extends State<MyItems> {
                       },
                     ),
                     title: Text(
-                      "My Orders",
+                      t(context, 'my_orders'),
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold),

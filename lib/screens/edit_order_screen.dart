@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/order.dart';
 
 import 'dart:async';
@@ -77,8 +78,8 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
               ),
             ));
         Flushbar(
-          title: "Success!",
-          message: "Item added.",
+          title: "${t(context, 'success')}!",
+          message: t(context, 'item_added'),
           padding: const EdgeInsets.all(8),
           borderRadius: 10,
           duration: Duration(seconds: 3),
@@ -87,12 +88,12 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: Text("Image couldn't be added!"),
-            content: Text("Do you want to add another image?"),
+            title: Text(t(context, 'image_couldnt_be_added')),
+            content: Text(t(context, 'another_image_prompt')),
             actions: <Widget>[
               FlatButton(
                 child: Text(
-                  'No',
+                  t(context, 'no'),
                   style: TextStyle(color: Colors.red),
                 ),
                 onPressed: () {
@@ -110,7 +111,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                 },
               ),
               FlatButton(
-                child: Text('Pick another Image'),
+                child: Text(t(context, 'pick_another_image')),
                 onPressed: () {
                   setState(() {
                     addItemButton = true;
