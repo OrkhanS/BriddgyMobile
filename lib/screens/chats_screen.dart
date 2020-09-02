@@ -69,7 +69,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
     ];
 
     Future _loadData() async {
-      if (nextMessagesURL.toString() != "null" && nextMessagesURL.toString() != "FristCall") {
+      if (nextMessagesURL.toString() != "null" && nextMessagesURL.toString() != "FirstCall") {
         String url = nextMessagesURL;
         try {
           await http.get(

@@ -158,7 +158,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
 //    return Form(
   Future _loadData() async {
-    if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FristCall") {
+    if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FirstCall") {
       String url = nextOrderURL;
       try {
         await http

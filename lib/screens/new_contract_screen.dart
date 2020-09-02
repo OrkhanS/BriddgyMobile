@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/models/trip.dart';
@@ -67,7 +68,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                   },
                 ),
                 title: Text(
-                  "Propose contract",
+                  t(context, 'propose_contract'),
                   style: TextStyle(
 //                    color: Colors.black,
                     color: Theme.of(context).primaryColor,
@@ -209,7 +210,7 @@ class Step1 extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "I am orderer",
+                    t(context, 'i-am-orderer'),
                     style: TextStyle(fontSize: 20),
                   ),
                 ],
@@ -232,7 +233,7 @@ class Step1 extends StatelessWidget {
                     child: SvgPicture.asset("assets/photos/traveler.svg"),
                   ),
                   Text(
-                    "I am traveler",
+                    t(context, 'i-am-traveler'),
                     style: TextStyle(fontSize: 20),
                   ),
                 ],
@@ -285,7 +286,7 @@ class _Step2State extends State<Step2> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 0),
             child: Text(
-              _iAmOrderer ? "Select Trip of " + _proposedUser.firstName + " " + _proposedUser.lastName : "Select Your Trip",
+              _iAmOrderer ? t(context, 'select_trip_of') + _proposedUser.firstName + " " + _proposedUser.lastName : t(context, 'select_your_trip'),
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -352,7 +353,7 @@ class _Step3State extends State<Step3> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 0),
             child: Text(
-              !_iAmOrderer ? "Select Order of " + _proposedUser.firstName + " " + _proposedUser.lastName : "Select Your Order",
+              !_iAmOrderer ? t(context, 'select_order_of') + _proposedUser.firstName + " " + _proposedUser.lastName : t(context, 'select_your_order'),
               style: TextStyle(fontSize: 20),
             ),
           ),
@@ -462,7 +463,7 @@ class _Step4State extends State<Step4> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Summary",
+                t(context, 'summary'),
                 style: TextStyle(
                   fontSize: 22,
                   color: Theme.of(context).primaryColor,
@@ -473,7 +474,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "Contract Proposed by:",
+                  t(context, 'contract_proposed_by'),
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(
@@ -490,7 +491,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "Order Owner:",
+                  t(context, 'order_owner'),
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -503,7 +504,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "Order :",
+                  "${t(context, 'order')}: ",
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -516,7 +517,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "Deliverer:",
+                  "${t(context, 'deliverer')}: ",
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -529,7 +530,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "From:",
+                  "${t(context, 'from')}:",
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -542,7 +543,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "To:",
+                  "${t(context, 'to')}:",
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -555,7 +556,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "Trip Date:",
+                  "${t(context, 'trip_date')}:",
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -568,7 +569,7 @@ class _Step4State extends State<Step4> {
             Row(
               children: <Widget>[
                 Text(
-                  "Reward:",
+                  "${t(context, 'reward')}:",
                   style: TextStyle(fontSize: 17, color: Colors.grey[600]),
                 ),
                 Expanded(child: SizedBox()),
@@ -612,7 +613,7 @@ class _Step4State extends State<Step4> {
                       size: 18,
                     ),
                     label: Text(
-                      "Cancel",
+                      t(context, 'cancel'),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.red,
@@ -623,7 +624,7 @@ class _Step4State extends State<Step4> {
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
-                          title: Text("Are you sure you want to cancel the Contract Proposal?"),
+                          title: Text(t(context, 'cancel_contract_prompt')),
                           content: Text("This action cannot be undone"),
                           actions: <Widget>[
                             FlatButton(
