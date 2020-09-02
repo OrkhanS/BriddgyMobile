@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optisend/localization/localization_constants.dart';
 
 class CustomerSupport extends StatefulWidget {
   var user, message;
@@ -26,7 +27,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
           },
         ),
         title: Text(
-          "Support",
+          t(context, 'support'),
           style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
         ),
         elevation: 1,
@@ -41,7 +42,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
                 Padding(
                   padding: const EdgeInsets.only(left: 30.0, top: 20, bottom: 20),
                   child: Text(
-                    "Fill the forms",
+                    t(context, 'fill_the_forms'),
                     style: TextStyle(fontSize: 25, color: Theme.of(context).primaryColor),
                   ),
                 ),
@@ -51,7 +52,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
               width: deviceWidth * 0.8,
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Subject',
+                  labelText: t(context, 'subject'),
                   icon: Icon(Icons.report),
                 ),
                 keyboardType: TextInputType.text,
@@ -62,7 +63,7 @@ class _CustomerSupportState extends State<CustomerSupport> {
               width: deviceWidth * 0.8,
               child: TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Tell us about your issue..',
+                  labelText: t(context, 'tell_about_issue'),
                   icon: Icon(Icons.report),
                 ),
                 keyboardType: TextInputType.text,

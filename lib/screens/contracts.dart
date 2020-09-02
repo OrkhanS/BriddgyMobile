@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:menu/menu.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -83,7 +84,7 @@ class _ContractsState extends State<Contracts> {
                     },
                   ),
                   title: Text(
-                    "My Contracts",
+                    t(context, 'my_contracts'),
                     style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                   ),
                   elevation: 1,
@@ -122,14 +123,14 @@ class _ContractsState extends State<Contracts> {
                                               style: TextStyle(fontSize: 22, color: Colors.grey[600], fontWeight: FontWeight.normal),
                                             ),
                                             Text(
-                                              "Traveler: " +
+                                              "${t(context, 'traveler')}: " +
                                                   _contracts[i]["trip"]["owner"]["first_name"] +
                                                   " " +
                                                   _contracts[i]["trip"]["owner"]["last_name"],
                                               style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                                             ),
                                             Text(
-                                              "Orderer: " +
+                                              "${t(context, 'orderer')}: " +
                                                   _contracts[i]["order"]["owner"]["first_name"] +
                                                   " " +
                                                   _contracts[i]["order"]["owner"]["last_name"],
@@ -179,14 +180,14 @@ class _ContractsState extends State<Contracts> {
                         ),
                       ),
                       items: [
-                        MenuItem("Info", () {
+                        MenuItem(t(context, 'info'), () {
                           Alert(
                             context: context,
-                            title: "Contract Details  " + "\n",
+                            title: "${t(context, 'contract_details')} " + "\n",
                             buttons: [
                               DialogButton(
                                 child: Text(
-                                  "Back",
+                                  t(context, 'back'),
                                   style: TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 onPressed: () => Navigator.pop(context),
@@ -194,7 +195,7 @@ class _ContractsState extends State<Contracts> {
                               ),
                               DialogButton(
                                 child: Text(
-                                  "Report",
+                                  t(context, 'report'),
                                   style: TextStyle(color: Colors.white, fontSize: 20),
                                 ),
                                 onPressed: () => {},
@@ -204,23 +205,23 @@ class _ContractsState extends State<Contracts> {
                             content: Column(
                               children: <Widget>[
                                 Text(
-                                  "Traveler: " +
+                                  "${t(context, 'traveler')}: " +
                                       _contracts[i]["trip"]["owner"]["first_name"] +
                                       " " +
                                       _contracts[i]["trip"]["owner"]["last_name"] +
                                       "\n" +
-                                      "Orderer: " +
+                                      "${t(context, 'orderer')}: " +
                                       _contracts[i]["order"]["owner"]["first_name"] +
                                       " " +
                                       _contracts[i]["order"]["owner"]["last_name"] +
                                       "\n" +
-                                      "Weight: " +
+                                      "${t(context, 'weight')}: " +
                                       _contracts[i]["order"]["weight"].toString() +
                                       "\n" +
-                                      "Reward: " +
+                                      "${t(context, 'reward')}: " +
                                       _contracts[i]["order"]["price"].toString() +
                                       "\n" +
-                                      "Arrival Date : " +
+                                      "${t(context, 'arrival_date')} : " +
                                       _contracts[i]["trip"]["date"].toString(),
                                   style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                                 ),
@@ -228,7 +229,7 @@ class _ContractsState extends State<Contracts> {
                             ),
                           ).show();
                         }),
-                        MenuItem("Remove", () {}),
+                        MenuItem(t(context, 'remove'), () {}),
                       ],
                       decoration: MenuDecoration(),
                     );

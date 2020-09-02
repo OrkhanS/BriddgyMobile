@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/screens/forgotPassword_screen.dart';
 import 'package:optisend/screens/verify_email_screen.dart';
 import 'package:provider/provider.dart';
@@ -72,11 +73,11 @@ class _AuthScreenState extends State<AuthScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('An Error Occurred!'),
+        title: Text(t(context, 'error_occurred')),
         content: Text(message),
         actions: <Widget>[
           FlatButton(
-            child: Text('Okay'),
+            child: Text(t(context, 'okay')),
             onPressed: () {
               Navigator.of(ctx).pop();
             },
@@ -162,7 +163,7 @@ class _AuthScreenState extends State<AuthScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  _authMode == AuthMode.Login ? 'Log In' : 'Sign Up',
+                  _authMode == AuthMode.Login ? t(context, 'login') : t(context, 'sign_up'),
                   style: TextStyle(
                     fontSize: 30,
                     color: Theme.of(context).primaryColor,
@@ -178,13 +179,13 @@ class _AuthScreenState extends State<AuthScreen> {
                   width: deviceSize.width * 0.8,
                   child: TextFormField(
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: t(context, 'email'),
                       icon: Icon(Icons.alternate_email),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value.isEmpty || !value.contains('@')) {
-                        return 'Invalid email!';
+                        return t(context, 'invalid_email');
                       } else
                         return null;
                     },
@@ -199,7 +200,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: TextFormField(
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
-                        labelText: 'Name',
+                        labelText: t(context, 'name'),
                         icon: Icon(Icons.person_outline),
                       ),
                       //validator: _authMode == AuthMode.Signup ? (value) {} : null,
@@ -214,7 +215,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: TextFormField(
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
-                        labelText: 'Surname',
+                        labelText: t(context, 'surname'),
                         icon: Icon(MdiIcons.accountTie),
                       ),
                       //validator: _authMode == AuthMode.Signup ? (value) {} : null,
@@ -227,7 +228,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   width: deviceSize.width * 0.8,
                   child: TextFormField(
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: t(context, 'password'),
                       icon: Icon(Icons.vpn_key),
                       suffixIcon: IconButton(
                         icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
@@ -238,7 +239,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     controller: _passwordController,
                     validator: (value) {
                       if (value.isEmpty || value.length < 5) {
-                        return 'Password is too short!';
+                        return t(context, 'short_password_error');
                       } else
                         return null;
                     },
@@ -253,14 +254,14 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: TextFormField(
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
-                        labelText: 'Repeat Password',
+                        labelText: t(context, 'repeat_password'),
                         icon: Icon(Icons.repeat),
                       ),
                       obscureText: true,
                       validator: _authMode == AuthMode.Signup
                           ? (value) {
                               if (value != _passwordController.text) {
-                                return 'Passwords do not match!';
+                                return t(context, 'passwords_dont_match');
                               } else
                                 return null;
                             }
@@ -317,7 +318,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     else
                       RaisedButton(
                         child: Text(
-                          _authMode == AuthMode.Login ? 'LOG IN' : 'SIGN UP',
+                          _authMode == AuthMode.Login ? t(context, 'login') : t(context, 'sign_up'),
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         onPressed: () {
@@ -337,12 +338,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      _authMode == AuthMode.Login ? "Don't Have an account?" : 'Already a member?',
+                      _authMode == AuthMode.Login ? t(context, 'dont_have_an_acc') : t(context, 'already_member'),
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     InkWell(
                       child: Text(
-                        '${_authMode == AuthMode.Login ? ' Sign up' : ' Log in'} ',
+                        '${_authMode == AuthMode.Login ? ' ${t(context, 'sign_up')}' : ' ${t(context, 'login')}'} ',
                         style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
                       ),
                       onTap: _switchAuthMode,
@@ -351,7 +352,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 InkWell(
                   child: Text(
-                    'Forgot password ?',
+                    '${t(context, 'forgot')} ?',
                     style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
                   ),
                   onTap: () {
@@ -372,7 +373,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: Container(
                           width: deviceSize.width * 0.6,
                           child: Text(
-                            "By creating an account, you agree to our ",
+                            t(context, 'by_creating'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 13,
@@ -386,13 +387,13 @@ class _AuthScreenState extends State<AuthScreen> {
                         children: <Widget>[
                           InkWell(
                             child: Text(
-                              ' Privacy Policy ',
+                              ' ${t(context, 'privacy')} ',
                               style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
                             ),
                             onTap: _switchAuthMode,
                           ),
                           Text(
-                            "and",
+                            t(context, 'and'),
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[500],
@@ -400,7 +401,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                           InkWell(
                             child: Text(
-                              ' Terms of use ',
+                              ' ${t(context, 'terms')} ',
                               style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
                             ),
                             onTap: _switchAuthMode,

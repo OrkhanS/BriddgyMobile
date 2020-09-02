@@ -231,7 +231,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                   Alert(
                                                     context: context,
                                                     type: AlertType.info,
-                                                    title: t(context, 'conservtion_start') +
+                                                    title: t(context, 'conversation_start') +
                                                         _rooms[index]["date_created"].toString().substring(0, 10) +
                                                         "\n",
                                                     buttons: [

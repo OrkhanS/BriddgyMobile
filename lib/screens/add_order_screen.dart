@@ -248,7 +248,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     },
                   ),
                   title: Text(
-                    "Add Item",
+                    t(context, 'add_item'),
                     style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                   ),
                   elevation: 1,
@@ -279,10 +279,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     Icons.add,
                                     size: 30,
                                     color: Colors.grey,
+
                                   ),
                                   Text(
-                                    "Add image",
+                                    t(context, 'add_image'),
                                     style: TextStyle(color: Colors.grey),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ],
                               )
@@ -311,8 +313,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     color: Colors.grey,
                                   ),
                                   Text(
-                                    "Add image",
+                                    t(context, 'add_image'),
                                     style: TextStyle(color: Colors.grey),
+                                    textAlign: TextAlign.center,
+
                                   ),
                                 ],
                               )
@@ -341,8 +345,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     color: Colors.grey,
                                   ),
                                   Text(
-                                    "Add image",
+                                    t(context, 'add_image'),
                                     style: TextStyle(color: Colors.grey),
+                                    textAlign: TextAlign.center,
+
                                   ),
                                 ],
                               )
@@ -364,7 +370,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           width: deviceWidth * 0.8,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              labelText: 'Title',
+                              labelText: t(context, 'title'),
                               icon: Icon(MdiIcons.bagCarryOn),
                             ),
                             onChanged: (String val) {
@@ -386,7 +392,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                       from = val.toString();
                                     },
                                     controller: this._typeAheadController,
-                                    decoration: InputDecoration(labelText: 'From', icon: Icon(MdiIcons.bridge)),
+                                    decoration: InputDecoration(labelText: t(context, 'from'), icon: Icon(MdiIcons.bridge)),
                                   ),
                                   suggestionsCallback: (pattern) {
                                     return getSuggestions(pattern);
@@ -406,7 +412,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   validator: (value) {
                                     from = value.toString();
                                     if (value.isEmpty) {
-                                      return 'Please select a city';
+                                      return t(context, 'select_city');
                                     }
                                   },
                                   onSaved: (value) => from = value,
@@ -422,7 +428,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                       to = val.toString();
                                     },
                                     controller: this._typeAheadController2,
-                                    decoration: InputDecoration(labelText: 'To', icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
+                                    decoration: InputDecoration(labelText: t(context, 'to'), icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
                                   ),
                                   suggestionsCallback: (pattern) {
                                     return getSuggestions(pattern);
@@ -442,7 +448,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                   validator: (value) {
                                     to = value.toString();
                                     if (value.isEmpty) {
-                                      return 'Please select a city';
+                                      return t(context, 'select_city');
                                     }
                                   },
                                   onSaved: (value) => to = value,
@@ -455,7 +461,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           width: deviceWidth * 0.8,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              labelText: 'Reward (in USD)',
+                              labelText: t(context, 'reward_usd'),
                               icon: Icon(Icons.attach_money),
                             ),
                             keyboardType: TextInputType.number,
@@ -468,7 +474,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           width: deviceWidth * 0.8,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              labelText: 'Weight',
+                              labelText: t(context, 'weight'),
                               icon: Icon(MdiIcons.weightKilogram),
                             ),
                             maxLength: 4,
@@ -487,7 +493,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             child: TextField(
                               maxLines: null,
                               decoration: InputDecoration(
-                                labelText: 'Description',
+                                labelText: t(context, 'description'),
                                 icon: Icon(MdiIcons.informationOutline),
                               ),
                               onChanged: (String val) {
@@ -518,7 +524,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                         child: Container(
                           width: double.infinity,
                           child: Text(
-                            "Add Order",
+                            t(context, 'add_order'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
@@ -542,8 +548,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                 addItemButton = true;
                               });
                               Flushbar(
-                                title: "Warning!",
-                                message: "Fill all the fields and try again.",
+                                title: "${t(context, 'warning')}!",
+                                message: t(context, 'fill_fields'),
                                 padding: const EdgeInsets.all(8),
                                 margin: const EdgeInsets.all(20),
                                 borderRadius: 10,
@@ -580,8 +586,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     addItemButton = true;
                                   });
                                   Flushbar(
-                                    title: "Warning!",
-                                    message: "Item couldn't be added, try again.",
+                                    title: "${t(context, 'warning')}!",
+                                    message: t(context, 'item_add_error'),
                                     padding: const EdgeInsets.all(8),
                                     borderRadius: 10,
                                     duration: Duration(seconds: 3),

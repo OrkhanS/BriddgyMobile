@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
 
 class ContractsScreenInfo extends StatefulWidget {
@@ -152,7 +153,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
-                "Item Details",
+                t(context, 'item_details'),
                 style: TextStyle(
                   fontSize: 25,
                   color: Theme.of(context).primaryColor,
@@ -171,7 +172,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Departure city:",
+                      "${t(context, 'departure_city')}:",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],
@@ -181,7 +182,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Arrival city:",
+                      "${t(context, 'arrival_city')}:",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],
@@ -191,7 +192,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Request date:",
+                      "${t(context, 'request_date')}:",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],
@@ -201,7 +202,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Weight:",
+                      "${t(context, 'weight')}:",
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],
@@ -211,7 +212,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
                   ListTile(
                     dense: true,
                     title: Text(
-                      "Item cost:", 
+                      "${t(context, 'item_cost')}:", 
                       style: TextStyle(
                         fontSize: 17,
                         color: Colors.grey[600],
@@ -229,7 +230,7 @@ class _ContractsScreenInfoState extends State<ContractsScreenInfo> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
               child: Text(
-                "Description",
+                t(context, 'description'),
                 style: TextStyle(
                   fontSize: 25,
                   color: Theme.of(context).primaryColor,
