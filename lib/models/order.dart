@@ -55,9 +55,9 @@ class Order {
         weight: json["weight"].toDouble(),
         price: json["price"].toDouble(),
         trip: json["trip"],
-//        description: json["description"],
         description: utf8.decode(json["description"].toString().codeUnits),
-        title: utf8.decode(json["title"].toString().codeUnits),
+        title: decodeUtf8(json["title"].codeUnits),
+//        title: json["title"],
         deliverer: json["deliverer"],
         orderimage: List<dynamic>.from(json["orderimage"].map((x) => x)),
       );

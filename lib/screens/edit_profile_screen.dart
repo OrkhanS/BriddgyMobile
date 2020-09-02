@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -30,7 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool picturePosting = false;
   bool changeInFields = false;
   void _openGallery(BuildContext context) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 400, maxWidth: 400);
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
     this.setState(() {
       imageFile = picture;
     });
@@ -73,8 +72,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           message: "Picture changed.",
           padding: const EdgeInsets.all(8),
           borderRadius: 10,
-          duration: Duration(seconds: 2
-          ),
+          duration: Duration(seconds: 2),
         )..show(context);
       }
     });
@@ -189,7 +187,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Container(
                         decoration: BoxDecoration(color: Colors.white54),
                         child: TextField(
-                          onChanged:(val){
+                          onChanged: (val) {
                             // todo patch request
                             setState(() {
                               changeInFields = true;
@@ -211,28 +209,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-            if(picturePosting) ProgressIndicatorWidget(show: true),
-
-            if(changeInFields && !picturePosting)
-            RaisedButton.icon(
-              icon: Icon(
-                Icons.save,
-                size: 20,
+            if (picturePosting) ProgressIndicatorWidget(show: true),
+            if (changeInFields && !picturePosting)
+              RaisedButton.icon(
+                icon: Icon(
+                  Icons.save,
+                  size: 20,
+                ),
+                label: Text(
+                  'Save',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                color: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).primaryTextTheme.button.color,
               ),
-              label: Text(
-                'Save',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).primaryTextTheme.button.color,
-            ),
             SizedBox(
               height: 20,
             ),

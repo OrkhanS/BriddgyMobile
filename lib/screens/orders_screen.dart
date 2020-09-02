@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/localization/demo_localization.dart';
 import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
@@ -20,6 +21,7 @@ import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:optisend/main.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
@@ -226,12 +228,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   );
                 }
               } else {
+//                navbar("1");
                 Flushbar(
-                  title: "Warning",
-                  message: "You need to Log in to add Item!",
-                  padding: const EdgeInsets.all(8),
+                  flushbarStyle: FlushbarStyle.GROUNDED,
+                  titleText: Text(
+                    "Warning",
+                    style: TextStyle(color: Colors.black, fontSize: 22),
+                  ),
+                  messageText: Text(
+                    "You need to Log in to add Item!",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  icon: Icon(MdiIcons.login),
+                  backgroundColor: Colors.white,
+                  borderColor: Theme.of(context).primaryColor,
+                  padding: const EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 120),
                   borderRadius: 10,
-                  duration: Duration(seconds: 3),
+                  duration: Duration(seconds: 10),
                 )..show(context);
               }
             },

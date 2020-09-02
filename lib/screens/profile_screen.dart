@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -159,8 +158,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 child: Text(
                                   user.firstName + " " + user.lastName,
                                   textAlign: TextAlign.start,
-                                  style: GoogleFonts.lato(
-                                    textStyle: Theme.of(context).textTheme.display1,
+                                  style: TextStyle(
                                     color: Colors.black,
 //                                    color: Theme.of(context).primaryColor,
                                     fontSize: 20,
@@ -174,7 +172,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
                               t(context, 'member_since') + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
-                              style: GoogleFonts.lato(
+                              style: TextStyle(
                                 color: Colors.grey[700],
 //                                color: Theme.of(context).primaryColor,
                                 fontSize: 14,
@@ -254,7 +252,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                         ),
                         Text(
                           " Baku, Azerbaijan",
-                          style: GoogleFonts.aBeeZee(
+                          style: TextStyle(
                             color: Colors.grey[800],
                             fontSize: 15,
                           ),
@@ -359,8 +357,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               Text(
                                 t(context, 'order_plural'),
                                 style: TextStyle(
-//color: Colors.white,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Colors.white,
                                   fontSize: 20,
                                 ),
                               ),

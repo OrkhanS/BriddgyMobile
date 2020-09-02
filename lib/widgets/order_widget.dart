@@ -45,6 +45,7 @@ class _OrderWidgetState extends State<OrderWidget> {
         children: <Widget>[
           Container(
             height: 100,
+            width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
@@ -60,98 +61,86 @@ class _OrderWidgetState extends State<OrderWidget> {
                     fit: BoxFit.fitWidth,
                   ),
                 ),
-//                CircleAvatar(
-//                  radius: 40,
-//                  backgroundColor: Colors.grey[100],
-//                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage(Api.noPictureImage)),
-//                ),
-                // Container(
-                //   child: FadeInImage.memoryNetwork(
-                //     placeholder: kTransparentImage,
-                //     image:
-                //         'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 200,
-                        child: Text(
-                          order.title,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            MdiIcons.mapMarkerMultipleOutline,
-//                            color: Colors.grey[700],
-                            color: Theme.of(context).primaryColor,
-                            size: 16,
-                          ),
-                          SizedBox(
-                            width: 200,
-                            child: Text(
-                              order.source.cityAscii + "  >  " + order.destination.cityAscii,
-                              maxLines: 1,
-                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          child: Text(
+                            order.title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.grey[800],
                             ),
                           ),
-                        ],
-                      ),
-                      Row(
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.mapMarkerMultipleOutline,
+//                            color: Colors.grey[700],
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: Text(
+                                order.source.cityAscii + "  >  " + order.destination.cityAscii,
+                                maxLines: 1,
+                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                MdiIcons.calendarRange,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  MdiIcons.calendarRange,
 //                                color: Colors.grey[700],
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              Text(
-                                DateFormat("dd MMMM").format(order.date),
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            width: 100,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.attach_money,
-//                                color: Colors.grey[700],
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                width: 50,
-                                child: Text(
-                                  order.price.toString(),
-                                  maxLines: 1,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 16,
+                                ),
+                                Text(
+                                  DateFormat("d MMMM yyy").format(order.date),
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+                              ],
+                            ),
+                            Expanded(
+                              child: SizedBox(),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.attach_money,
+//                                color: Colors.grey[700],
+                                  color: Theme.of(context).primaryColor,
+                                  size: 16,
+                                ),
+                                SizedBox(
+                                  width: 50,
+                                  child: Text(
+                                    order.price.toString(),
+                                    maxLines: 1,
+                                    style: TextStyle(color: Colors.grey[600]),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 if (Provider.of<Auth>(context, listen: false).isAuth)
