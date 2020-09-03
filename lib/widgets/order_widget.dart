@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:flushbar/flushbar.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +9,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:optisend/screens/order_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -165,8 +170,36 @@ class _OrderWidgetState extends State<OrderWidget> {
                               FlatButton(
                                 child: Text('Yes,delete!'),
                                 onPressed: () {
-                                  //todo Orxan
+                                  var url = Api.orders + order.id.toString() + '/';
+                                  http.delete(
+                                    url,
+                                    headers: {
+                                      HttpHeaders.contentTypeHeader: "application/json",
+                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                    },
+                                  ).then((value) {});
+                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                  orderprovider.myorders.removeAt(i);
+                                  orderprovider.notify();
                                   Navigator.of(ctx).pop();
+                                  Flushbar(
+                                    flushbarStyle: FlushbarStyle.GROUNDED,
+                                    titleText: Text(
+                                      "Success",
+                                      style: TextStyle(color: Colors.black, fontSize: 22),
+                                    ),
+                                    messageText: Text(
+                                      "Order have been deleted",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    icon: Icon(MdiIcons.delete),
+                                    backgroundColor: Colors.white,
+                                    borderColor: Theme.of(context).primaryColor,
+                                    padding: const EdgeInsets.all(10),
+                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                                    borderRadius: 10,
+                                    duration: Duration(seconds: 5),
+                                  )..show(context);
                                 },
                               )
                             ],

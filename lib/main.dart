@@ -204,7 +204,11 @@ class _MyAppState extends State<MyApp> {
           title: Text('Chats'),
           icon: newmessage.arethereNewMessage == true
               ? Badge(
-                  badgeContent: Text(newmessage.newMessages.length.toString()),
+                  badgeColor: Colors.green,
+                  badgeContent: Text(
+                    newmessage.newMessages.length.toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
                   child: Icon(MdiIcons.forumOutline),
                 )
               : Icon(MdiIcons.forumOutline),

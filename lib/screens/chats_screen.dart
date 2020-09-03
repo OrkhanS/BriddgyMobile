@@ -113,7 +113,33 @@ class _ChatsScreenState extends State<ChatsScreen> {
                     provider.chats.isEmpty && provider.chatsLoading == false
                         ?
                         // if chats is empty
-                        Center(child: Text(t(context, 'no_chats')))
+                        Center(
+                            child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 400,
+                                  width: 200,
+                                  padding: EdgeInsets.all(10),
+                                  child: SvgPicture.asset(
+                                    "assets/photos/chat_bubbles.svg",
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(40.0),
+                                  child: Text(
+                                    t(context, 'no_chats'),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ))
                         :
                         //Check if chatsloading or not
                         provider.chatsLoading
@@ -197,7 +223,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
                                                               /// IF LENGHT IS NOT 0, SHOWING THE BADGE
                                                               Badge(
-                                                                  badgeContent: Text(provider.newMessage[_rooms[index].id].length.toString(),style: TextStyle(color: Colors.white),),
+                                                                  badgeColor: Colors.green,
+                                                                  badgeContent: Text(
+                                                                    provider.newMessage[_rooms[index].id].length.toString(),
+                                                                    style: TextStyle(color: Colors.white),
+                                                                  ),
                                                                   child: Icon(Icons.arrow_forward_ios),
                                                                 )
                                                               : Icon(

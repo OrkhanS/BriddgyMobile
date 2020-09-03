@@ -164,7 +164,8 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              t(context, 'member_since') + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
+                              t(context, 'member_since') + DateFormat("d MMM yyyy").format(user.date_joined).toString(),
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.grey[700],
 //                                color: Theme.of(context).primaryColor,

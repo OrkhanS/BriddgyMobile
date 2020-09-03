@@ -263,12 +263,15 @@ class _OrderScreenState extends State<OrderScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text(
-                                order.title,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w600,
+                              Expanded(
+                                child: Text(
+                                  order.title,
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                               IconButton(

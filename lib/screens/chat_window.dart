@@ -128,16 +128,16 @@ class _ChatWindowState extends State<ChatWindow> {
         print(e);
       }
     }
-    
+
     setState(() {
       _messages.insert(0, tempMessage);
     });
-    
+
     for (var i = 0; i < widget.provider.chats.length; i++) {
       if (widget.provider.chats[i].id == id) {
         widget.provider.chats[i].lastMessage = tempMessage.text;
       }
-    }   
+    }
   }
 
   var triangle = CustomPaint(
@@ -384,46 +384,6 @@ class _ChatWindowState extends State<ChatWindow> {
                           ],
                         ),
                       ),
-                      OpenContainer(
-                        openElevation: 5,
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionType: ContainerTransitionType.fadeThrough,
-                        openBuilder: (BuildContext context, VoidCallback _) {
-                          return me.isNumberVerified ? NewContactScreen(widget.user) : VerifyPhoneScreen();
-                        },
-                        closedElevation: 6.0,
-                        closedShape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(56 / 2),
-                          ),
-                        ),
-                        closedColor: Colors.white,
-                        closedBuilder: (BuildContext context, VoidCallback openContainer) {
-                          return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Icon(
-                                  MdiIcons.scriptTextOutline,
-                                  color: Colors.green[600],
-                                  size: 18,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  t(context, 'propose_contract'),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
                     ],
                   ),
                   if (_isloading)
@@ -447,247 +407,294 @@ class _ChatWindowState extends State<ChatWindow> {
                               ],
                             ),
                           )
-                        : NotificationListener<ScrollNotification>(
-                            onNotification: (ScrollNotification scrollInfo) {
-                              if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                                // start loading data
-                                setState(() {
-                                  _isloading = true;
-                                });
-                                _loadData();
-                              }
-                            },
-                            child: ListView.builder(
-                              reverse: true,
-                              controller: scrollController,
-                              itemCount: _messages.length,
-                              itemBuilder: (context, index) {
-                                bool iscontract = false;
+                        : Stack(
+                            children: [
+                              NotificationListener<ScrollNotification>(
+                                onNotification: (ScrollNotification scrollInfo) {
+                                  if (!_isloading && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                    // start loading data
+                                    setState(() {
+                                      _isloading = true;
+                                    });
+                                    _loadData();
+                                  }
+                                },
+                                child: ListView.builder(
+                                  reverse: true,
+                                  controller: scrollController,
+                                  itemCount: _messages.length,
+                                  itemBuilder: (context, index) {
+                                    bool iscontract = false;
 
-                                try {
-                                  var check = json.decode(_messages[index].text) as Map<String, dynamic>;
-                                  iscontract = true;
-                                } on FormatException catch (_) {
-                                  iscontract = false;
-                                }
-                                //iscontract = false;
+                                    try {
+                                      var check = json.decode(_messages[index].text) as Map<String, dynamic>;
+                                      iscontract = true;
+                                    } on FormatException catch (_) {
+                                      iscontract = false;
+                                    }
+                                    //iscontract = false;
 
-                                bool reverse = false;
-                                if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
-                                  newMessageMe = false;
-                                  reverse = true;
-                                }
+                                    bool reverse = false;
+                                    if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
+                                      newMessageMe = false;
+                                      reverse = true;
+                                    }
 
-                                var avatar = reverse == false
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          //ToDo navigate to user profile
-                                          print("check");
-                                        },
-                                        child: imageUrlUser == Api.noPictureImage
-                                            ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+                                    var avatar = reverse == false
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              //ToDo navigate to user profile
+                                              print("check");
+                                            },
+                                            child: imageUrlUser == Api.noPictureImage
+                                                ? InitialsAvatarWidget(widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0)
+                                                : ClipRRect(
+                                                    borderRadius: BorderRadius.circular(25.0),
+                                                    child: Image.network(
+                                                      imageUrlUser,
+                                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                        return InitialsAvatarWidget(
+                                                            widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
+                                                      },
+                                                      height: 50,
+                                                      width: 50,
+                                                      fit: BoxFit.fitWidth,
+                                                    ),
+                                                  ),
+                                          )
+                                        : imageUrlMe == Api.noPictureImage
+                                            ? InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0)
                                             : ClipRRect(
                                                 borderRadius: BorderRadius.circular(25.0),
                                                 child: Image.network(
-                                                  imageUrlUser,
+                                                  imageUrlMe,
                                                   errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                    return InitialsAvatarWidget(
-                                                        widget.user.firstName.toString(), widget.user.lastName.toString(), 50.0);
+                                                    return InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0);
                                                   },
                                                   height: 50,
                                                   width: 50,
                                                   fit: BoxFit.fitWidth,
                                                 ),
+                                              );
+                                    if (iscontract) {
+                                      contract = json.decode(_messages[index].text);
+                                      if (contract["my"]["orderimage"] == null) {
+                                        order = Order.fromJson(contract["opp"]);
+                                        trip = Trip.fromJson(contract["my"]);
+                                      } else {
+                                        order = Order.fromJson(contract["my"]);
+                                        trip = Trip.fromJson(contract["opp"]);
+                                      }
+                                    }
+                                    //For Rasul
+                                    //use order and trip for filling below
+                                    var messagebody = !iscontract
+                                        ? Menu(
+                                            child: Container(
+                                              width: _messages[index].text.toString().length * 9.0 + 20 > MediaQuery.of(context).size.width * 0.6
+                                                  ? MediaQuery.of(context).size.width * 0.6
+                                                  : _messages[index].text.toString().length * 9.0 + 20,
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue[100],
+                                                borderRadius: BorderRadius.circular(8.0),
                                               ),
-                                      )
-                                    : imageUrlMe == Api.noPictureImage
-                                        ? InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0)
-                                        : ClipRRect(
-                                            borderRadius: BorderRadius.circular(25.0),
-                                            child: Image.network(
-                                              imageUrlMe,
-                                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                return InitialsAvatarWidget(me.firstName.toString(), me.lastName.toString(), 50.0);
-                                              },
-                                              height: 50,
-                                              width: 50,
-                                              fit: BoxFit.fitWidth,
+                                              child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10),
+                                                  child: Text(
+                                                    _messages[index].text.toString(),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 50,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            items: [
+                                              MenuItem(t(context, 'info'), () {
+                                                Alert(
+                                                  context: context,
+                                                  type: AlertType.info,
+                                                  title: t(context, 'sent_on') +
+                                                      _messages[index].dateCreated.toString().substring(0, 10) +
+                                                      ",  " +
+                                                      _messages[index].dateCreated.toString().substring(11, 16) +
+                                                      "\n",
+                                                  buttons: [
+                                                    DialogButton(
+                                                      child: Text(
+                                                        t(context, 'back'),
+                                                        style: TextStyle(color: Colors.white, fontSize: 20),
+                                                      ),
+                                                      onPressed: () => Navigator.pop(context),
+                                                      color: Color.fromRGBO(0, 179, 134, 1.0),
+                                                    ),
+                                                    DialogButton(
+                                                      child: Text(
+                                                        t(context, 'report'),
+                                                        style: TextStyle(color: Colors.white, fontSize: 20),
+                                                      ),
+                                                      onPressed: () => {},
+                                                      color: Color.fromRGBO(0, 179, 134, 1.0),
+                                                    )
+                                                  ],
+                                                  content: Text(t(context, 'chats_cant_be_deleted')),
+                                                ).show();
+                                              }),
+                                            ],
+                                            decoration: MenuDecoration(),
+                                          )
+                                        : Container(
+                                            width: MediaQuery.of(context).size.width * 0.6,
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue[100],
+//                                          color: Theme.of(context).scaffoldBackgroundColor,
+                                              borderRadius: BorderRadius.circular(10),
+//                                          border: Border.all(color: Colors.grey[500]),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Text(t(context, 'i-am-traveling')),
+                                                ListTile(
+                                                  leading: Text(order.source.cityAscii),
+                                                  trailing: Text(order.destination.cityAscii),
+                                                ),
+                                                RaisedButton(
+                                                  color: Colors.blue,
+                                                  child: Text(
+                                                    t(context, 'accept'),
+                                                    style: TextStyle(color: Colors.white),
+                                                  ),
+                                                  onPressed: () {
+                                                    final url = Api.applyForDelivery;
+                                                    http
+                                                        .put(
+                                                      url,
+                                                      headers: {
+                                                        HttpHeaders.contentTypeHeader: "application/json",
+                                                        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                      },
+                                                      body: json.encode(
+                                                        {'order': order.id, 'trip': trip.id, 'idOfmessage': _messages[index].id},
+                                                      ),
+                                                    )
+                                                        .then((response) {
+                                                      if (response.statusCode == 200) {
+                                                        print("Accepted");
+                                                        //todo Rasul
+                                                        // need to show that contract approved or how?
+
+                                                      } else {
+                                                        //todo Rasul
+                                                        // Here show an error message how you want
+                                                        // use  below code to give detailed
+
+                                                        print(json.decode(response.body)["detail"]);
+                                                      }
+                                                    });
+                                                  },
+                                                ),
+                                                RaisedButton(
+                                                  color: Colors.red,
+                                                  child: Text(
+                                                    t(context, 'reject'),
+                                                    style: TextStyle(color: Colors.white),
+                                                  ),
+                                                  onPressed: () {},
+                                                ),
+                                              ],
                                             ),
                                           );
-                                if (iscontract) {
-                                  contract = json.decode(_messages[index].text);
-                                  if (contract["my"]["orderimage"] == null) {
-                                    order = Order.fromJson(contract["opp"]);
-                                    trip = Trip.fromJson(contract["my"]);
-                                  } else {
-                                    order = Order.fromJson(contract["my"]);
-                                    trip = Trip.fromJson(contract["opp"]);
-                                  }
-                                }
-                                //For Rasul
-                                //use order and trip for filling below
-                                var messagebody = !iscontract
-                                    ? Menu(
-                                        child: Container(
-                                          width: _messages[index].text.toString().length * 9.0 + 20 > MediaQuery.of(context).size.width * 0.6
-                                              ? MediaQuery.of(context).size.width * 0.6
-                                              : _messages[index].text.toString().length * 9.0 + 20,
-                                          decoration: BoxDecoration(
-                                            color: Colors.blue[100],
-                                            borderRadius: BorderRadius.circular(8.0),
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 10),
-                                              child: Text(
-                                                _messages[index].text.toString(),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 50,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        items: [
-                                          MenuItem(t(context, 'info'), () {
-                                            Alert(
-                                              context: context,
-                                              type: AlertType.info,
-                                              title: t(context, 'sent_on') +
-                                                  _messages[index].dateCreated.toString().substring(0, 10) +
-                                                  ",  " +
-                                                  _messages[index].dateCreated.toString().substring(11, 16) +
-                                                  "\n",
-                                              buttons: [
-                                                DialogButton(
-                                                  child: Text(
-                                                    t(context, 'back'),
-                                                    style: TextStyle(color: Colors.white, fontSize: 20),
-                                                  ),
-                                                  onPressed: () => Navigator.pop(context),
-                                                  color: Color.fromRGBO(0, 179, 134, 1.0),
-                                                ),
-                                                DialogButton(
-                                                  child: Text(
-                                                    t(context, 'report'),
-                                                    style: TextStyle(color: Colors.white, fontSize: 20),
-                                                  ),
-                                                  onPressed: () => {},
-                                                  color: Color.fromRGBO(0, 179, 134, 1.0),
-                                                )
-                                              ],
-                                              content: Text(t(context, 'chats_cant_be_deleted')),
-                                            ).show();
-                                          }),
+
+                                    Widget message;
+
+                                    if (reverse) {
+                                      message = Stack(
+                                        children: <Widget>[
+                                          messagebody,
+                                          !iscontract ? Positioned(right: 0, bottom: 0, child: triangle) : SizedBox(),
                                         ],
-                                        decoration: MenuDecoration(),
-                                      )
-                                    : Container(
-                                        width: MediaQuery.of(context).size.width * 0.6,
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue[100],
-//                                          color: Theme.of(context).scaffoldBackgroundColor,
-                                          borderRadius: BorderRadius.circular(10),
-//                                          border: Border.all(color: Colors.grey[500]),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Text(t(context, 'i-am-traveling')),
-                                            ListTile(
-                                              leading: Text(order.source.cityAscii),
-                                              trailing: Text(order.destination.cityAscii),
-                                            ),
-                                            RaisedButton(
-                                              color: Colors.blue,
-                                              child: Text(
-                                                t(context, 'accept'),
-                                                style: TextStyle(color: Colors.white),
-                                              ),
-                                              onPressed: () {
-                                                final url = Api.applyForDelivery;
-                                                http
-                                                    .put(
-                                                  url,
-                                                  headers: {
-                                                    HttpHeaders.contentTypeHeader: "application/json",
-                                                    "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                  },
-                                                  body: json.encode(
-                                                    {'order': order.id, 'trip': trip.id, 'idOfmessage': _messages[index].id},
-                                                  ),
-                                                )
-                                                    .then((response) {
-                                                  if (response.statusCode == 200) {
-                                                    print("Accepted");
-                                                    //todo Rasul
-                                                    // need to show that contract approved or how?
-
-                                                  } else {
-                                                    //todo Rasul
-                                                    // Here show an error message how you want
-                                                    // use  below code to give detailed
-
-                                                    print(json.decode(response.body)["detail"]);
-                                                  }
-                                                });
-                                              },
-                                            ),
-                                            RaisedButton(
-                                              color: Colors.red,
-                                              child: Text(
-                                                t(context, 'reject'),
-                                                style: TextStyle(color: Colors.white),
-                                              ),
-                                              onPressed: () {},
-                                            ),
-                                          ],
-                                        ),
                                       );
+                                    } else {
+                                      message = Stack(
+                                        children: <Widget>[
+                                          !iscontract ? Positioned(left: 0, bottom: 0, child: triangle) : SizedBox(),
+                                          messagebody,
+                                        ],
+                                      );
+                                    }
 
-                                Widget message;
-
-                                if (reverse) {
-                                  message = Stack(
-                                    children: <Widget>[
-                                      messagebody,
-                                      !iscontract ? Positioned(right: 0, bottom: 0, child: triangle) : SizedBox(),
-                                    ],
-                                  );
-                                } else {
-                                  message = Stack(
-                                    children: <Widget>[
-                                      !iscontract ? Positioned(left: 0, bottom: 0, child: triangle) : SizedBox(),
-                                      messagebody,
-                                    ],
-                                  );
-                                }
-
-                                if (reverse) {
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: message,
+                                    if (reverse) {
+                                      return Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: message,
+                                          ),
+                                          avatar,
+                                        ],
+                                      );
+                                    } else {
+                                      return Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: <Widget>[
+                                          avatar,
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: message,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: OpenContainer(
+                                  openElevation: 5,
+                                  transitionDuration: Duration(milliseconds: 500),
+                                  transitionType: ContainerTransitionType.fadeThrough,
+                                  openBuilder: (BuildContext context, VoidCallback _) {
+                                    return me.isNumberVerified ? NewContactScreen(widget.user) : VerifyPhoneScreen();
+                                  },
+                                  closedElevation: 6.0,
+                                  closedShape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(56 / 2),
+                                    ),
+                                  ),
+                                  closedColor: Colors.white,
+                                  closedBuilder: (BuildContext context, VoidCallback openContainer) {
+                                    return Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Icon(
+                                            MdiIcons.scriptTextOutline,
+                                            color: Colors.green[600],
+                                            size: 18,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            t(context, 'propose_contract'),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      avatar,
-                                    ],
-                                  );
-                                } else {
-                                  return Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      avatar,
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: message,
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                   ),
                   Divider(height: 2.0),

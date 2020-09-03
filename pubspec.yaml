@@ -94,6 +94,8 @@ flutter:
     - assets/photos/traveler.svg
     - assets/photos/handshake.svg
     - assets/photos/chat_bubbles.svg
+    - assets/photos/empty_order.svg
+    - assets/photos/two_factor.svg
 
   #  - images/a_dot_ham.jpeg
 

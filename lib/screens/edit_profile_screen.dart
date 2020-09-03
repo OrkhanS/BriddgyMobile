@@ -210,28 +210,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-            if(picturePosting) ProgressIndicatorWidget(show: true),
-
-            if(changeInFields && !picturePosting)
-            RaisedButton.icon(
-              icon: Icon(
-                Icons.save,
-                size: 20,
+            if (picturePosting) ProgressIndicatorWidget(show: true),
+            if (changeInFields && !picturePosting)
+              RaisedButton.icon(
+                icon: Icon(
+                  Icons.save,
+                  size: 20,
+                ),
+                label: Text(
+                  t(context, 'save'),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
+                color: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).primaryTextTheme.button.color,
               ),
-              label: Text(
-                t(context, 'save'),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).primaryTextTheme.button.color,
-            ),
             SizedBox(
               height: 20,
             ),
