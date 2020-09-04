@@ -48,10 +48,10 @@ class _OrderScreenState extends State<OrderScreen> {
     order = widget.order;
     imageUrl = order.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + order.owner.avatarpic.toString();
     if (order.orderimage.isEmpty) {
-      imageList.add(FadeInImage.memoryNetwork(
-        placeholder: kTransparentImage,
-        image: Api.noPictureImage,
-      ));
+//      imageList.add(FadeInImage.memoryNetwork(
+//        placeholder: kTransparentImage,
+//        image: Api.noPictureImage,
+//      ));
     } else {
       for (var i = 0; i < order.orderimage.length; i++) {
         imageList.add(FadeInImage.memoryNetwork(
@@ -226,25 +226,26 @@ class _OrderScreenState extends State<OrderScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          CarouselSlider(
-                            options: CarouselOptions(
-                              initialPage: 0,
-                              enableInfiniteScroll: true,
-                              reverse: false,
-                              autoPlay: true,
-                              autoPlayInterval: Duration(seconds: 5),
-                              autoPlayAnimationDuration: Duration(milliseconds: 800),
-                              autoPlayCurve: Curves.fastOutSlowIn,
-                              enlargeCenterPage: true,
-                              onPageChanged: (index, reason) {
-                                setState(() {
-                                  _current = index;
-                                });
-                              },
-                              scrollDirection: Axis.horizontal,
+                          if (imageList.isNotEmpty)
+                            CarouselSlider(
+                              options: CarouselOptions(
+                                initialPage: 0,
+                                enableInfiniteScroll: true,
+                                reverse: false,
+                                autoPlay: true,
+                                autoPlayInterval: Duration(seconds: 5),
+                                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                                autoPlayCurve: Curves.fastOutSlowIn,
+                                enlargeCenterPage: true,
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    _current = index;
+                                  });
+                                },
+                                scrollDirection: Axis.horizontal,
+                              ),
+                              items: imageList,
                             ),
-                            items: imageList,
-                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: imageList.map((url) {

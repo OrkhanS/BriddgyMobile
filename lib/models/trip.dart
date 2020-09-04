@@ -19,6 +19,7 @@ class Trip {
     this.date,
     this.weightLimit,
     this.numberOfContracts,
+    this.description,
   });
 
   int id;
@@ -28,6 +29,7 @@ class Trip {
   DateTime date;
   double weightLimit;
   int numberOfContracts;
+  String description;
 
   factory Trip.fromJson(Map<String, dynamic> json) => Trip(
         id: json["id"],
@@ -37,6 +39,7 @@ class Trip {
         date: DateTime.parse(json["date"]),
         weightLimit: json["weight_limit"].toDouble(),
         numberOfContracts: json["number_of_contracts"],
+        description: utf8.decode(json["description"].toString().codeUnits),
       );
 
   Map<String, dynamic> toJson() => {
@@ -47,6 +50,7 @@ class Trip {
         "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
         "weight_limit": weightLimit,
         "number_of_contracts": numberOfContracts,
+        "description": description
       };
 }
 

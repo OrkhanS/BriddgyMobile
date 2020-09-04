@@ -5,7 +5,6 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -64,7 +63,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Provider.of<Messages>(context,listen: false).notifFun();
+                    Provider.of<Messages>(context, listen: false).notifFun();
                   },
                 ),
                 title: Text(
@@ -295,7 +294,7 @@ class _Step2State extends State<Step2> {
                 ? ListView.builder(
                     itemBuilder: (context, int i) {
                       var color = Colors.grey;
-                      return GestureDetector(
+                      return InkWell(
                         onTap: () {
                           _trip = trips[i];
                           widget.next();
@@ -362,7 +361,7 @@ class _Step3State extends State<Step3> {
                 ? ListView.builder(
                     itemBuilder: (context, int i) {
                       if (true)
-                        return GestureDetector(
+                        return InkWell(
                           onTap: () {
                             _order = orders[i];
                             widget.next();
@@ -394,19 +393,19 @@ class Step4 extends StatefulWidget {
 }
 
 class _Step4State extends State<Step4> {
-  bool proposingContract=false;
-  
-  
-  Future signContract() async{
-      setState(() {
-        proposingContract = true;
-      });
-      final url = Api.applyForDelivery;
-      http.put(
+  bool proposingContract = false;
+
+  Future signContract() async {
+    setState(() {
+      proposingContract = true;
+    });
+    final url = Api.applyForDelivery;
+    http
+        .put(
       url,
       headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          "Authorization": "Token " + Provider.of<Auth>(context,listen:false).myTokenFromStorage,
+        HttpHeaders.contentTypeHeader: "application/json",
+        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
       },
       body: json.encode(
         {
@@ -414,32 +413,26 @@ class _Step4State extends State<Step4> {
           'trip': _trip.id,
         },
       ),
-    ).then((response) {
-        if(response.statusCode == 201){
-          var my,opp;
-          if(_order.id == _requestingUser.id){
-            my = _order;
-            opp = _trip; 
-          }
-          else{
-            my = _trip;
-            opp = _order;
-          }
-          Map body = {
-            "type":
-                _iAmOrderer ? "order" : "trip",
-                "my": my,
-                "opp": opp
-          };
-          Provider.of<Messages>(context,listen:false).contractBody = json.encode(body);
-          Provider.of<Messages>(context,listen:false).notifFun();
-          Navigator.pop(context);
+    )
+        .then((response) {
+      if (response.statusCode == 201) {
+        var my, opp;
+        if (_order.id == _requestingUser.id) {
+          my = _order;
+          opp = _trip;
+        } else {
+          my = _trip;
+          opp = _order;
         }
-        else{
-          print(response.body);
-        }
+        Map body = {"type": _iAmOrderer ? "order" : "trip", "my": my, "opp": opp};
+        Provider.of<Messages>(context, listen: false).contractBody = json.encode(body);
+        Provider.of<Messages>(context, listen: false).notifFun();
+        Navigator.pop(context);
+      } else {
+        print(response.body);
+      }
     });
-}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -594,92 +587,91 @@ class _Step4State extends State<Step4> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                if(!proposingContract)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: RaisedButton.icon(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                if (!proposingContract)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: RaisedButton.icon(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
 //                            color: Theme.of(context).scaffoldBackgroundColor,
-                    color: Colors.white,
-
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                    ),
-                    icon: Icon(
-                      MdiIcons.cancel,
-                      color: Colors.red,
-//                              color: Theme.of(context).primaryColor,
-                      size: 18,
-                    ),
-                    label: Text(
-                      t(context, 'cancel'),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-//                                    color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: Text(t(context, 'cancel_contract_prompt')),
-                          content: Text("This action cannot be undone"),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text(
-                                'No',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              onPressed: () {
-                                Navigator.of(ctx).pop();
-                              },
-                            ),
-                            FlatButton(
-                              child: Text('Yes'),
-                              onPressed: () {
-                                Navigator.of(ctx).pop();
-                                Navigator.of(ctx).pop();
-                              },
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                
-                if(!proposingContract)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: RaisedButton.icon(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//                            color: Theme.of(context).scaffoldBackgroundColor,
-                    color: Colors.green,
-
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0),
-                    ),
-                    icon: Icon(
-                      MdiIcons.textBoxCheckOutline,
                       color: Colors.white,
-                      size: 18,
-                    ),
-                    label: Text(
-                      "Confirm & Propose",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
                       ),
+                      icon: Icon(
+                        MdiIcons.cancel,
+                        color: Colors.red,
+//                              color: Theme.of(context).primaryColor,
+                        size: 18,
+                      ),
+                      label: Text(
+                        t(context, 'cancel'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+//                                    color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text(t(context, 'cancel_contract_prompt')),
+                            content: Text("This action cannot be undone"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                  'No',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text('Yes'),
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                  Navigator.of(ctx).pop();
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                    onPressed: () {
-                      signContract();
-                    },
                   ),
-                ),
-                if(proposingContract)ProgressIndicatorWidget(show: true)
+                if (!proposingContract)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: RaisedButton.icon(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+//                            color: Theme.of(context).scaffoldBackgroundColor,
+                      color: Colors.green,
+
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                      icon: Icon(
+                        MdiIcons.textBoxCheckOutline,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      label: Text(
+                        "Confirm & Propose",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () {
+                        signContract();
+                      },
+                    ),
+                  ),
+                if (proposingContract) ProgressIndicatorWidget(show: true)
               ],
             )
           ],
@@ -707,7 +699,7 @@ void loadTrips(List<Trip> trips, int id, Function fetch) async {
 }
 
 void loadOrders(List<Order> orders, int id, Function fetch) async {
-  final url = Api.orderById + id.toString() + "/orders/?origin="+_trip.source.id.toString()+"&dest="+_trip.destination.id.toString();
+  final url = Api.orderById + id.toString() + "/orders/?origin=" + _trip.source.id.toString() + "&dest=" + _trip.destination.id.toString();
   http.get(
     url,
     headers: {

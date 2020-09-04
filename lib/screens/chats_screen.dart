@@ -171,6 +171,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
                                         imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
 
+                                        bool iscontract = false;
+
+                                        try {
+                                          var check = json.decode(_rooms[index].lastMessage.toString()) as Map<String, dynamic>;
+                                          iscontract = true;
+                                        } on FormatException catch (_) {
+                                          iscontract = false;
+                                        }
                                         return Column(
                                           children: <Widget>[
                                             Menu(
@@ -198,8 +206,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                     style: TextStyle(fontSize: 15.0),
                                                   ),
                                                   subtitle: Text(
-                                                    _rooms[index].lastMessage.toString(),
-                                                    style: TextStyle(fontSize: 15.0),
+                                                    iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
+                                                    style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),
                                                     maxLines: 2,
                                                   ),
                                                   trailing:

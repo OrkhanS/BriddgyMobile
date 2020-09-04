@@ -37,6 +37,7 @@
     "trip_plural": "Trips",
     "trip": "Trip",
     "order_plural": "Orders",
+    "contract": "Contract",
     "order-my": "My Order",
     "order-my-subtitle": "See all the details of your order",
     "trip-my": "My Trip",
@@ -304,5 +305,6 @@
 
     "empty_results" : "No results found  for the given parameters. Come check later :)",
     "my_orders" : "My Orders",
-    "my_trips" : "My Trips"
+    "my_trips" : "My Trips",
+    "no_description" : "No additional info provided"
 }

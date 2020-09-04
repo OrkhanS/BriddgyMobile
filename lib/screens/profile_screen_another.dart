@@ -416,7 +416,7 @@ class _ProfileScreenAnotherState extends State<ProfileScreenAnother> {
                                       ),
                                     ),
                               Text(
-                                t(context, 'ordered'),
+                                t(context, 'delivered'),
                                 style: TextStyle(
 //color: Colors.white,
                                   color: Theme.of(context).primaryColor,

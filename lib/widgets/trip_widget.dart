@@ -43,34 +43,57 @@ class TripWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                imageUrl == Api.noPictureImage
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
-                        child: InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0),
-                      )
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(40.0),
-                          child: Image.network(
-                            imageUrl,
-                            errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                              return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0);
-                            },
-                            height: 60,
-                            width: 60,
-                            fit: BoxFit.fitWidth,
+                SizedBox(
+                  width: 5,
+                ),
+                Stack(
+                  children: <Widget>[
+                    imageUrl == Api.noPictureImage
+                        ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(25.0),
+                            child: Image.network(
+                              imageUrl,
+                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                              },
+                              height: 70,
+                              width: 70,
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
+                    Positioned(
+                      left: 17,
+                      right: 17,
+                      bottom: 0,
+                      child: Container(
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(255, 255, 255, 30),
+                          border: Border.all(color: Colors.green, width: 1),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
                           ),
                         ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Icon(
+                              Icons.star,
+                              size: 12,
+                              color: Colors.green,
+                            ),
+                            Text(
+                              trip.owner.rating.toString(),
+                              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
                       ),
-//                CircleAvatar(
-//                  radius: 40,
-//                  child: FadeInImage.memoryNetwork(
-//                    image: imageUrl,
-//                    placeholder: kTransparentImage,
-//                  ),
-//                  backgroundColor: Colors.grey[200],
-//                ),
+                    ),
+                  ],
+                ),
                 Expanded(
                   flex: 5,
                   child: Padding(
@@ -95,7 +118,7 @@ class TripWidget extends StatelessWidget {
                                 size: 16,
                               ),
                               Text(
-                                "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii,
+                                "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii + ", " + trip.destination.country,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
@@ -362,7 +385,7 @@ class TripSimpleWidget extends StatelessWidget {
                             size: 16,
                           ),
                           Text(
-                            "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii,
+                            "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii + ", " + trip.destination.country,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
@@ -377,7 +400,7 @@ class TripSimpleWidget extends StatelessWidget {
                             size: 16,
                           ),
                           Text(
-                            "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
+                            "  " + DateFormat('d MMMM yyyy').format(trip.date), //Todo: date
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ],

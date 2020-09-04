@@ -360,7 +360,7 @@ class _TripScreenState extends State<TripScreen> {
                           ),
                           Divider(),
                           Text(
-                            "Not delivering edible orders. Thanks for understanding", //todo orxan fix after adding backend
+                            trip.description == 'null' ? t(context, "no_description") : trip.description,
                             style: TextStyle(fontSize: 17),
                           ),
                         ],

@@ -171,7 +171,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              t(context, 'member_since') + DateFormat("dd MMMM yy").format(user.date_joined).toString(),
+                              t(context, 'member_since') + DateFormat("d MMM yyyy").format(user.date_joined).toString(),
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.grey[700],
 //                                color: Theme.of(context).primaryColor,
@@ -206,32 +207,31 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     ),
                                   ),
                             Positioned(
-                              left: 0,
-                              bottom: 5,
+                              left: 17,
+                              right: 17,
+                              bottom: 0,
                               child: Container(
-                                height: 30,
+                                height: 18,
                                 decoration: BoxDecoration(
-                                  color: Color.fromRGBO(255, 255, 255, 60),
-                                  border: Border.all(color: Theme.of(context).primaryColor, width: 0.5),
+                                  color: Color.fromRGBO(255, 255, 255, 30),
+                                  border: Border.all(color: Colors.green, width: 1),
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(15),
+                                    Radius.circular(20),
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
-                                    Text(
-//                                            "4.5",
-                                      " " + user.rating.toString(),
-//                                        order.owner.rating.toString(),
-                                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                                    ),
                                     Icon(
                                       Icons.star,
-                                      size: 11,
-                                      color: Theme.of(context).primaryColor,
+                                      size: 12,
+                                      color: Colors.green,
                                     ),
+                                    Text(
+                                      user.rating.toString(),
+                                      style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                    )
                                   ],
                                 ),
                               ),
@@ -357,7 +357,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               Text(
                                 t(context, 'order_plural'),
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Theme.of(context).primaryColor,
                                   fontSize: 20,
                                 ),
                               ),
