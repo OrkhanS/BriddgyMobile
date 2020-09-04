@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:optisend/localization/demo_localization.dart';
@@ -21,20 +23,28 @@ Future<Locale> setLocale(String languageCode) async{
 
   await _prefs.setString(LANGUAGE_CODE, languageCode);
 
-  await _locale(languageCode);
+  return _locale(languageCode);
 
 }
 
 Locale _locale(String languageCode){
   Locale _temp;
-  switch (language.languageCode) {
+  switch (languageCode) {
     case ENGLISH:
-      _temp = Locale(language.languageCode, 'US');
+      _temp = Locale(languageCode, 'US');
       break;
     case RUSSIAN:
-      _temp = Locale(language.languageCode, 'RU');
+      _temp = Locale(languageCode, 'RU');
       break;
     default:
       _temp = Locale(ENGLISH, 'US');
   }
+  return _temp;
+}
+
+Future<Locale> getLocale() async{
+  SharedPreferences _prefs = await SharedPreferences.getInstance();
+  String languageCode = _prefs.get(LANGUAGE_CODE) ?? ENGLISH;
+  return _locale(languageCode);
+
 }
