@@ -104,7 +104,7 @@ class _MyItemsState extends State<MyItems> {
                       },
                     ),
                     title: Text(
-                      t(context, 'my_orders'),
+                      t(context, 'my-orders'),
                       style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold),

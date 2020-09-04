@@ -62,14 +62,14 @@ class _AccountPageState extends State<AccountPage> {
   _changeLanguage(Language language) {
     Locale _temp;
     switch (language.languageCode) {
-      case 'en':
+      case ENGLISH:
         _temp = Locale(language.languageCode, 'US');
         break;
-      case 'ru':
+      case RUSSIAN:
         _temp = Locale(language.languageCode, 'RU');
         break;
       default:
-        _temp = Locale(language.languageCode, 'US');
+        _temp = Locale(ENGLISH, 'US');
     }
     MyApp.setLocale(context, _temp);
   }
