@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:http/http.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
@@ -279,7 +278,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     Icons.add,
                                     size: 30,
                                     color: Colors.grey,
-
                                   ),
                                   Text(
                                     t(context, 'add_image'),
@@ -316,7 +314,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     t(context, 'add_image'),
                                     style: TextStyle(color: Colors.grey),
                                     textAlign: TextAlign.center,
-
                                   ),
                                 ],
                               )
@@ -348,7 +345,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
                                     t(context, 'add_image'),
                                     style: TextStyle(color: Colors.grey),
                                     textAlign: TextAlign.center,
-
                                   ),
                                 ],
                               )
@@ -378,84 +374,82 @@ class _AddItemScreenState extends State<AddItemScreen> {
                             },
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: deviceWidth * 0.4,
-                                child: TypeAheadFormField(
-                                  keepSuggestionsOnLoading: false,
-                                  debounceDuration: const Duration(milliseconds: 200),
-                                  textFieldConfiguration: TextFieldConfiguration(
-                                    onSubmitted: (val) {
-                                      from = val.toString();
-                                    },
-                                    controller: this._typeAheadController,
-                                    decoration: InputDecoration(labelText: t(context, 'from'), icon: Icon(MdiIcons.bridge)),
-                                  ),
-                                  suggestionsCallback: (pattern) {
-                                    return getSuggestions(pattern);
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: deviceWidth * 0.4,
+                              child: TypeAheadFormField(
+                                keepSuggestionsOnLoading: false,
+                                debounceDuration: const Duration(milliseconds: 200),
+                                textFieldConfiguration: TextFieldConfiguration(
+                                  onSubmitted: (val) {
+                                    from = val.toString();
                                   },
-                                  itemBuilder: (context, suggestion) {
-                                    return ListTile(
-                                      title: Text(suggestion.cityAscii + ", " + suggestion.country),
-                                    );
-                                  },
-                                  transitionBuilder: (context, suggestionsBox, controller) {
-                                    return suggestionsBox;
-                                  },
-                                  onSuggestionSelected: (suggestion) {
-                                    this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
-                                    from = suggestion.id.toString();
-                                  },
-                                  validator: (value) {
-                                    from = value.toString();
-                                    if (value.isEmpty) {
-                                      return t(context, 'select_city');
-                                    }
-                                  },
-                                  onSaved: (value) => from = value,
+                                  controller: this._typeAheadController,
+                                  decoration: InputDecoration(labelText: t(context, 'from'), icon: Icon(MdiIcons.bridge)),
                                 ),
+                                suggestionsCallback: (pattern) {
+                                  return getSuggestions(pattern);
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return ListTile(
+                                    title: Text(suggestion.cityAscii + ", " + suggestion.country),
+                                  );
+                                },
+                                transitionBuilder: (context, suggestionsBox, controller) {
+                                  return suggestionsBox;
+                                },
+                                onSuggestionSelected: (suggestion) {
+                                  this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
+                                  from = suggestion.id.toString();
+                                },
+                                validator: (value) {
+                                  from = value.toString();
+                                  if (value.isEmpty) {
+                                    return t(context, 'select_city');
+                                  }
+                                },
+                                onSaved: (value) => from = value,
                               ),
-                              Container(
-                                width: deviceWidth * 0.4,
-                                child: TypeAheadFormField(
-                                  keepSuggestionsOnLoading: false,
-                                  debounceDuration: const Duration(milliseconds: 200),
-                                  textFieldConfiguration: TextFieldConfiguration(
-                                    onSubmitted: (val) {
-                                      to = val.toString();
-                                    },
-                                    controller: this._typeAheadController2,
-                                    decoration: InputDecoration(labelText: t(context, 'to'), icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
-                                  ),
-                                  suggestionsCallback: (pattern) {
-                                    return getSuggestions(pattern);
+                            ),
+                            Container(
+                              width: deviceWidth * 0.4,
+                              child: TypeAheadFormField(
+                                keepSuggestionsOnLoading: false,
+                                debounceDuration: const Duration(milliseconds: 200),
+                                textFieldConfiguration: TextFieldConfiguration(
+                                  onSubmitted: (val) {
+                                    to = val.toString();
                                   },
-                                  itemBuilder: (context, suggestion) {
-                                    return ListTile(
-                                      title: Text(suggestion.cityAscii + ", " + suggestion.country),
-                                    );
-                                  },
-                                  transitionBuilder: (context, suggestionsBox, controller) {
-                                    return suggestionsBox;
-                                  },
-                                  onSuggestionSelected: (suggestion) {
-                                    this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
-                                    to = suggestion.id.toString();
-                                  },
-                                  validator: (value) {
-                                    to = value.toString();
-                                    if (value.isEmpty) {
-                                      return t(context, 'select_city');
-                                    }
-                                  },
-                                  onSaved: (value) => to = value,
+                                  controller: this._typeAheadController2,
+                                  decoration: InputDecoration(labelText: t(context, 'to'), icon: Icon(MdiIcons.mapMarkerMultipleOutline)),
                                 ),
+                                suggestionsCallback: (pattern) {
+                                  return getSuggestions(pattern);
+                                },
+                                itemBuilder: (context, suggestion) {
+                                  return ListTile(
+                                    title: Text(suggestion.cityAscii + ", " + suggestion.country),
+                                  );
+                                },
+                                transitionBuilder: (context, suggestionsBox, controller) {
+                                  return suggestionsBox;
+                                },
+                                onSuggestionSelected: (suggestion) {
+                                  this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
+                                  to = suggestion.id.toString();
+                                },
+                                validator: (value) {
+                                  to = value.toString();
+                                  if (value.isEmpty) {
+                                    return t(context, 'select_city');
+                                  }
+                                },
+                                onSaved: (value) => to = value,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Container(
                           width: deviceWidth * 0.8,

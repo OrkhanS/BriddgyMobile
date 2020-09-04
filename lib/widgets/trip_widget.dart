@@ -25,20 +25,20 @@ class TripWidget extends StatelessWidget {
     if (imageUrl == null) {
       imageUrl = trip.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + trip.owner.avatarpic.toString();
     }
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (__) => TripScreen(
-              trip: trip,
-            ),
-          ),
-        );
-      },
-      child: Column(
-        children: <Widget>[
-          Container(
+    return Column(
+      children: <Widget>[
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (__) => TripScreen(
+                  trip: trip,
+                ),
+              ),
+            );
+          },
+          child: Container(
             height: 80,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -198,15 +198,15 @@ class TripWidget extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Divider(
-              height: 4,
-              color: Colors.black45,
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Divider(
+            height: 4,
+            color: Colors.black45,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -298,29 +298,6 @@ class TripFadeWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              //todo check if I am the owner
-              //todo if user is the owner, then replace the button below with delete button
-              Expanded(
-                flex: 3,
-                child: RaisedButton.icon(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  elevation: 1,
-                  onPressed: () {},
-                  icon: Icon(
-                    MdiIcons.chatOutline,
-                    color: Colors.grey[200],
-                    size: 18,
-                  ),
-                  label: Text(
-                    " Message",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[200],
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(width: 10),
             ],
           ),
@@ -351,7 +328,7 @@ class TripSimpleWidget extends StatelessWidget {
       children: <Widget>[
         Container(
           height: 100,
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[

@@ -132,7 +132,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
+      duration: Duration(milliseconds: 250),
       height: _expanded ? 265 : 55,
       child: Column(
         children: <Widget>[
@@ -177,297 +177,305 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
               ],
             ),
           ),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 200),
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            height: _expanded ? 210 : 0,
-            child: Form(
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TypeAheadFormField(
-                          keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
-                          textFieldConfiguration: TextFieldConfiguration(
-                            onChanged: (value) {
-                              widget.from = null;
-                            },
-                            controller: this._typeAheadController,
-                            decoration: InputDecoration(
-                              labelText: t(context, 'from'),
-                              hintText: ' ${t(context, 'paris')}',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              hintStyle: TextStyle(color: Colors.grey[300]),
-                              prefixIcon: Icon(
-                                MdiIcons.bridge,
-                              ),
-                              suffixIcon: IconButton(
-                                padding: EdgeInsets.only(
-                                  top: 5,
-                                ),
-                                icon: Icon(
-                                  Icons.close,
-                                  size: 15,
-                                ),
-                                onPressed: () {
-                                  this._typeAheadController.text = '';
-                                  widget.from = null;
-                                },
-                              ),
-                            ),
-                          ),
-                          suggestionsCallback: (pattern) {
-                            return getSuggestions(pattern);
-                          },
-                          itemBuilder: (context, suggestion) {
-                            return ListTile(
-                              title: Text(suggestion.cityAscii + ", " + suggestion.country),
-                            );
-                          },
-                          transitionBuilder: (context, suggestionsBox, controller) {
-                            return suggestionsBox;
-                          },
-                          onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
-                            widget.from = suggestion.id.toString();
-                            _searchBarFrom = suggestion.cityAscii;
-                          },
-                          validator: (value) {
-                            widget.from = value.toString();
+          if (_expanded)
+            FutureBuilder(
+                future: Future.delayed(const Duration(milliseconds: 200), () {
+                  return "done";
+                }),
+                builder: (context, snapshot) {
+                  if (snapshot.data == "done")
+                    return Form(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 15),
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TypeAheadFormField(
+                                    keepSuggestionsOnLoading: false,
+                                    debounceDuration: const Duration(milliseconds: 200),
+                                    textFieldConfiguration: TextFieldConfiguration(
+                                      onChanged: (value) {
+                                        widget.from = null;
+                                      },
+                                      controller: this._typeAheadController,
+                                      decoration: InputDecoration(
+                                        labelText: t(context, 'from'),
+                                        hintText: ' ${t(context, 'paris')}',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        hintStyle: TextStyle(color: Colors.grey[300]),
+                                        prefixIcon: Icon(
+                                          MdiIcons.bridge,
+                                        ),
+                                        suffixIcon: IconButton(
+                                          padding: EdgeInsets.only(
+                                            top: 5,
+                                          ),
+                                          icon: Icon(
+                                            Icons.close,
+                                            size: 15,
+                                          ),
+                                          onPressed: () {
+                                            this._typeAheadController.text = '';
+                                            widget.from = null;
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    suggestionsCallback: (pattern) {
+                                      return getSuggestions(pattern);
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(suggestion.cityAscii + ", " + suggestion.country),
+                                      );
+                                    },
+                                    transitionBuilder: (context, suggestionsBox, controller) {
+                                      return suggestionsBox;
+                                    },
+                                    onSuggestionSelected: (suggestion) {
+                                      this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
+                                      widget.from = suggestion.id.toString();
+                                      _searchBarFrom = suggestion.cityAscii;
+                                    },
+                                    validator: (value) {
+                                      widget.from = value.toString();
 
-                            if (value.isEmpty) {
-                              return t(context, 'select_city');
-                            }
-                          },
-                          onSaved: (value) {
-                            widget.from = value;
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: TypeAheadFormField(
-                          keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
-                          textFieldConfiguration: TextFieldConfiguration(
-                            onChanged: (value) {
-                              widget.to = null;
-                            },
-                            controller: this._typeAheadController2,
-                            decoration: InputDecoration(
-                              labelText: t(context, 'to'),
-                              hintText: ' ${t(context, 'berlin')}',
-                              hintStyle: TextStyle(color: Colors.grey[300]),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              prefixIcon: Icon(
-                                MdiIcons.mapMarkerMultipleOutline,
-                              ),
-                              suffixIcon: IconButton(
-                                padding: EdgeInsets.only(
-                                  top: 5,
+                                      if (value.isEmpty) {
+                                        return t(context, 'select_city');
+                                      }
+                                    },
+                                    onSaved: (value) {
+                                      widget.from = value;
+                                    },
+                                  ),
                                 ),
-                                icon: Icon(
-                                  Icons.close,
-                                  size: 15,
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: TypeAheadFormField(
+                                    keepSuggestionsOnLoading: false,
+                                    debounceDuration: const Duration(milliseconds: 200),
+                                    textFieldConfiguration: TextFieldConfiguration(
+                                      onChanged: (value) {
+                                        widget.to = null;
+                                      },
+                                      controller: this._typeAheadController2,
+                                      decoration: InputDecoration(
+                                        labelText: t(context, 'to'),
+                                        hintText: ' ${t(context, 'berlin')}',
+                                        hintStyle: TextStyle(color: Colors.grey[300]),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        prefixIcon: Icon(
+                                          MdiIcons.mapMarkerMultipleOutline,
+                                        ),
+                                        suffixIcon: IconButton(
+                                          padding: EdgeInsets.only(
+                                            top: 5,
+                                          ),
+                                          icon: Icon(
+                                            Icons.close,
+                                            size: 15,
+                                          ),
+                                          onPressed: () {
+                                            this._typeAheadController2.text = '';
+                                            widget.to = null;
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    suggestionsCallback: (pattern) {
+                                      return getSuggestions(pattern);
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(suggestion.cityAscii + ", " + suggestion.country),
+                                      );
+                                    },
+                                    transitionBuilder: (context, suggestionsBox, controller) {
+                                      return suggestionsBox;
+                                    },
+                                    onSuggestionSelected: (suggestion) {
+                                      this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
+                                      widget.to = suggestion.id.toString();
+                                      _searchBarTo = suggestion.cityAscii;
+                                    },
+                                    validator: (value) {
+                                      widget.to = value.toString();
+                                      if (value.isEmpty) {
+                                        return t(context, 'select_city');
+                                      }
+                                    },
+                                    onSaved: (value) => widget.to = value,
+                                  ),
                                 ),
-                                onPressed: () {
-                                  this._typeAheadController2.text = '';
-                                  widget.to = null;
-                                },
-                              ),
+                              ],
                             ),
-                          ),
-                          suggestionsCallback: (pattern) {
-                            return getSuggestions(pattern);
-                          },
-                          itemBuilder: (context, suggestion) {
-                            return ListTile(
-                              title: Text(suggestion.cityAscii + ", " + suggestion.country),
-                            );
-                          },
-                          transitionBuilder: (context, suggestionsBox, controller) {
-                            return suggestionsBox;
-                          },
-                          onSuggestionSelected: (suggestion) {
-                            this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
-                            widget.to = suggestion.id.toString();
-                            _searchBarTo = suggestion.cityAscii;
-                          },
-                          validator: (value) {
-                            widget.to = value.toString();
-                            if (value.isEmpty) {
-                              return t(context, 'select_city');
-                            }
-                          },
-                          onSaved: (value) => widget.to = value,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: _expanded ? 20 : 0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _typeAheadController3,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
+                            SizedBox(
+                              height: _expanded ? 10 : 0,
                             ),
-                            prefixIcon: Icon(MdiIcons.weightKilogram),
-                            labelText: t(context, 'max_weight'),
-                            hintText: ' 3 ${t(context, 'kg')}',
-                            hintStyle: TextStyle(color: Colors.grey[300]),
-                            suffixIcon: IconButton(
-                              padding: EdgeInsets.only(
-                                top: 5,
-                              ),
-                              icon: Icon(
-                                Icons.close,
-                                size: 15,
-                              ),
-                              onPressed: () {
-                                this._typeAheadController3.text = '';
-                                widget.weight = null;
-                              },
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _typeAheadController3,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      prefixIcon: Icon(MdiIcons.weightKilogram),
+                                      labelText: t(context, 'max_weight'),
+                                      hintText: ' 3 ${t(context, 'kg')}',
+                                      hintStyle: TextStyle(color: Colors.grey[300]),
+                                      suffixIcon: IconButton(
+                                        padding: EdgeInsets.only(
+                                          top: 5,
+                                        ),
+                                        icon: Icon(
+                                          Icons.close,
+                                          size: 15,
+                                        ),
+                                        onPressed: () {
+                                          this._typeAheadController3.text = '';
+                                          widget.weight = null;
+                                        },
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.number,
 //
-                          onChanged: (String val) {
-                            _searchBarWeight = val;
-                            widget.weight = val;
-                          },
-                          onSaved: (value) {
+                                    onChanged: (String val) {
+                                      _searchBarWeight = val;
+                                      widget.weight = val;
+                                    },
+                                    onSaved: (value) {
 //                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _typeAheadController4,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              MdiIcons.currencyUsd,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-
-                            labelText: t(context, 'reward_usd'),
-                            hintText: ' 10\$',
-                            hintStyle: TextStyle(color: Colors.grey[300]),
-
-                            suffixIcon: IconButton(
-                              padding: EdgeInsets.only(
-                                top: 5,
-                              ),
-                              icon: Icon(
-                                Icons.close,
-                                size: 15,
-                              ),
-                              onPressed: () {
-                                this._typeAheadController4.text = '';
-                                widget.price = null;
-                              },
-                            ),
-                            //icon: Icon(Icons.location_on),
-                          ),
-                          keyboardType: TextInputType.number,
-                          onChanged: (String val) {
-                            widget.price = val;
-                          },
-                          onSaved: (value) {
-//                        _authData['email'] = value;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      GestureDetector(
-                        child: Container(
-                          height: _expanded ? 40 : 0,
-                          width: 40,
-                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.red[200],
-                            ),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Icon(
-                            Icons.close,
-                            color: Colors.red[400],
-                          ),
-                        ),
-                        onTap: () {
-                          var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                          widget.from = null;
-                          widget.to = null;
-                          widget.weight = null;
-                          widget.price = null;
-                          provider.isLoadingOrders = true;
-                          provider.notify();
-                          provider.fetchAndSetOrders();
-                          _searchBarFrom = t(context, 'anywhere');
-                          _searchBarTo = t(context, 'anywhere');
-                          _searchBarWeight = t(context, 'any');
-                          urlFilter = null;
-                          setState(() {
-                            _expanded = !_expanded;
-                          });
-                        },
-                      ),
-                      Expanded(flex: 2, child: SizedBox()),
-                      Expanded(
-                        flex: 3,
-                        child: RaisedButton(
-//                          color: Theme.of(context).primaryColor,
-                          color: Colors.green,
-                          elevation: 2,
-                          child: Container(
-                            decoration: BoxDecoration(),
-                            width: MediaQuery.of(context).size.width,
-                            child: Center(
-                              child: Text(
-                                t(context, 'find_orders'),
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
+                                    },
+                                  ),
                                 ),
-                              ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _typeAheadController4,
+                                    decoration: InputDecoration(
+                                      prefixIcon: Icon(
+                                        MdiIcons.currencyUsd,
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+
+                                      labelText: t(context, 'reward_usd'),
+                                      hintText: ' 10\$',
+                                      hintStyle: TextStyle(color: Colors.grey[300]),
+
+                                      suffixIcon: IconButton(
+                                        padding: EdgeInsets.only(
+                                          top: 5,
+                                        ),
+                                        icon: Icon(
+                                          Icons.close,
+                                          size: 15,
+                                        ),
+                                        onPressed: () {
+                                          this._typeAheadController4.text = '';
+                                          widget.price = null;
+                                        },
+                                      ),
+                                      //icon: Icon(Icons.location_on),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (String val) {
+                                      widget.price = val;
+                                    },
+                                    onSaved: (value) {
+//                        _authData['email'] = value;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          onPressed: () {
-                            filterAndSetOrders();
-                            setState(() {
-                              _expanded = !_expanded;
-                            });
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  child: Container(
+                                    height: _expanded ? 40 : 0,
+                                    width: 40,
+                                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.red[200],
+                                      ),
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Icon(
+                                      Icons.close,
+                                      color: Colors.red[400],
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                    widget.from = null;
+                                    widget.to = null;
+                                    widget.weight = null;
+                                    widget.price = null;
+                                    provider.isLoadingOrders = true;
+                                    provider.notify();
+                                    provider.fetchAndSetOrders();
+                                    _searchBarFrom = t(context, 'anywhere');
+                                    _searchBarTo = t(context, 'anywhere');
+                                    _searchBarWeight = t(context, 'any');
+                                    urlFilter = null;
+                                    setState(() {
+                                      _expanded = !_expanded;
+                                    });
+                                  },
+                                ),
+                                Expanded(flex: 2, child: SizedBox()),
+                                Expanded(
+                                  flex: 3,
+                                  child: RaisedButton(
+//                          color: Theme.of(context).primaryColor,
+                                    color: Colors.green,
+                                    elevation: 2,
+                                    child: Container(
+                                      decoration: BoxDecoration(),
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Center(
+                                        child: Text(
+                                          t(context, 'find_orders'),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+//                                  fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      filterAndSetOrders();
+                                      setState(() {
+                                        _expanded = !_expanded;
+                                      });
 //    filterAndSetOrders(from, to, weight, price);
-                          },
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          )
+                    );
+                  else
+                    return SizedBox();
+                })
         ],
       ),
     );

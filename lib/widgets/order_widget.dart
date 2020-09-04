@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:flushbar/flushbar.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +9,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:optisend/models/api.dart';
 import 'package:optisend/models/order.dart';
 import 'package:optisend/providers/auth.dart';
+import 'package:optisend/providers/ordersandtrips.dart';
 import 'package:optisend/screens/order_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -45,6 +50,7 @@ class _OrderWidgetState extends State<OrderWidget> {
         children: <Widget>[
           Container(
             height: 100,
+            width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
@@ -60,98 +66,86 @@ class _OrderWidgetState extends State<OrderWidget> {
                     fit: BoxFit.fitWidth,
                   ),
                 ),
-//                CircleAvatar(
-//                  radius: 40,
-//                  backgroundColor: Colors.grey[100],
-//                  child: FadeInImage(image: NetworkImage(imageUrl), placeholder: NetworkImage(Api.noPictureImage)),
-//                ),
-                // Container(
-                //   child: FadeInImage.memoryNetwork(
-                //     placeholder: kTransparentImage,
-                //     image:
-                //         'https://images-na.ssl-images-amazon.com/images/I/81NIli1PuqL._AC_SL1500_.jpg',
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 200,
-                        child: Text(
-                          order.title,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey[800],
-//                                          fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            MdiIcons.mapMarkerMultipleOutline,
-//                            color: Colors.grey[700],
-                            color: Theme.of(context).primaryColor,
-                            size: 16,
-                          ),
-                          SizedBox(
-                            width: 200,
-                            child: Text(
-                              order.source.cityAscii + "  >  " + order.destination.cityAscii,
-                              maxLines: 1,
-                              style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          child: Text(
+                            order.title,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.grey[800],
                             ),
                           ),
-                        ],
-                      ),
-                      Row(
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.mapMarkerMultipleOutline,
+//                            color: Colors.grey[700],
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: Text(
+                                order.source.cityAscii + "  >  " + order.destination.cityAscii,
+                                maxLines: 1,
+                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
 //                                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                MdiIcons.calendarRange,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  MdiIcons.calendarRange,
 //                                color: Colors.grey[700],
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              Text(
-                                DateFormat("dd MMMM").format(order.date),
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            width: 100,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.attach_money,
-//                                color: Colors.grey[700],
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                width: 50,
-                                child: Text(
-                                  order.price.toString(),
-                                  maxLines: 1,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 16,
+                                ),
+                                Text(
+                                  DateFormat("d MMMM yyy").format(order.date),
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+                              ],
+                            ),
+                            Expanded(
+                              child: SizedBox(),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.attach_money,
+//                                color: Colors.grey[700],
+                                  color: Theme.of(context).primaryColor,
+                                  size: 16,
+                                ),
+                                SizedBox(
+                                  width: 50,
+                                  child: Text(
+                                    order.price.toString(),
+                                    maxLines: 1,
+                                    style: TextStyle(color: Colors.grey[600]),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 if (Provider.of<Auth>(context, listen: false).isAuth)
@@ -176,8 +170,36 @@ class _OrderWidgetState extends State<OrderWidget> {
                               FlatButton(
                                 child: Text('Yes,delete!'),
                                 onPressed: () {
-                                  //todo Orxan
+                                  var url = Api.orders + order.id.toString() + '/';
+                                  http.delete(
+                                    url,
+                                    headers: {
+                                      HttpHeaders.contentTypeHeader: "application/json",
+                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                    },
+                                  ).then((value) {});
+                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                  orderprovider.myorders.removeAt(i);
+                                  orderprovider.notify();
                                   Navigator.of(ctx).pop();
+                                  Flushbar(
+                                    flushbarStyle: FlushbarStyle.GROUNDED,
+                                    titleText: Text(
+                                      "Success",
+                                      style: TextStyle(color: Colors.black, fontSize: 22),
+                                    ),
+                                    messageText: Text(
+                                      "Order have been deleted",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    icon: Icon(MdiIcons.delete),
+                                    backgroundColor: Colors.white,
+                                    borderColor: Theme.of(context).primaryColor,
+                                    padding: const EdgeInsets.all(10),
+                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                                    borderRadius: 10,
+                                    duration: Duration(seconds: 5),
+                                  )..show(context);
                                 },
                               )
                             ],

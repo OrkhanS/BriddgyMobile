@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
@@ -317,12 +318,40 @@ class _TripScreenState extends State<TripsScreen> {
                                   _loadData();
                                 }
                               },
-                              child: ListView.builder(
-                                itemBuilder: (context, int i) {
-                                  return TripWidget(trip: _trips[i], i: i);
-                                },
-                                itemCount: _trips == null ? 0 : _trips.length,
-                              ),
+                              child: _trips.length == 0
+                                  ? Center(
+                                      child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            height: 400,
+                                            width: 200,
+                                            padding: EdgeInsets.all(10),
+                                            child: SvgPicture.asset(
+                                              "assets/photos/empty_order.svg",
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                            child: Text(
+                                              t(context, 'empty_results'),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                color: Colors.grey[500],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ))
+                                  : ListView.builder(
+                                      itemBuilder: (context, int i) {
+                                        return TripWidget(trip: _trips[i], i: i);
+                                      },
+                                      itemCount: _trips == null ? 0 : _trips.length,
+                                    ),
                             ),
                     ),
                   ],

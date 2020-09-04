@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,185 +38,150 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: missCallmeButton
+          ? RaisedButton(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    t(context, 'next'),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  Icon(
+                    Icons.navigate_next,
+                    size: 24,
+                  ),
+                ],
+              ),
+              onPressed: () {
+                if (phone == null) {
+                  setState(() {
+                    missCallmeButton = true;
+                  });
+                  Flushbar(
+                    title: "${t(context, 'warning')}!",
+                    message: t(context, 'fill_field'),
+                    padding: const EdgeInsets.all(8),
+                    borderRadius: 10,
+                    duration: Duration(seconds: 3),
+                  )..show(context);
+                } else {
+                  setState(() {
+                    missCallmeButton = false;
+                  });
+                  var token = Provider.of<Auth>(context, listen: false).token;
+                  String url = Api.requestPhoneVerification;
+                  http
+                      .post(url,
+                          headers: {
+                            HttpHeaders.contentTypeHeader: "application/json",
+                            "Authorization": "Token " + token,
+                          },
+                          body: json.encode({
+                            "phone": phone,
+                          }))
+                      .then((response) {
+                    if (response.statusCode == 200) {
+                      setState(() {
+                        missCallmeButton = true;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (__) => VerifyPhoneNextScreen()),
+                      );
+                    } else {
+                      setState(() {
+                        missCallmeButton = true;
+                      });
+                      Flushbar(
+                        title: t(context, 'error'),
+                        message: t(context, 'please_try_again'),
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                    }
+                  });
+                }
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10.0),
+              color: Colors.green,
+              textColor: Theme.of(context).primaryTextTheme.button.color,
+            )
+          : ProgressIndicatorWidget(show: true),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                child: Text(
-                  t(context, 'verify_phone'),
-                  style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30.0),
+                  child: Text(
+                    t(context, 'verify_phone'),
+                    style: TextStyle(fontSize: 30, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600),
+                  ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).primaryColor,
-                      width: 3,
+                Center(
+                    child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 200,
+                        padding: EdgeInsets.all(10),
+                        child: SvgPicture.asset(
+                          "assets/photos/two_factor.svg",
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.grey[400],
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(200)),
-                child: Icon(
-                  Icons.phone,
-                  size: 100,
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
-                child: Text(
-                  t(context, 'phone_enter_prompt'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
-                ),
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: IntlPhoneField(
-                  decoration: InputDecoration(
-                    labelText: t(context, 'phone_number'),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(),
+                    child: Column(
+                      children: [
+                        IntlPhoneField(
+                          autoValidate: true,
+                          decoration: InputDecoration(
+                            labelText: t(context, 'phone_number'),
+
+//                            border: InputBorder.,
+                          ),
+                          initialCountryCode: 'AZ',
+                          onChanged: (value) {
+                            phone = value.completeNumber.toString();
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  initialCountryCode: 'AZ',
-                  onChanged: (value) {
-                    phone = value.completeNumber.toString();
-                  },
                 ),
-              ),
-//              Container(
-//                margin: EdgeInsets.symmetric(horizontal: 30),
-//                padding: EdgeInsets.all(20),
-//                child: PinPut(
-//                  fieldsCount: 5,
-//                  onSubmit: (String pin) {
-//                    Provider.of<Auth>(context, listen: false).verifyEmailCode(pin).whenComplete(() {
-//                      if (Provider.of<Auth>(context, listen: false).verificationStatus) {
-//                        Navigator.pop(context);
-//                        Flushbar(
-//                          title: "Success",
-//                          message: "You are now verified!",
-//                          padding: const EdgeInsets.all(8),
-//                          borderRadius: 10,
-//                          duration: Duration(seconds: 3),
-//                        )..show(context);
-//                      } else {
-//                        Flushbar(
-//                          title: "Failed",
-//                          message: "Wrong Verification Code, Try again!",
-//                          padding: const EdgeInsets.all(8),
-//                          borderRadius: 10,
-//                          duration: Duration(seconds: 3),
-//                        )..show(context);
-//                      }
-//                    });
-//                  },
-//                  focusNode: _pinPutFocusNode,
-//                  controller: _pinPutController,
-//                  submittedFieldDecoration: _pinPutDecoration.copyWith(borderRadius: BorderRadius.circular(20)),
-//                  selectedFieldDecoration: _pinPutDecoration,
-//                  followingFieldDecoration: _pinPutDecoration.copyWith(
-//                    borderRadius: BorderRadius.circular(5),
-//                    border: Border.all(
-//                      color: Theme.of(context).primaryColor,
-//                    ),
-//                  ),
-//                ),
-//              ),
-              Expanded(
-                child: SizedBox(
-                  width: 1,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
+                  child: Text(
+                    t(context, 'phone_enter_prompt'),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w300, fontSize: 20),
+                  ),
                 ),
-              ),
-
-              missCallmeButton
-                  ? RaisedButton.icon(
-                      icon: Icon(
-                        Icons.phone_in_talk,
-                        size: 20,
-                      ),
-                      label: Text(
-                        t(context, 'call_me'),
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      onPressed: () {
-                        if (phone == null) {
-                          setState(() {
-                            missCallmeButton = true;
-                          });
-                          Flushbar(
-                            title: "${t(context, 'warning')}!",
-                            message: t(context, 'fill_field'),
-                            padding: const EdgeInsets.all(8),
-                            borderRadius: 10,
-                            duration: Duration(seconds: 3),
-                          )..show(context);
-                        } else {
-                          setState(() {
-                            missCallmeButton = false;
-                          });
-                          var token = Provider.of<Auth>(context, listen: false).token;
-                          String url = Api.requestPhoneVerification;
-                          http
-                              .post(url,
-                                  headers: {
-                                    HttpHeaders.contentTypeHeader: "application/json",
-                                    "Authorization": "Token " + token,
-                                  },
-                                  body: json.encode({
-                                    "phone": phone,
-                                  }))
-                              .then((response) {
-                            if (response.statusCode == 200) {
-                              setState(() {
-                                missCallmeButton = true;
-                              });
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (__) => VerifyPhoneNextScreen()),
-                              );
-                            } else {
-                              setState(() {
-                                missCallmeButton = true;
-                              });
-                              Flushbar(
-                                title: t(context, 'error'),
-                                message: t(context, 'please_try_again'),
-                                padding: const EdgeInsets.all(8),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context);
-                            }
-                          });
-                        }
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (__) => VerifyPhoneNextScreen()),
-                        // );
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15.0),
-                      color: Theme.of(context).primaryColor,
-                      textColor: Theme.of(context).primaryTextTheme.button.color,
-                    )
-                  : ProgressIndicatorWidget(show: true),
-
-              SizedBox(
-                height: 30,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -348,7 +314,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 child: Text(
                   t(context, 'last_digits_complete_prompt'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
+                  style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w400, fontSize: 19),
                 ),
               ),
               SizedBox(
@@ -358,7 +324,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "+62 - 21 - 31 - 18 - ",
+                    "+62-213-118- ",
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.grey[400],

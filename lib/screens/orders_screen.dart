@@ -3,10 +3,12 @@ import 'dart:io';
 import 'dart:async';
 import 'package:animations/animations.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/localization/demo_localization.dart';
 import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
@@ -20,10 +22,12 @@ import 'package:optisend/widgets/order_widget.dart';
 import 'package:optisend/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:optisend/main.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
   OrdersTripsProvider orderstripsProvider;
+
   var token, room, auth;
   OrdersScreen({this.orderstripsProvider, this.token, this.auth, this.room});
 
@@ -226,12 +230,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   );
                 }
               } else {
+//                navbar("1");
                 Flushbar(
-                  title: "Warning",
-                  message: "You need to Log in to add Item!",
-                  padding: const EdgeInsets.all(8),
+                  flushbarStyle: FlushbarStyle.GROUNDED,
+                  titleText: Text(
+                    "Warning",
+                    style: TextStyle(color: Colors.black, fontSize: 22),
+                  ),
+                  messageText: Text(
+                    "You need to Log in to add Item!",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  icon: Icon(MdiIcons.login),
+                  backgroundColor: Colors.white,
+                  borderColor: Theme.of(context).primaryColor,
+                  padding: const EdgeInsets.all(10),
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 120),
                   borderRadius: 10,
-                  duration: Duration(seconds: 3),
+                  duration: Duration(seconds: 5),
                 )..show(context);
               }
             },
@@ -332,30 +348,58 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 }
                                 return false;
                               },
-                              child: ListView.builder(
-                                itemBuilder: (context, int i) {
-                                  if (i + 1 == _orders.length)
-                                    return Column(
-                                      children: <Widget>[
-                                        OrderWidget(
-                                          order: _orders[i],
-                                          i: i,
-                                        ),
-                                        SizedBox(
-                                          height: 80,
-                                        ),
-                                      ],
-                                    );
-                                  else
-                                    return OrderWidget(
-                                      order: _orders[i],
-                                      i: i,
-                                    );
+                              child: _orders.length == 0
+                                  ? Center(
+                                      child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            height: 400,
+                                            width: 200,
+                                            padding: EdgeInsets.all(10),
+                                            child: SvgPicture.asset(
+                                              "assets/photos/empty_order.svg",
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                            child: Text(
+                                              t(context, 'empty_results'),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                color: Colors.grey[500],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ))
+                                  : ListView.builder(
+                                      itemBuilder: (context, int i) {
+                                        if (i + 1 == _orders.length)
+                                          return Column(
+                                            children: <Widget>[
+                                              OrderWidget(
+                                                order: _orders[i],
+                                                i: i,
+                                              ),
+                                              SizedBox(
+                                                height: 80,
+                                              ),
+                                            ],
+                                          );
+                                        else
+                                          return OrderWidget(
+                                            order: _orders[i],
+                                            i: i,
+                                          );
 
 //                              return OrderFadeWidget();
-                                },
-                                itemCount: _orders.length,
-                              ),
+                                      },
+                                      itemCount: _orders.length,
+                                    ),
                             ),
                     ),
                   ],

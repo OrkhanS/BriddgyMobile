@@ -37,6 +37,8 @@ void main() {
   runApp(MyApp());
 }
 
+int _currentIndex = 0;
+
 class MyApp extends StatefulWidget {
   final StreamController<String> streamController = StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
@@ -55,7 +57,6 @@ class _MyAppState extends State<MyApp> {
   final notifications = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool _isOn = false;
-  int _currentIndex = 0;
   PageController _pageController;
   String tokenforROOM;
   Map valueMessages = {};
@@ -203,7 +204,11 @@ class _MyAppState extends State<MyApp> {
           title: Text('Chats'),
           icon: newmessage.arethereNewMessage == true
               ? Badge(
-                  badgeContent: Text(newmessage.newMessages.length.toString()),
+                  badgeColor: Colors.green,
+                  badgeContent: Text(
+                    newmessage.newMessages.length.toString(),
+                    style: TextStyle(color: Colors.white),
+                  ),
                   child: Icon(MdiIcons.forumOutline),
                 )
               : Icon(MdiIcons.forumOutline),
@@ -292,7 +297,7 @@ class _MyAppState extends State<MyApp> {
             primarySwatch: Colors.blue,
             primaryColor: Colors.teal[700],
             accentColor: Colors.green,
-            fontFamily: 'Lato',
+            fontFamily: 'Open Sans',
           ),
           home: Scaffold(
             body: SizedBox.expand(
