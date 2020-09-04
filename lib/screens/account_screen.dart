@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'package:optisend/models/user.dart';
+import 'chay_screen.dart';
 import 'splash_screen.dart';
 import 'package:share/share.dart';
 import 'package:optisend/screens/customer_support.dart';
@@ -310,10 +311,10 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           ListTile(
                             leading: Icon(Icons.star_border),
-                            onTap: () {
+                            onLongPress: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (__) => OpenContainerTransformDemo()),
+                                MaterialPageRoute(builder: (__) => ChayScreen()),
                               );
                             },
                             title: Text(

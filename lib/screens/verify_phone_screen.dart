@@ -40,14 +40,19 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: missCallmeButton
-          ? RaisedButton.icon(
-              icon: Icon(
-                Icons.phone_in_talk,
-                size: 20,
-              ),
-              label: Text(
-                t(context, 'call_me'),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ? RaisedButton(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    t(context, 'next'),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  Icon(
+                    Icons.navigate_next,
+                    size: 24,
+                  ),
+                ],
               ),
               onPressed: () {
                 if (phone == null) {
@@ -155,7 +160,8 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                           autoValidate: true,
                           decoration: InputDecoration(
                             labelText: t(context, 'phone_number'),
-                            border: InputBorder.none,
+
+//                            border: InputBorder.,
                           ),
                           initialCountryCode: 'AZ',
                           onChanged: (value) {
@@ -308,7 +314,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 child: Text(
                   t(context, 'last_digits_complete_prompt'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w100),
+                  style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w400, fontSize: 19),
                 ),
               ),
               SizedBox(
@@ -318,7 +324,7 @@ class _VerifyPhoneNextScreenState extends State<VerifyPhoneNextScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "+62 - 21 - 31 - 18 - ",
+                    "+62-213-118- ",
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.grey[400],

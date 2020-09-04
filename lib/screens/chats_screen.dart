@@ -193,24 +193,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                             fit: BoxFit.fitWidth,
                                                           ),
                                                         ),
-                                                  title: Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        user.firstName + " " + user.lastName,
-                                                        style: TextStyle(fontSize: 15.0),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 16.0,
-                                                      ),
-                                                    ],
+                                                  title: Text(
+                                                    user.firstName + " " + user.lastName,
+                                                    style: TextStyle(fontSize: 15.0),
                                                   ),
-                                                  subtitle: Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        _rooms[index].lastMessage.toString(),
-                                                        style: TextStyle(fontSize: 15.0),
-                                                      ),
-                                                    ],
+                                                  subtitle: Text(
+                                                    _rooms[index].lastMessage.toString(),
+                                                    style: TextStyle(fontSize: 15.0),
+                                                    maxLines: 2,
                                                   ),
                                                   trailing:
                                                       //////////////////////////////////////////////////////////////////

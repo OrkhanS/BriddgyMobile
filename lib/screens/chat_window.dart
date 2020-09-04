@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/localization/localization_constants.dart';
@@ -27,6 +28,10 @@ import 'package:http/http.dart' as http;
 
 import 'add_order_screen.dart';
 
+Order _order;
+Trip _trip;
+User _requestingUser;
+
 class ChatWindow extends StatefulWidget {
   var provider, user, room, auth, token;
   ChatWindow({this.provider, this.user, this.room, this.auth, this.token});
@@ -53,7 +58,7 @@ class _ChatWindowState extends State<ChatWindow> {
   var file;
   User me;
   String imageUrlMe, imageUrlUser;
-  var contract, order, trip;
+  var contract;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
@@ -478,12 +483,14 @@ class _ChatWindowState extends State<ChatWindow> {
                                               );
                                     if (iscontract) {
                                       contract = json.decode(_messages[index].text);
-                                      if (contract["my"]["orderimage"] == null) {
-                                        order = Order.fromJson(contract["opp"]);
-                                        trip = Trip.fromJson(contract["my"]);
+                                      if (contract["type"] == "trip") {
+                                        _order = Order.fromJson(contract["opp"]);
+                                        _trip = Trip.fromJson(contract["my"]);
+                                        _requestingUser = _trip.owner;
                                       } else {
-                                        order = Order.fromJson(contract["my"]);
-                                        trip = Trip.fromJson(contract["opp"]);
+                                        _order = Order.fromJson(contract["my"]);
+                                        _trip = Trip.fromJson(contract["opp"]);
+                                        _requestingUser = _order.owner;
                                       }
                                     }
                                     //For Rasul
@@ -545,7 +552,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                             decoration: MenuDecoration(),
                                           )
                                         : Container(
-                                            width: MediaQuery.of(context).size.width * 0.6,
+                                            width: MediaQuery.of(context).size.width * 0.8,
+                                            padding: EdgeInsets.all(8),
                                             decoration: BoxDecoration(
                                               color: Colors.blue[100],
 //                                          color: Theme.of(context).scaffoldBackgroundColor,
@@ -554,53 +562,179 @@ class _ChatWindowState extends State<ChatWindow> {
                                             ),
                                             child: Column(
                                               children: [
-                                                Text(t(context, 'i-am-traveling')),
-                                                ListTile(
-                                                  leading: Text(order.source.cityAscii),
-                                                  trailing: Text(order.destination.cityAscii),
-                                                ),
-                                                RaisedButton(
-                                                  color: Colors.blue,
-                                                  child: Text(
-                                                    t(context, 'accept'),
-                                                    style: TextStyle(color: Colors.white),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 20),
+                                                  child: SvgPicture.asset(
+                                                    "assets/photos/handshake.svg",
+                                                    width: MediaQuery.of(context).size.width * 0.5,
                                                   ),
-                                                  onPressed: () {
-                                                    final url = Api.applyForDelivery;
-                                                    http
-                                                        .put(
-                                                      url,
-                                                      headers: {
-                                                        HttpHeaders.contentTypeHeader: "application/json",
-                                                        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                      },
-                                                      body: json.encode(
-                                                        {'order': order.id, 'trip': trip.id, 'idOfmessage': _messages[index].id},
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    t(context, 'summary'),
+                                                    style: TextStyle(
+                                                      fontSize: 22,
+                                                      color: Theme.of(context).primaryColor,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      t(context, 'contract_proposed_by'),
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(
+                                                      child: SizedBox(
+                                                        height: 1,
                                                       ),
-                                                    )
-                                                        .then((response) {
-                                                      if (response.statusCode == 200) {
-                                                        print("Accepted");
-                                                        //todo Rasul
-                                                        // need to show that contract approved or how?
-
-                                                      } else {
-                                                        //todo Rasul
-                                                        // Here show an error message how you want
-                                                        // use  below code to give detailed
-
-                                                        print(json.decode(response.body)["detail"]);
-                                                      }
-                                                    });
-                                                  },
+                                                    ),
+                                                    Text(
+                                                      " ${_order.owner.firstName} ${_order.owner.lastName}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
                                                 ),
-                                                RaisedButton(
-                                                  color: Colors.red,
-                                                  child: Text(
-                                                    t(context, 'reject'),
-                                                    style: TextStyle(color: Colors.white),
-                                                  ),
-                                                  onPressed: () {},
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      t(context, 'order_owner'),
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      " ${_order.owner.firstName} ${_order.owner.lastName}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${t(context, 'order')}: ",
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      " ${_order.title}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${t(context, 'deliverer')}: ",
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      " ${_trip.owner.firstName} ${_trip.owner.lastName}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${t(context, 'from')}:",
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      " ${_trip.source.cityAscii}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${t(context, 'to')}:",
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      "${_trip.destination.cityAscii}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${t(context, 'trip_date')}:",
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      DateFormat('d MMMM yyyy').format(_trip.date),
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      "${t(context, 'reward')}:",
+                                                      style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                                                    ),
+                                                    Expanded(child: SizedBox()),
+                                                    Text(
+                                                      "\$${_order.price}",
+                                                      style: TextStyle(fontSize: 15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  children: [
+                                                    RaisedButton(
+                                                      color: Colors.red,
+                                                      child: Text(
+                                                        t(context, 'reject'),
+                                                        style: TextStyle(color: Colors.white),
+                                                      ),
+                                                      onPressed: () {},
+                                                    ),
+                                                    RaisedButton(
+                                                      color: Colors.green,
+                                                      child: Text(
+                                                        t(context, 'accept'),
+                                                        style: TextStyle(color: Colors.white),
+                                                      ),
+                                                      onPressed: () {
+                                                        final url = Api.applyForDelivery;
+                                                        http
+                                                            .put(
+                                                          url,
+                                                          headers: {
+                                                            HttpHeaders.contentTypeHeader: "application/json",
+                                                            "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                          },
+                                                          body: json.encode(
+                                                            {'order': _order.id, 'trip': _trip.id, 'idOfmessage': _messages[index].id},
+                                                          ),
+                                                        )
+                                                            .then((response) {
+                                                          if (response.statusCode == 200) {
+                                                            print("Accepted");
+                                                            //todo Rasul
+                                                            // need to show that contract approved or how?
+
+                                                          } else {
+                                                            //todo Rasul
+                                                            // Here show an error message how you want
+                                                            // use  below code to give detailed
+
+                                                            print(json.decode(response.body)["detail"]);
+                                                          }
+                                                        });
+                                                      },
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -608,20 +742,24 @@ class _ChatWindowState extends State<ChatWindow> {
 
                                     Widget message;
 
-                                    if (reverse) {
-                                      message = Stack(
-                                        children: <Widget>[
-                                          messagebody,
-                                          !iscontract ? Positioned(right: 0, bottom: 0, child: triangle) : SizedBox(),
-                                        ],
-                                      );
+                                    if (!iscontract) {
+                                      if (reverse) {
+                                        message = Stack(
+                                          children: <Widget>[
+                                            messagebody,
+                                            Positioned(right: 0, bottom: 0, child: triangle),
+                                          ],
+                                        );
+                                      } else {
+                                        message = Stack(
+                                          children: <Widget>[
+                                            Positioned(left: 0, bottom: 0, child: triangle),
+                                            messagebody,
+                                          ],
+                                        );
+                                      }
                                     } else {
-                                      message = Stack(
-                                        children: <Widget>[
-                                          !iscontract ? Positioned(left: 0, bottom: 0, child: triangle) : SizedBox(),
-                                          messagebody,
-                                        ],
-                                      );
+                                      message = messagebody;
                                     }
 
                                     if (reverse) {
@@ -633,14 +771,14 @@ class _ChatWindowState extends State<ChatWindow> {
                                             padding: const EdgeInsets.all(8.0),
                                             child: message,
                                           ),
-                                          avatar,
+                                          if (!iscontract) avatar,
                                         ],
                                       );
                                     } else {
                                       return Row(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: <Widget>[
-                                          avatar,
+                                          if (!iscontract) avatar,
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: message,
