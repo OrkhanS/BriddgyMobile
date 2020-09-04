@@ -104,7 +104,7 @@ class _MyTripsState extends State<MyTrips> {
                       },
                     ),
                     title: Text(
-                      t(context, 'my_trips'),
+                      t(context, 'my-trips'),
                       style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                     ),
                     elevation: 1,

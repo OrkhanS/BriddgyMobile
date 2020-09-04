@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:optisend/localization/demo_localization.dart';
+import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/screens/add_order_screen.dart';
 import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/auth_screen.dart';
@@ -226,6 +227,16 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    getLocale().then((locale){
+      setState(() {
+        this._locale = locale;
+      });
+    });
+    super.didChangeDependencies();
   }
 
   @override

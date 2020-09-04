@@ -60,18 +60,8 @@ class _AccountPageState extends State<AccountPage> {
     super.initState();
   }
 
-  _changeLanguage(Language language) {
-    Locale _temp;
-    switch (language.languageCode) {
-      case 'en':
-        _temp = Locale(language.languageCode, 'US');
-        break;
-      case 'ru':
-        _temp = Locale(language.languageCode, 'RU');
-        break;
-      default:
-        _temp = Locale(language.languageCode, 'US');
-    }
+  _changeLanguage(Language language) async {
+    Locale _temp = await setLocale(language.languageCode);
     MyApp.setLocale(context, _temp);
   }
 
