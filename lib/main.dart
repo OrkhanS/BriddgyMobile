@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -10,6 +11,7 @@ import 'package:optisend/screens/add_trip_screen.dart';
 import 'package:optisend/screens/auth_screen.dart';
 import 'package:optisend/screens/my_trips.dart';
 import 'package:optisend/screens/trips_screen.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import './providers/auth.dart';
 import './screens/orders_screen.dart';
@@ -38,8 +40,6 @@ void main() {
   runApp(MyApp());
 }
 
-int _currentIndex = 0;
-
 class MyApp extends StatefulWidget {
   final StreamController<String> streamController = StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
@@ -55,6 +55,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  int _currentIndex = 0;
   final notifications = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool _isOn = false;
@@ -68,6 +69,8 @@ class _MyAppState extends State<MyApp> {
   IOWebSocketChannel alertChannel;
 
   Locale _locale;
+
+  PersistentTabController _controller = PersistentTabController(initialIndex: 0);
 
   void setLocale(Locale locale) {
     setState(() {
@@ -125,12 +128,12 @@ class _MyAppState extends State<MyApp> {
         if (!prefs.containsKey('userData')) {
           return false;
         }
-         final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+        final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
         auth.token = extractedUserData['token'];
 
         if (extractedUserData['token'] != null) {
-          alertChannel = new IOWebSocketChannel.connect(Api.alertSocket + auth.user.id.toString()+"/?token="+auth.token.toString());
+          alertChannel = new IOWebSocketChannel.connect(Api.alertSocket + auth.user.id.toString() + "/?token=" + auth.token.toString());
           alertChannel.stream.listen(_onReceptionOfMessageFromServer).onDone(() {
             reset();
             initCommunication(authProvider, messageProvider);
@@ -233,7 +236,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void didChangeDependencies() {
-    getLocale().then((locale){
+    getLocale().then((locale) {
       setState(() {
         this._locale = locale;
       });
@@ -262,14 +265,14 @@ class _MyAppState extends State<MyApp> {
         orderstripsProvider,
         _,
       ) {
-        authProvider = message;
-        messageProvider = auth;
+        authProvider = auth;
+        messageProvider = message;
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
         if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
-        if(auth.user!=null && !socketConnected) initCommunication(auth, message);
+        if (auth.user != null && !socketConnected) initCommunication(auth, message);
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
             if (auth.user == null) {
@@ -283,6 +286,84 @@ class _MyAppState extends State<MyApp> {
           statusBarColor: Colors.white10,
           statusBarIconBrightness: Brightness.dark,
         ));
+        List<Widget> _buildScreens() {
+          return [
+            OrdersScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
+            TripsScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
+            ChatsScreen(provider: message, auth: auth),
+//                  NotificationScreen(),
+            auth.isAuth ? AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider) : AuthScreen(),
+          ];
+        }
+
+        List<PersistentBottomNavBarItem> _navBarsItems() {
+          return [
+//            BottomNavigationBarItem(
+//              title: Text('Trips'),
+//              icon: Icon(MdiIcons.roadVariant),
+//              activeIcon: Icon(MdiIcons.road),
+//            ),
+//            BottomNavigationBarItem(
+//              title: Text('Chats'),
+//              icon: newmessage.arethereNewMessage == true
+//                  ? Badge(
+//                badgeColor: Colors.green,
+//                badgeContent: Text(
+//                  newmessage.newMessages.length.toString(),
+//                  style: TextStyle(color: Colors.white),
+//                ),
+//                child: Icon(MdiIcons.forumOutline),
+//              )
+//                  : Icon(MdiIcons.forumOutline),
+//              activeIcon: Icon(MdiIcons.forum),
+//            ),
+////        BottomNavigationBarItem(
+////          title: Text('Notifications'),
+////          icon: Icon(Icons.notifications_none),
+////          activeIcon: Icon(Icons.notifications),
+////        ),
+//            BottomNavigationBarItem(
+//              title: Text('Account'),
+//              icon: Icon(MdiIcons.accountSettingsOutline),
+//              activeIcon: Icon(MdiIcons.accountSettings),
+//            ),
+            PersistentBottomNavBarItem(
+              title: 'Orders',
+              icon: _controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),
+              activeColor: Colors.teal[700],
+              inactiveColor: Colors.grey[300],
+            ),
+
+            PersistentBottomNavBarItem(
+              title: ("Trips"),
+              icon: _controller.index == 1 ? Icon(MdiIcons.road) : Icon(MdiIcons.roadVariant),
+              activeColor: Colors.teal[700],
+              inactiveColor: Colors.grey[300],
+            ),
+            PersistentBottomNavBarItem(
+              title: ("Chats"),
+              icon: messageProvider.arethereNewMessage == true
+                  ? Badge(
+                      badgeColor: Colors.green,
+                      badgeContent: Text(
+                        messageProvider.newMessages.length.toString(),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      child: Icon(MdiIcons.forumOutline),
+                    )
+                  : Icon(MdiIcons.forumOutline),
+              activeColor: Colors.teal[700],
+              inactiveColor: Colors.grey[300],
+            ),
+            PersistentBottomNavBarItem(
+              title: ("Account"),
+              icon: Icon(MdiIcons.accountSettingsOutline),
+              activeColor: Colors.teal[700],
+              inactiveColor: Colors.grey[300],
+            ),
+          ];
+        }
+
         return MaterialApp(
           locale: _locale,
           localizationsDelegates: [
@@ -313,23 +394,36 @@ class _MyAppState extends State<MyApp> {
             accentColor: Colors.green,
             fontFamily: 'Open Sans',
           ),
-          home: Scaffold(
-            body: SizedBox.expand(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                children: <Widget>[
-                  OrdersScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
-                  TripsScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
-                  ChatsScreen(provider: message, auth: auth),
-//                  NotificationScreen(),
-                  auth.isAuth ? AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider) : AuthScreen(),
-                ],
-              ),
+          home: PersistentTabView(
+            controller: _controller,
+            screens: _buildScreens(),
+            items: _navBarsItems(),
+            confineInSafeArea: true,
+            backgroundColor: Colors.white,
+            handleAndroidBackButtonPress: true,
+            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
+            stateManagement: true,
+            hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
+            decoration: NavBarDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              colorBehindNavBar: Colors.white,
             ),
-            bottomNavigationBar: navbar(message),
+            popAllScreensOnTapOfSelectedTab: true,
+            itemAnimationProperties: ItemAnimationProperties(
+              // Navigation Bar's items animation properties.
+              duration: Duration(milliseconds: 200),
+              curve: Curves.ease,
+            ),
+            screenTransitionAnimation: ScreenTransitionAnimation(
+              // Screen transition animation on change of selected tab.
+              animateTabTransition: true,
+              curve: Curves.ease,
+              duration: Duration(milliseconds: 300),
+            ),
+            onItemSelected: (index) {
+              setState(() {});
+            },
+            navBarStyle: NavBarStyle.style1, // Choose the nav bar style with this property.
           ),
           routes: {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),

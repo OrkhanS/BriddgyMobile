@@ -55,6 +55,8 @@ dependencies:
   firebase_admob: ^0.9.3+4
   utf: 0.9.0+5
   flutter_svg: ^0.17.1
+  persistent_bottom_nav_bar: ^2.0.5
+
 
 
 
