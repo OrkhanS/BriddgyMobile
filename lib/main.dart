@@ -64,6 +64,8 @@ class _MyAppState extends State<MyApp> {
   bool socketConnected = false;
   bool socketConnectedFirebase = false;
   var neWMessage, newMessageauth;
+  var authProvider, messageProvider;
+  IOWebSocketChannel alertChannel;
 
   Locale _locale;
 
@@ -111,7 +113,7 @@ class _MyAppState extends State<MyApp> {
         MaterialPageRoute(builder: (context) => ChatsScreen()),
       );
 
-  initCommunication(auth, newmessage) async {
+  Future initCommunication(auth, newmessage) async {
     if (socketConnected == false) {
       reset();
       try {
@@ -123,18 +125,21 @@ class _MyAppState extends State<MyApp> {
         if (!prefs.containsKey('userData')) {
           return false;
         }
-        final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+         final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
 
         auth.token = extractedUserData['token'];
 
         if (extractedUserData['token'] != null) {
-          widget._channel = new IOWebSocketChannel.connect(Api.alertSocket + extractedUserData['token']);
-          widget._channel.stream.listen(_onReceptionOfMessageFromServer);
+          alertChannel = new IOWebSocketChannel.connect(Api.alertSocket + auth.user.id.toString()+"/?token="+auth.token.toString());
+          alertChannel.stream.listen(_onReceptionOfMessageFromServer).onDone(() {
+            reset();
+            initCommunication(authProvider, messageProvider);
+          });
           print("Alert Connected");
           socketConnected = true;
         }
       } catch (e) {
-        print("Error Occured");
+        print(e);
         reset();
       }
     } else {
@@ -170,10 +175,7 @@ class _MyAppState extends State<MyApp> {
   /// Callback which is invoked each time that we are receiving
   /// a message from the server
   /// ----------------------------------------------------------
-  _onReceptionOfMessageFromServer(message) {
-    valueMessages = json.decode(message);
-    neWMessage.addMessages = valueMessages;
-  }
+  _onReceptionOfMessageFromServer(message) {}
 
   @override
   void dispose() {
@@ -260,13 +262,14 @@ class _MyAppState extends State<MyApp> {
         orderstripsProvider,
         _,
       ) {
-        neWMessage = message;
-        newMessageauth = auth;
+        authProvider = message;
+        messageProvider = auth;
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
         if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
+        if(auth.user!=null && !socketConnected) initCommunication(auth, message);
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
             if (auth.user == null) {

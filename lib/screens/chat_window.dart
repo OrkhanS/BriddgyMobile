@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -81,9 +83,14 @@ class _ChatWindowState extends State<ChatWindow> {
     reset();
     try {
       _channelRoom = new IOWebSocketChannel.connect(Api.roomSocket + id.toString() + '/?token=' + token.toString());
-      _channelRoom.stream.listen(_onReceptionOfMessageFromServer);
+      _channelRoom.stream.listen(_onReceptionOfMessageFromServer,).onDone(() {
+        reset();
+        initCommunication(id);
+      });
       print("Room Socket Connected");
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   addListener(Function callback) {
@@ -125,7 +132,11 @@ class _ChatWindowState extends State<ChatWindow> {
     if (_channelRoom != null) {
       try {
         if (_channelRoom.sink != null) {
-          _channelRoom.sink.add(text);
+          try {
+            _channelRoom.sink.add(text);
+          } catch (e) {
+            print(e);
+          }
           // widget.provider.messages[id].insert(0, tempMessage);
           widget.provider.changeChatRoomPlace(id);
         }
@@ -348,23 +359,37 @@ class _ChatWindowState extends State<ChatWindow> {
 //                                ),
                                         ),
                                       ),
+                                      widget.user.online ?
                                       Icon(
-                                        MdiIcons.shieldCheck,
+                                        MdiIcons.circle,
                                         color: Colors.green,
-                                        size: 17,
-                                      ),
+                                        size: 14,
+                                      ) : Icon(
+                                        MdiIcons.circle,
+                                        color: Colors.grey[600],
+                                        size: 14,
+                                      ) ,
                                     ],
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                                    child: Text(
-                                      t(context, 'last_online') + DateFormat.yMMMd().format(widget.user.lastOnline),
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
+                                    child: widget.user.online ? Text(
+                                        ('online'),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.green[500],
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ):
+                                        Text(
+                                        t(context, 'last_online') + DateFormat.yMMMd().format(widget.user.lastOnline),
+                                        style: TextStyle(
+                                          color: Colors.grey[500],
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
-                                    ),
                                   ),
                                 ],
                               ),

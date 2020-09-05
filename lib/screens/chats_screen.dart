@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:menu/menu.dart';
 import 'package:optisend/localization/localization_constants.dart';
 import 'package:optisend/models/api.dart';
@@ -186,25 +187,37 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 7.0),
                                                 child: ListTile(
                                                   leading: imageUrl == Api.noPictureImage
-                                                      ? InitialsAvatarWidget(_rooms[index].members[0].user.firstName.toString(),
-                                                          _rooms[index].members[0].user.lastName.toString(), 50.0)
+                                                      ? InitialsAvatarWidget(user.firstName.toString(),
+                                                          user.lastName.toString(), 50.0)
                                                       : ClipRRect(
                                                           borderRadius: BorderRadius.circular(25.0),
                                                           child: Image.network(
                                                             imageUrl,
                                                             errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                              return InitialsAvatarWidget(_rooms[index].members[0].user.firstName.toString(),
-                                                                  _rooms[index].members[0].user.lastName.toString(), 50.0);
+                                                              return InitialsAvatarWidget(user.firstName.toString(),
+                                                                  user.lastName.toString(), 50.0);
                                                             },
                                                             height: 50,
                                                             width: 50,
                                                             fit: BoxFit.fitWidth,
                                                           ),
                                                         ),
-                                                  title: Text(
-                                                    user.firstName + " " + user.lastName,
+                                                  title: Row(children: <Widget>[
+                                                    Text(
+                                                    user.firstName + " " + user.lastName+"  ",
                                                     style: TextStyle(fontSize: 15.0),
                                                   ),
+                                                   user.online ?
+                                                    Icon(
+                                                      MdiIcons.circle,
+                                                      color: Colors.green,
+                                                      size: 12,
+                                                    ) : Icon(
+                                                      MdiIcons.circle,
+                                                      color: Colors.grey[600],
+                                                      size: 12,
+                                                    ) ,
+                                                  ],), 
                                                   subtitle: Text(
                                                     iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
                                                     style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),

@@ -4,7 +4,7 @@ class Api {
   static const storageBucket = "https://storage.googleapis.com/briddgy-media/";
   static const String address = "https://backend.briddgy.com/";
   static const roomSocket = "wss://backend.briddgy.com/chat/";
-  static const alertSocket = address + "ws/alert/?token=";
+  static const alertSocket = "wss://backend.briddgy.com/chat/alert/";
   static const currentUserDetails = address + "api/users/me/";
   static const signUp = address + "api/users/";
   static const users = address + "api/users/";

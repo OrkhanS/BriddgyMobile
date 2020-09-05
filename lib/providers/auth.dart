@@ -112,7 +112,6 @@ class Auth with ChangeNotifier {
   }
 
   Future fetchAndSetUserDetails() async {
-    isLoadingUserForMain = false;
     const url = Api.currentUserDetails;
     try {
       final response = await http.get(

@@ -99,19 +99,34 @@ class _TripScreenState extends State<TripScreen> {
 //                                ),
                                 ),
                               ),
+                              trip.owner.online ?
                               Icon(
-                                MdiIcons.shieldCheck,
+                                MdiIcons.circle,
                                 color: Colors.green,
-                                size: 17,
-                              ),
+                                size: 14,
+                              ) : Icon(
+                                MdiIcons.circle,
+                                color: Colors.grey[600],
+                                size: 14,
+                              ) ,
                             ],
                           ),
-                          Padding(
+                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: Text(
+                            child: 
+                              trip.owner.online ? Text(
+                              ('online'),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.green[500],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ):
+                              Text(
                               t(context, 'last_online') + DateFormat.yMMMd().format(trip.owner.lastOnline),
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: Colors.grey[500],
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                               ),
