@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   Map valueMessages = {};
   bool socketConnected = false;
   bool socketConnectedFirebase = false;
-  var neWMessage, newMessageauth;
+  var neWMessage;
   var authProvider, messageProvider;
   IOWebSocketChannel alertChannel;
 
@@ -91,13 +91,13 @@ class _MyAppState extends State<MyApp> {
     print("ConnectedFirebase");
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, newMessageauth);
+        neWMessage.addMessages(message.values.last, authProvider);
       },
       onLaunch: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, newMessageauth);
+        neWMessage.addMessages(message.values.last, authProvider);
       },
       onResume: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, newMessageauth);
+        neWMessage.addMessages(message.values.last, authProvider);
       },
     );
   }

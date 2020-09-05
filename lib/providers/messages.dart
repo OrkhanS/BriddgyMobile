@@ -178,7 +178,6 @@ class Messages extends ChangeNotifier {
 
   bool get arethereNewMessage {
     var key = newMessage.keys.firstWhere((k) => newMessage[k] != 0, orElse: () => null);
-    print(newMessage);
     if (key != null) {
       return true;
     } else {
