@@ -6,11 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:optisend/screens/order_screen.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
+import 'package:briddgy/screens/order_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -98,7 +98,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                 order.source.cityAscii +
                                     ", " +
                                     order.source.country.substring(0, 3) +
-                                    "  >  " +
+                                    "  -  " +
                                     order.destination.cityAscii +
                                     ", " +
                                     order.destination.country,
@@ -113,40 +113,45 @@ class _OrderWidgetState extends State<OrderWidget> {
 //                                        mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Icon(
-                                  MdiIcons.calendarRange,
+                            Icon(
+                              MdiIcons.calendarRange,
 //                                color: Colors.grey[700],
-                                  color: Theme.of(context).primaryColor,
-                                  size: 16,
-                                ),
-                                Text(
-                                  DateFormat("d MMMM yyy").format(order.date),
-                                  style: TextStyle(color: Colors.grey[600]),
-                                ),
-                              ],
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
                             ),
-                            Expanded(
-                              child: SizedBox(),
+                            Text(
+                              DateFormat("d MMM yyy").format(order.date),
+                              style: TextStyle(color: Colors.grey[600]),
                             ),
-                            Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.attach_money,
+                            Spacer(),
+                            Icon(
+                              MdiIcons.weightKilogram,
 //                                color: Colors.grey[700],
-                                  color: Theme.of(context).primaryColor,
-                                  size: 16,
-                                ),
-                                SizedBox(
-                                  width: 50,
-                                  child: Text(
-                                    order.price.toString(),
-                                    maxLines: 1,
-                                    style: TextStyle(color: Colors.grey[600]),
-                                  ),
-                                ),
-                              ],
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            SizedBox(
+                              width: 50,
+                              child: Text(
+                                order.weight.toString(),
+                                maxLines: 1,
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ),
+                            Spacer(),
+                            Icon(
+                              Icons.attach_money,
+//                                color: Colors.grey[700],
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            SizedBox(
+                              width: 50,
+                              child: Text(
+                                order.price.toString(),
+                                maxLines: 1,
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
                             ),
                           ],
                         ),
@@ -341,7 +346,7 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
                           SizedBox(
                             width: 200,
                             child: Text(
-                              order.source.cityAscii + "  >  " + order.destination.cityAscii,
+                              order.source.cityAscii + "  -  " + order.destination.cityAscii,
                               maxLines: 1,
                               style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
                             ),

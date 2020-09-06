@@ -1,9 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/screens/forgotPassword_screen.dart';
-import 'package:optisend/screens/verify_email_screen.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/screens/forgotPassword_screen.dart';
+import 'package:briddgy/screens/verify_email_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../models/http_exception.dart';

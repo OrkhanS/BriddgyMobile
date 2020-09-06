@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/widgets/order_widget.dart';
-import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/widgets/order_widget.dart';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
 
 class MyItems extends StatefulWidget {
   var token, orderstripsProvider;

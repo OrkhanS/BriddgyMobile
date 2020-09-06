@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/api.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/api.dart';
 
 class ContractsScreenInfo extends StatefulWidget {
   var contract;

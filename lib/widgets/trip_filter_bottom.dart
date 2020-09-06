@@ -5,13 +5,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/city.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/models/trip.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/city.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/models/trip.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 
 class TripFilterBottomBar extends StatefulWidget {

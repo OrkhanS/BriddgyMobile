@@ -3,7 +3,7 @@
 //     final chats = chatsFromJson(jsonString);
 
 import 'dart:convert';
-import 'package:optisend/models/user.dart';
+import 'package:briddgy/models/user.dart';
 
 Chats chatsFromJson(String str) => Chats.fromJson(json.decode(str));
 

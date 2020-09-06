@@ -6,12 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/models/review.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:optisend/screens/order_screen.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/models/review.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
+import 'package:briddgy/screens/order_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 

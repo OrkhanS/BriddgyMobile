@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/demo_localization.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/main.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/screens/contracts.dart';
-import 'package:optisend/screens/my_orders.dart';
-import 'package:optisend/screens/my_trips.dart';
-import 'package:optisend/screens/profile_screen.dart';
-import 'package:optisend/screens/test.dart';
-import 'package:optisend/widgets/generators.dart';
+import 'package:briddgy/localization/demo_localization.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/main.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/screens/contracts.dart';
+import 'package:briddgy/screens/my_orders.dart';
+import 'package:briddgy/screens/my_trips.dart';
+import 'package:briddgy/screens/profile_screen.dart';
+import 'package:briddgy/screens/test.dart';
+import 'package:briddgy/widgets/generators.dart';
 import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
-import 'package:optisend/models/user.dart';
+import 'package:briddgy/models/user.dart';
 import 'chay_screen.dart';
 import 'splash_screen.dart';
 import 'package:share/share.dart';
-import 'package:optisend/screens/customer_support.dart';
+import 'package:briddgy/screens/customer_support.dart';
 import '../models/language.dart';
 
 class AccountScreen extends StatelessWidget {
@@ -83,7 +83,10 @@ class _AccountPageState extends State<AccountPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (__) => MyProfileScreen(user: user, auth: widget.auth)),
+                          MaterialPageRoute(
+                              builder: (__) => ProfileScreen(
+                                    user: user,
+                                  )),
                         );
                       },
                       child: Padding(
@@ -131,33 +134,46 @@ class _AccountPageState extends State<AccountPage> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 8.0),
-                      child: Row(
-                        children: [
-                          DropdownButton(
-                            underline: SizedBox(),
-                            icon: Icon(
-                              MdiIcons.earth,
-                              color: Colors.grey[600],
-                            ),
-                            items: Language.languageList()
-                                .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
-                                      value: lang,
-                                      child: Row(
-                                        children: <Widget>[
-                                          Text(lang.name),
-                                          Text(lang.flag),
-                                        ],
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (Language language) {
-                              _changeLanguage(language);
-                            },
+                    Card(
+                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      elevation: 3,
+                      child: ListTile(
+                        leading: Icon(MdiIcons.earth),
+                        title: DropdownButton(
+                          isExpanded: true,
+                          underline: SizedBox(),
+                          icon: Row(
+                            children: [
+                              Text(
+                                t(context, 'change_language'),
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              SizedBox(
+                                width: 40,
+                              ),
+                            ],
                           ),
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.end,
+                          items: Language.languageList()
+                              .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
+                                    value: lang,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text(lang.name),
+                                        Text(lang.flag),
+                                      ],
+                                    ),
+                                  ))
+                              .toList(),
+                          onChanged: (Language language) {
+                            _changeLanguage(language);
+                          },
+                        ),
                       ),
                     ),
                     Card(

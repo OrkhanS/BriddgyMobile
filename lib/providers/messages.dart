@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:optisend/models/api.dart';
+import 'package:briddgy/models/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:optisend/models/chats.dart';
-import 'package:optisend/models/message.dart';
+import 'package:briddgy/models/chats.dart';
+import 'package:briddgy/models/message.dart';
 
 class Messages extends ChangeNotifier {
   Map _messages = {};

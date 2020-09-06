@@ -307,5 +307,7 @@
     "empty_results" : "No results found  for the given parameters. Come check later :)",
     "my_orders" : "My Orders",
     "my_trips" : "My Trips",
-    "no_description" : "No additional info provided"
+    "no_description" : "No additional info provided",
+
+    "change_language": "Change Language"
 }

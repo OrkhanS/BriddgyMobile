@@ -1,5 +1,5 @@
-name: optisend
-description: optisend
+name: briddgy
+description: briddgy
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -86,16 +86,7 @@ flutter:
   assets:
     - i18n/en.json
     - i18n/ru.json
-    - assets/photos/google_logo.png
-    - assets/photos/facebook_logo.png
-    - assets/photos/orderer.svg
-    - assets/photos/traveler.svg
-    - assets/photos/handshake.svg
-    - assets/photos/chat_bubbles.svg
-    - assets/photos/empty_order.svg
-    - assets/photos/two_factor.svg
-    - assets/photos/tea.svg
-    - assets/photos/review.svg
+    - assets/photos/
 
   #  - images/a_dot_ham.jpeg
 

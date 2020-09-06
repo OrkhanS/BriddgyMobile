@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:optisend/models/user.dart';
+import 'package:briddgy/models/user.dart';
 
 Trip tripFromJson(String str) => Trip.fromJson(json.decode(str));
 

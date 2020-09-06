@@ -3,17 +3,17 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/api.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/api.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:optisend/widgets/generators.dart';
-import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:briddgy/widgets/generators.dart';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 import 'package:provider/provider.dart';
-import 'package:optisend/providers/auth.dart';
+import 'package:briddgy/providers/auth.dart';
 import 'dart:convert';
-import 'package:optisend/models/user.dart';
+import 'package:briddgy/models/user.dart';
 
 class EditProfileScreen extends StatefulWidget {
   var user;
@@ -117,7 +117,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: <Widget>[
-                    Text(user.firstName + " " + user.lastName),
+                    Text(
+                      user.firstName + " " + user.lastName,
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -166,46 +169,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          t(context, 'phone_number'),
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                        ),
-                        Text(
-                          t(context, 'edit'),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(color: Colors.white54),
-                        child: TextField(
-                          onChanged: (val) {
-                            // todo patch request
-                            setState(() {
-                              changeInFields = true;
-                            });
-                          },
-                          decoration: InputDecoration(
-                              fillColor: Colors.blue,
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: "+12456787654"),
-                        ),
-                      ),
-                    ),
+//                    Row(
+//                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                      children: <Widget>[
+//                        Text(
+//                          t(context, 'phone_number'),
+//                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+//                        ),
+//                        Text(
+//                          t(context, 'edit'),
+//                          style: TextStyle(
+//                            fontWeight: FontWeight.w500,
+//                            fontSize: 20,
+//                            color: Theme.of(context).primaryColor,
+//                          ),
+//                        ),
+//                      ],
+//                    ),
+//                    Padding(
+//                      padding: const EdgeInsets.all(8.0),
+//                      child: Container(
+//                        decoration: BoxDecoration(color: Colors.white54),
+//                        child: TextField(
+//                          onChanged: (val) {
+//                            // todo patch request
+//                            setState(() {
+//                              changeInFields = true;
+//                            });
+//                          },
+//                          decoration: InputDecoration(
+//                              fillColor: Colors.blue,
+//                              border: InputBorder.none,
+//                              focusedBorder: InputBorder.none,
+//                              enabledBorder: InputBorder.none,
+//                              errorBorder: InputBorder.none,
+//                              disabledBorder: InputBorder.none,
+//                              contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+//                              hintText: "+12456787654"),
+//                        ),
+//                      ),
+//                    ),
                   ],
                 ),
               ),

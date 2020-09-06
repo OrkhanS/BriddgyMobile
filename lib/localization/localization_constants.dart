@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
-import 'package:optisend/localization/demo_localization.dart';
+import 'package:briddgy/localization/demo_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String t(BuildContext context, String key) {
