@@ -256,7 +256,10 @@ class _TripScreenState extends State<TripsScreen> {
             notchMargin: 10,
             shape: CircularNotchedRectangle(),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 5.0),
+              child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+            ),
           ),
           body: SafeArea(
             child: Stack(

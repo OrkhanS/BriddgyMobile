@@ -11,7 +11,7 @@ description: optisend
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.1.1+9
+version: 0.3.0+11
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -25,7 +25,6 @@ dependencies:
   intl: ^0.16.0
   http: ^0.12.0+2
   shared_preferences: ^0.5.3+1
-  bottom_navy_bar: ^5.3.2
   #flutter_facebook_login: 2.0.0
   flutter_datetime_picker: ^1.3.4
   flutter_rating_bar: ^3.0.1+1
@@ -54,7 +53,7 @@ dependencies:
   animations: ^1.1.2
   firebase_admob: ^0.9.3+4
   utf: 0.9.0+5
-  flutter_svg: ^0.17.1
+  flutter_svg: ^0.18.0
   persistent_bottom_nav_bar: ^2.0.5
 
 
@@ -66,8 +65,6 @@ dependencies:
   cupertino_icons: ^0.1.2
 
 
-dependency_overrides:
-  flutter_svg: 0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -91,7 +88,6 @@ flutter:
     - i18n/ru.json
     - assets/photos/google_logo.png
     - assets/photos/facebook_logo.png
-    - assets/photos/earth_map.jpg
     - assets/photos/orderer.svg
     - assets/photos/traveler.svg
     - assets/photos/handshake.svg
@@ -99,6 +95,7 @@ flutter:
     - assets/photos/empty_order.svg
     - assets/photos/two_factor.svg
     - assets/photos/tea.svg
+    - assets/photos/review.svg
 
   #  - images/a_dot_ham.jpeg
 

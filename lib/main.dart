@@ -331,35 +331,46 @@ class _MyAppState extends State<MyApp> {
               title: 'Orders',
               icon: _controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
 
             PersistentBottomNavBarItem(
               title: ("Trips"),
-              icon: _controller.index == 1 ? Icon(MdiIcons.road) : Icon(MdiIcons.roadVariant),
+              icon: _controller.index == 1 ? Icon(MdiIcons.roadVariant) : Icon(MdiIcons.road),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
             PersistentBottomNavBarItem(
               title: ("Chats"),
-              icon: messageProvider.arethereNewMessage == true
-                  ? Badge(
-                      badgeColor: Colors.green,
-                      badgeContent: Text(
-                        messageProvider.newMessages.length.toString(),
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      child: Icon(MdiIcons.forumOutline),
-                    )
-                  : Icon(MdiIcons.forumOutline),
+              icon: _controller.index == 2
+                  ? messageProvider.arethereNewMessage == true
+                      ? Badge(
+                          badgeColor: Colors.green,
+                          badgeContent: Text(
+                            messageProvider.newMessages.length.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          child: Icon(MdiIcons.forum),
+                        )
+                      : Icon(MdiIcons.forum)
+                  : messageProvider.arethereNewMessage == true
+                      ? Badge(
+                          badgeColor: Colors.green,
+                          badgeContent: Text(
+                            messageProvider.newMessages.length.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          child: Icon(MdiIcons.forumOutline),
+                        )
+                      : Icon(MdiIcons.forumOutline),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
             PersistentBottomNavBarItem(
               title: ("Account"),
-              icon: Icon(MdiIcons.accountSettingsOutline),
+              icon: _controller.index == 3 ? Icon(MdiIcons.accountSettings) : Icon(MdiIcons.accountSettingsOutline),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
           ];
         }
@@ -399,7 +410,7 @@ class _MyAppState extends State<MyApp> {
             screens: _buildScreens(),
             items: _navBarsItems(),
             confineInSafeArea: true,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             handleAndroidBackButtonPress: true,
             resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
             stateManagement: true,
@@ -418,12 +429,12 @@ class _MyAppState extends State<MyApp> {
               // Screen transition animation on change of selected tab.
               animateTabTransition: true,
               curve: Curves.ease,
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 200),
             ),
             onItemSelected: (index) {
               setState(() {});
             },
-            navBarStyle: NavBarStyle.style1, // Choose the nav bar style with this property.
+            navBarStyle: NavBarStyle.style6, // Choose the nav bar style with this property.
           ),
           routes: {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),

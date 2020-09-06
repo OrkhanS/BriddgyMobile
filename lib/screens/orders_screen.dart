@@ -206,12 +206,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
         return Scaffold(
           bottomNavigationBar: BottomAppBar(
-            notchMargin: 10,
+            notchMargin: 8,
             shape: CircularNotchedRectangle(),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price)),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 5.0),
+              child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+            ),
           ),
           resizeToAvoidBottomPadding: true,
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
