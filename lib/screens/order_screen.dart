@@ -10,17 +10,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/locale.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/providers/messages.dart';
-import 'package:optisend/screens/apply_for_order.dart';
-import 'package:optisend/screens/chats_screen.dart';
-import 'package:optisend/screens/edit_order_screen.dart';
-import 'package:optisend/screens/profile_screen_another.dart';
-import 'package:optisend/widgets/generators.dart';
-import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/providers/messages.dart';
+import 'package:briddgy/screens/apply_for_order.dart';
+import 'package:briddgy/screens/chats_screen.dart';
+import 'package:briddgy/screens/edit_order_screen.dart';
+import 'package:briddgy/screens/profile_screen.dart';
+import 'package:briddgy/screens/profile_screen_another.dart';
+import 'package:briddgy/widgets/generators.dart';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:utf/utf.dart';
@@ -76,7 +77,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (__) => ProfileScreenAnother(
+                        builder: (__) => ProfileScreen(
                               user: order.owner,
                             )),
                   );
@@ -117,38 +118,39 @@ class _OrderScreenState extends State<OrderScreen> {
 //                                ),
                                 ),
                               ),
-                              order.owner.online ?
-                              Icon(
-                                MdiIcons.circle,
-                                color: Colors.green,
-                                size: 14,
-                              ) : Icon(
-                                MdiIcons.circle,
-                                color: Colors.grey[600],
-                                size: 14,
-                              ) ,
+                              order.owner.online
+                                  ? Icon(
+                                      MdiIcons.circle,
+                                      color: Colors.green,
+                                      size: 14,
+                                    )
+                                  : Icon(
+                                      MdiIcons.circle,
+                                      color: Colors.grey[600],
+                                      size: 14,
+                                    ),
                             ],
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: 
-                              order.owner.online ? Text(
-                              ('online'),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.green[500],
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ):
-                              Text(
-                              t(context, 'last_online') + DateFormat.yMMMd().format(order.owner.lastOnline),
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                            child: order.owner.online
+                                ? Text(
+                                    ('online'),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.green[500],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  )
+                                : Text(
+                                    t(context, 'last_online') + DateFormat.yMMMd().format(order.owner.lastOnline),
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                           ),
                         ],
                       ),

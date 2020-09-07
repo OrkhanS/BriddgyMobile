@@ -1,16 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/demo_localization.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/screens/add_order_screen.dart';
-import 'package:optisend/screens/add_trip_screen.dart';
-import 'package:optisend/screens/auth_screen.dart';
-import 'package:optisend/screens/my_trips.dart';
-import 'package:optisend/screens/trips_screen.dart';
+import 'package:briddgy/localization/demo_localization.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/screens/add_order_screen.dart';
+import 'package:briddgy/screens/add_trip_screen.dart';
+import 'package:briddgy/screens/auth_screen.dart';
+import 'package:briddgy/screens/my_trips.dart';
+import 'package:briddgy/screens/trips_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import './providers/auth.dart';
@@ -20,14 +21,14 @@ import './screens/account_screen.dart';
 import './screens/notification_screen.dart';
 import './screens/chats_screen.dart';
 import './screens/chat_window.dart';
-import 'package:optisend/screens/profile_screen.dart';
-import 'package:optisend/screens/order_screen.dart';
+import 'package:briddgy/screens/profile_screen.dart';
+import 'package:briddgy/screens/order_screen.dart';
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:optisend/providers/messages.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:optisend/screens/my_orders.dart';
-import 'package:optisend/screens/contracts.dart';
+import 'package:briddgy/providers/messages.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
+import 'package:briddgy/screens/my_orders.dart';
+import 'package:briddgy/screens/contracts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:badges/badges.dart';
@@ -244,6 +245,8 @@ class _MyAppState extends State<MyApp> {
     super.didChangeDependencies();
   }
 
+  var a = 0;
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -331,35 +334,46 @@ class _MyAppState extends State<MyApp> {
               title: 'Orders',
               icon: _controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
 
             PersistentBottomNavBarItem(
               title: ("Trips"),
-              icon: _controller.index == 1 ? Icon(MdiIcons.road) : Icon(MdiIcons.roadVariant),
+              icon: _controller.index == 1 ? Icon(MdiIcons.roadVariant) : Icon(MdiIcons.road),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
             PersistentBottomNavBarItem(
               title: ("Chats"),
-              icon: messageProvider.arethereNewMessage == true
-                  ? Badge(
-                      badgeColor: Colors.green,
-                      badgeContent: Text(
-                        messageProvider.newMessages.length.toString(),
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      child: Icon(MdiIcons.forumOutline),
-                    )
-                  : Icon(MdiIcons.forumOutline),
+              icon: _controller.index == 2
+                  ? messageProvider.arethereNewMessage == true
+                      ? Badge(
+                          badgeColor: Colors.green,
+                          badgeContent: Text(
+                            messageProvider.newMessages.length.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          child: Icon(MdiIcons.forum),
+                        )
+                      : Icon(MdiIcons.forum)
+                  : messageProvider.arethereNewMessage == true
+                      ? Badge(
+                          badgeColor: Colors.green,
+                          badgeContent: Text(
+                            messageProvider.newMessages.length.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          child: Icon(MdiIcons.forumOutline),
+                        )
+                      : Icon(MdiIcons.forumOutline),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
             PersistentBottomNavBarItem(
               title: ("Account"),
-              icon: Icon(MdiIcons.accountSettingsOutline),
+              icon: _controller.index == 3 ? Icon(MdiIcons.accountSettings) : Icon(MdiIcons.accountSettingsOutline),
               activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[300],
+              inactiveColor: Colors.grey[400],
             ),
           ];
         }
@@ -385,7 +399,7 @@ class _MyAppState extends State<MyApp> {
 
             return supportedLocales.first;
           },
-          title: 'Optisend',
+          title: 'briddgy',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             backgroundColor: Colors.white,
@@ -399,7 +413,7 @@ class _MyAppState extends State<MyApp> {
             screens: _buildScreens(),
             items: _navBarsItems(),
             confineInSafeArea: true,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             handleAndroidBackButtonPress: true,
             resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
             stateManagement: true,
@@ -418,12 +432,12 @@ class _MyAppState extends State<MyApp> {
               // Screen transition animation on change of selected tab.
               animateTabTransition: true,
               curve: Curves.ease,
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 200),
             ),
             onItemSelected: (index) {
               setState(() {});
             },
-            navBarStyle: NavBarStyle.style1, // Choose the nav bar style with this property.
+            navBarStyle: NavBarStyle.style6, // Choose the nav bar style with this property.
           ),
           routes: {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),

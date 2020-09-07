@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:optisend/models/user.dart';
+import 'package:briddgy/models/user.dart';
 import 'package:utf/utf.dart';
 
 Order orderFromJson(String str) => Order.fromJson(json.decode(str));

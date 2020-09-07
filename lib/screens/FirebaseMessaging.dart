@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:optisend/screens/chats_screen.dart';
+import 'package:briddgy/screens/chats_screen.dart';
 
 class FirebaseMessagingDemo extends StatefulWidget {
   FirebaseMessagingDemo() : super();

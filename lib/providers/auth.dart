@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/user.dart';
-import 'package:optisend/providers/messages.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/user.dart';
+import 'package:briddgy/providers/messages.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

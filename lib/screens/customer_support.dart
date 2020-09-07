@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:optisend/localization/localization_constants.dart';
+import 'package:briddgy/localization/localization_constants.dart';
 
 class CustomerSupport extends StatefulWidget {
   var user, message;

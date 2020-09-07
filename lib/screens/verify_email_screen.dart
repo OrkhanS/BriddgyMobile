@@ -1,7 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/providers/auth.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/providers/auth.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:pinput/pin_put/pin_put_state.dart';
 import 'package:provider/provider.dart';

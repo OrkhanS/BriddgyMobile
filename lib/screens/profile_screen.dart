@@ -1,48 +1,66 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flushbar/flushbar.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/models/stats.dart';
-import 'package:optisend/models/user.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/screens/verify_phone_screen.dart';
-import 'package:optisend/widgets/generators.dart';
-import 'package:optisend/widgets/order_widget.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/models/review.dart';
+import 'package:briddgy/models/stats.dart';
+import 'package:briddgy/models/trip.dart';
+import 'package:briddgy/models/user.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/providers/messages.dart';
+import 'package:briddgy/screens/add_review.dart';
+import 'package:briddgy/screens/chats_screen.dart';
+import 'package:briddgy/widgets/generators.dart';
+import 'package:briddgy/widgets/order_widget.dart';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
+import 'package:briddgy/widgets/review_widget.dart';
+import 'package:briddgy/widgets/trip_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'edit_profile_screen.dart';
 
-class MyProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatefulWidget {
   var user;
-  var auth;
-  MyProfileScreen({@required this.user, @required this.auth});
+  ProfileScreen({this.user});
   static const routeName = '/profile';
 
   @override
-  _MyProfileScreenState createState() => _MyProfileScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _MyProfileScreenState extends State<MyProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   List _reviews = [];
   Map _stats = {};
+  int _tabSelected;
   bool reviewsNotReady = true;
   bool statsNotReady = true;
   bool ordersNotReady = true;
+  bool tripsNotReady = true;
   User user;
   Stats stats;
   List orders = [];
+  List trips = [];
+  bool messageButton = true;
   var imageUrl;
+
+  Size size;
+
+  Auth auth;
   @override
   void initState() {
     user = widget.user;
+    _tabSelected = 1;
+    imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
     loadOrders();
+    loadTrips();
     fetchAndSetReviews();
     fetchAndSetStatistics();
     super.initState();
@@ -86,6 +104,26 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     }
   }
 
+  Future loadTrips() async {
+    String url = Api.orderById + user.id.toString() + '/trips/';
+    final response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+      },
+    );
+
+    if (this.mounted) {
+      setState(() {
+        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+        for (var i = 0; i < data["results"].length; i++) {
+          trips.add(Trip.fromJson(data["results"][i]));
+        }
+        tripsNotReady = false;
+      });
+    }
+  }
+
   Future fetchAndSetStatistics() async {
     String url = Api.userStats + user.id.toString() + '/';
     final response = await http.get(
@@ -105,18 +143,143 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    auth = Provider.of<Auth>(context, listen: false);
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (widget.auth.userdetail != null) {
-      user = widget.auth.userdetail;
-      imageUrl = widget.auth.userdetail.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
-    }
+    size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: auth.userdetail.id == user.id
+          ? RaisedButton.icon(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              color: Theme.of(context).scaffoldBackgroundColor,
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+              icon: Icon(
+                Icons.edit,
+                color: Theme.of(context).primaryColor,
+                size: 18,
+              ),
+              label: Text(
+                t(context, 'edit'),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+//                                    color: Theme.of(context).primaryColor,
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (__) => EditProfileScreen(
+                            user: user,
+                            auth: auth,
+                          )),
+//                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
+                );
+              },
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                RaisedButton.icon(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.blue,
+                    size: 18,
+                  ),
+                  label: Text(
+                    t(context, 'review-add'),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (__) => AddReviewScreen()),
+                    );
+                  },
+                ),
+                messageButton
+                    ? RaisedButton.icon(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        color: Colors.green,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                        icon: Icon(
+                          MdiIcons.chatOutline,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        label: Text(
+                          t(context, 'message'),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            messageButton = false;
+                          });
+                          var auth = Provider.of<Auth>(context, listen: false);
+                          var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                          messageProvider.createRooms(user.id, auth).whenComplete(() => {
+                                if (messageProvider.isChatRoomCreated)
+                                  {
+                                    setState(() {
+                                      messageButton = true;
+                                    }),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                                    ),
+                                    Flushbar(
+                                      title: t(context, 'success'),
+                                      message: t(context, 'chat_with') + user.firstName.toString() + t(context, 'has_been_started'),
+                                      padding: const EdgeInsets.all(8),
+                                      borderRadius: 10,
+                                      duration: Duration(seconds: 3),
+                                    )..show(context)
+                                  }
+                                else
+                                  {
+                                    setState(() {
+                                      messageButton = true;
+                                    }),
+                                    Flushbar(
+                                      title: t(context, 'failure'),
+                                      message: t(context, 'please_try_again'),
+                                      padding: const EdgeInsets.all(8),
+                                      borderRadius: 10,
+                                      duration: Duration(seconds: 3),
+                                    )..show(context)
+                                  }
+                              });
+                        },
+                      )
+                    : ProgressIndicatorWidget(show: true),
+              ],
+            ),
       body: SafeArea(
-        child:
-//        reviewsNotReady || statsNotReady || ordersNotReady
-//            ? Center(child: CircularProgressIndicator())
-//            :
-            Column(
+        child: Column(
           children: <Widget>[
             Card(
               elevation: 3,
@@ -126,6 +289,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 //                color: Colors.blueGrey,
 //              ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -242,184 +406,328 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 5),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.location_on,
-                          color: Theme.of(context).primaryColor,
-                          size: 16,
-                        ),
-                        Text(
-                          " Baku, Azerbaijan",
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 15,
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: Colors.blueGrey[50], borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                t(context, 'earned'),
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "\$" + (statsNotReady ? "0.0" : stats.totalearnings.toString()),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                              ),
+                            ],
                           ),
+                          Column(
+                            children: [
+                              Text(
+                                t(context, 'contract_plural'),
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                (statsNotReady ? "0.0" : stats.totalcontracts.toString()),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                t(context, 'trip_plural'),
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                (statsNotReady ? "0.0" : stats.totaltrips.toString()),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                t(context, 'order_plural'),
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                (statsNotReady ? "0.0" : stats.totalorders.toString()),
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  IntrinsicHeight(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          height: 40,
                         ),
                         Expanded(
-                          child: SizedBox(
-                            height: 1,
+                          child: InkWell(
+                            child: Center(
+                              child: Text(t(context, "review_plural"),
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: (_tabSelected == 1 ? Theme.of(context).primaryColorDark : Colors.grey[500]))),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _tabSelected = 1;
+                              });
+                            },
                           ),
                         ),
-                        RaisedButton.icon(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          icon: Icon(
-                            Icons.edit,
-                            color: Theme.of(context).primaryColor,
-                            size: 18,
-                          ),
-                          label: Text(
-                            t(context, 'edit'),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
-//                                    color: Theme.of(context).primaryColor,
+                        VerticalDivider(
+                          color: Colors.grey[400],
+                          thickness: 1,
+                          width: 1,
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            child: Center(
+                              child: Text(
+                                t(context, "order_plural"),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: (_tabSelected == 2 ? Theme.of(context).primaryColorDark : Colors.grey[500]),
+                                ),
+                              ),
                             ),
+                            onTap: () {
+                              setState(() {
+                                _tabSelected = 2;
+                              });
+                            },
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (__) => EditProfileScreen(
-                                        user: user,
-                                        auth: widget.auth,
-                                      )),
-//                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
-                            );
-                          },
+                        ),
+                        VerticalDivider(
+                          color: Colors.grey[400],
+                          thickness: 1,
+                          width: 1,
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            child: Center(
+                              child: Text(
+                                t(context, "trip_plural"),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: (_tabSelected == 3 ? Theme.of(context).primaryColorDark : Colors.grey[500]),
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _tabSelected = 3;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              statsNotReady
-                                  ? Text(
-                                      "\$ 0.0",
-                                      style: TextStyle(
-                                        color: Colors.grey[800],
-//                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 20,
-                                      ),
-                                    )
-                                  : Text(
-                                      "\$" + stats.totalearnings.toString(),
-                                      style: TextStyle(
-                                        color: Colors.grey[800],
-//                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                              Text(
-                                t(context, 'earned'),
-                                style: TextStyle(
-                                  //color: Colors.white,
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              statsNotReady
-                                  ? Text(
-                                      "0",
-                                      style: TextStyle(
-                                        color: Colors.grey[800],
-//                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 20,
-//                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  : Text(
-                                      stats.totalorders.toString(),
-                                      style: TextStyle(
-                                        color: Colors.grey[800],
-                                        //color: Theme.of(context).primaryColor,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                              Text(
-                                t(context, 'order_plural'),
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 10,
-                        color: Colors.red,
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              statsNotReady
-                                  ? Text(
-                                      "0",
-                                      style: TextStyle(
-                                        color: Colors.grey[800],
-//                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 20,
-//                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  : Text(
-                                      stats.totalcontracts.toString(),
-                                      style: TextStyle(
-                                        color: Colors.grey[800],
-//                                        color: Theme.of(context).primaryColor,
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                              Text(
-                                t(context, 'delivered'),
-                                style: TextStyle(
-//color: Colors.white,
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  )
+                  SizedBox(height: 5),
+//                  Padding(
+//                    padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 5),
+//                    child: Row(
+//                      children: <Widget>[
+//                        RaisedButton.icon(
+//                          padding: EdgeInsets.symmetric(horizontal: 10),
+//                          color: Colors.white,
+//                          shape: RoundedRectangleBorder(
+//                            borderRadius: BorderRadius.circular(18.0),
+//                          ),
+//                          icon: Icon(
+//                            MdiIcons.star,
+//                            color: Colors.green,
+//                            size: 18,
+//                          ),
+//                          label: Text(
+//                            t(context, 'review-add'),
+//                            style: TextStyle(
+//                              fontWeight: FontWeight.bold,
+//                              color: Colors.green,
+//                            ),
+//                          ),
+//                          onPressed: () {
+//                            Navigator.push(
+//                              context,
+//                              MaterialPageRoute(builder: (__) => AddReviewScreen()),
+//                            );
+//                          },
+//                        ),
+//                        Expanded(
+//                          child: SizedBox(
+//                            height: 1,
+//                          ),
+//                        ),
+//                        messageButton
+//                            ? RaisedButton.icon(
+//                                padding: EdgeInsets.symmetric(horizontal: 10),
+//                                color: Colors.green,
+//                                elevation: 2,
+//                                shape: RoundedRectangleBorder(
+//                                  borderRadius: BorderRadius.circular(18.0),
+//                                ),
+//                                icon: Icon(
+//                                  MdiIcons.chatOutline,
+//                                  color: Colors.white,
+//                                  size: 18,
+//                                ),
+//                                label: Text(
+//                                  t(context, 'message'),
+//                                  style: TextStyle(
+//                                    fontWeight: FontWeight.bold,
+//                                    color: Colors.white,
+//                                  ),
+//                                ),
+//                                onPressed: () {
+//                                  setState(() {
+//                                    messageButton = false;
+//                                  });
+//                                  var auth = Provider.of<Auth>(context, listen: false);
+//                                  var messageProvider = Provider.of<Messages>(context, listen: false);
+//
+//                                  messageProvider.createRooms(user.id, auth).whenComplete(() => {
+//                                        if (messageProvider.isChatRoomCreated)
+//                                          {
+//                                            setState(() {
+//                                              messageButton = true;
+//                                            }),
+//                                            Navigator.push(
+//                                              context,
+//                                              MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+//                                            ),
+//                                            Flushbar(
+//                                              title: t(context, 'success'),
+//                                              message: t(context, 'chat_with') + user.firstName.toString() + t(context, 'has_been_started'),
+//                                              padding: const EdgeInsets.all(8),
+//                                              borderRadius: 10,
+//                                              duration: Duration(seconds: 3),
+//                                            )..show(context)
+//                                          }
+//                                        else
+//                                          {
+//                                            setState(() {
+//                                              messageButton = true;
+//                                            }),
+//                                            Flushbar(
+//                                              title: t(context, 'failure'),
+//                                              message: t(context, 'please_try_again'),
+//                                              padding: const EdgeInsets.all(8),
+//                                              borderRadius: 10,
+//                                              duration: Duration(seconds: 3),
+//                                            )..show(context)
+//                                          }
+//                                      });
+//                                },
+//                              )
+//                            : ProgressIndicatorWidget(show: true),
+//                      ],
+//                    ),
+//                  ),
                 ],
               ),
             ),
+            SizedBox(height: 10),
+            //todo i18n
+            if (_reviews.length == 0 && _tabSelected == 1)
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: SvgPicture.asset(
+                      "assets/photos/empty_order.svg",
+                      height: size.height * 0.2,
+                    ),
+                  ),
+                  Text(
+                    user.firstName + " has no reviews",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.grey[500]),
+                  ),
+                ],
+              ),
+            if (orders.length == 0 && _tabSelected == 2)
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: SvgPicture.asset(
+                      "assets/photos/empty_order.svg",
+                      height: size.height * 0.2,
+                    ),
+                  ),
+                  Text(
+                    user.firstName + " has no orders",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.grey[500]),
+                  ),
+                ],
+              ),
+            if (trips.length == 0 && _tabSelected == 3)
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: SvgPicture.asset(
+                      "assets/photos/empty_order.svg",
+                      height: size.height * 0.2,
+                    ),
+                  ),
+                  Text(
+                    user.firstName + " has no trips",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.grey[500]),
+                  ),
+                ],
+              ),
             Expanded(
               child: ListView.builder(
                 itemBuilder: (context, int i) {
-                  return OrderWidget(
-                    order: orders[i],
-                    i: i,
-                  );
+                  if (_tabSelected == 1) {
+                    var loxushka = Review.fromJson(_reviews[i]);
+                    return ReviewWidget(review: loxushka);
+                  } else if (_tabSelected == 2)
+                    return OrderWidget(
+                      order: orders[i],
+                      i: i,
+                    );
+                  else {
+                    return TripWidget(
+                      trip: trips[i],
+                      i: i,
+                    );
+                  }
                 },
-                itemCount: orders.length,
+                itemCount: (_tabSelected == 1 ? _reviews.length : _tabSelected == 2 ? orders.length : trips.length),
               ),
             )
           ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:optisend/local_notications_helper.dart';
-import 'package:optisend/screens/orders_screen.dart';
+import 'package:briddgy/local_notications_helper.dart';
+import 'package:briddgy/screens/orders_screen.dart';
 //import 'package:projectname33/page/second_page.dart';
 
 class LocalNotificationWidget extends StatefulWidget {

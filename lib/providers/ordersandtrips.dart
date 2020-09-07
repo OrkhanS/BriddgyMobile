@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/models/trip.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/models/trip.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';

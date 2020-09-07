@@ -43,6 +43,7 @@
     "trip-my": "My Trip",
     "trip-my-subtitle": "See all the details of your trips",
     "order": "Order",
+    "contract_plural": "Contracts",
     "terms": "Terms & Conditions",
     "profile": "View Profile",
     "message_plural": "Messages",
@@ -306,5 +307,8 @@
     "empty_results" : "No results found  for the given parameters. Come check later :)",
     "my_orders" : "My Orders",
     "my_trips" : "My Trips",
-    "no_description" : "No additional info provided"
+    "no_description" : "No additional info provided",
+
+    "change_language": "Change Language",
+    "no_internet": "Internet connection error.\nPlease check your connectivity and try again."
 }

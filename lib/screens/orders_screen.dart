@@ -2,27 +2,29 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:animations/animations.dart';
+import 'package:briddgy/widgets/offline_widget.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optisend/localization/demo_localization.dart';
-import 'package:optisend/localization/localization_constants.dart';
-import 'package:optisend/models/api.dart';
-import 'package:optisend/models/order.dart';
-import 'package:optisend/providers/auth.dart';
-import 'package:optisend/screens/add_order_screen.dart';
-import 'package:optisend/screens/verify_email_screen.dart';
-import 'package:optisend/screens/verify_phone_screen.dart';
-import 'package:optisend/widgets/order_filter_bottom.dart';
-import 'package:optisend/widgets/order_widget.dart';
-import 'package:optisend/widgets/progress_indicator_widget.dart';
+import 'package:briddgy/localization/demo_localization.dart';
+import 'package:briddgy/localization/localization_constants.dart';
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/models/order.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/screens/add_order_screen.dart';
+import 'package:briddgy/screens/verify_email_screen.dart';
+import 'package:briddgy/screens/verify_phone_screen.dart';
+import 'package:briddgy/widgets/order_filter_bottom.dart';
+import 'package:briddgy/widgets/order_widget.dart';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:optisend/providers/ordersandtrips.dart';
-import 'package:optisend/main.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
+import 'package:briddgy/main.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = '/orders';
@@ -206,12 +208,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
         return Scaffold(
           bottomNavigationBar: BottomAppBar(
-            notchMargin: 10,
+            notchMargin: 8,
             shape: CircularNotchedRectangle(),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price)),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 5.0),
+              child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+            ),
           ),
           resizeToAvoidBottomPadding: true,
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -288,19 +291,28 @@ class _OrdersScreenState extends State<OrdersScreen> {
           body: SafeArea(
             child: Stack(
               children: <Widget>[
-                Column(
-                  children: <Widget>[
+                OfflineBuilder(
+                  connectivityBuilder: (
+                    BuildContext context,
+                    ConnectivityResult connectivity,
+                    Widget child,
+                  ) {
+                    final bool connected = connectivity != ConnectivityResult.none;
+                    return !connected
+                        ? OfflineWidget()
+                        : Column(
+                            children: <Widget>[
 //                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+                                child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
 //                        Expanded(child: SizedBox()),
-                        Text(
-                          orderstripsProvider.detailsOrder.isEmpty
-                              ? t(context, 'result_plural') + ': 0'
-                              : t(context, 'result_plural') + ": " + orderstripsProvider.detailsOrder["count"].toString(),
-                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                        ),
+                                  Text(
+                                    orderstripsProvider.detailsOrder.isEmpty
+                                        ? t(context, 'result_plural') + ': 0'
+                                        : t(context, 'result_plural') + ": " + orderstripsProvider.detailsOrder["count"].toString(),
+                                    style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
+                                  ),
 //                        DropdownButton(
 //                          hint: Text(_value),
 //                          items: [
@@ -326,83 +338,86 @@ class _OrdersScreenState extends State<OrdersScreen> {
 //                            sortData(value, orderstripsProvider);
 //                          },
 //                        ),
-                      ]),
-                    ),
-                    Expanded(
-                      child: orderstripsProvider.notLoadingOrders
-                          ? ListView(
-                              children: <Widget>[
-                                for (var i = 0; i < 10; i++) OrderFadeWidget(),
-                              ],
-                            )
-                          : NotificationListener<ScrollNotification>(
-                              onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                                  // start loading data
-                                  setState(() {
-                                    _isfetchingnew = true;
-                                  });
-                                  _loadData();
-
-                                  return true;
-                                }
-                                return false;
-                              },
-                              child: _orders.length == 0
-                                  ? Center(
-                                      child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            height: 400,
-                                            width: 200,
-                                            padding: EdgeInsets.all(10),
-                                            child: SvgPicture.asset(
-                                              "assets/photos/empty_order.svg",
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                            child: Text(
-                                              t(context, 'empty_results'),
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 25,
-                                                color: Colors.grey[500],
-                                              ),
-                                            ),
-                                          ),
+                                ]),
+                              ),
+                              Expanded(
+                                child: orderstripsProvider.notLoadingOrders
+                                    ? ListView(
+                                        children: <Widget>[
+                                          for (var i = 0; i < 10; i++) OrderFadeWidget(),
                                         ],
-                                      ),
-                                    ))
-                                  : ListView.builder(
-                                      itemBuilder: (context, int i) {
-                                        if (i + 1 == _orders.length)
-                                          return Column(
-                                            children: <Widget>[
-                                              OrderWidget(
-                                                order: _orders[i],
-                                                i: i,
-                                              ),
-                                              SizedBox(
-                                                height: 80,
-                                              ),
-                                            ],
-                                          );
-                                        else
-                                          return OrderWidget(
-                                            order: _orders[i],
-                                            i: i,
-                                          );
+                                      )
+                                    : NotificationListener<ScrollNotification>(
+                                        onNotification: (ScrollNotification scrollInfo) {
+                                          if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                            // start loading data
+                                            setState(() {
+                                              _isfetchingnew = true;
+                                            });
+                                            _loadData();
+
+                                            return true;
+                                          }
+                                          return false;
+                                        },
+                                        child: _orders.length == 0
+                                            ? Center(
+                                                child: Padding(
+                                                padding: const EdgeInsets.all(20.0),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      height: 400,
+                                                      width: 200,
+                                                      padding: EdgeInsets.all(10),
+                                                      child: SvgPicture.asset(
+                                                        "assets/photos/empty_order.svg",
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                                      child: Text(
+                                                        t(context, 'empty_results'),
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.grey[500],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ))
+                                            : ListView.builder(
+                                                itemBuilder: (context, int i) {
+                                                  if (i + 1 == _orders.length)
+                                                    return Column(
+                                                      children: <Widget>[
+                                                        OrderWidget(
+                                                          order: _orders[i],
+                                                          i: i,
+                                                        ),
+                                                        SizedBox(
+                                                          height: 80,
+                                                        ),
+                                                      ],
+                                                    );
+                                                  else
+                                                    return OrderWidget(
+                                                      order: _orders[i],
+                                                      i: i,
+                                                    );
 
 //                              return OrderFadeWidget();
-                                      },
-                                      itemCount: _orders.length,
-                                    ),
-                            ),
-                    ),
-                  ],
+                                                },
+                                                itemCount: _orders.length,
+                                              ),
+                                      ),
+                              ),
+                            ],
+                          );
+                  },
+                  child: SizedBox(),
                 ),
                 ProgressIndicatorWidget(show: _isfetchingnew),
               ],
