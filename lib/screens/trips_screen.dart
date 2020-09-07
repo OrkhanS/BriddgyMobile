@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:briddgy/widgets/offline_widget.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:briddgy/localization/localization_constants.dart';
@@ -264,18 +267,27 @@ class _TripScreenState extends State<TripsScreen> {
           body: SafeArea(
             child: Stack(
               children: <Widget>[
-                Column(
-                  children: <Widget>[
+                OfflineBuilder(
+                  connectivityBuilder: (
+                    BuildContext context,
+                    ConnectivityResult connectivity,
+                    Widget child,
+                  ) {
+                    final bool connected = connectivity != ConnectivityResult.none;
+                    return !connected
+                        ? OfflineWidget()
+                        : Column(
+                            children: <Widget>[
 //                    FilterBarTrip(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                        Text(
-                          orderstripsProvider.detailsTrip.isEmpty
-                              ? "${t(context, 'result_plural')}: 0"
-                              : "${t(context, 'result_plural')}: " + orderstripsProvider.detailsTrip["count"].toString(),
-                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                        ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                                  Text(
+                                    orderstripsProvider.detailsTrip.isEmpty
+                                        ? "${t(context, 'result_plural')}: 0"
+                                        : "${t(context, 'result_plural')}: " + orderstripsProvider.detailsTrip["count"].toString(),
+                                    style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
+                                  ),
 //                        DropdownButton(
 //                          hint: Text(_value),
 //                          items: [
@@ -302,62 +314,65 @@ class _TripScreenState extends State<TripsScreen> {
 //                            sortData(value, orderstripsProvider);
 //                          },
 //                        ),
-                      ]),
-                    ),
-                    Expanded(
-                      child: orderstripsProvider.notLoaded != false
-                          ? ListView(
-                              children: <Widget>[
-                                for (var i = 0; i < 10; i++) TripFadeWidget(),
-                              ],
-                            )
-                          : NotificationListener<ScrollNotification>(
-                              onNotification: (ScrollNotification scrollInfo) {
-                                if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                                  // start loading data
-                                  setState(() {
-                                    _isfetchingnew = true;
-                                  });
-                                  _loadData();
-                                }
-                              },
-                              child: _trips.length == 0
-                                  ? Center(
-                                      child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            height: 400,
-                                            width: 200,
-                                            padding: EdgeInsets.all(10),
-                                            child: SvgPicture.asset(
-                                              "assets/photos/empty_order.svg",
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                            child: Text(
-                                              t(context, 'empty_results'),
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 25,
-                                                color: Colors.grey[500],
-                                              ),
-                                            ),
-                                          ),
+                                ]),
+                              ),
+                              Expanded(
+                                child: orderstripsProvider.notLoaded != false
+                                    ? ListView(
+                                        children: <Widget>[
+                                          for (var i = 0; i < 10; i++) TripFadeWidget(),
                                         ],
+                                      )
+                                    : NotificationListener<ScrollNotification>(
+                                        onNotification: (ScrollNotification scrollInfo) {
+                                          if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                                            // start loading data
+                                            setState(() {
+                                              _isfetchingnew = true;
+                                            });
+                                            _loadData();
+                                          }
+                                        },
+                                        child: _trips.length == 0
+                                            ? Center(
+                                                child: Padding(
+                                                padding: const EdgeInsets.all(20.0),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      height: 400,
+                                                      width: 200,
+                                                      padding: EdgeInsets.all(10),
+                                                      child: SvgPicture.asset(
+                                                        "assets/photos/empty_order.svg",
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                                      child: Text(
+                                                        t(context, 'empty_results'),
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 25,
+                                                          color: Colors.grey[500],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ))
+                                            : ListView.builder(
+                                                itemBuilder: (context, int i) {
+                                                  return TripWidget(trip: _trips[i], i: i);
+                                                },
+                                                itemCount: _trips == null ? 0 : _trips.length,
+                                              ),
                                       ),
-                                    ))
-                                  : ListView.builder(
-                                      itemBuilder: (context, int i) {
-                                        return TripWidget(trip: _trips[i], i: i);
-                                      },
-                                      itemCount: _trips == null ? 0 : _trips.length,
-                                    ),
-                            ),
-                    ),
-                  ],
+                              ),
+                            ],
+                          );
+                  },
+                  child: SizedBox(),
                 ),
                 ProgressIndicatorWidget(
                   show: _isfetchingnew,

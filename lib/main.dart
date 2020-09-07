@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -243,6 +244,8 @@ class _MyAppState extends State<MyApp> {
     });
     super.didChangeDependencies();
   }
+
+  var a = 0;
 
   @override
   Widget build(BuildContext context) {

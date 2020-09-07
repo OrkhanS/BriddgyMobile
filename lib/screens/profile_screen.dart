@@ -196,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(18.0),
                   ),
                   icon: Icon(
-                    MdiIcons.star,
+                    Icons.add,
                     color: Colors.blue,
                     size: 18,
                   ),

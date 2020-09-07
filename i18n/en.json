@@ -309,5 +309,6 @@
     "my_trips" : "My Trips",
     "no_description" : "No additional info provided",
 
-    "change_language": "Change Language"
+    "change_language": "Change Language",
+    "no_internet": "Internet connection error.\nPlease check your connectivity and try again."
 }
