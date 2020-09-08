@@ -30,7 +30,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   @override
   void initState() {
     review = widget.review;
-    imageUrl = review.author.avatarpic == null ? Api.noPictureImage : Api.storageBucket + review.author.avatarpic.toString();
+    imageUrl = review.reviewFrom.avatarpic == null ? Api.noPictureImage : Api.storageBucket + review.reviewFrom.avatarpic.toString();
     super.initState();
   }
 
@@ -63,7 +63,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        review.author.firstName + " " + review.author.lastName,
+                        review.reviewFrom.firstName + " " + review.reviewFrom.lastName,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(

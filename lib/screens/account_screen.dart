@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'package:briddgy/models/user.dart';
-import 'chay_screen.dart';
+import 'chay_screen1.dart';
 import 'splash_screen.dart';
 import 'package:share/share.dart';
 import 'package:briddgy/screens/customer_support.dart';

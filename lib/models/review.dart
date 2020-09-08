@@ -13,27 +13,31 @@ String reviewToJson(Review data) => json.encode(data.toJson());
 class Review {
   Review({
     this.id,
-    this.author,
+    this.reviewFrom,
     this.reviewTo,
     this.comment,
+    this.date,
   });
 
   int id;
-  User author;
+  User reviewFrom;
   int reviewTo;
   String comment;
+  DateTime date; 
 
   factory Review.fromJson(Map<String, dynamic> json) => Review(
         id: json["id"],
-        author: User.fromJson(json["author"]),
+        reviewFrom: User.fromJson(json["reviewFrom"]),
         reviewTo: json["reviewTo"],
         comment: utf8.decode(json["comment"].toString().codeUnits),
+        date: DateTime.parse(json["date"]),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "author": author.toJson(),
+        "reviewFrom": reviewFrom.toJson(),
         "reviewTo": reviewTo,
         "comment": comment,
+        "date": date.toIso8601String(),
       };
 }
