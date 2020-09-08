@@ -63,7 +63,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        review.reviewFrom.firstName + " " + review.reviewFrom.lastName,
+                        review.reviewFrom.firstName + " " + review.reviewFrom.lastName + review.rating.toString(),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(
