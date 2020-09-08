@@ -240,7 +240,7 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.scriptTextOutline),
                             title: Text(
-                              t(context, 'accepted_deals'),
+                              t(context, 'my_contracts'),
                               style: TextStyle(
                                 fontSize: 17,
                                 color: Colors.grey[600],
