@@ -19,7 +19,6 @@ import 'package:briddgy/screens/apply_for_order.dart';
 import 'package:briddgy/screens/chats_screen.dart';
 import 'package:briddgy/screens/edit_order_screen.dart';
 import 'package:briddgy/screens/profile_screen.dart';
-import 'package:briddgy/screens/profile_screen_another.dart';
 import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';

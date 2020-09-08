@@ -1,17 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/models/api.dart';
 import 'package:briddgy/models/trip.dart';
-import 'package:briddgy/providers/auth.dart';
-import 'package:briddgy/providers/messages.dart';
-import 'package:briddgy/screens/chats_screen.dart';
-import 'package:briddgy/screens/profile_screen_another.dart';
 import 'package:briddgy/screens/trip_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import 'generators.dart';
 

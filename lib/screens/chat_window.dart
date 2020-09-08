@@ -14,7 +14,6 @@ import 'package:briddgy/models/user.dart';
 import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/screens/new_contract_screen.dart';
 import 'package:briddgy/screens/profile_screen.dart';
-import 'package:briddgy/screens/profile_screen_another.dart';
 import 'package:briddgy/screens/verify_phone_screen.dart';
 import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
