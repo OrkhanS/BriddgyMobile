@@ -69,7 +69,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
+  Future removeReview(i) async {
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text("Are you sure you want to delete this review?"),
+              content: Text("This action cannot be undone"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                ),
+                FlatButton(
+                  child: Text('Yes,delete!'),
+                  onPressed: () {
+                    var url = Api.writeDeleteReview;
+                    http.delete(
+                      url,
+                      headers: {
+                        HttpHeaders.contentTypeHeader: "application/json",
+                        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                      },
+                    );
+                    var auth = Provider.of<Auth>(context, listen: false);
+                    auth.reviews.removeAt(i);
+                    auth.notifyAuth();
+                    Navigator.of(ctx).pop();
+                    Flushbar(
+                      flushbarStyle: FlushbarStyle.GROUNDED,
+                      titleText: Text(
+                        "Success",
+                        style: TextStyle(color: Colors.black, fontSize: 22),
+                      ),
+                      messageText: Text(
+                        "Review has been deleted",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      icon: Icon(MdiIcons.delete),
+                      backgroundColor: Colors.white,
+                      borderColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.all(10),
+                      margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                      borderRadius: 10,
+                      duration: Duration(seconds: 5),
+                    )..show(context);
+                  },
+                )
+              ],
+            ),
+          );
 
+  }
+  
   Future loadOrders() async {
     String url = Api.orderById + user.id.toString() + '/orders/';
     final response = await http.get(

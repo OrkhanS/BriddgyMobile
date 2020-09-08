@@ -200,7 +200,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                                       style: TextStyle(color: Colors.black, fontSize: 22),
                                     ),
                                     messageText: Text(
-                                      "Order have been deleted",
+                                      "Order has been deleted",
                                       style: TextStyle(color: Colors.black),
                                     ),
                                     icon: Icon(MdiIcons.delete),
