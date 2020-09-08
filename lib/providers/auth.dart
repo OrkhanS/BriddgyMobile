@@ -47,7 +47,9 @@ class Auth with ChangeNotifier {
 
   List get reviews => _reviews;
   List get stats => _stats;
-
+  set reviews(reviews) {
+    _reviews = reviews;
+  }
   bool get isAuth {
     return _token != null;
   }

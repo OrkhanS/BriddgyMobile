@@ -57,14 +57,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    _reviews = [];
     user = widget.user;
+    auth = Provider.of<Auth>(context,listen: false);
+    auth.reviews = []; auth.reviewsloading = true;
+    url = Api.users + user.id.toString() + "/reviews/";
+    auth.fetchAndSetReviews(url);
+    _reviews = [];
     _tabSelected = 1;
     imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
     loadOrders();
     loadTrips();
-    url = Api.users + user.id.toString() + "/reviews/";
-    Provider.of<Auth>(context,listen: false).fetchAndSetReviews(url);
     fetchAndSetStatistics();
     super.initState();
   }
@@ -88,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 FlatButton(
                   child: Text('Yes,delete!'),
                   onPressed: () {
-                    var url = Api.writeDeleteReview;
+                    var url = Api.writeDeleteReview+user.id.toString()+'/';
                     http.delete(
                       url,
                       headers: {
