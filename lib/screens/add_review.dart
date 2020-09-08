@@ -167,7 +167,7 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
                                       showAddReviewButton = false;
                                     });
                                     var now = DateTime.now();
-                                    final url = Api.writeReview;
+                                    final url = Api.writeDeleteReview;
                                     http.post(
                                       url,
                                       headers: {

@@ -94,6 +94,10 @@ class Auth with ChangeNotifier {
     }
   }
 
+  notifyAuth(){
+    notifyListeners();
+  }
+
   Future fetchAndSetReviews(url) async {
       reviewsNotReady = false;
       final response = await http.get(

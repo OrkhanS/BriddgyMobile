@@ -30,6 +30,6 @@ class Api {
   static const addOrderImage = address + "api/fileupload/orderimage/";
   static const addUserImage = address + "api/fileupload/userimage/";
   static const applyForDelivery = address + "api/contracts/sign/";
-  static const writeReview = address + "api/users/review/";
+  static const writeDeleteReview = address + "api/users/review/";
   static const noPictureImage = "https://cdn2.iconfinder.com/data/icons/outlined-set-1/29/no_camera-512.png";
 }
