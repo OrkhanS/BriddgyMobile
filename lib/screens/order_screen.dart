@@ -210,28 +210,6 @@ class _OrderScreenState extends State<OrderScreen> {
                 ),
               ),
             ),
-//            Padding(
-//              padding: EdgeInsets.symmetric(horizontal: 10),
-//              child: AppBar(
-//                backgroundColor: Colors.white,
-//                centerTitle: true,
-//                leading: IconButton(
-//                  color: Theme.of(context).primaryColor,
-//                  icon: Icon(
-//                    Icons.chevron_left,
-//                    size: 24,
-//                  ),
-//                  onPressed: () {
-//                    Navigator.of(context).pop();
-//                  },
-//                ),
-//                title: Text(
-//                  order.title.toString(),
-//                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-//                ),
-//                elevation: 1,
-//              ),
-//            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -247,7 +225,7 @@ class _OrderScreenState extends State<OrderScreen> {
                             CarouselSlider(
                               options: CarouselOptions(
                                 initialPage: 0,
-                                enableInfiniteScroll: true,
+                                enableInfiniteScroll: false,
                                 reverse: false,
                                 autoPlay: true,
                                 autoPlayInterval: Duration(seconds: 5),
