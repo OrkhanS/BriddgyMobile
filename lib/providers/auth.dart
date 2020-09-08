@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
 
+import 'package:briddgy/models/review.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:briddgy/models/api.dart';
@@ -26,10 +27,11 @@ class Auth with ChangeNotifier {
   bool statsNotReady = true;
   bool statsNotReadyForProfile = true;
   bool reviewsNotReady = true;
-  bool reviewsNotReadyForProfile = true;
+  bool reviewsloading = true;
   bool verificationStatus = false;
   bool passwordResetStatus = false;
   String deviceToken;
+  Map reviewDetail = {};
 
   String get myToken {
     return myTokenFromStorage;
@@ -92,24 +94,28 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future fetchAndSetReviews() async {
-    const url = Api.myReviews;
-    if (_token != null) {
+  Future fetchAndSetReviews(url) async {
       reviewsNotReady = false;
       final response = await http.get(
         url,
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          "Authorization": "Token " + _token,
-        },
+         headers: isAuth
+          ? {
+              HttpHeaders.contentTypeHeader: "application/json",
+              "Authorization": "Token " + token,
+            }
+          : {
+              HttpHeaders.contentTypeHeader: "application/json",
+            },
       );
-
-      final dataOrders = json.decode(response.body) as Map<String, dynamic>;
-      _reviews = dataOrders["results"];
-      reviewsNotReadyForProfile = false;
+      _reviews = [];
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      for (var i = 0; i < data["results"].length; i++) {
+          _reviews.add(Review.fromJson(data["results"][i]));
+      }
+      reviewDetail = {"next": data["next"], "count": data["count"]};
+      reviewsloading = false;
       notifyListeners();
     }
-  }
 
   Future fetchAndSetUserDetails() async {
     const url = Api.currentUserDetails;

@@ -1,9 +1,20 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
+import 'package:flushbar/flushbar.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/models/user.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+
 
 class AddReviewScreen extends StatefulWidget {
   final User user;
@@ -16,12 +27,19 @@ class AddReviewScreen extends StatefulWidget {
 
 class _AddReviewScreenState extends State<AddReviewScreen> {
   double _rating = 5;
-
+  User user;
   String _review = '';
+  bool showAddReviewButton = true;
+
+  @override
+  void initState() {
+    user = widget.user;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+      return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -125,28 +143,96 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
                                   _review = val;
                                 },
                               ),
-                              RaisedButton.icon(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                color: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                icon: Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                                label: Text(
-                                  t(context, 'review-add'),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                              if(showAddReviewButton)
+                                RaisedButton.icon(
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  color: Colors.green,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
                                   ),
+                                  icon: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    t(context, 'review-add'),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      showAddReviewButton = false;
+                                    });
+                                    var now = DateTime.now();
+                                    final url = Api.writeReview;
+                                    http.post(
+                                      url,
+                                      headers: {
+                                          HttpHeaders.contentTypeHeader: "application/json",
+                                          "Authorization": "Token " + Provider.of<Auth>(context,listen:false).myTokenFromStorage,
+                                      },
+                                      body: json.encode({
+                                          "reviewTo": user.id,
+                                          "comment": _review,
+                                          "rating": _rating,
+                                          "Date": DateFormat('yyyy-MM-dd hh:mm:ss').format(now).toString()
+                                        })
+                                      
+                                    ).then((value){
+                                      if(value.statusCode == 200){
+                                        Navigator.pop(context);
+                                        var auth = Provider.of<Auth>(context,listen: false);
+                                        var url = Api.users + user.id.toString() + "/reviews/";
+                                        auth.reviewsloading = true; auth.fetchAndSetReviews(url);
+                                        Flushbar(
+                                        title: "${t(context, 'success')}!",
+                                        backgroundColor: Colors.green[800],
+                                        message: t(context, 'review_added'),
+                                        padding: const EdgeInsets.all(8),
+                                        borderRadius: 10,
+                                        duration: Duration(seconds: 3),
+                                      )..show(context);
+                                      } else if(value.statusCode == 403){
+                                          Flushbar(
+                                          title: "${t(context, 'failed')}!",
+                                          backgroundColor: Colors.red[800],
+                                          message: t(context, 'review_not_added_contract'),
+                                          padding: const EdgeInsets.all(8),
+                                          borderRadius: 10,
+                                          duration: Duration(seconds: 3),
+                                        )..show(context);
+                                      } else if (value.statusCode == 409){
+                                        Flushbar(
+                                          title: "${t(context, 'failed')}!",
+                                          backgroundColor: Colors.red[800],
+                                          message: t(context, 'review_not_added'),
+                                          padding: const EdgeInsets.all(8),
+                                          borderRadius: 10,
+                                          duration: Duration(seconds: 3),
+                                        )..show(context);
+                                      } else{
+                                        Flushbar(
+                                            title: t(context, 'failure'),
+                                            message: t(context, 'please_try_again'),
+                                            padding: const EdgeInsets.all(8),
+                                            borderRadius: 10,
+                                            duration: Duration(seconds: 3),
+                                          )..show(context);
+                                      }
+                                      setState(() {
+                                        showAddReviewButton = true;
+                                      });
+
+                                    });
+                                  },
                                 ),
-                                onPressed: () {
-                                  //todo Orxan
-                                },
-                              ),
+
+                                if(!showAddReviewButton)
+                                ProgressIndicatorWidget(show: true)
+                            
                             ],
                           ),
                         ),
@@ -159,6 +245,6 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
           ),
         ),
       ),
-    );
+    );      
   }
 }

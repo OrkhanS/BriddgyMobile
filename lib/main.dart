@@ -283,7 +283,7 @@ class _MyAppState extends State<MyApp> {
               auth.isLoadingUserDetails = true;
             }
           });
-        if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetReviews();
+        //if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetReviews();
         if (auth.statsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetStatistics();
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.white10,

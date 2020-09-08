@@ -50,39 +50,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List trips = [];
   bool messageButton = true;
   var imageUrl;
-
+  String url;
   Size size;
-
+  String nextReviewURL = "FirstCall";
   Auth auth;
+
   @override
   void initState() {
+    _reviews = [];
     user = widget.user;
     _tabSelected = 1;
     imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
     loadOrders();
     loadTrips();
-    fetchAndSetReviews();
+    url = Api.users + user.id.toString() + "/reviews/";
+    Provider.of<Auth>(context,listen: false).fetchAndSetReviews(url);
     fetchAndSetStatistics();
     super.initState();
   }
 
-  Future fetchAndSetReviews() async {
-    String url = Api.users + user.id.toString() + "/reviews/";
-    final response = await http.get(
-      url,
-      headers: {
-        HttpHeaders.contentTypeHeader: "application/json",
-      },
-    );
-
-    if (this.mounted) {
-      setState(() {
-        final dataReviews = json.decode(response.body) as Map<String, dynamic>;
-        _reviews = dataReviews["results"];
-        reviewsNotReady = false;
-      });
-    }
-  }
 
   Future loadOrders() async {
     String url = Api.orderById + user.id.toString() + '/orders/';
@@ -150,8 +136,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
-    return Scaffold(
+    return Consumer<Auth>(
+      builder: (context, provider, child) {
+        if (!provider.reviewsloading) {
+          _reviews = [];
+          _reviews = provider.reviews;
+        }
+        size = MediaQuery.of(context).size;
+        return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: auth.userdetail.id == user.id
           ? RaisedButton.icon(
@@ -210,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (__) => AddReviewScreen()),
+                      MaterialPageRoute(builder: (__) => AddReviewScreen(user: user,)),
                     );
                   },
                 ),
@@ -713,7 +705,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ListView.builder(
                 itemBuilder: (context, int i) {
                   if (_tabSelected == 1) {
-                    var loxushka = Review.fromJson(_reviews[i]);
+                    var loxushka = _reviews[i] ;
                     return ReviewWidget(review: loxushka);
                   } else if (_tabSelected == 2)
                     return OrderWidget(
@@ -734,5 +726,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  
+    },);
   }
 }
