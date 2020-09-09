@@ -32,7 +32,7 @@ class User {
   String email;
   bool isActive;
   bool isStaff;
-  var rating;
+  double rating;
   bool isNumberVerified;
   bool isEmailVerified;
   bool isPhotoVerified;
@@ -49,7 +49,7 @@ class User {
         email: json["email"],
         isActive: json["is_active"],
         isStaff: json["is_staff"],
-        rating: json["rating"].toDouble(),
+        rating: json["rating"] as double,
         isNumberVerified: json["is_number_verified"],
         isEmailVerified: json["is_email_verified"],
         isPhotoVerified: json["is_photo_verified"],

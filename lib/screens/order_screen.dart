@@ -19,9 +19,9 @@ import 'package:briddgy/screens/apply_for_order.dart';
 import 'package:briddgy/screens/chats_screen.dart';
 import 'package:briddgy/screens/edit_order_screen.dart';
 import 'package:briddgy/screens/profile_screen.dart';
-import 'package:briddgy/screens/profile_screen_another.dart';
 import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:utf/utf.dart';
@@ -30,8 +30,9 @@ import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class OrderScreen extends StatefulWidget {
-  Order order;
-  OrderScreen({this.order});
+  final Order order;
+  final int i;
+  OrderScreen({@required this.order, @required this.i});
   static const routeName = '/orders/item';
   @override
   _OrderScreenState createState() => _OrderScreenState();
@@ -501,7 +502,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                         size: 18,
                                       ),
                                       label: Text(
-                                        " ${t(context, 'delete_order')}",
+                                        " ${t(context, 'delete')}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
@@ -524,9 +525,21 @@ class _OrderScreenState extends State<OrderScreen> {
                                                 },
                                               ),
                                               FlatButton(
-                                                child: Text('Yes,delete!'),
+                                                child: Text(
+                                                  t(context, 'yes_delete'),
+                                                ),
                                                 onPressed: () {
-                                                  //todo Orxan
+                                                  var url = Api.orders + order.id.toString() + '/';
+                                                  http.delete(
+                                                    url,
+                                                    headers: {
+                                                      HttpHeaders.contentTypeHeader: "application/json",
+                                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                    },
+                                                  ).then((value) {});
+                                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                                  orderprovider.myorders.removeAt(widget.i);
+                                                  orderprovider.notify();
                                                   Navigator.of(ctx).pop();
                                                 },
                                               )

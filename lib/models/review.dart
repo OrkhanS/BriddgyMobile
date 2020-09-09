@@ -11,19 +11,14 @@ Review reviewFromJson(String str) => Review.fromJson(json.decode(str));
 String reviewToJson(Review data) => json.encode(data.toJson());
 
 class Review {
-  Review({
-    this.id,
-    this.reviewFrom,
-    this.reviewTo,
-    this.comment,
-    this.date,
-  });
+  Review({this.id, this.reviewFrom, this.reviewTo, this.comment, this.date, this.rating});
 
   int id;
   User reviewFrom;
   int reviewTo;
   String comment;
-  DateTime date; 
+  DateTime date;
+  int rating;
 
   factory Review.fromJson(Map<String, dynamic> json) => Review(
         id: json["id"],
@@ -31,6 +26,7 @@ class Review {
         reviewTo: json["reviewTo"],
         comment: utf8.decode(json["comment"].toString().codeUnits),
         date: DateTime.parse(json["date"]),
+        rating: json["rating"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,5 +35,6 @@ class Review {
         "reviewTo": reviewTo,
         "comment": comment,
         "date": date.toIso8601String(),
+        "rating": rating,
       };
 }

@@ -12,7 +12,6 @@ import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/models/user.dart';
 import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/screens/chat_window.dart';
-import 'package:briddgy/screens/profile_screen_another.dart';
 import 'package:briddgy/screens/report_user_screen.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
@@ -190,37 +189,34 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 7.0),
                                                 child: ListTile(
                                                   leading: imageUrl == Api.noPictureImage
-                                                      ? InitialsAvatarWidget(user.firstName.toString(),
-                                                          user.lastName.toString(), 50.0)
+                                                      ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 50.0)
                                                       : ClipRRect(
                                                           borderRadius: BorderRadius.circular(25.0),
                                                           child: Image.network(
                                                             imageUrl,
                                                             errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                              return InitialsAvatarWidget(user.firstName.toString(),
-                                                                  user.lastName.toString(), 50.0);
+                                                              return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 50.0);
                                                             },
                                                             height: 50,
                                                             width: 50,
                                                             fit: BoxFit.fitWidth,
                                                           ),
                                                         ),
-                                                  title: Row(children: <Widget>[
-                                                    Text(
-                                                    user.firstName + " " + user.lastName+"  ",
-                                                    style: TextStyle(fontSize: 15.0),
+                                                  title: Row(
+                                                    children: <Widget>[
+                                                      Text(
+                                                        user.firstName + " " + user.lastName + "  ",
+                                                        style: TextStyle(fontSize: 15.0),
+                                                      ),
+                                                      user.online
+                                                          ? Icon(
+                                                              MdiIcons.circle,
+                                                              color: Colors.green,
+                                                              size: 12,
+                                                            )
+                                                          : SizedBox()
+                                                    ],
                                                   ),
-                                                   user.online ?
-                                                    Icon(
-                                                      MdiIcons.circle,
-                                                      color: Colors.green,
-                                                      size: 12,
-                                                    ) : Icon(
-                                                      MdiIcons.circle,
-                                                      color: Colors.grey[600],
-                                                      size: 12,
-                                                    ) ,
-                                                  ],), 
                                                   subtitle: Text(
                                                     iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
                                                     style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),

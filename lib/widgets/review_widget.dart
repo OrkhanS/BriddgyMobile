@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/cupertino.dart';
@@ -17,7 +18,8 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ReviewWidget extends StatefulWidget {
   final Review review;
-  ReviewWidget({@required this.review});
+  final int i;
+  ReviewWidget({@required this.review, @required this.i});
 
   @override
   _ReviewWidgetState createState() => _ReviewWidgetState();
@@ -32,6 +34,63 @@ class _ReviewWidgetState extends State<ReviewWidget> {
     review = widget.review;
     imageUrl = review.reviewFrom.avatarpic == null ? Api.noPictureImage : Api.storageBucket + review.reviewFrom.avatarpic.toString();
     super.initState();
+  }
+
+  Future removeReview(i) async {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("Are you sure you want to delete this review?"),
+        content: Text("This action cannot be undone"),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.red),
+            ),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('Yes,delete!'),
+            onPressed: () {
+              var url = Api.writeDeleteReview + review.reviewTo.toString() + "/";
+              print(url);
+              http.delete(
+                url,
+                headers: {
+                  HttpHeaders.contentTypeHeader: "application/json",
+                  "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                },
+              );
+              var auth = Provider.of<Auth>(context, listen: false);
+              auth.reviews.removeAt(i);
+              auth.notifyAuth();
+              Navigator.of(ctx).pop();
+              Flushbar(
+                flushbarStyle: FlushbarStyle.GROUNDED,
+                titleText: Text(
+                  "Success",
+                  style: TextStyle(color: Colors.black, fontSize: 22),
+                ),
+                messageText: Text(
+                  "Review has been deleted",
+                  style: TextStyle(color: Colors.black),
+                ),
+                icon: Icon(MdiIcons.delete),
+                backgroundColor: Colors.white,
+                borderColor: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.all(10),
+                margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                borderRadius: 10,
+                duration: Duration(seconds: 5),
+              )..show(context);
+            },
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -62,20 +121,49 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        review.reviewFrom.firstName + " " + review.reviewFrom.lastName,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[800],
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            review.reviewFrom.firstName + " " + review.reviewFrom.lastName,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[800],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Spacer(),
+                          Text(
+                            DateFormat("d MMMM yyyy").format(review.date),
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Spacer(),
+                          RatingBar(
+                            initialRating: review.rating.toDouble(),
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            glowColor: Colors.amber,
+                            glowRadius: .2,
+                            itemSize: 15,
+                            allowHalfRating: false,
+                            itemCount: 5,
+                            itemPadding: EdgeInsets.symmetric(horizontal: 1.0),
+                            itemBuilder: (context, _) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                          ),
+                        ],
                       ),
                       Text(
                         review.comment,
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 10,
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[800],
@@ -85,6 +173,26 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                   ),
                 ),
               ),
+              if (Provider.of<Auth>(context, listen: false).isAuth)
+                if (review.reviewFrom.id == Provider.of<Auth>(context, listen: false).user.id)
+                  GestureDetector(
+                    onTap: () {
+                      removeReview(widget.i);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.red[200],
+                        ),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.red[400],
+                      ),
+                    ),
+                  )
             ],
           ),
         ),
@@ -100,16 +208,16 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   }
 }
 
-class OrderSimpleWidget extends StatefulWidget {
+class ReviewSimpleWidget extends StatefulWidget {
   Order order;
   var i;
-  OrderSimpleWidget({@required this.order, @required this.i});
+  ReviewSimpleWidget({@required this.order, @required this.i});
 
   @override
-  _OrderSimpleWidgetState createState() => _OrderSimpleWidgetState();
+  _ReviewSimpleWidgetState createState() => _ReviewSimpleWidgetState();
 }
 
-class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
+class _ReviewSimpleWidgetState extends State<ReviewSimpleWidget> {
   Order order;
   var imageUrl;
   var i;
@@ -266,7 +374,7 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
   }
 }
 
-class OrderFadeWidget extends StatelessWidget {
+class ReviewFadeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
