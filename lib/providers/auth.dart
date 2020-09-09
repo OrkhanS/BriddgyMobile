@@ -50,6 +50,7 @@ class Auth with ChangeNotifier {
   set reviews(reviews) {
     _reviews = reviews;
   }
+
   bool get isAuth {
     return _token != null;
   }
@@ -96,15 +97,15 @@ class Auth with ChangeNotifier {
     }
   }
 
-  notifyAuth(){
+  notifyAuth() {
     notifyListeners();
   }
 
   Future fetchAndSetReviews(url) async {
-      reviewsNotReady = false;
-      final response = await http.get(
-        url,
-         headers: isAuth
+    reviewsNotReady = false;
+    final response = await http.get(
+      url,
+      headers: isAuth
           ? {
               HttpHeaders.contentTypeHeader: "application/json",
               "Authorization": "Token " + token,
@@ -112,16 +113,16 @@ class Auth with ChangeNotifier {
           : {
               HttpHeaders.contentTypeHeader: "application/json",
             },
-      );
-      _reviews = [];
-      final data = json.decode(response.body) as Map<String, dynamic>;
-      for (var i = 0; i < data["results"].length; i++) {
-          _reviews.add(Review.fromJson(data["results"][i]));
-      }
-      reviewDetail = {"next": data["next"], "count": data["count"]};
-      reviewsloading = false;
-      notifyListeners();
+    );
+    _reviews = [];
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    for (var i = 0; i < data["results"].length; i++) {
+      _reviews.add(Review.fromJson(data["results"][i]));
     }
+    reviewDetail = {"next": data["next"], "count": data["count"]};
+    reviewsloading = false;
+    notifyListeners();
+  }
 
   Future fetchAndSetUserDetails() async {
     const url = Api.currentUserDetails;
@@ -133,8 +134,7 @@ class Auth with ChangeNotifier {
           "Authorization": "Token " + myTokenFromStorage,
         },
       ).then((response) {
-        Map<String, dynamic> data =
-            json.decode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
         user = User.fromJson(data);
         isLoadingUserForMain = false;
         isLoadingUserDetails = false;
@@ -146,8 +146,7 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
+  Future<void> _authenticate(String email, String password, String urlSegment) async {
     const url = "http://briddgy.herokuapp.com/api/auth/";
     try {
       final response = await http.post(
@@ -259,8 +258,7 @@ class Auth with ChangeNotifier {
     });
   }
 
-  Future<void> signup(String email, String password, String firstname,
-      String lastname, String deviceID) async {
+  Future<void> signup(String email, String password, String firstname, String lastname, String deviceID) async {
     const url = Api.signUp;
     try {
       final response = await http.post(
@@ -298,7 +296,7 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> login(String email, String password, String deviceID,context) async {
+  Future<void> login(String email, String password, String deviceID, context) async {
     const url = Api.login;
     deviceToken = deviceID;
     try {
@@ -314,8 +312,7 @@ class Auth with ChangeNotifier {
         ),
       );
       final responseData = json.decode(response.body);
-      Provider.of<OrdersTripsProvider>(context, listen: false)
-        .removeAllDataOfProvider();
+      Provider.of<OrdersTripsProvider>(context, listen: false).removeAllDataOfProvider();
       Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
       removeAllDataOfProvider();
       _token = responseData;
@@ -340,8 +337,7 @@ class Auth with ChangeNotifier {
     if (!prefs.containsKey('userData')) {
       return false;
     }
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
     _token = extractedUserData['token'];
     myToken = extractedUserData['token'];
     myTokenFromStorage = extractedUserData['token'];
@@ -358,13 +354,11 @@ class Auth with ChangeNotifier {
           "Authorization": "Token " + _token,
         },
         body: json.encode({"token": _token}));
-    Navigator.of(context).pop();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('userData');
     prefs.commit();
     prefs.clear();
-    Provider.of<OrdersTripsProvider>(context, listen: false)
-        .removeAllDataOfProvider();
+    Provider.of<OrdersTripsProvider>(context, listen: false).removeAllDataOfProvider();
     Provider.of<Messages>(context, listen: false).removeAllDataOfProvider();
     removeAllDataOfProvider();
     notifyListeners();

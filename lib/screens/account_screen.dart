@@ -237,31 +237,31 @@ class _AccountPageState extends State<AccountPage> {
 //                              );
 //                            },
 //                          ),
-                          ListTile(
-                            leading: Icon(MdiIcons.scriptTextOutline),
-                            title: Text(
-                              t(context, 'my_contracts'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (__) => Contracts(
-                                          token: Provider.of<Auth>(context, listen: true).token,
-                                        )),
-                              );
-                            },
-                          ),
+//                          ListTile(
+//                            leading: Icon(MdiIcons.scriptTextOutline),
+//                            title: Text(
+//                              t(context, 'my_contracts'),
+//                              style: TextStyle(
+//                                fontSize: 17,
+//                                color: Colors.grey[600],
+//                              ),
+//                            ),
+//                            trailing: Container(
+//                                decoration: BoxDecoration(
+//                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+//                                  color: Colors.grey[200],
+//                                ),
+//                                child: Icon(Icons.navigate_next)),
+//                            onTap: () {
+//                              Navigator.push(
+//                                context,
+//                                MaterialPageRoute(
+//                                    builder: (__) => Contracts(
+//                                          token: Provider.of<Auth>(context, listen: true).token,
+//                                        )),
+//                              );
+//                            },
+//                          ),
                         ],
                       ),
                     ),
@@ -340,32 +340,35 @@ class _AccountPageState extends State<AccountPage> {
                           ListTile(
                             leading: Icon(MdiIcons.logoutVariant),
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-//                          title: Text(''),
-                                  content: Text(
-                                    t(context, 'logout_prompt'),
-                                  ),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text(t(context, 'no')),
-                                      onPressed: () {
-                                        Navigator.of(ctx).pop();
-                                      },
-                                    ),
-                                    FlatButton(
-                                      child: Text(t(context, 'yes_let_me_out'),
-                                          style: TextStyle(
-                                            color: Colors.redAccent,
-                                          )),
-                                      onPressed: () {
-                                        Provider.of<Auth>(context, listen: false).logout(context);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              );
+                              Provider.of<Auth>(context, listen: false).logout(context);
+                              Navigator.of(context).reassemble();
+//                              showDialog(
+//                                context: context,
+//                                builder: (ctx) => AlertDialog(
+////                          title: Text(''),
+//                                  content: Text(
+//                                    t(context, 'logout_prompt'),
+//                                  ),
+//                                  actions: <Widget>[
+//                                    FlatButton(
+//                                      child: Text(t(context, 'no')),
+//                                      onPressed: () {
+//                                        Navigator.of(ctx).pop();
+//                                      },
+//                                    ),
+//                                    FlatButton(
+//                                      child: Text(t(context, 'yes_let_me_out'),
+//                                          style: TextStyle(
+//                                            color: Colors.redAccent,
+//                                          )),
+//                                      onPressed: () {
+//                                        Provider.of<Auth>(context, listen: false).logout(context);
+//                                        Navigator.of(context).reassemble();
+//                                      },
+//                                    ),
+//                                  ],
+//                                ),
+//                              );
                             },
                             title: Text(
                               t(context, 'logout'),
