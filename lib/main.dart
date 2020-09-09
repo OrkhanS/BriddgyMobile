@@ -91,9 +91,6 @@ class _MyAppState extends State<MyApp> {
     socketConnectedFirebase = true;
     print("ConnectedFirebase");
     _firebaseMessaging.configure(
-      onBackgroundMessage: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, authProvider);
-      },
       onMessage: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
       },
@@ -276,7 +273,8 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth, false);
+        print(auth.user);
+        if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
         if (auth.isLoadingUserForMain && auth.token != null)

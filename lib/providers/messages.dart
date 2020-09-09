@@ -284,14 +284,21 @@ class Messages extends ChangeNotifier {
           _chatRooms = [];
           for (var i = 0; i < data["results"].length; i++) {
             _chatRooms.add(Chats.fromJson(data["results"][i]));
+            // if(_chatRooms[i].unread1[1] == auth.user.id){
+            //   if(_chatRooms[i].unread1[0]!=0) {
+            //     newMessage.
+            //   }
+            // }
           }
           allChatRoomDetails = {"next": data["next"], "count": data["count"]};
           isChatsLoading = false;
           isChatsLoadingForMain = false;
+
           if (!isChatRoomPageActive) notifyListeners();
         });
         return _chatRooms;
       } catch (e) {
+        print(e);
         return;
       }
     } else {

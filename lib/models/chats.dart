@@ -16,6 +16,8 @@ class Chats {
     this.dateModified,
     this.members,
     this.lastMessage,
+    this.unread1,
+    this.unread2,
   });
 
   String id;
@@ -23,6 +25,8 @@ class Chats {
   DateTime dateCreated;
   DateTime dateModified;
   List<Member> members;
+  List<dynamic> unread1;
+  List<dynamic> unread2;
 
   factory Chats.fromJson(Map<String, dynamic> json) => Chats(
         id: json["id"],
@@ -31,6 +35,8 @@ class Chats {
         dateModified: DateTime.parse(json["date_modified"]),
         members:
             List<Member>.from(json["members"].map((x) => Member.fromJson(x))),
+        unread1: List<dynamic>.from(json["unread1"].map((x) => x)),
+        unread2: List<dynamic>.from(json["unread2"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
