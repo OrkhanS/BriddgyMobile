@@ -412,7 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 imageUrl == Api.noPictureImage
                                     ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
                                     : ClipRRect(
-                                        borderRadius: BorderRadius.circular(25.0),
+                                        borderRadius: BorderRadius.circular(40.0),
                                         child: Image.network(
                                           imageUrl,
                                           errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
@@ -423,6 +423,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
+                                GestureDetector(
+                                  onTap: () {
+//                                    _openGallery(context);
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 35,
+                                    backgroundColor: Color.fromRGBO(40, 40, 40, 50),
+                                    child: Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                                 Positioned(
                                   left: 17,
                                   right: 17,

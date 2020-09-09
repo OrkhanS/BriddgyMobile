@@ -423,6 +423,7 @@ class _MyAppState extends State<MyApp> {
               colorBehindNavBar: Colors.white,
             ),
             popAllScreensOnTapOfSelectedTab: true,
+            navBarHeight: 50,
             itemAnimationProperties: ItemAnimationProperties(
               // Navigation Bar's items animation properties.
               duration: Duration(milliseconds: 200),
