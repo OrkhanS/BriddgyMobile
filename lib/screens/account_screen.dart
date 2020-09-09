@@ -185,58 +185,58 @@ class _AccountPageState extends State<AccountPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          ListTile(
-                            leading: Icon(MdiIcons.mailboxOpenOutline),
-                            title: Text(
-                              t(context, 'my-orders'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (__) => MyItems(
-                                          token: Provider.of<Auth>(context, listen: true).token,
-                                          orderstripsProvider: widget.provider,
-                                        )),
-                              );
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(MdiIcons.mapMarkerPath),
-                            title: Text(
-                              t(context, 'my-trips'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (__) => MyTrips(
-                                          token: Provider.of<Auth>(context, listen: true).token,
-                                          orderstripsProvider: widget.provider,
-                                        )),
-                              );
-                            },
-                          ),
+//                          ListTile(
+//                            leading: Icon(MdiIcons.mailboxOpenOutline),
+//                            title: Text(
+//                              t(context, 'my-orders'),
+//                              style: TextStyle(
+//                                fontSize: 17,
+//                                color: Colors.grey[600],
+//                              ),
+//                            ),
+//                            trailing: Container(
+//                                decoration: BoxDecoration(
+//                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+//                                  color: Colors.grey[200],
+//                                ),
+//                                child: Icon(Icons.navigate_next)),
+//                            onTap: () {
+//                              Navigator.push(
+//                                context,
+//                                MaterialPageRoute(
+//                                    builder: (__) => MyItems(
+//                                          token: Provider.of<Auth>(context, listen: true).token,
+//                                          orderstripsProvider: widget.provider,
+//                                        )),
+//                              );
+//                            },
+//                          ),
+//                          ListTile(
+//                            leading: Icon(MdiIcons.mapMarkerPath),
+//                            title: Text(
+//                              t(context, 'my-trips'),
+//                              style: TextStyle(
+//                                fontSize: 17,
+//                                color: Colors.grey[600],
+//                              ),
+//                            ),
+//                            trailing: Container(
+//                                decoration: BoxDecoration(
+//                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+//                                  color: Colors.grey[200],
+//                                ),
+//                                child: Icon(Icons.navigate_next)),
+//                            onTap: () {
+//                              Navigator.push(
+//                                context,
+//                                MaterialPageRoute(
+//                                    builder: (__) => MyTrips(
+//                                          token: Provider.of<Auth>(context, listen: true).token,
+//                                          orderstripsProvider: widget.provider,
+//                                        )),
+//                              );
+//                            },
+//                          ),
                           ListTile(
                             leading: Icon(MdiIcons.scriptTextOutline),
                             title: Text(

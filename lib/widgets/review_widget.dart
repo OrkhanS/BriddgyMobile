@@ -142,6 +142,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       ),
                       Row(
                         children: [
+                          Spacer(),
                           RatingBar(
                             initialRating: review.rating.toDouble(),
                             minRating: 1,
@@ -162,7 +163,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                       Text(
                         review.comment,
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                        maxLines: 10,
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[800],
@@ -207,16 +208,16 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   }
 }
 
-class OrderSimpleWidget extends StatefulWidget {
+class ReviewSimpleWidget extends StatefulWidget {
   Order order;
   var i;
-  OrderSimpleWidget({@required this.order, @required this.i});
+  ReviewSimpleWidget({@required this.order, @required this.i});
 
   @override
-  _OrderSimpleWidgetState createState() => _OrderSimpleWidgetState();
+  _ReviewSimpleWidgetState createState() => _ReviewSimpleWidgetState();
 }
 
-class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
+class _ReviewSimpleWidgetState extends State<ReviewSimpleWidget> {
   Order order;
   var imageUrl;
   var i;
@@ -373,7 +374,7 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
   }
 }
 
-class OrderFadeWidget extends StatelessWidget {
+class ReviewFadeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(

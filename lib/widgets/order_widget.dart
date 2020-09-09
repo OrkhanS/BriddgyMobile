@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flushbar/flushbar.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/cupertino.dart';
@@ -12,12 +13,12 @@ import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:briddgy/screens/order_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class OrderWidget extends StatefulWidget {
-  Order order;
-  var i;
-  OrderWidget({@required this.order, @required this.i});
+  final Order order;
+  final int i;
+  final bool modeProfile;
+  OrderWidget({@required this.order, @required this.i, this.modeProfile = false});
 
   @override
   _OrderWidgetState createState() => _OrderWidgetState();
@@ -42,7 +43,10 @@ class _OrderWidgetState extends State<OrderWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (__) => OrderScreen(order: order),
+            builder: (__) => OrderScreen(
+              order: order,
+              i: i,
+            ),
           ),
         );
       },
@@ -54,21 +58,53 @@ class _OrderWidgetState extends State<OrderWidget> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(25.0),
-                  child: Image.network(
-                    imageUrl,
-                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                      return SizedBox();
-                    },
-                    height: 80,
-                    width: 80,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
+                widget.modeProfile
+                    ? Container(
+                        width: 80,
+                        child: Column(
+                          children: order.trip == null
+                              ? [
+                                  SvgPicture.asset(
+                                    "assets/photos/empty_order.svg",
+                                    fit: BoxFit.fitHeight,
+                                    height: 50,
+                                  ),
+                                  Text(
+                                    "No Contract",
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ]
+                              : [
+                                  SvgPicture.asset(
+                                    "assets/photos/handshake.svg",
+                                    fit: BoxFit.fitHeight,
+                                    height: 50,
+                                  ),
+                                  Text(
+                                    "Contract Settled",
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
+                        ),
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(25.0),
+                        child: Image.network(
+                          imageUrl,
+                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                            return SizedBox();
+                          },
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                VerticalDivider(),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,12 +146,10 @@ class _OrderWidgetState extends State<OrderWidget> {
                           ],
                         ),
                         Row(
-//                                        mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             Icon(
                               MdiIcons.calendarRange,
-//                                color: Colors.grey[700],
                               color: Theme.of(context).primaryColor,
                               size: 16,
                             ),
@@ -126,7 +160,6 @@ class _OrderWidgetState extends State<OrderWidget> {
                             Spacer(),
                             Icon(
                               MdiIcons.weightKilogram,
-//                                color: Colors.grey[700],
                               color: Theme.of(context).primaryColor,
                               size: 16,
                             ),
@@ -141,17 +174,13 @@ class _OrderWidgetState extends State<OrderWidget> {
                             Spacer(),
                             Icon(
                               Icons.attach_money,
-//                                color: Colors.grey[700],
                               color: Theme.of(context).primaryColor,
                               size: 16,
                             ),
-                            SizedBox(
-                              width: 50,
-                              child: Text(
-                                order.price.toString(),
-                                maxLines: 1,
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
+                            Text(
+                              order.price.toString(),
+                              maxLines: 1,
+                              style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
                         ),
@@ -235,7 +264,7 @@ class _OrderWidgetState extends State<OrderWidget> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            padding: const EdgeInsets.only(left: 100.0),
             child: Divider(
               height: 4,
               color: Colors.black45,
@@ -354,43 +383,30 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
                         ],
                       ),
                       Row(
-//                                        mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                MdiIcons.calendarRange,
-//                                color: Colors.grey[700],
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              Text(
-                                DateFormat("d MMMM").format(order.date),
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ],
+                          Icon(
+                            MdiIcons.calendarRange,
+                            color: Theme.of(context).primaryColor,
+                            size: 16,
+                          ),
+                          Text(
+                            DateFormat("d MMMM").format(order.date),
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.attach_money,
+                            color: Theme.of(context).primaryColor,
+                            size: 16,
                           ),
                           SizedBox(
-                            width: 100,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                Icons.attach_money,
-//                                color: Colors.grey[700],
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                width: 50,
-                                child: Text(
-                                  order.price.toString(),
-                                  maxLines: 1,
-                                  style: TextStyle(color: Colors.grey[600]),
-                                ),
-                              ),
-                            ],
+                            width: 50,
+                            child: Text(
+                              order.price.toString(),
+                              maxLines: 1,
+                              style: TextStyle(color: Colors.grey[600]),
+                            ),
                           ),
                         ],
                       ),

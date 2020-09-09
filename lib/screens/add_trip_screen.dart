@@ -303,6 +303,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                             title: "${t(context, 'warning')}!",
                             message: t(context, 'fill_fields'),
                             padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.all(10),
                             borderRadius: 10,
                             duration: Duration(seconds: 3),
                           )..show(context);
@@ -337,6 +338,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 title: t(context, 'trip_added'),
                                 message: t(context, 'trips_in_acc_page'),
                                 padding: const EdgeInsets.all(8),
+                                margin: const EdgeInsets.all(10),
                                 borderRadius: 10,
                                 duration: Duration(seconds: 5),
                               )..show(context);
@@ -348,6 +350,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 title: "${t(context, 'warning')}!",
                                 message: t(context, 'trip_not_added'),
                                 padding: const EdgeInsets.all(8),
+                                margin: const EdgeInsets.all(10),
                                 borderRadius: 10,
                                 duration: Duration(seconds: 3),
                               )..show(context);

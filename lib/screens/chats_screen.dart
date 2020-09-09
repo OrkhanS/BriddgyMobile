@@ -211,11 +211,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                               color: Colors.green,
                                                               size: 12,
                                                             )
-                                                          : Icon(
-                                                              MdiIcons.circle,
-                                                              color: Colors.grey[600],
-                                                              size: 12,
-                                                            ),
+                                                          : SizedBox()
                                                     ],
                                                   ),
                                                   subtitle: Text(

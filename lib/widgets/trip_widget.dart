@@ -1,16 +1,24 @@
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/models/api.dart';
 import 'package:briddgy/models/trip.dart';
 import 'package:briddgy/screens/trip_screen.dart';
+import 'package:briddgy/providers/auth.dart';
+import 'package:briddgy/providers/ordersandtrips.dart';
+import 'package:provider/provider.dart';
 
 import 'generators.dart';
 
 class TripWidget extends StatelessWidget {
   Trip trip;
   var i;
-  TripWidget({@required this.trip, @required this.i});
+  final bool modeProfile;
+  TripWidget({@required this.trip, @required this.i, this.modeProfile = false});
   var imageUrl;
   @override
   Widget build(BuildContext context) {
@@ -40,56 +48,89 @@ class TripWidget extends StatelessWidget {
                 ),
                 Stack(
                   children: <Widget>[
-                    imageUrl == Api.noPictureImage
-                        ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(25.0),
-                            child: Image.network(
-                              imageUrl,
-                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
-                              },
-                              height: 70,
-                              width: 70,
-                              fit: BoxFit.fitWidth,
+                    modeProfile
+                        ? Container(
+                            width: 70,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  trip.numberOfContracts.toString(),
+                                  style: TextStyle(fontSize: 25),
+                                ),
+                                //todo i18n
+                                Text(
+                                  "Active Contracts",
+                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                  textAlign: TextAlign.center,
+                                ),
+//                                RaisedButton(
+//                                  color: Colors.blue,
+//                                  onPressed: () {},
+//                                  child: Text("Find Orders"),
+//                                )
+                              ],
+                            ),
+                          )
+
+//                    Text(
+//                            trip.numberOfContracts.toString() ,
+//                            style: Theme.of(context).textTheme.headline3,
+//                          )
+                        : imageUrl == Api.noPictureImage
+                            ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(25.0),
+                                child: Image.network(
+                                  imageUrl,
+                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                    return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                                  },
+                                  height: 70,
+                                  width: 70,
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              ),
+                    modeProfile
+                        ? SizedBox()
+                        : Positioned(
+                            left: 17,
+                            right: 17,
+                            bottom: 0,
+                            child: Container(
+                              height: 18,
+                              decoration: BoxDecoration(
+                                color: Color.fromRGBO(255, 255, 255, 30),
+                                border: Border.all(color: Colors.green, width: 1),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.star,
+                                    size: 12,
+                                    color: Colors.green,
+                                  ),
+                                  Text(
+                                    trip.owner.rating.toString(),
+                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                    Positioned(
-                      left: 17,
-                      right: 17,
-                      bottom: 0,
-                      child: Container(
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(255, 255, 255, 30),
-                          border: Border.all(color: Colors.green, width: 1),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Icon(
-                              Icons.star,
-                              size: 12,
-                              color: Colors.green,
-                            ),
-                            Text(
-                              trip.owner.rating.toString(),
-                              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
+                VerticalDivider(),
                 Expanded(
                   flex: 5,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,70 +193,106 @@ class TripWidget extends StatelessWidget {
                 ),
                 //todo check if I am the owner
                 //todo if user is the owner, then replace the button below with delete button
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.grey[200],
+                if (Provider.of<Auth>(context, listen: false).isAuth)
+                  if (trip.owner.id == Provider.of<Auth>(context, listen: false).user.id)
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text("Are you sure you want to delete this order?"),
+                            content: Text("This action cannot be undone"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text('Yes,delete!'),
+                                onPressed: () {
+                                  var url = Api.orders + trip.id.toString() + '/';
+                                  http.delete(
+                                    url,
+                                    headers: {
+                                      HttpHeaders.contentTypeHeader: "application/json",
+                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                    },
+                                  ).then((value) {});
+                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                  orderprovider.myorders.removeAt(i);
+                                  orderprovider.notify();
+                                  Navigator.of(ctx).pop();
+                                  Flushbar(
+                                    flushbarStyle: FlushbarStyle.GROUNDED,
+                                    titleText: Text(
+                                      "Success",
+                                      style: TextStyle(color: Colors.black, fontSize: 22),
+                                    ),
+                                    messageText: Text(
+                                      "Order has been deleted",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    icon: Icon(MdiIcons.delete),
+                                    backgroundColor: Colors.white,
+                                    borderColor: Theme.of(context).primaryColor,
+                                    padding: const EdgeInsets.all(10),
+                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
+                                    borderRadius: 10,
+                                    duration: Duration(seconds: 5),
+                                  )..show(context);
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.red[200],
+                          ),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.red[400],
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.grey[200],
 //                    border: Border.all(
 ////                      color: Colors.grey[400],
 //                      width: 0.8,
 //                      color: Theme.of(context).primaryColor,
 //                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Icon(
-                      Icons.chevron_right,
-                      size: 25,
-                      color: Theme.of(context).primaryColor,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Icon(
+                          Icons.chevron_right,
+                          size: 25,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-//                Expanded(
-//                  flex: 3,
-//                  child: RaisedButton.icon(
-//                    padding: EdgeInsets.symmetric(horizontal: 10),
-//                    color: Theme.of(context).scaffoldBackgroundColor,
-//                    elevation: 1,
-//                    icon: Icon(
-//                      MdiIcons.chatOutline,
-//                      color: Theme.of(context).primaryColor,
-//                      size: 18,
-//                    ),
-//                    label: Text(
-//                      " Message",
-//                      style: TextStyle(
-//                        fontWeight: FontWeight.bold,
-//                        color: Theme.of(context).primaryColor,
-//                      ),
-//                    ),
-//                    onPressed: () {
-//                      var auth = Provider.of<Auth>(context, listen: false);
-//                      var messageProvider = Provider.of<Messages>(context, listen: false);
-//
-//                      messageProvider.createRooms(trip.owner.id, auth);
-//                      messageProvider.isChatsLoading = true;
-//                      Navigator.push(
-//                        context,
-//                        MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
-//                      );
-//                      Flushbar(
-//                        title: "Success",
-//                        message: "Chat with " + trip.owner.firstName.toString() + " has been started!",
-//                        padding: const EdgeInsets.all(8),
-//                        borderRadius: 10,
-//                        duration: Duration(seconds: 3),
-//                      )..show(context);
-//                    },
-//                  ),
-//                ),
+
                 SizedBox(width: 10),
               ],
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          padding: const EdgeInsets.only(left: 90.0),
           child: Divider(
             height: 4,
             color: Colors.black45,

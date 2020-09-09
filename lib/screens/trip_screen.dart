@@ -26,8 +26,9 @@ import 'package:transparent_image/transparent_image.dart';
 import 'chats_screen.dart';
 
 class TripScreen extends StatefulWidget {
-  Trip trip;
-  TripScreen({this.trip});
+  final Trip trip;
+  final int i;
+  TripScreen({@required this.trip, @required this.i});
   static const routeName = '/trips/trip';
   @override
   _TripScreenState createState() => _TripScreenState();
@@ -366,10 +367,7 @@ class _TripScreenState extends State<TripScreen> {
                               children: <Widget>[
                                 Text(
                                   t(context, 'description'),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  style: TextStyle(fontSize: 20, color: Theme.of(context).primaryColor),
                                 ),
                               ],
                             ),
@@ -382,12 +380,73 @@ class _TripScreenState extends State<TripScreen> {
                         ],
                       ),
                     ),
-                    messageDeliveryButton
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
+                    if (Provider.of<Auth>(context, listen: false).isAuth)
+                      if (trip.owner.id == Provider.of<Auth>(context, listen: false).user.id)
+                        Row(
+                          children: [
+                            Spacer(),
+                            RaisedButton.icon(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              color: Colors.red,
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color: Colors.white,
+//                              color: Theme.of(context).primaryColor,
+                                size: 18,
+                              ),
+                              label: Text(
+                                " ${t(context, 'delete')}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+//                                    color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: Text(t(context, 'confirm_deletion')),
+                                    content: Text(t(context, 'action_cant_be_undone')),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text(
+                                          t(context, 'cancel'),
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(ctx).pop();
+                                        },
+                                      ),
+                                      FlatButton(
+                                        child: Text(t(context, 'yes_delete')),
+                                        onPressed: () {
+                                          //todo Orxan
+                                          Navigator.of(ctx).pop();
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                );
+//                                      Navigator.push(
+//                                        context,
+//                                        MaterialPageRoute(builder: (__) => EditOrderScreen(order)),
+//                                      );
+                              },
+                            ),
+                            SizedBox(width: 20),
+                          ],
+                        )
+                      else
+                        messageDeliveryButton
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: <Widget>[
 //                                RaisedButton.icon(
 //                                  padding: EdgeInsets.symmetric(horizontal: 20),
 ////                            color: Theme.of(context).scaffoldBackgroundColor,
@@ -418,79 +477,80 @@ class _TripScreenState extends State<TripScreen> {
 //                                    );
 //                                  },
 //                                ),
-                                Expanded(
-                                  child: SizedBox(),
-                                ),
-                                RaisedButton.icon(
-                                    padding: EdgeInsets.symmetric(horizontal: 20),
-                                    color: Colors.green,
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
+                                    Expanded(
+                                      child: SizedBox(),
                                     ),
-                                    icon: Icon(
-                                      MdiIcons.chatOutline,
-                                      color: Colors.white,
+                                    RaisedButton.icon(
+                                        padding: EdgeInsets.symmetric(horizontal: 20),
+                                        color: Colors.green,
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                        ),
+                                        icon: Icon(
+                                          MdiIcons.chatOutline,
+                                          color: Colors.white,
 //                              color: Theme.of(context).primaryColor,
-                                      size: 18,
-                                    ),
-                                    label: Text(
-                                      " ${t(context, 'message')}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+                                          size: 18,
+                                        ),
+                                        label: Text(
+                                          " ${t(context, 'message')}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        messageDeliveryButton = false;
-                                      });
-                                      var auth = Provider.of<Auth>(context, listen: false);
-                                      var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                                      messageProvider.createRooms(trip.owner.id, auth).whenComplete(() => {
-                                            if (messageProvider.isChatRoomCreated)
-                                              {
-                                                setState(() {
-                                                  messageDeliveryButton = true;
-                                                }),
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (__) => ChatsScreen(
-                                                            provider: messageProvider,
-                                                            auth: auth,
-                                                            shouldOpenTop: true,
-                                                          )),
-                                                ),
-                                                Flushbar(
-                                                  title: t(context, 'success'),
-                                                  message: t(context, 'chat_with') + trip.owner.firstName.toString() + t(context, 'has_been_started'),
-                                                  padding: const EdgeInsets.all(20),
-                                                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                                  borderRadius: 10,
-                                                  duration: Duration(seconds: 3),
-                                                )..show(context)
-                                              }
-                                            else
-                                              {
-                                                setState(() {
-                                                  messageDeliveryButton = true;
-                                                }),
-                                                Flushbar(
-                                                  title: t(context, 'failure'),
-                                                  message: t(context, 'please_try_again'),
-                                                  padding: const EdgeInsets.all(8),
-                                                  borderRadius: 10,
-                                                  duration: Duration(seconds: 3),
-                                                )..show(context)
-                                              }
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            messageDeliveryButton = false;
                                           });
-                                    }),
-                              ],
-                            ),
-                          )
-                        : ProgressIndicatorWidget(show: true),
+                                          var auth = Provider.of<Auth>(context, listen: false);
+                                          var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                                          messageProvider.createRooms(trip.owner.id, auth).whenComplete(() => {
+                                                if (messageProvider.isChatRoomCreated)
+                                                  {
+                                                    setState(() {
+                                                      messageDeliveryButton = true;
+                                                    }),
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (__) => ChatsScreen(
+                                                                provider: messageProvider,
+                                                                auth: auth,
+                                                                shouldOpenTop: true,
+                                                              )),
+                                                    ),
+                                                    Flushbar(
+                                                      title: t(context, 'success'),
+                                                      message:
+                                                          t(context, 'chat_with') + trip.owner.firstName.toString() + t(context, 'has_been_started'),
+                                                      padding: const EdgeInsets.all(20),
+                                                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                      borderRadius: 10,
+                                                      duration: Duration(seconds: 3),
+                                                    )..show(context)
+                                                  }
+                                                else
+                                                  {
+                                                    setState(() {
+                                                      messageDeliveryButton = true;
+                                                    }),
+                                                    Flushbar(
+                                                      title: t(context, 'failure'),
+                                                      message: t(context, 'please_try_again'),
+                                                      padding: const EdgeInsets.all(8),
+                                                      borderRadius: 10,
+                                                      duration: Duration(seconds: 3),
+                                                    )..show(context)
+                                                  }
+                                              });
+                                        }),
+                                  ],
+                                ),
+                              )
+                            : ProgressIndicatorWidget(show: true),
                   ],
                 ),
               ),
