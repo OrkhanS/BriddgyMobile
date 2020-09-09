@@ -159,7 +159,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                     ),
                   ),
                 ),
-                if (Provider.of<Auth>(context, listen: false).isAuth)
+                if (Provider.of<Auth>(context, listen: false).isAuth && !Provider.of<Auth>(context).isLoadingUserDetails)
                   if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
                     GestureDetector(
                       onTap: () {

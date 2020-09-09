@@ -91,6 +91,9 @@ class _MyAppState extends State<MyApp> {
     socketConnectedFirebase = true;
     print("ConnectedFirebase");
     _firebaseMessaging.configure(
+      onBackgroundMessage: (Map<String, dynamic> message) async {
+        neWMessage.addMessages(message.values.last, authProvider);
+      },
       onMessage: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
       },

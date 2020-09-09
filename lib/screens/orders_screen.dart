@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:animations/animations.dart';
+import 'package:briddgy/providers/messages.dart';
 import 'package:briddgy/widgets/offline_widget.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_offline/flutter_offline.dart';
@@ -54,6 +55,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   List _suggested = [];
   List _cities = [];
   List _orders = [];
+  bool connectionLost=false;
 
   @override
   void initState() {
@@ -297,7 +299,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ConnectivityResult connectivity,
                     Widget child,
                   ) {
+                    
                     final bool connected = connectivity != ConnectivityResult.none;
+                    if(!connected) connectionLost = true;
+                    else{
+                      if(connectionLost) {
+                        widget.orderstripsProvider.fetchAndSetOrders(); widget.orderstripsProvider.fetchAndSetTrips();
+                        Provider.of<Messages>(context,listen: false).fetchAndSetRooms(widget.auth, false);
+                      }
+                    }
                     return !connected
                         ? OfflineWidget()
                         : Column(
