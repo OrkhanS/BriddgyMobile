@@ -40,7 +40,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     user = widget.user;
-    // TODO: implement initState
     super.initState();
   }
 
