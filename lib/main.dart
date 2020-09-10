@@ -273,7 +273,7 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
+        // if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
         if (orderstripsProvider.isLoadingOrders) orderstripsProvider.fetchAndSetOrders();

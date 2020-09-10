@@ -129,7 +129,7 @@ class Messages extends ChangeNotifier {
             chats[i].lastMessage = "Contract";
           }
         }
-      } on FormatException catch (_) {
+      }catch (e) {
         for (var i = 0; i < chats.length; i++) {
           if (chats[i].id == roomid) {
             chats[i].lastMessage = tempMessage.text;
@@ -145,10 +145,10 @@ class Messages extends ChangeNotifier {
       // Checking if ChatRoomPage is Active with the roomid, then don't give Notifications
       if (roomid != roomIDofActiveChatRoom) {
         // Checking if ChatRoom is already exists
-        if (newMessage[roomid] == null || newMessage[roomid] != 0) {
+        if (newMessage[roomid] == null || newMessage[roomid] == 0) {
           // cannot directly add Message object to Map. So need TemporaryList
           newMessage.putIfAbsent(roomid, () => null);
-          newMessage[roomid] = newMessage[roomid] + 1;
+          newMessage[roomid] = 1;
           notifyListeners();
         } else {
           // Checking if FCM sends the same notification twice
@@ -157,11 +157,11 @@ class Messages extends ChangeNotifier {
             notifyListeners();
           }
         }
-        if (isChatRoomPageActive) {
-          if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
-        } else {
-          changeChatRoomPlace(roomid);
-        }
+        // if (false) {
+        //   if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
+        // } else {
+        //   changeChatRoomPlace(roomid);
+        // }
       }
       notifyListeners();
     }
@@ -252,8 +252,6 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth, isNewMessage) async {
-    isChatsLoadingForMain = false;
-    if (chats.isEmpty || isNewMessage) {
       if (auth.isAuth) {
         tokenforROOM = auth.myTokenFromStorage;
       } else {
@@ -306,9 +304,6 @@ class Messages extends ChangeNotifier {
         print(e);
         return;
       }
-    } else {
-      isChatsLoading = false;
-    }
   }
 
   set addChats(Map mesaj) {

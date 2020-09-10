@@ -57,10 +57,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.provider.isChatRoomPageActive) {
-      widget.provider.isChatRoomPageActive = false;
-      widget.provider.roomIDofActiveChatroom = "Empty";
-    }
+    // widget.provider.isChatsLoading = true;
+    widget.provider.fetchAndSetRooms(widget.auth, false);
+    
     if (myid == "empty" && Provider.of<Auth>(context, listen: false).userdetail != null) {
       myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
     }
@@ -179,9 +178,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         try {
                                           var check = json.decode(_rooms[index].lastMessage.toString()) as Map<String, dynamic>;
                                           iscontract = true;
-                                        } on FormatException catch (_) {
-                                          iscontract = false;
-                                        }
+                                        }catch (e) {
+                                              iscontract=false;
+                                          }
                                         return Column(
                                           children: <Widget>[
                                             Menu(

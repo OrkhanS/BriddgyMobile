@@ -155,7 +155,7 @@ class _ChatWindowState extends State<ChatWindow> {
             print(e);
           }
           // widget.provider.messages[id].insert(0, tempMessage);
-          widget.provider.changeChatRoomPlace(id);
+          // widget.provider.changeChatRoomPlace(id);
         }
       } catch (e) {
         print(e);
@@ -166,11 +166,11 @@ class _ChatWindowState extends State<ChatWindow> {
       _messages.insert(0, tempMessage);
     });
 
-    for (var i = 0; i < widget.provider.chats.length; i++) {
-      if (widget.provider.chats[i].id == id) {
-        widget.provider.chats[i].lastMessage = tempMessage.text;
-      }
-    }
+    // for (var i = 0; i < widget.provider.chats.length; i++) {
+    //   if (widget.provider.chats[i].id == id) {
+    //     widget.provider.chats[i].lastMessage = tempMessage.text;
+    //   }
+    // }
   }
 
   var triangle = CustomPaint(
@@ -190,9 +190,9 @@ class _ChatWindowState extends State<ChatWindow> {
 
   Future<bool> _onWillPop() async {
     // widget.provider.messages[widget.room]["data"] = _messages;
-    widget.provider.isChatRoomPageActive = false;
-    widget.provider.changeChatRoomPlace("ChangewithList");
-    widget.provider.notifFun();
+    // widget.provider.isChatRoomPageActive = false;
+    // widget.provider.changeChatRoomPlace("ChangewithList");
+    // widget.provider.notifFun();
     return true;
   }
 
@@ -246,10 +246,10 @@ class _ChatWindowState extends State<ChatWindow> {
       });
     }   
 
-    if (widget.provider.isChatRoomPageActive == false) {
-      widget.provider.isChatRoomPageActive = true;
-      widget.provider.roomIDofActiveChatroom = id;
-    }
+    // if (widget.provider.isChatRoomPageActive == false) {
+    //   widget.provider.isChatRoomPageActive = true;
+    //   widget.provider.roomIDofActiveChatroom = id;
+    // }
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -359,9 +359,9 @@ class _ChatWindowState extends State<ChatWindow> {
                               ),
                               onPressed: () {
                                 // widget.provider.messages[widget.room]["data"] = _messages;
-                                widget.provider.isChatRoomPageActive = false;
-                                widget.provider.changeChatRoomPlace("ChangewithList");
-                                widget.provider.notifFun();
+                                // widget.provider.isChatRoomPageActive = false;
+                                // widget.provider.changeChatRoomPlace("ChangewithList");
+                                // widget.provider.notifFun();
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -491,9 +491,11 @@ class _ChatWindowState extends State<ChatWindow> {
                                     try {
                                       var check = json.decode(_messages[index].text) as Map<String, dynamic>;
                                       iscontract = true;
-                                    } on FormatException catch (_) {
-                                      iscontract = false;
+                                    } catch (e) {
+                                      print(e);
+                                      iscontract=false;
                                     }
+
 
                                     bool reverse = false;
                                     if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
