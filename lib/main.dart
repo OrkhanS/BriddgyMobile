@@ -273,7 +273,7 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        // if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
+        if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
         if (orderstripsProvider.isLoadingOrders) orderstripsProvider.fetchAndSetOrders();
@@ -331,7 +331,8 @@ class _MyAppState extends State<MyApp> {
 //              title: Text('Account'),
 //              icon: Icon(MdiIcons.accountSettingsOutline),
 //              activeIcon: Icon(MdiIcons.accountSettings),
-//            ),
+//            ),'
+            
             PersistentBottomNavBarItem(
               title: 'Orders',
               icon: _controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),

@@ -191,10 +191,10 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   Future<bool> _onWillPop() async {
-    // widget.provider.messages[widget.room]["data"] = _messages;
-    // widget.provider.isChatRoomPageActive = false;
-    // widget.provider.changeChatRoomPlace("ChangewithList");
-    // widget.provider.notifFun();
+    widget.provider.messages[widget.room]["data"] = _messages;
+    widget.provider.isChatRoomPageActive = false;
+    widget.provider.changeChatRoomPlace("ChangewithList");
+    widget.provider.notifFun();
     return true;
   }
 
@@ -248,10 +248,10 @@ class _ChatWindowState extends State<ChatWindow> {
       });
     }   
 
-    // if (widget.provider.isChatRoomPageActive == false) {
-    //   widget.provider.isChatRoomPageActive = true;
-    //   widget.provider.roomIDofActiveChatroom = id;
-    // }
+    if (widget.provider.isChatRoomPageActive == false) {
+      widget.provider.isChatRoomPageActive = true;
+      widget.provider.roomIDofActiveChatroom = id;
+    }
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -360,10 +360,10 @@ class _ChatWindowState extends State<ChatWindow> {
                                 size: 24,
                               ),
                               onPressed: () {
-                                // widget.provider.messages[widget.room]["data"] = _messages;
-                                // widget.provider.isChatRoomPageActive = false;
-                                // widget.provider.changeChatRoomPlace("ChangewithList");
-                                // widget.provider.notifFun();
+                                widget.provider.messages[widget.room]["data"] = _messages;
+                                widget.provider.isChatRoomPageActive = false;
+                                widget.provider.changeChatRoomPlace("ChangewithList");
+                                widget.provider.notifFun();
                                 Navigator.of(context).pop();
                               },
                             ),

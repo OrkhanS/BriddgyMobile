@@ -157,11 +157,11 @@ class Messages extends ChangeNotifier {
             notifyListeners();
           }
         }
-        // if (false) {
-        //   if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
-        // } else {
-        //   changeChatRoomPlace(roomid);
-        // }
+        if (isChatRoomPageActive) {
+          if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
+        } else {
+          changeChatRoomPlace(roomid);
+        }
       }
       notifyListeners();
     }
