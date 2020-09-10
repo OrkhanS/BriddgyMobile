@@ -274,7 +274,7 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        // if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
+        if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
         if (orderstripsProvider.isLoadingOrders) orderstripsProvider.fetchAndSetOrders();
@@ -312,6 +312,36 @@ class _MyAppState extends State<MyApp> {
 
         List<PersistentBottomNavBarItem> _navBarsItems(BuildContext ctx) {
           return [
+//            BottomNavigationBarItem(
+//              title: Text('Trips'),
+//              icon: Icon(MdiIcons.roadVariant),
+//              activeIcon: Icon(MdiIcons.road),
+//            ),
+//            BottomNavigationBarItem(
+//              title: Text('Chats'),
+//              icon: newmessage.arethereNewMessage == true
+//                  ? Badge(
+//                badgeColor: Colors.green,
+//                badgeContent: Text(
+//                  newmessage.newMessages.length.toString(),
+//                  style: TextStyle(color: Colors.white),
+//                ),
+//                child: Icon(MdiIcons.forumOutline),
+//              )
+//                  : Icon(MdiIcons.forumOutline),
+//              activeIcon: Icon(MdiIcons.forum),
+//            ),
+////        BottomNavigationBarItem(
+////          title: Text('Notifications'),
+////          icon: Icon(Icons.notifications_none),
+////          activeIcon: Icon(Icons.notifications),
+////        ),
+//            BottomNavigationBarItem(
+//              title: Text('Account'),
+//              icon: Icon(MdiIcons.accountSettingsOutline),
+//              activeIcon: Icon(MdiIcons.accountSettings),
+//            ),'
+
             PersistentBottomNavBarItem(
 //              title: t(ctx, "order_plural"),
               title: "Orders",
@@ -419,7 +449,6 @@ class _MyAppState extends State<MyApp> {
             ),
             onItemSelected: (index) {
               setState(() {});
-              print("selected");
             },
             navBarStyle: NavBarStyle.style6, // Choose the nav bar style with this property.
           ),

@@ -46,9 +46,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   void initState() {
-    if(widget.provider.chats.isEmpty){
-      widget.provider.fetchAndSetRooms(widget.auth,false);
-    }
+    // if(widget.provider.chats.isEmpty){
+    //   widget.provider.fetchAndSetRooms(widget.auth,false);
+    // }
     pageController = PageController(viewportFraction: viewportFraction);
     widget.provider.isChatRoomPageActive = false;
     widget.provider.roomIDofActiveChatroom = "Empty";
@@ -58,8 +58,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     // widget.provider.isChatsLoading = true;
-    widget.provider.fetchAndSetRooms(widget.auth, false);
-    
+    // widget.provider.fetchAndSetRooms(widget.auth, false);
     if (myid == "empty" && Provider.of<Auth>(context, listen: false).userdetail != null) {
       myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
     }
@@ -249,15 +248,17 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                             ),
                                                   //////////////////////////////////////////////////////////////////////////
                                                   onTap: () {
+                                                    var room_id = _rooms[index].members[0].room; 
                                                     provider.readMessages(_rooms[index].id);
                                                     provider.messagesLoading = true;
                                                     provider.fetchAndSetMessages(index);
+                                                    
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (__) => ChatWindow(
                                                               provider: provider,
-                                                              room: _rooms[index].members[0].room,
+                                                              room: room_id,
                                                               user: user,
                                                               token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                                                               auth: Provider.of<Auth>(context, listen: false))),

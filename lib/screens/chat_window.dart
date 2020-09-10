@@ -135,7 +135,8 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   void handleSendMessage() {
-    var text = textEditingController.value.text;
+    var text = textEditingController.value.text.trim();
+     if(text.length!=0){
     textEditingController.clear();
     var tempMessage = Message.fromJson({
       "id": 200,
@@ -166,11 +167,12 @@ class _ChatWindowState extends State<ChatWindow> {
       _messages.insert(0, tempMessage);
     });
 
-    // for (var i = 0; i < widget.provider.chats.length; i++) {
-    //   if (widget.provider.chats[i].id == id) {
-    //     widget.provider.chats[i].lastMessage = tempMessage.text;
-    //   }
-    // }
+    for (var i = 0; i < widget.provider.chats.length; i++) {
+      if (widget.provider.chats[i].id == id) {
+        widget.provider.chats[i].lastMessage = tempMessage.text;
+      }
+    }
+  }
   }
 
   var triangle = CustomPaint(
@@ -189,10 +191,10 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   Future<bool> _onWillPop() async {
-    // widget.provider.messages[widget.room]["data"] = _messages;
-    // widget.provider.isChatRoomPageActive = false;
-    // widget.provider.changeChatRoomPlace("ChangewithList");
-    // widget.provider.notifFun();
+    widget.provider.messages[widget.room]["data"] = _messages;
+    widget.provider.isChatRoomPageActive = false;
+    widget.provider.changeChatRoomPlace("ChangewithList");
+    widget.provider.notifFun();
     return true;
   }
 
@@ -241,15 +243,15 @@ class _ChatWindowState extends State<ChatWindow> {
         "user_id":me.id,
         "room_id":id
       });
-      Timer(Duration(seconds: 5), () {
+      Timer(Duration(seconds: 2), () {
         readMessageSockets(a);
       });
     }   
 
-    // if (widget.provider.isChatRoomPageActive == false) {
-    //   widget.provider.isChatRoomPageActive = true;
-    //   widget.provider.roomIDofActiveChatroom = id;
-    // }
+    if (widget.provider.isChatRoomPageActive == false) {
+      widget.provider.isChatRoomPageActive = true;
+      widget.provider.roomIDofActiveChatroom = id;
+    }
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -358,10 +360,10 @@ class _ChatWindowState extends State<ChatWindow> {
                                 size: 24,
                               ),
                               onPressed: () {
-                                // widget.provider.messages[widget.room]["data"] = _messages;
-                                // widget.provider.isChatRoomPageActive = false;
-                                // widget.provider.changeChatRoomPlace("ChangewithList");
-                                // widget.provider.notifFun();
+                                widget.provider.messages[widget.room]["data"] = _messages;
+                                widget.provider.isChatRoomPageActive = false;
+                                widget.provider.changeChatRoomPlace("ChangewithList");
+                                widget.provider.notifFun();
                                 Navigator.of(context).pop();
                               },
                             ),
