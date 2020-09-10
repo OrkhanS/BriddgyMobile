@@ -76,73 +76,105 @@ class _AccountPageState extends State<AccountPage> {
       child: user == null
           ? Center(child: CircularProgressIndicator())
           : Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (__) => ProfileScreen(
-                                    user: user,
-                                  )),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            imageUrl == Api.noPictureImage
-                                ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                                : ClipRRect(
-                                    borderRadius: BorderRadius.circular(35.0),
-                                    child: Image.network(
-                                      imageUrl,
-                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                        return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                      },
-                                      height: 70,
-                                      width: 70,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                            Column(
-                              children: <Widget>[
-                                Text(
-                                  user.firstName + " " + user.lastName,
-                                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
-                                ),
-                                Text(user.email, style: TextStyle(fontSize: 15)),
-                              ],
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(25)),
-//                                color: Theme.of(context).primaryColor,
-                                color: Colors.grey[200],
-                              ),
-                              child: Icon(
-                                Icons.navigate_next,
-                                color: Colors.grey[600],
-                                size: 30,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: [
+                      DropdownButton(
+//                        underline: SizedBox(),
+                        icon: Row(
+                          children: [
+                            Text(
+                              t(context, 'change_language'),
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[800],
                               ),
                             ),
+                            Icon(MdiIcons.earth),
                           ],
                         ),
+                        items: Language.languageList()
+                            .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
+                                  value: lang,
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(lang.name),
+                                      Text(lang.flag),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (Language language) {
+                          _changeLanguage(language);
+                        },
+                      ),
+                    ],
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (__) => ProfileScreen(
+                                  user: user,
+                                )),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          imageUrl == Api.noPictureImage
+                              ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(35.0),
+                                  child: Image.network(
+                                    imageUrl,
+                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                      return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
+                                    },
+                                    height: 70,
+                                    width: 70,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                          Column(
+                            children: <Widget>[
+                              Text(
+                                user.firstName + " " + user.lastName,
+                                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+                              ),
+                              Text(user.email, style: TextStyle(fontSize: 15)),
+                            ],
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(25)),
+//                                color: Theme.of(context).primaryColor,
+                              color: Colors.grey[200],
+                            ),
+                            child: Icon(
+                              Icons.navigate_next,
+                              color: Colors.grey[600],
+                              size: 30,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Card(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      elevation: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    elevation: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
 //                          ListTile(
 //                            leading: Icon(MdiIcons.mailboxOpenOutline),
 //                            title: Text(
@@ -220,121 +252,86 @@ class _AccountPageState extends State<AccountPage> {
 //                              );
 //                            },
 //                          ),
-                        ],
-                      ),
+                      ],
                     ),
-                    Card(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      elevation: 3,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(MdiIcons.earth),
-                            title: DropdownButton(
-                              isExpanded: true,
-                              underline: SizedBox(),
-                              icon: Row(
-                                children: [
-                                  Text(
-                                    t(context, 'change_language'),
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 40,
-                                  ),
-                                ],
-                              ),
-                              items: Language.languageList()
-                                  .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
-                                        value: lang,
-                                        child: Row(
-                                          children: <Widget>[
-                                            Text(lang.name),
-                                            Text(lang.flag),
-                                          ],
-                                        ),
-                                      ))
-                                  .toList(),
-                              onChanged: (Language language) {
-                                _changeLanguage(language);
-                              },
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    elevation: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(MdiIcons.accountMultiplePlus),
+                          title: Text(
+                            t(context, 'invite_friends'),
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
                             ),
                           ),
-                          ListTile(
-                            leading: Icon(MdiIcons.accountMultiplePlus),
-                            title: Text(
-                              t(context, 'invite_friends'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
+                          trailing: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                color: Colors.grey[200],
                               ),
+                              child: Icon(Icons.navigate_next)),
+                          onTap: () {
+                            Share.share(t(context, 'share_link'));
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.faceAgent),
+                          title: Text(
+                            t(context, 'customer_service'),
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
                             ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
-                            onTap: () {
-                              Share.share(t(context, 'share_link'));
-                            },
                           ),
-                          ListTile(
-                            leading: Icon(MdiIcons.faceAgent),
-                            title: Text(
-                              t(context, 'customer_service'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
+                          trailing: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                color: Colors.grey[200],
                               ),
+                              child: Icon(Icons.navigate_next)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (__) => CustomerSupport()),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.star_border),
+                          onLongPress: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (__) => ChayScreen()),
+                            );
+                          },
+                          title: Text(
+                            t(context, 'rate_leave_suggestion'), //Todo: App Rating
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
                             ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (__) => CustomerSupport()),
-                              );
-                            },
                           ),
-                          ListTile(
-                            leading: Icon(Icons.star_border),
-                            onLongPress: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (__) => ChayScreen()),
-                              );
-                            },
-                            title: Text(
-                              t(context, 'rate_leave_suggestion'), //Todo: App Rating
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
+                          trailing: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                color: Colors.grey[200],
                               ),
-                            ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
-                          ),
-                          ListTile(
-                            leading: Icon(MdiIcons.logoutVariant),
-                            onTap: () {
-                              Provider.of<Auth>(context, listen: false).logout(context);
-                              Navigator.of(context).reassemble();
+                              child: Icon(Icons.navigate_next)),
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.logoutVariant),
+                          onTap: () {
+                            Provider.of<Auth>(context, listen: false).logout(context);
+                            Navigator.of(context).reassemble();
 //                              showDialog(
 //                                context: context,
 //                                builder: (ctx) => AlertDialog(
@@ -362,26 +359,25 @@ class _AccountPageState extends State<AccountPage> {
 //                                  ],
 //                                ),
 //                              );
-                            },
-                            title: Text(
-                              t(context, 'logout'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[600],
-                              ),
+                          },
+                          title: Text(
+                            t(context, 'logout'),
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
                             ),
-                            trailing: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                                  color: Colors.grey[200],
-                                ),
-                                child: Icon(Icons.navigate_next)),
                           ),
-                        ],
-                      ),
+                          trailing: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                color: Colors.grey[200],
+                              ),
+                              child: Icon(Icons.navigate_next)),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     ));

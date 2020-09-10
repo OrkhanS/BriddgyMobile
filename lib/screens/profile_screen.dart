@@ -367,8 +367,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   GestureDetector(
                                     onTap: () {},
                                     child: Icon(
-                                      MdiIcons.shieldCheck,
-                                      color: Colors.green,
+                                      MdiIcons.email,
+                                      color: user.isEmailVerified ? Colors.green : Colors.red,
+                                      size: 17,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      MdiIcons.phone,
+                                      color: user.isNumberVerified ? Colors.green : Colors.red,
+                                      size: 17,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      Icons.tag_faces,
+                                      color: user.isPhotoVerified ? Colors.green : Colors.red,
                                       size: 17,
                                     ),
                                   ),
