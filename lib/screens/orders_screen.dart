@@ -59,9 +59,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
   @override
   void initState() {
-    if (widget.orderstripsProvider.notLoadingOrders) {
-      widget.orderstripsProvider.fetchAndSetOrders();
-    }
     super.initState();
   }
 

@@ -228,14 +228,14 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                           ?
 
                                                           /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
-                                                          provider.newMessage[_rooms[index].id].length != 0
+                                                          provider.newMessage[_rooms[index].id] != 0
                                                               ?
 
                                                               /// IF LENGHT IS NOT 0, SHOWING THE BADGE
                                                               Badge(
                                                                   badgeColor: Colors.green,
                                                                   badgeContent: Text(
-                                                                    provider.newMessage[_rooms[index].id].length.toString(),
+                                                                    provider.newMessage[_rooms[index].id].toString(),
                                                                     style: TextStyle(color: Colors.white),
                                                                   ),
                                                                   child: Icon(Icons.arrow_forward_ios),
