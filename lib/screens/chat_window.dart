@@ -135,7 +135,8 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   void handleSendMessage() {
-    var text = textEditingController.value.text;
+    var text = textEditingController.value.text.trim();
+     if(text.length!=0){
     textEditingController.clear();
     var tempMessage = Message.fromJson({
       "id": 200,
@@ -166,11 +167,12 @@ class _ChatWindowState extends State<ChatWindow> {
       _messages.insert(0, tempMessage);
     });
 
-    // for (var i = 0; i < widget.provider.chats.length; i++) {
-    //   if (widget.provider.chats[i].id == id) {
-    //     widget.provider.chats[i].lastMessage = tempMessage.text;
-    //   }
-    // }
+    for (var i = 0; i < widget.provider.chats.length; i++) {
+      if (widget.provider.chats[i].id == id) {
+        widget.provider.chats[i].lastMessage = tempMessage.text;
+      }
+    }
+  }
   }
 
   var triangle = CustomPaint(
