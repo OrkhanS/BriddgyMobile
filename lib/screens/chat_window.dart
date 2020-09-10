@@ -243,7 +243,7 @@ class _ChatWindowState extends State<ChatWindow> {
         "user_id":me.id,
         "room_id":id
       });
-      Timer(Duration(seconds: 5), () {
+      Timer(Duration(seconds: 2), () {
         readMessageSockets(a);
       });
     }   
