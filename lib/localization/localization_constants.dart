@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
@@ -18,16 +17,15 @@ const String RUSSIAN = 'ru';
 //language code
 const String LANGUAGE_CODE = 'languageCode';
 
-Future<Locale> setLocale(String languageCode) async{
+Future<Locale> setLocale(String languageCode) async {
   SharedPreferences _prefs = await SharedPreferences.getInstance();
 
   await _prefs.setString(LANGUAGE_CODE, languageCode);
 
   return _locale(languageCode);
-
 }
 
-Locale _locale(String languageCode){
+Locale _locale(String languageCode) {
   Locale _temp;
   switch (languageCode) {
     case ENGLISH:
@@ -42,9 +40,8 @@ Locale _locale(String languageCode){
   return _temp;
 }
 
-Future<Locale> getLocale() async{
+Future<Locale> getLocale() async {
   SharedPreferences _prefs = await SharedPreferences.getInstance();
   String languageCode = _prefs.get(LANGUAGE_CODE) ?? ENGLISH;
   return _locale(languageCode);
-
 }

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:briddgy/localization/demo_localization.dart';
-import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/screens/add_order_screen.dart';
 import 'package:briddgy/screens/add_trip_screen.dart';
 import 'package:briddgy/screens/auth_screen.dart';
@@ -35,6 +34,8 @@ import 'package:badges/badges.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'localization/demo_localization.dart';
+import 'localization/localization_constants.dart';
 import 'models/api.dart';
 
 void main() {
@@ -45,7 +46,7 @@ class MyApp extends StatefulWidget {
   final StreamController<String> streamController = StreamController<String>.broadcast();
   IOWebSocketChannel _channel;
   ObserverList<Function> _listeners = new ObserverList<Function>();
-  var button = ChatsScreen();
+  final Widget button = ChatsScreen();
   static void setLocale(BuildContext context, Locale locale) {
     _MyAppState state = context.findAncestorStateOfType<_MyAppState>();
     state.setLocale(locale);
@@ -227,7 +228,7 @@ class _MyAppState extends State<MyApp> {
 //          activeIcon: Icon(Icons.notifications),
 //        ),
         BottomNavigationBarItem(
-          title: Text('Account'),
+          title: Text('Profile'),
           icon: Icon(MdiIcons.accountSettingsOutline),
           activeIcon: Icon(MdiIcons.accountSettings),
         ),
@@ -297,48 +298,27 @@ class _MyAppState extends State<MyApp> {
             TripsScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
             ChatsScreen(provider: message, auth: auth),
 //                  NotificationScreen(),
-            auth.isAuth ? AccountScreen(token: tokenforROOM, auth: auth, orderstripsProvider: orderstripsProvider) : AuthScreen(),
+            auth.isAuth
+                ?
+//            AccountScreen(token: tokenforROOM, auth: auth, provider: orderstripsProvider)
+                auth.user != null
+                    ? ProfileScreen(
+                        user: auth.user,
+                      )
+                    : ProgressIndicatorWidget(show: true)
+                : AuthScreen(),
           ];
         }
 
-        List<PersistentBottomNavBarItem> _navBarsItems() {
+        List<PersistentBottomNavBarItem> _navBarsItems(BuildContext ctx) {
           return [
-//            BottomNavigationBarItem(
-//              title: Text('Trips'),
-//              icon: Icon(MdiIcons.roadVariant),
-//              activeIcon: Icon(MdiIcons.road),
-//            ),
-//            BottomNavigationBarItem(
-//              title: Text('Chats'),
-//              icon: newmessage.arethereNewMessage == true
-//                  ? Badge(
-//                badgeColor: Colors.green,
-//                badgeContent: Text(
-//                  newmessage.newMessages.length.toString(),
-//                  style: TextStyle(color: Colors.white),
-//                ),
-//                child: Icon(MdiIcons.forumOutline),
-//              )
-//                  : Icon(MdiIcons.forumOutline),
-//              activeIcon: Icon(MdiIcons.forum),
-//            ),
-////        BottomNavigationBarItem(
-////          title: Text('Notifications'),
-////          icon: Icon(Icons.notifications_none),
-////          activeIcon: Icon(Icons.notifications),
-////        ),
-//            BottomNavigationBarItem(
-//              title: Text('Account'),
-//              icon: Icon(MdiIcons.accountSettingsOutline),
-//              activeIcon: Icon(MdiIcons.accountSettings),
-//            ),
             PersistentBottomNavBarItem(
-              title: 'Orders',
+//              title: t(ctx, "order_plural"),
+              title: "Orders",
               icon: _controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),
               activeColor: Colors.teal[700],
               inactiveColor: Colors.grey[400],
             ),
-
             PersistentBottomNavBarItem(
               title: ("Trips"),
               icon: _controller.index == 1 ? Icon(MdiIcons.roadVariant) : Icon(MdiIcons.road),
@@ -372,7 +352,7 @@ class _MyAppState extends State<MyApp> {
               inactiveColor: Colors.grey[400],
             ),
             PersistentBottomNavBarItem(
-              title: ("Account"),
+              title: ("Profile"),
               icon: _controller.index == 3 ? Icon(MdiIcons.accountSettings) : Icon(MdiIcons.accountSettingsOutline),
               activeColor: Colors.teal[700],
               inactiveColor: Colors.grey[400],
@@ -413,7 +393,7 @@ class _MyAppState extends State<MyApp> {
           home: PersistentTabView(
             controller: _controller,
             screens: _buildScreens(),
-            items: _navBarsItems(),
+            items: _navBarsItems(context),
             confineInSafeArea: true,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             handleAndroidBackButtonPress: true,
@@ -439,6 +419,7 @@ class _MyAppState extends State<MyApp> {
             ),
             onItemSelected: (index) {
               setState(() {});
+              print("selected");
             },
             navBarStyle: NavBarStyle.style6, // Choose the nav bar style with this property.
           ),
@@ -451,7 +432,7 @@ class _MyAppState extends State<MyApp> {
             MyItems.routeName: (ctx) => MyItems(),
             MyTrips.routeName: (ctx) => MyTrips(),
             Contracts.routeName: (ctx) => Contracts(),
-            AccountScreen.routeName: (ctx) => AccountScreen(token: tokenforROOM, orderstripsProvider: orderstripsProvider),
+            AccountScreen.routeName: (ctx) => AccountScreen(),
           },
         );
       }),

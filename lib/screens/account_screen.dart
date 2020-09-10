@@ -1,75 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:briddgy/localization/demo_localization.dart';
 import 'package:briddgy/localization/localization_constants.dart';
-import 'package:briddgy/main.dart';
 import 'package:briddgy/models/api.dart';
-import 'package:briddgy/screens/contracts.dart';
-import 'package:briddgy/screens/my_orders.dart';
-import 'package:briddgy/screens/my_trips.dart';
 import 'package:briddgy/screens/profile_screen.dart';
-import 'package:briddgy/screens/test.dart';
 import 'package:briddgy/widgets/generators.dart';
 import 'package:provider/provider.dart';
-import './auth_screen.dart';
 import '../providers/auth.dart';
 import 'package:briddgy/models/user.dart';
 import 'chay_screen1.dart';
-import 'splash_screen.dart';
+import 'languages_screen.dart';
 import 'package:share/share.dart';
 import 'package:briddgy/screens/customer_support.dart';
-import '../models/language.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
   static const routeName = '/accountscreen';
-  var token, orderstripsProvider, auth;
-  AccountScreen({this.token, this.orderstripsProvider, this.auth});
+
   @override
-  Widget build(BuildContext context) {
-    var auth = Provider.of<Auth>(context, listen: false);
-    return Scaffold(
-      body:
-//      auth.isAuth?
-          AccountPage(
-        token: token,
-        auth: auth,
-        provider: orderstripsProvider,
-      )
-//          : FutureBuilder(
-//              future: auth.tryAutoLogin(),
-//              builder: (ctx, authResultSnapshot) => authResultSnapshot.connectionState == ConnectionState.waiting ? SplashScreen() : AuthScreen(),
-//            )
-      ,
-    );
-  }
+  _AccountScreenState createState() => _AccountScreenState();
 }
 
-class AccountPage extends StatefulWidget {
-  var token, provider, auth;
-  AccountPage({this.token, this.provider, this.auth});
-  @override
-  _AccountPageState createState() => _AccountPageState();
-}
-
-class _AccountPageState extends State<AccountPage> {
+class _AccountScreenState extends State<AccountScreen> {
   bool isLoading = true;
   User user;
   var imageUrl;
+  Auth auth;
+
+  var token;
+
   @override
   void initState() {
     super.initState();
   }
 
-  _changeLanguage(Language language) async {
-    Locale _temp = await setLocale(language.languageCode);
-    MyApp.setLocale(context, _temp);
+  @override
+  void didChangeDependencies() {
+    auth = Provider.of<Auth>(context, listen: true);
+    if (auth.userdetail != null) {
+      user = auth.userdetail;
+      token = auth.token;
+      imageUrl = auth.userdetail.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
+    }
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.auth.userdetail != null) {
-      user = widget.auth.userdetail;
-      imageUrl = widget.auth.userdetail.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
+//    if (auth == null) auth = Provider<Auth>.of(context);
+
+    if (auth.userdetail != null) {
+      user = auth.userdetail;
+      imageUrl = auth.userdetail.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
     }
     return Scaffold(
         body: SafeArea(
@@ -77,40 +57,8 @@ class _AccountPageState extends State<AccountPage> {
           ? Center(child: CircularProgressIndicator())
           : Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Row(
-                    children: [
-                      DropdownButton(
-//                        underline: SizedBox(),
-                        icon: Row(
-                          children: [
-                            Text(
-                              t(context, 'change_language'),
-                              style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey[800],
-                              ),
-                            ),
-                            Icon(MdiIcons.earth),
-                          ],
-                        ),
-                        items: Language.languageList()
-                            .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
-                                  value: lang,
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(lang.name),
-                                      Text(lang.flag),
-                                    ],
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (Language language) {
-                          _changeLanguage(language);
-                        },
-                      ),
-                    ],
-                  ),
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -265,6 +213,28 @@ class _AccountPageState extends State<AccountPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         ListTile(
+                          leading: Icon(MdiIcons.earth),
+                          title: Text(
+                            t(context, 'change_language'),
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          trailing: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                                color: Colors.grey[200],
+                              ),
+                              child: Icon(Icons.navigate_next)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (__) => LanguageScreen()),
+                            );
+                          },
+                        ),
+                        ListTile(
                           leading: Icon(MdiIcons.accountMultiplePlus),
                           title: Text(
                             t(context, 'invite_friends'),
@@ -331,7 +301,9 @@ class _AccountPageState extends State<AccountPage> {
                           leading: Icon(MdiIcons.logoutVariant),
                           onTap: () {
                             Provider.of<Auth>(context, listen: false).logout(context);
-                            Navigator.of(context).reassemble();
+                            Navigator.of(context).pop();
+
+//                            Navigator.of(context).reassemble();
 //                              showDialog(
 //                                context: context,
 //                                builder: (ctx) => AlertDialog(
