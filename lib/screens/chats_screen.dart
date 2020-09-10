@@ -252,12 +252,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                     provider.readMessages(_rooms[index].id);
                                                     provider.messagesLoading = true;
                                                     provider.fetchAndSetMessages(index);
+                                                    var room_id = _rooms[index].members[0].room; 
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (__) => ChatWindow(
                                                               provider: provider,
-                                                              room: _rooms[index].members[0].room,
+                                                              room: room_id,
                                                               user: user,
                                                               token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                                                               auth: Provider.of<Auth>(context, listen: false))),
