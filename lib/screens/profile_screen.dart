@@ -203,134 +203,136 @@ class _ProfileScreenState extends State<ProfileScreen> {
         size = MediaQuery.of(context).size;
         return Scaffold(
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: auth.userdetail.id == user.id
-              ? RaisedButton.icon(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                  ),
-                  icon: Icon(
-                    Icons.edit,
-                    color: Theme.of(context).primaryColor,
-                    size: 18,
-                  ),
-                  label: Text(
-                    t(context, 'edit'),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-//                                    color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (__) => EditProfileScreen(
-                                user: user,
-                                auth: auth,
-                              )),
-//                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
-                    );
-                  },
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    RaisedButton.icon(
+          floatingActionButton: Provider.of<Auth>(context, listen: false).isAuth
+              ? auth.userdetail.id == user.id
+                  ? RaisedButton.icon(
                       padding: EdgeInsets.symmetric(horizontal: 10),
-                      color: Colors.white,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      elevation: 3,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       icon: Icon(
-                        Icons.add,
-                        color: Colors.blue,
+                        Icons.edit,
+                        color: Theme.of(context).primaryColor,
                         size: 18,
                       ),
                       label: Text(
-                        t(context, 'review-add'),
+                        t(context, 'edit'),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                          color: Theme.of(context).primaryColor,
+//                                    color: Theme.of(context).primaryColor,
                         ),
                       ),
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (__) => AddReviewScreen(
+                              builder: (__) => EditProfileScreen(
                                     user: user,
+                                    auth: auth,
                                   )),
+//                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
                         );
                       },
-                    ),
-                    messageButton
-                        ? RaisedButton.icon(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            color: Colors.green,
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        RaisedButton.icon(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.blue,
+                            size: 18,
+                          ),
+                          label: Text(
+                            t(context, 'review-add'),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
                             ),
-                            icon: Icon(
-                              MdiIcons.chatOutline,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                            label: Text(
-                              t(context, 'message'),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                messageButton = false;
-                              });
-                              var auth = Provider.of<Auth>(context, listen: false);
-                              var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                              messageProvider.createRooms(user.id, auth).whenComplete(() => {
-                                    if (messageProvider.isChatRoomCreated)
-                                      {
-                                        setState(() {
-                                          messageButton = true;
-                                        }),
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
-                                        ),
-                                        Flushbar(
-                                          title: t(context, 'success'),
-                                          message: t(context, 'chat_with') + user.firstName.toString() + t(context, 'has_been_started'),
-                                          padding: const EdgeInsets.all(8),
-                                          borderRadius: 10,
-                                          duration: Duration(seconds: 3),
-                                        )..show(context)
-                                      }
-                                    else
-                                      {
-                                        setState(() {
-                                          messageButton = true;
-                                        }),
-                                        Flushbar(
-                                          title: t(context, 'failure'),
-                                          message: t(context, 'please_try_again'),
-                                          padding: const EdgeInsets.all(8),
-                                          borderRadius: 10,
-                                          duration: Duration(seconds: 3),
-                                        )..show(context)
-                                      }
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (__) => AddReviewScreen(
+                                        user: user,
+                                      )),
+                            );
+                          },
+                        ),
+                        messageButton
+                            ? RaisedButton.icon(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                color: Colors.green,
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                ),
+                                icon: Icon(
+                                  MdiIcons.chatOutline,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  t(context, 'message'),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    messageButton = false;
                                   });
-                            },
-                          )
-                        : ProgressIndicatorWidget(show: true),
-                  ],
-                ),
+                                  var auth = Provider.of<Auth>(context, listen: false);
+                                  var messageProvider = Provider.of<Messages>(context, listen: false);
+
+                                  messageProvider.createRooms(user.id, auth).whenComplete(() => {
+                                        if (messageProvider.isChatRoomCreated)
+                                          {
+                                            setState(() {
+                                              messageButton = true;
+                                            }),
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                                            ),
+                                            Flushbar(
+                                              title: t(context, 'success'),
+                                              message: t(context, 'chat_with') + user.firstName.toString() + t(context, 'has_been_started'),
+                                              padding: const EdgeInsets.all(8),
+                                              borderRadius: 10,
+                                              duration: Duration(seconds: 3),
+                                            )..show(context)
+                                          }
+                                        else
+                                          {
+                                            setState(() {
+                                              messageButton = true;
+                                            }),
+                                            Flushbar(
+                                              title: t(context, 'failure'),
+                                              message: t(context, 'please_try_again'),
+                                              padding: const EdgeInsets.all(8),
+                                              borderRadius: 10,
+                                              duration: Duration(seconds: 3),
+                                            )..show(context)
+                                          }
+                                      });
+                                },
+                              )
+                            : ProgressIndicatorWidget(show: true),
+                      ],
+                    )
+              : SizedBox(),
           body: SafeArea(
             child: Column(
               children: <Widget>[
@@ -423,19 +425,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                GestureDetector(
-                                  onTap: () {
-//                                    _openGallery(context);
-                                  },
-                                  child: CircleAvatar(
-                                    radius: 35,
-                                    backgroundColor: Color.fromRGBO(40, 40, 40, 50),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+                                Provider.of<Auth>(context, listen: false).isAuth
+                                    ? auth.userdetail.id == user.id
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              //todo Orxan
+//                                              _openGallery(context);
+                                            },
+                                            child: CircleAvatar(
+                                              radius: 35,
+                                              backgroundColor: Color.fromRGBO(125, 125, 125, 175),
+                                              child: Icon(
+                                                Icons.edit,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox()
+                                    : SizedBox(),
                                 Positioned(
                                   left: 17,
                                   right: 17,

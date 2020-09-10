@@ -15,8 +15,8 @@ import 'package:provider/provider.dart';
 import 'generators.dart';
 
 class TripWidget extends StatelessWidget {
-  Trip trip;
-  var i;
+  final Trip trip;
+  final int i;
   final bool modeProfile;
   TripWidget({@required this.trip, @required this.i, this.modeProfile = false});
   var imageUrl;

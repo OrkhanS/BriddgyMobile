@@ -135,48 +135,6 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                     ),
                     Card(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      elevation: 3,
-                      child: ListTile(
-                        leading: Icon(MdiIcons.earth),
-                        title: DropdownButton(
-                          isExpanded: true,
-                          underline: SizedBox(),
-                          icon: Row(
-                            children: [
-                              Text(
-                                t(context, 'change_language'),
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              SizedBox(
-                                width: 40,
-                              ),
-                            ],
-                          ),
-                          items: Language.languageList()
-                              .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
-                                    value: lang,
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text(lang.name),
-                                        Text(lang.flag),
-                                      ],
-                                    ),
-                                  ))
-                              .toList(),
-                          onChanged: (Language language) {
-                            _changeLanguage(language);
-                          },
-                        ),
-                      ),
-                    ),
-                    Card(
                       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
@@ -274,6 +232,41 @@ class _AccountPageState extends State<AccountPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
+                          ListTile(
+                            leading: Icon(MdiIcons.earth),
+                            title: DropdownButton(
+                              isExpanded: true,
+                              underline: SizedBox(),
+                              icon: Row(
+                                children: [
+                                  Text(
+                                    t(context, 'change_language'),
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 40,
+                                  ),
+                                ],
+                              ),
+                              items: Language.languageList()
+                                  .map<DropdownMenuItem<Language>>((lang) => DropdownMenuItem(
+                                        value: lang,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Text(lang.name),
+                                            Text(lang.flag),
+                                          ],
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: (Language language) {
+                                _changeLanguage(language);
+                              },
+                            ),
+                          ),
                           ListTile(
                             leading: Icon(MdiIcons.accountMultiplePlus),
                             title: Text(
