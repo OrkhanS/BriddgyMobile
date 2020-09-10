@@ -61,6 +61,7 @@ class _ChatWindowState extends State<ChatWindow> {
   User me;
   String imageUrlMe, imageUrlUser;
   var contract;
+  bool firstEntry = true;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
@@ -74,7 +75,6 @@ class _ChatWindowState extends State<ChatWindow> {
     widget.provider.roomIDofActiveChatroom = id;
     imageUrlMe = me.avatarpic == null ? Api.noPictureImage : Api.storageBucket + me.avatarpic.toString();
     imageUrlUser = widget.user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + widget.user.avatarpic.toString();
-
     initCommunication(id);
     super.initState();
   }
@@ -94,7 +94,7 @@ class _ChatWindowState extends State<ChatWindow> {
       print("Room Socket Connected");
     } catch (e) {
       print(e);
-    }
+    }  
   }
 
   addListener(Function callback) {
@@ -121,6 +121,19 @@ class _ChatWindowState extends State<ChatWindow> {
     }
   }
 
+
+  void readMessageSockets(text){
+    if (_channelRoom != null) {
+        if (_channelRoom.sink != null) {
+          try {
+            _channelRoom.sink.add(text);
+          } catch (e) {
+            print(e);
+          }   
+        }
+    }
+  }
+
   void handleSendMessage() {
     var text = textEditingController.value.text;
     textEditingController.clear();
@@ -142,7 +155,7 @@ class _ChatWindowState extends State<ChatWindow> {
             print(e);
           }
           // widget.provider.messages[id].insert(0, tempMessage);
-          widget.provider.changeChatRoomPlace(id);
+          // widget.provider.changeChatRoomPlace(id);
         }
       } catch (e) {
         print(e);
@@ -153,11 +166,11 @@ class _ChatWindowState extends State<ChatWindow> {
       _messages.insert(0, tempMessage);
     });
 
-    for (var i = 0; i < widget.provider.chats.length; i++) {
-      if (widget.provider.chats[i].id == id) {
-        widget.provider.chats[i].lastMessage = tempMessage.text;
-      }
-    }
+    // for (var i = 0; i < widget.provider.chats.length; i++) {
+    //   if (widget.provider.chats[i].id == id) {
+    //     widget.provider.chats[i].lastMessage = tempMessage.text;
+    //   }
+    // }
   }
 
   var triangle = CustomPaint(
@@ -177,9 +190,9 @@ class _ChatWindowState extends State<ChatWindow> {
 
   Future<bool> _onWillPop() async {
     // widget.provider.messages[widget.room]["data"] = _messages;
-    widget.provider.isChatRoomPageActive = false;
-    widget.provider.changeChatRoomPlace("ChangewithList");
-    widget.provider.notifFun();
+    // widget.provider.isChatRoomPageActive = false;
+    // widget.provider.changeChatRoomPlace("ChangewithList");
+    // widget.provider.notifFun();
     return true;
   }
 
@@ -221,10 +234,22 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.provider.isChatRoomPageActive == false) {
-      widget.provider.isChatRoomPageActive = true;
-      widget.provider.roomIDofActiveChatroom = id;
-    }
+    if(firstEntry){
+      firstEntry = false;
+        var a = json.encode({
+        "briddgy_message_field_for_online":"True",
+        "user_id":me.id,
+        "room_id":id
+      });
+      Timer(Duration(seconds: 5), () {
+        readMessageSockets(a);
+      });
+    }   
+
+    // if (widget.provider.isChatRoomPageActive == false) {
+    //   widget.provider.isChatRoomPageActive = true;
+    //   widget.provider.roomIDofActiveChatroom = id;
+    // }
     var textInput = Row(
       children: <Widget>[
         Expanded(
@@ -294,6 +319,7 @@ class _ChatWindowState extends State<ChatWindow> {
       child: Consumer<Messages>(
         builder: (context, provider, child) {
           bool messageLoader = provider.messagesLoading;
+
           if (widget.provider.messages[widget.room] != null && !messageLoader) {
             if (widget.provider.messages[widget.room].isNotEmpty) {
               _messages = widget.provider.messages[widget.room]["data"];
@@ -333,9 +359,9 @@ class _ChatWindowState extends State<ChatWindow> {
                               ),
                               onPressed: () {
                                 // widget.provider.messages[widget.room]["data"] = _messages;
-                                widget.provider.isChatRoomPageActive = false;
-                                widget.provider.changeChatRoomPlace("ChangewithList");
-                                widget.provider.notifFun();
+                                // widget.provider.isChatRoomPageActive = false;
+                                // widget.provider.changeChatRoomPlace("ChangewithList");
+                                // widget.provider.notifFun();
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -465,9 +491,11 @@ class _ChatWindowState extends State<ChatWindow> {
                                     try {
                                       var check = json.decode(_messages[index].text) as Map<String, dynamic>;
                                       iscontract = true;
-                                    } on FormatException catch (_) {
-                                      iscontract = false;
+                                    } catch (e) {
+                                      print(e);
+                                      iscontract=false;
                                     }
+
 
                                     bool reverse = false;
                                     if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {

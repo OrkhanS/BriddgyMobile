@@ -57,6 +57,7 @@ dependencies:
   persistent_bottom_nav_bar: ^2.0.5
   flutter_offline: ^0.3.0
   connectivity: ^0.4.9+2
+  google_sign_in: ^4.5.3
 
 
 

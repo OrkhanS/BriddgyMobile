@@ -129,7 +129,7 @@ class Messages extends ChangeNotifier {
             chats[i].lastMessage = "Contract";
           }
         }
-      } on FormatException catch (_) {
+      }catch (e) {
         for (var i = 0; i < chats.length; i++) {
           if (chats[i].id == roomid) {
             chats[i].lastMessage = tempMessage.text;
@@ -145,25 +145,23 @@ class Messages extends ChangeNotifier {
       // Checking if ChatRoomPage is Active with the roomid, then don't give Notifications
       if (roomid != roomIDofActiveChatRoom) {
         // Checking if ChatRoom is already exists
-        if (newMessage[roomid] == null || newMessage[roomid].isEmpty) {
+        if (newMessage[roomid] == null || newMessage[roomid] == 0) {
           // cannot directly add Message object to Map. So need TemporaryList
-          List<Message> temporary = [];
-          temporary.add(tempMessage);
-          newMessage[roomid] = {};
-          newMessage[roomid] = temporary;
+          newMessage.putIfAbsent(roomid, () => null);
+          newMessage[roomid] = 1;
           notifyListeners();
         } else {
           // Checking if FCM sends the same notification twice
           if (_messages[roomid]["data"][0].id == tempMessage.id) {
-            newMessage[roomid].insert(0, tempMessage);
+            newMessage[roomid] = newMessage[roomid] + 1;
             notifyListeners();
           }
         }
-        if (isChatRoomPageActive) {
-          if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
-        } else {
-          changeChatRoomPlace(roomid);
-        }
+        // if (false) {
+        //   if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
+        // } else {
+        //   changeChatRoomPlace(roomid);
+        // }
       }
       notifyListeners();
     }
@@ -254,8 +252,6 @@ class Messages extends ChangeNotifier {
   }
 
   Future fetchAndSetRooms(auth, isNewMessage) async {
-    isChatsLoadingForMain = false;
-    if (chats.isEmpty || isNewMessage) {
       if (auth.isAuth) {
         tokenforROOM = auth.myTokenFromStorage;
       } else {
@@ -284,19 +280,30 @@ class Messages extends ChangeNotifier {
           _chatRooms = [];
           for (var i = 0; i < data["results"].length; i++) {
             _chatRooms.add(Chats.fromJson(data["results"][i]));
+            if(_chatRooms[i].unread1[1] == auth.user.id){
+              if(_chatRooms[i].unread1[0]!=0){
+                newMessage.putIfAbsent(_chatRooms[i].id, () => null);
+                newMessage[_chatRooms[i].id] = _chatRooms[i].unread1[0];
+              }
+
+            }else{
+              if(_chatRooms[i].unread2[0]!=0){
+                newMessage.putIfAbsent(_chatRooms[i].id, () => null);
+                newMessage[_chatRooms[i].id] = _chatRooms[i].unread2[0];
+              }
+            }
           }
           allChatRoomDetails = {"next": data["next"], "count": data["count"]};
           isChatsLoading = false;
           isChatsLoadingForMain = false;
+
           if (!isChatRoomPageActive) notifyListeners();
         });
         return _chatRooms;
       } catch (e) {
+        print(e);
         return;
       }
-    } else {
-      isChatsLoading = false;
-    }
   }
 
   set addChats(Map mesaj) {

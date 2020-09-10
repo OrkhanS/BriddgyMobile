@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:briddgy/providers/messages.dart';
 import 'package:briddgy/widgets/offline_widget.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
@@ -49,14 +50,12 @@ class _TripScreenState extends State<TripsScreen> {
   String _value = "Sort By";
   final formKey = new GlobalKey<FormState>();
   String urlFilter = "";
+  bool connectionLost=false;
 
   bool isLoading = true;
   bool _isfetchingnew = false;
   @override
   void initState() {
-    if (widget.orderstripsProvider.notLoaded) {
-      widget.orderstripsProvider.fetchAndSetTrips();
-    }
     super.initState();
   }
 
@@ -274,6 +273,13 @@ class _TripScreenState extends State<TripsScreen> {
                     Widget child,
                   ) {
                     final bool connected = connectivity != ConnectivityResult.none;
+                    if(!connected) connectionLost = true;
+                    else{
+                      if(connectionLost) {
+                        widget.orderstripsProvider.fetchAndSetOrders(); widget.orderstripsProvider.fetchAndSetTrips();
+                        Provider.of<Messages>(context,listen: false).fetchAndSetRooms(widget.auth, false);
+                      }
+                    }
                     return !connected
                         ? OfflineWidget()
                         : Column(

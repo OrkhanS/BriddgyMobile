@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/models/api.dart';
 import 'package:briddgy/models/order.dart';
-import 'package:briddgy/models/review.dart';
 import 'package:briddgy/models/stats.dart';
 import 'package:briddgy/models/trip.dart';
 import 'package:briddgy/models/user.dart';
@@ -24,8 +25,9 @@ import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:briddgy/widgets/review_widget.dart';
 import 'package:briddgy/widgets/trip_widget.dart';
 import 'package:provider/provider.dart';
-
 import 'edit_profile_screen.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 
 class ProfileScreen extends StatefulWidget {
   var user;
@@ -51,14 +53,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool messageButton = true;
   var imageUrl;
   String url;
-  Size size;
+  Size size; 
+  bool picturePosting = false;
+  var imageFile;
   String nextReviewURL = "FirstCall";
   Auth auth;
 
   @override
   void initState() {
     user = widget.user;
-    auth = Provider.of<Auth>(context, listen: false);
+    auth = Provider.of<Auth>(this.context, listen: false);
     auth.reviews = [];
     auth.reviewsloading = true;
     url = Api.users + user.id.toString() + "/reviews/";
@@ -71,10 +75,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
     fetchAndSetStatistics();
     super.initState();
   }
+  void _openGallery(BuildContext context) async {
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
+    this.setState(() {
+        imageFile = picture;
+      });
+      upload(context);
+    }
+    Future upload(context) async {
+      setState(() {
+        picturePosting = true;
+      });
+      var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+      var length = await imageFile.length();
+
+      var uri = Uri.parse(Api.addUserImage);
+      var token = Provider.of<Auth>(context, listen: false).myTokenFromStorage;
+      var request = new http.MultipartRequest("PUT", uri);
+      var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
+      request.headers['Authorization'] = "Token " + token;
+
+      request.files.add(multipartFile);
+      var response = await request.send().then((value) {
+        if (value.statusCode == 201) {
+          value.stream.transform(utf8.decoder).listen((value) {
+            setState(() {
+              picturePosting = false;
+              Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
+              imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
+            });
+          });
+          Flushbar(
+            title: "${t(context, 'success')}!",
+            backgroundColor: Colors.green[800],
+            message: "${t(context, 'image_changed')}.",
+            padding: const EdgeInsets.all(8),
+            borderRadius: 10,
+            duration: Duration(seconds: 2),
+          )..show(context);
+        }
+      });
+  }
+
+ 
 
   Future removeReview(i) async {
     showDialog(
-      context: context,
+      context: this.context,
       builder: (ctx) => AlertDialog(
         title: Text("Are you sure you want to delete this review?"),
         content: Text("This action cannot be undone"),
@@ -96,10 +143,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 url,
                 headers: {
                   HttpHeaders.contentTypeHeader: "application/json",
-                  "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                  "Authorization": "Token " + Provider.of<Auth>(this.context, listen: false).myTokenFromStorage,
                 },
               );
-              var auth = Provider.of<Auth>(context, listen: false);
+              var auth = Provider.of<Auth>(this.context, listen: false);
               auth.reviews.removeAt(i);
               auth.notifyAuth();
               Navigator.of(ctx).pop();
@@ -115,12 +162,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 icon: Icon(MdiIcons.delete),
                 backgroundColor: Colors.white,
-                borderColor: Theme.of(context).primaryColor,
+                borderColor: Theme.of(this.context).primaryColor,
                 padding: const EdgeInsets.all(10),
                 margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
                 borderRadius: 10,
                 duration: Duration(seconds: 5),
-              )..show(context);
+              )..show(this.context);
             },
           )
         ],
@@ -188,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void didChangeDependencies() {
-    auth = Provider.of<Auth>(context, listen: false);
+    auth = Provider.of<Auth>(this.context, listen: false);
     super.didChangeDependencies();
   }
 
@@ -205,7 +252,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Provider.of<Auth>(context, listen: false).isAuth
               ? auth.userdetail.id == user.id
-                  ? RaisedButton.icon(
+                  ?  
+                  RaisedButton.icon(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       color: Theme.of(context).scaffoldBackgroundColor,
                       elevation: 3,
@@ -222,7 +270,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
-//                                    color: Theme.of(context).primaryColor,
                         ),
                       ),
                       onPressed: () {
@@ -233,7 +280,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     user: user,
                                     auth: auth,
                                   )),
-//                              MaterialPageRoute(builder: (__) => VerifyPhoneScreen()),
                         );
                       },
                     )
@@ -445,8 +491,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? auth.userdetail.id == user.id
                                         ? GestureDetector(
                                             onTap: () {
-                                              //todo Orxan
-//                                              _openGallery(context);
+                                              _openGallery(context);
                                             },
                                             child: CircleAvatar(
                                               radius: 35,
@@ -799,6 +844,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
+                if(picturePosting)ProgressIndicatorWidget(show: true),
                 Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, int i) {

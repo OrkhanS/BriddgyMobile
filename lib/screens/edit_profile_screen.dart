@@ -29,6 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   User user;
   bool picturePosting = false;
   bool changeInFields = false;
+  
   void _openGallery(BuildContext context) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
     this.setState(() {

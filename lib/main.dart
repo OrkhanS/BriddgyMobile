@@ -273,9 +273,11 @@ class _MyAppState extends State<MyApp> {
         if (auth.isAuth == false) {
           auth.tryAutoLogin();
         }
-        if (message.isChatsLoadingForMain && auth.isAuth) message.fetchAndSetRooms(auth, false);
+        // if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
+        if (orderstripsProvider.isLoadingOrders) orderstripsProvider.fetchAndSetOrders();
+        if (orderstripsProvider.isLoadingTrips) orderstripsProvider.fetchAndSetTrips();
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
             if (auth.user == null) {
@@ -284,7 +286,7 @@ class _MyAppState extends State<MyApp> {
             }
           });
         //if (auth.reviewsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetReviews();
-        if (auth.statsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetStatistics();
+        //if (auth.statsNotReady && auth.isNotLoadingUserDetails == false) auth.fetchAndSetStatistics();
         SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
           statusBarColor: Colors.white10,
           statusBarIconBrightness: Brightness.dark,
