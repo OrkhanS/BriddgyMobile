@@ -216,9 +216,8 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(height: 10),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -257,202 +256,13 @@ class _OrderScreenState extends State<OrderScreen> {
                               );
                             }).toList(),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Expanded(
-                                child: Text(
-                                  order.title,
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.share),
-                                onPressed: () {
-                                  Share.share("${t(context, 'earn')}\$" +
-                                      order.price.toString() +
-                                      " ${t(context, 'by_delivering')}" +
-                                      order.title +
-                                      "\n" +
-                                      Api.orderLink +
-                                      order.id.toString());
-                                },
-                              ),
-                            ],
-                          ),
-                          Divider(),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  "${t(context, 'from')}:",
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 1,
-                                  ),
-                                ),
-                                Text(
-                                  order.source.cityAscii,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  "${t(context, 'to')}:",
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 1,
-                                  ),
-                                ),
-                                Text(
-                                  order.destination.cityAscii,
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  t(context, 'posted_on'),
-                                  style: TextStyle(fontSize: 17, color: Colors.grey[600]),
-                                ),
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 1,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat.yMMMd().format(order.date),
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  t(context, 'weight'),
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 1,
-                                  ),
-                                ),
-                                Text(
-                                  order.weight.toString() + " ${t(context, 'kg')}",
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 4,
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  "${t(context, 'reward')}:",
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(
-                                    height: 1,
-                                  ),
-                                ),
-                                Text(
-                                  order.price.toString() + ' \$',
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Row(
-                              children: <Widget>[
-                                Text(
-                                  t(context, 'description'),
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Divider(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 0.0),
-                            child: Text(
-                              order.description,
-                              style: TextStyle(
-                                fontSize: 16,
-                                height: 1.1,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    messageDeliveryButton
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
+                          buildOrderInfo(order: order),
+                          messageDeliveryButton
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
 //                                RaisedButton.icon(
 //                                  padding: EdgeInsets.symmetric(horizontal: 20),
 ////                            color: Theme.of(context).scaffoldBackgroundColor,
@@ -483,148 +293,152 @@ class _OrderScreenState extends State<OrderScreen> {
 //                                    );
 //                                  },
 //                                ),
-                                Expanded(
-                                  child: SizedBox(),
-                                ),
-                                if (Provider.of<Auth>(context, listen: false).isAuth)
-                                  if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
-                                    RaisedButton.icon(
-                                      padding: EdgeInsets.symmetric(horizontal: 20),
-                                      color: Colors.red,
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
+                                      Expanded(
+                                        child: SizedBox(),
                                       ),
-                                      icon: Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.white,
+                                      if (Provider.of<Auth>(context, listen: false).isAuth)
+                                        if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
+                                          RaisedButton.icon(
+                                            padding: EdgeInsets.symmetric(horizontal: 20),
+                                            color: Colors.red,
+                                            elevation: 5,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            icon: Icon(
+                                              Icons.delete_outline,
+                                              color: Colors.white,
 //                              color: Theme.of(context).primaryColor,
-                                        size: 18,
-                                      ),
-                                      label: Text(
-                                        " ${t(context, 'delete')}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+                                              size: 18,
+                                            ),
+                                            label: Text(
+                                              " ${t(context, 'delete')}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            title: Text(t(context, 'confirm_deletion')),
-                                            content: Text(t(context, 'action_cant_be_undone')),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                child: Text(
-                                                  t(context, 'cancel'),
-                                                  style: TextStyle(color: Colors.red),
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.of(ctx).pop();
-                                                },
                                               ),
-                                              FlatButton(
-                                                child: Text(
-                                                  t(context, 'yes_delete'),
+                                            ),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (ctx) => AlertDialog(
+                                                  title: Text(t(context, 'confirm_deletion')),
+                                                  content: Text(t(context, 'action_cant_be_undone')),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      child: Text(
+                                                        t(context, 'cancel'),
+                                                        style: TextStyle(color: Colors.red),
+                                                      ),
+                                                      onPressed: () {
+                                                        Navigator.of(ctx).pop();
+                                                      },
+                                                    ),
+                                                    FlatButton(
+                                                      child: Text(
+                                                        t(context, 'yes_delete'),
+                                                      ),
+                                                      onPressed: () {
+                                                        var url = Api.orders + order.id.toString() + '/';
+                                                        http.delete(
+                                                          url,
+                                                          headers: {
+                                                            HttpHeaders.contentTypeHeader: "application/json",
+                                                            "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                          },
+                                                        ).then((value) {});
+                                                        var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                                        orderprovider.myorders.removeAt(widget.i);
+                                                        orderprovider.notify();
+                                                        Navigator.of(ctx).pop();
+                                                      },
+                                                    )
+                                                  ],
                                                 ),
-                                                onPressed: () {
-                                                  var url = Api.orders + order.id.toString() + '/';
-                                                  http.delete(
-                                                    url,
-                                                    headers: {
-                                                      HttpHeaders.contentTypeHeader: "application/json",
-                                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                    },
-                                                  ).then((value) {});
-                                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                                                  orderprovider.myorders.removeAt(widget.i);
-                                                  orderprovider.notify();
-                                                  Navigator.of(ctx).pop();
-                                                },
-                                              )
-                                            ],
-                                          ),
-                                        );
+                                              );
 //                                      Navigator.push(
 //                                        context,
 //                                        MaterialPageRoute(builder: (__) => EditOrderScreen(order)),
 //                                      );
-                                      },
-                                    )
-                                  else
-                                    RaisedButton.icon(
-                                      padding: EdgeInsets.symmetric(horizontal: 20),
-                                      color: Colors.green,
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                      ),
-                                      icon: Icon(
-                                        MdiIcons.chatOutline,
-                                        color: Colors.white,
+                                            },
+                                          )
+                                        else
+                                          RaisedButton.icon(
+                                            padding: EdgeInsets.symmetric(horizontal: 20),
+                                            color: Colors.green,
+                                            elevation: 5,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(5.0),
+                                            ),
+                                            icon: Icon(
+                                              MdiIcons.chatOutline,
+                                              color: Colors.white,
 //                              color: Theme.of(context).primaryColor,
-                                        size: 18,
-                                      ),
-                                      label: Text(
-                                        " ${t(context, 'message')}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+                                              size: 18,
+                                            ),
+                                            label: Text(
+                                              " ${t(context, 'message')}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
 //                                    color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          messageDeliveryButton = false;
-                                        });
-                                        var auth = Provider.of<Auth>(context, listen: false);
-                                        var messageProvider = Provider.of<Messages>(context, listen: false);
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                messageDeliveryButton = false;
+                                              });
+                                              var auth = Provider.of<Auth>(context, listen: false);
+                                              var messageProvider = Provider.of<Messages>(context, listen: false);
 
-                                        messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
-                                              if (messageProvider.isChatRoomCreated)
-                                                {
-                                                  setState(() {
-                                                    messageDeliveryButton = true;
-                                                  }),
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (__) => ChatsScreen(
-                                                              provider: messageProvider,
-                                                              auth: auth,
-                                                              shouldOpenTop: true,
-                                                            )),
-                                                  ),
-                                                  Flushbar(
-                                                    title: t(context, 'success'),
-                                                    message:
-                                                        t(context, 'chat_with') + order.owner.firstName.toString() + t(context, "has_been_started"),
-                                                    padding: const EdgeInsets.all(20),
-                                                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                                    borderRadius: 10,
-                                                    duration: Duration(seconds: 3),
-                                                  )..show(context)
-                                                }
-                                              else
-                                                {
-                                                  setState(() {
-                                                    messageDeliveryButton = true;
-                                                  }),
-                                                  Flushbar(
-                                                    title: t(context, 'failure'),
-                                                    message: t(context, 'please_try_again'),
-                                                    padding: const EdgeInsets.all(8),
-                                                    borderRadius: 10,
-                                                    duration: Duration(seconds: 3),
-                                                  )..show(context)
-                                                }
-                                            });
-                                      },
-                                    ),
-                              ],
-                            ),
-                          )
-                        : ProgressIndicatorWidget(show: true),
+                                              messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
+                                                    if (messageProvider.isChatRoomCreated)
+                                                      {
+                                                        setState(() {
+                                                          messageDeliveryButton = true;
+                                                        }),
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (__) => ChatsScreen(
+                                                                    provider: messageProvider,
+                                                                    auth: auth,
+                                                                    shouldOpenTop: true,
+                                                                  )),
+                                                        ),
+                                                        Flushbar(
+                                                          title: t(context, 'success'),
+                                                          message: t(context, 'chat_with') +
+                                                              order.owner.firstName.toString() +
+                                                              t(context, "has_been_started"),
+                                                          padding: const EdgeInsets.all(20),
+                                                          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                          borderRadius: 10,
+                                                          duration: Duration(seconds: 3),
+                                                        )..show(context)
+                                                      }
+                                                    else
+                                                      {
+                                                        setState(() {
+                                                          messageDeliveryButton = true;
+                                                        }),
+                                                        Flushbar(
+                                                          title: t(context, 'failure'),
+                                                          message: t(context, 'please_try_again'),
+                                                          padding: const EdgeInsets.all(8),
+                                                          borderRadius: 10,
+                                                          duration: Duration(seconds: 3),
+                                                        )..show(context)
+                                                      }
+                                                  });
+                                            },
+                                          ),
+                                    ],
+                                  ),
+                                )
+                              : ProgressIndicatorWidget(show: true),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -634,6 +448,184 @@ class _OrderScreenState extends State<OrderScreen> {
       ),
     );
   }
-}
 
-class _current {}
+  Widget buildOrderInfo({@required Order order}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+          color: Colors.grey[300],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey[500].withOpacity(.3),
+            offset: Offset(2, 5),
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    order.title,
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.share,
+                    size: 19,
+                  ),
+                  onPressed: () {
+                    Share.share("${t(context, 'earn')}\$" +
+                        order.price.toString() +
+                        " ${t(context, 'by_delivering')}" +
+                        order.title +
+                        "\n" +
+                        Api.orderLink +
+                        order.id.toString());
+                  },
+                ),
+              ],
+            ),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t(context, 'from'),
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      order.source.cityAscii,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      order.source.country,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                Icon(
+                  MdiIcons.bagChecked,
+                  color: Colors.grey[700],
+                  size: 30,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      t(context, 'to'),
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      order.destination.cityAscii,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      order.destination.country,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.date_range,
+                        size: 20,
+                        color: Colors.grey[700],
+                      ),
+                      Text(
+                        t(context, 'posted_on'),
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        DateFormat("d MMM yyy").format(order.date),
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Icon(
+                        MdiIcons.weightKilogram,
+                        size: 20,
+                        color: Colors.grey[700],
+                      ),
+                      Text(
+                        t(context, 'weight'),
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        order.weight.toString() + " ${t(context, 'kg')}",
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Icon(
+                        MdiIcons.currencyUsdCircleOutline,
+                        size: 20,
+                        color: Colors.grey[700],
+                      ),
+                      Text(
+                        t(context, 'reward'),
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Text(
+                        order.price.toString() + ' \$',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 2.0),
+              child: Text(
+                order.description,
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 15,
+                  height: 1.1,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:briddgy/localization/localization_constants.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
@@ -50,227 +51,256 @@ class _OrderWidgetState extends State<OrderWidget> {
           ),
         );
       },
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: 100,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Row(
-              children: <Widget>[
-                widget.modeProfile
-                    ? Container(
-                        width: 80,
-                        child: Column(
-                          children: order.trip == null
-                              ? [
-                                  SvgPicture.asset(
-                                    "assets/photos/empty_order.svg",
-                                    fit: BoxFit.fitHeight,
-                                    height: 50,
-                                  ),
-                                  Text(
-                                    "No Contract",
-                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ]
-                              : [
-                                  SvgPicture.asset(
-                                    "assets/photos/handshake.svg",
-                                    fit: BoxFit.fitHeight,
-                                    height: 50,
-                                  ),
-                                  Text(
-                                    "Contract Settled",
-                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                    textAlign: TextAlign.center,
-                                  )
-                                ],
-                        ),
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(25.0),
-                        child: Image.network(
-                          imageUrl,
-                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                            return SizedBox();
-                          },
-                          height: 80,
-                          width: 80,
-                          fit: BoxFit.fitWidth,
-                        ),
-                      ),
-                VerticalDivider(),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          child: Text(
-                            order.title,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Icon(
-                              MdiIcons.mapMarkerMultipleOutline,
-//                            color: Colors.grey[700],
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
-                            Expanded(
-                              child: Text(
-                                order.source.cityAscii +
-                                    ", " +
-                                    order.source.country.substring(0, 3) +
-                                    "  -  " +
-                                    order.destination.cityAscii +
-                                    ", " +
-                                    order.destination.country,
-                                softWrap: false,
-                                overflow: TextOverflow.fade,
-                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Icon(
-                              MdiIcons.calendarRange,
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
-                            Text(
-                              DateFormat("d MMM yyy").format(order.date),
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            Spacer(),
-                            Icon(
-                              MdiIcons.weightKilogram,
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
-                            SizedBox(
-                              width: 50,
-                              child: Text(
-                                order.weight.toString(),
-                                maxLines: 1,
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            ),
-                            Spacer(),
-                            Icon(
-                              Icons.attach_money,
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
-                            Text(
-                              order.price.toString(),
-                              maxLines: 1,
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (Provider.of<Auth>(context, listen: false).isAuth && !Provider.of<Auth>(context).isLoadingUserDetails)
-                  if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text("Are you sure you want to delete this order?"),
-                            content: Text("This action cannot be undone"),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.red),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Card(
+          child: Row(
+            children: <Widget>[
+              SizedBox(width: 5),
+              widget.modeProfile
+                  ? Container(
+                      width: 80,
+                      child: Column(
+                        children: order.trip == null
+                            ? [
+                                SvgPicture.asset(
+                                  "assets/photos/empty_order.svg",
+                                  fit: BoxFit.fitHeight,
+                                  height: 50,
                                 ),
-                                onPressed: () {
-                                  Navigator.of(ctx).pop();
-                                },
-                              ),
-                              FlatButton(
-                                child: Text('Yes,delete!'),
-                                onPressed: () {
-                                  var url = Api.orders + order.id.toString() + '/';
-                                  http.delete(
-                                    url,
-                                    headers: {
-                                      HttpHeaders.contentTypeHeader: "application/json",
-                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                    },
-                                  ).then((value) {});
-                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                                  orderprovider.myorders.removeAt(i);
-                                  orderprovider.notify();
-                                  Navigator.of(ctx).pop();
-                                  Flushbar(
-                                    flushbarStyle: FlushbarStyle.GROUNDED,
-                                    titleText: Text(
-                                      "Success",
-                                      style: TextStyle(color: Colors.black, fontSize: 22),
-                                    ),
-                                    messageText: Text(
-                                      "Order has been deleted",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                    icon: Icon(MdiIcons.delete),
-                                    backgroundColor: Colors.white,
-                                    borderColor: Theme.of(context).primaryColor,
-                                    padding: const EdgeInsets.all(10),
-                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
-                                    borderRadius: 10,
-                                    duration: Duration(seconds: 5),
-                                  )..show(context);
-                                },
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.red[200],
-                          ),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.red[400],
-                        ),
+                                Text(
+                                  "No Contract",
+                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ]
+                            : [
+                                SvgPicture.asset(
+                                  "assets/photos/handshake.svg",
+                                  fit: BoxFit.fitHeight,
+                                  height: 50,
+                                ),
+                                Text(
+                                  "Contract Settled",
+                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                  textAlign: TextAlign.center,
+                                )
+                              ],
                       ),
                     )
-              ],
-            ),
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(2.0),
+                      child: Image.network(
+                        imageUrl,
+                        errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                          return SizedBox();
+                        },
+                        height: 80,
+                        width: 80,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+              Container(
+                margin: const EdgeInsets.only(left: 5),
+                color: Colors.grey[200],
+                width: 1,
+                height: 80,
+              ),
+
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  t(context, 'from'),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                Text(
+                                  order.source.cityAscii,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+//                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                Text(
+                                  order.source.country,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            MdiIcons.bagChecked,
+//                            color: Theme.of(context).primaryColor,
+                            color: Colors.grey[700],
+
+                            size: 30,
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  t(context, 'to'),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                Text(
+                                  order.destination.cityAscii,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+//                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                                Text(
+                                  order.destination.country,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+//                                Text(
+//                                  t(context, 'weight'),
+//                                ),
+                          Text(
+                            order.weight.toString() + " " + t(context, 'kg'),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                          ),
+//                          Icon(
+//                            MdiIcons.weightKilogram,
+//                            size: 20,
+//                            color: Colors.grey[700],
+//                          ),
+                          Spacer(),
+
+//                                Text(
+//                                  t(context, 'reward'),
+//                                  style: TextStyle(fontSize: 14),
+//                                ),
+                          Text(
+                            order.price.toString() + ' \$',
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                          ),
+//                          Icon(
+//                            MdiIcons.currencyUsdCircleOutline,
+//                            size: 20,
+//                            color: Colors.grey[700],
+////                            color: Colors.amber,
+//                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+//                Expanded(
+//                  child: Padding(
+//                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+//                    child: Column(
+//                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                      crossAxisAlignment: CrossAxisAlignment.start,
+//                      children: <Widget>[
+//                        SizedBox(
+//                          child: Text(
+//                            order.title,
+//                            overflow: TextOverflow.ellipsis,
+//                            maxLines: 1,
+//                            style: TextStyle(
+//                              fontSize: 20,
+//                              color: Colors.grey[800],
+//                            ),
+//                          ),
+//                        ),
+//                        Row(
+//                          mainAxisAlignment: MainAxisAlignment.start,
+//                          children: <Widget>[
+//                            Icon(
+//                              MdiIcons.mapMarkerMultipleOutline,
+////                            color: Colors.grey[700],
+//                              color: Theme.of(context).primaryColor,
+//                              size: 16,
+//                            ),
+//                            Expanded(
+//                              child: Text(
+//                                order.source.cityAscii +
+//                                    ", " +
+//                                    order.source.country.substring(0, 3) +
+//                                    "  -  " +
+//                                    order.destination.cityAscii +
+//                                    ", " +
+//                                    order.destination.country,
+//                                softWrap: false,
+//                                overflow: TextOverflow.fade,
+//                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+//                              ),
+//                            ),
+//                          ],
+//                        ),
+//                        Row(
+//                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                          children: <Widget>[
+//                            Icon(
+//                              MdiIcons.calendarRange,
+//                              color: Theme.of(context).primaryColor,
+//                              size: 16,
+//                            ),
+//                            Text(
+//                              DateFormat("d MMM yyy").format(order.date),
+//                              style: TextStyle(color: Colors.grey[600]),
+//                            ),
+//                            Spacer(),
+//                            Icon(
+//                              MdiIcons.weightKilogram,
+//                              color: Theme.of(context).primaryColor,
+//                              size: 16,
+//                            ),
+//                            SizedBox(
+//                              width: 50,
+//                              child: Text(
+//                                order.weight.toString(),
+//                                maxLines: 1,
+//                                style: TextStyle(color: Colors.grey[600]),
+//                              ),
+//                            ),
+//                            Spacer(),
+//                            Icon(
+//                              Icons.attach_money,
+//                              color: Theme.of(context).primaryColor,
+//                              size: 16,
+//                            ),
+//                            Text(
+//                              order.price.toString(),
+//                              maxLines: 1,
+//                              style: TextStyle(color: Colors.grey[600]),
+//                            ),
+//                          ],
+//                        ),
+//                      ],
+//                    ),
+//                  ),
+//                ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 100.0),
-            child: Divider(
-              height: 4,
-              color: Colors.black45,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

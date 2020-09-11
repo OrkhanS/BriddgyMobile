@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 import 'package:briddgy/models/user.dart';
+import 'package:utf/utf.dart';
 
 Chats chatsFromJson(String str) => Chats.fromJson(json.decode(str));
 
@@ -30,11 +31,10 @@ class Chats {
 
   factory Chats.fromJson(Map<String, dynamic> json) => Chats(
         id: json["id"],
-        lastMessage: json["last_message"],
+        lastMessage: decodeUtf8(json["last_message"].codeUnits),
         dateCreated: DateTime.parse(json["date_created"]),
         dateModified: DateTime.parse(json["date_modified"]),
-        members:
-            List<Member>.from(json["members"].map((x) => Member.fromJson(x))),
+        members: List<Member>.from(json["members"].map((x) => Member.fromJson(x))),
         unread1: List<dynamic>.from(json["unread1"].map((x) => x)),
         unread2: List<dynamic>.from(json["unread2"].map((x) => x)),
       );

@@ -133,6 +133,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 250),
+      curve: Curves.decelerate,
       height: _expanded ? 265 : 55,
       child: Column(
         children: <Widget>[
@@ -179,7 +180,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
           ),
           if (_expanded)
             FutureBuilder(
-                future: Future.delayed(const Duration(milliseconds: 200), () {
+                future: Future.delayed(const Duration(milliseconds: 250), () {
                   return "done";
                 }),
                 builder: (context, snapshot) {

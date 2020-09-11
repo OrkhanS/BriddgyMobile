@@ -59,59 +59,49 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (__) => ProfileScreen(
-                                  user: user,
-                                )),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          imageUrl == Api.noPictureImage
-                              ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(35.0),
-                                  child: Image.network(
-                                    imageUrl,
-                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                      return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                    },
-                                    height: 70,
-                                    width: 70,
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.chevron_left,
+                            size: 21,
+                            //color: Colors.white,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        imageUrl == Api.noPictureImage
+                            ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(35.0),
+                                child: Image.network(
+                                  imageUrl,
+                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                    return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
+                                  },
+                                  height: 70,
+                                  width: 70,
+                                  fit: BoxFit.fitWidth,
                                 ),
-                          Column(
-                            children: <Widget>[
-                              Text(
-                                user.firstName + " " + user.lastName,
-                                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
                               ),
-                              Text(user.email, style: TextStyle(fontSize: 15)),
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(25)),
-//                                color: Theme.of(context).primaryColor,
-                              color: Colors.grey[200],
+                        VerticalDivider(),
+                        Column(
+                          children: <Widget>[
+                            Text(
+                              user.firstName + " " + user.lastName,
+                              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
                             ),
-                            child: Icon(
-                              Icons.navigate_next,
-                              color: Colors.grey[600],
-                              size: 30,
-                            ),
-                          ),
-                        ],
-                      ),
+                            Text(user.email, style: TextStyle(fontSize: 15)),
+                          ],
+                        ),
+                        Spacer(),
+                      ],
                     ),
                   ),
                   Card(
