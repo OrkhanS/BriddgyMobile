@@ -56,6 +56,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   List _cities = [];
   List _orders = [];
   bool connectionLost=false;
+  bool newMessage = false;
 
   @override
   void initState() {
@@ -204,8 +205,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
             nextOrderURL = orderstripsProvider.detailsOrder["next"];
           }
         }
-
         return Scaffold(
+          
           bottomNavigationBar: BottomAppBar(
             notchMargin: 8,
             shape: CircularNotchedRectangle(),
@@ -309,6 +310,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         ? OfflineWidget()
                         : Column(
                             children: <Widget>[
+                             
 //                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),

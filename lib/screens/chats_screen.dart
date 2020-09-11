@@ -248,7 +248,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                             ),
                                                   //////////////////////////////////////////////////////////////////////////
                                                   onTap: () {
-                                                    var room_id = _rooms[index].members[0].room; 
+                                                    var room = _rooms[index]; 
                                                     provider.readMessages(_rooms[index].id);
                                                     provider.messagesLoading = true;
                                                     provider.fetchAndSetMessages(index);
@@ -258,7 +258,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                       MaterialPageRoute(
                                                           builder: (__) => ChatWindow(
                                                               provider: provider,
-                                                              room: room_id,
+                                                              room: room,
                                                               user: user,
                                                               token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                                                               auth: Provider.of<Auth>(context, listen: false))),
