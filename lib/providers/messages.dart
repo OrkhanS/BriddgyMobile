@@ -28,6 +28,7 @@ class Messages extends ChangeNotifier {
   List roomIDsWhileChatRoomActive = [];
   String roomIDofActiveChatRoom = " ";
   String contractBody = "";
+  bool messageFlushbar = false;
   var auth;
 
   String get getToken {
@@ -97,7 +98,6 @@ class Messages extends ChangeNotifier {
       "recipients": []
     });
     var roomid = message["room_id"];
-
     // Checking if ChatRoom is already exists
     try {
       if (_messages[roomid] == null || _messages[roomid].isEmpty) {
@@ -157,14 +157,16 @@ class Messages extends ChangeNotifier {
             notifyListeners();
           }
         }
-        if (isChatRoomPageActive) {
-          if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
-        } else {
-          changeChatRoomPlace(roomid);
-        }
+        // if (isChatRoomPageActive) {
+        //   if (!roomIDsWhileChatRoomActive.contains(roomid)) roomIDsWhileChatRoomActive.add(roomid);
+        // } else {
+          
+        // }
       }
+      changeChatRoomPlace(roomid);
       notifyListeners();
     }
+    
   }
 
   Map get messages => _messages;
@@ -227,6 +229,7 @@ class Messages extends ChangeNotifier {
         }
       }
     }
+    notifyListeners();
   }
 
   notifFun() {
@@ -306,6 +309,18 @@ class Messages extends ChangeNotifier {
       }
   }
 
+
+  changeLastMessage(id,text){
+    for (var i = 0; i < chats.length; i++) {
+      if (chats[i].id == id) {
+        chats[i].lastMessage = text;
+        chats.indexOf(chats[i]);
+        chats.insert(0, chats.removeAt(i));
+        notifyListeners();
+      }
+    }
+  }
+
   set addChats(Map mesaj) {
     //here goes new room
     notifyListeners();
@@ -332,6 +347,7 @@ class Messages extends ChangeNotifier {
   Map get userDetails {
     return user_detail;
   }
+
 
 //________________________________________________CONTRACTS________________________________________________
 

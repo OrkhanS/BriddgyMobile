@@ -83,6 +83,19 @@ Widget build(BuildContext context) {
               width: MediaQuery.of(context).size.width * 0.8,
             ),
           ),
+           RaisedButton(
+            onPressed: () {
+              setState(() {
+                loxlar.shuffle();
+                generated = true;
+              });
+            },
+            color: Colors.red,
+            child: Text(
+              "Generate Lox",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
          Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),

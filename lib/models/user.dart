@@ -49,7 +49,7 @@ class User {
         email: json["email"],
         isActive: json["is_active"],
         isStaff: json["is_staff"],
-        rating: json["rating"] as double,
+        rating: double.parse(json["rating"].toString()),
         isNumberVerified: json["is_number_verified"],
         isEmailVerified: json["is_email_verified"],
         isPhotoVerified: json["is_photo_verified"],

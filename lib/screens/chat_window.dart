@@ -68,7 +68,7 @@ class _ChatWindowState extends State<ChatWindow> {
   void initState() {
     textEditingController = TextEditingController();
     scrollController = ScrollController();
-    id = widget.room.toString();
+    id = widget.room.id.toString();
     token = widget.auth.myTokenFromStorage;
     me = widget.auth.user;
     widget.provider.isChatRoomPageActive = true;
@@ -93,7 +93,6 @@ class _ChatWindowState extends State<ChatWindow> {
       });
       print("Room Socket Connected");
     } catch (e) {
-      print(e);
     }  
   }
 
@@ -128,7 +127,7 @@ class _ChatWindowState extends State<ChatWindow> {
           try {
             _channelRoom.sink.add(text);
           } catch (e) {
-            print(e);
+    
           }   
         }
     }
@@ -153,25 +152,21 @@ class _ChatWindowState extends State<ChatWindow> {
           try {
             _channelRoom.sink.add(text);
           } catch (e) {
-            print(e);
+    
           }
           // widget.provider.messages[id].insert(0, tempMessage);
           // widget.provider.changeChatRoomPlace(id);
         }
       } catch (e) {
-        print(e);
+
       }
     }
 
     setState(() {
       _messages.insert(0, tempMessage);
     });
+    widget.provider.changeLastMessage(id,tempMessage.text);
 
-    for (var i = 0; i < widget.provider.chats.length; i++) {
-      if (widget.provider.chats[i].id == id) {
-        widget.provider.chats[i].lastMessage = tempMessage.text;
-      }
-    }
   }
   }
 
@@ -191,7 +186,7 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   Future<bool> _onWillPop() async {
-    widget.provider.messages[widget.room]["data"] = _messages;
+    widget.provider.messages[widget.room.id.id]["data"] = _messages;
     widget.provider.isChatRoomPageActive = false;
     widget.provider.changeChatRoomPlace("ChangewithList");
     widget.provider.notifFun();
@@ -216,22 +211,18 @@ class _ChatWindowState extends State<ChatWindow> {
           widget.provider.contractBody = "";
         }
       } catch (e) {
-        print(e);
+
       }
     }
-    if (widget.provider.messages[widget.room] == null) {
+    if (widget.provider.messages[widget.room.id] == null) {
       List<Message> temp = [];
       temp.add(tempMessage);
-      widget.provider.messages[widget.room] = {"next": null, "data": temp};
+      widget.provider.messages[widget.room.id] = {"next": null, "data": temp};
     } else {
-      widget.provider.messages[widget.room]["data"].insert(0, tempMessage);
+      widget.provider.messages[widget.room.id]["data"].insert(0, tempMessage);
     }
-    widget.provider.notifFun();
-    for (var i = 0; i < widget.provider.chats.length; i++) {
-      if (widget.provider.chats[i].id == id) {
-        widget.provider.chats[i].lastMessage = "Contract";
-      }
-    }
+    widget.provider.changeLastMessage(id,"Contract");
+
   }
 
   @override
@@ -243,7 +234,7 @@ class _ChatWindowState extends State<ChatWindow> {
         "user_id":me.id,
         "room_id":id
       });
-      Timer(Duration(seconds: 2), () {
+      Timer(Duration(milliseconds: 300), () {
         readMessageSockets(a);
       });
     }   
@@ -270,7 +261,7 @@ class _ChatWindowState extends State<ChatWindow> {
             ),
           ),
         ),
-        enableButton
+        enableButton && !widget.provider.messagesLoading
             ? IconButton(
                 color: Theme.of(context).primaryColor,
                 icon: Icon(
@@ -322,11 +313,17 @@ class _ChatWindowState extends State<ChatWindow> {
         builder: (context, provider, child) {
           bool messageLoader = provider.messagesLoading;
 
-          if (widget.provider.messages[widget.room] != null && !messageLoader) {
-            if (widget.provider.messages[widget.room].isNotEmpty) {
-              _messages = widget.provider.messages[widget.room]["data"];
+          if (widget.provider.messages[widget.room.id] != null && !messageLoader) {
+            if (widget.provider.messages[widget.room.id].isNotEmpty) {
+              var a = json.encode({
+                "briddgy_message_field_for_online":"True",
+                "user_id":me.id,
+                "room_id":id
+              });
+              readMessageSockets(a);
+              _messages = widget.provider.messages[widget.room.id]["data"];
               if (nextMessagesURL == "FirstCall") {
-                nextMessagesURL = widget.provider.messages[widget.room]["next"];
+                nextMessagesURL = widget.provider.messages[widget.room.id]["next"];
               }
               messageLoader = false;
             } else {
@@ -360,7 +357,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                 size: 24,
                               ),
                               onPressed: () {
-                                widget.provider.messages[widget.room]["data"] = _messages;
+                                widget.provider.messages[widget.room.id]["data"] = _messages;
                                 widget.provider.isChatRoomPageActive = false;
                                 widget.provider.changeChatRoomPlace("ChangewithList");
                                 widget.provider.notifFun();
@@ -494,7 +491,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                       var check = json.decode(_messages[index].text) as Map<String, dynamic>;
                                       iscontract = true;
                                     } catch (e) {
-                                      print(e);
+                              
                                       iscontract=false;
                                     }
 

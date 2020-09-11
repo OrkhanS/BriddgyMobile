@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -96,11 +97,24 @@ class _MyAppState extends State<MyApp> {
       },
       onLaunch: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
+        setState(() {
+         _controller.index = 2;
+       });
       },
       onResume: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
+       setState(() {
+         _controller.index = 2;
+       });
       },
+        
     );
+      _firebaseMessaging.requestNotificationPermissions(
+            const IosNotificationSettings(sound: true, badge: true, alert: true));
+          _firebaseMessaging.onIosSettingsRegistered
+            .listen((IosNotificationSettings settings) {
+          print("Settings registered: $settings");
+        });
   }
 
   Future getToken() async {

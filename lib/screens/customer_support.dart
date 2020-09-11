@@ -1,5 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:briddgy/models/api.dart';
+import 'package:briddgy/providers/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:briddgy/localization/localization_constants.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class CustomerSupport extends StatefulWidget {
   var user, message;
@@ -56,18 +64,27 @@ class _CustomerSupportState extends State<CustomerSupport> {
                   icon: Icon(Icons.report),
                 ),
                 keyboardType: TextInputType.text,
-                onChanged: (String val) {},
+                onChanged: (String val) {
+                  title = val;
+                },
               ),
             ),
             Container(
               width: deviceWidth * 0.8,
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: t(context, 'tell_about_issue'),
-                  icon: Icon(Icons.report),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 300.0,
                 ),
-                keyboardType: TextInputType.text,
-                onChanged: (String val) {},
+                child: TextField(
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    labelText: t(context, 'description'),
+                    icon: Icon(MdiIcons.informationOutline),
+                  ),
+                  onChanged: (String val) {
+                    description = val;
+                  },
+                ),
               ),
             ),
             Padding(
@@ -93,6 +110,19 @@ class _CustomerSupportState extends State<CustomerSupport> {
                     ),
                   ),
                   onPressed: () {
+                    description = "Subject:" + title + "  Content:" +description;
+                    final url = Api.writeDeleteReview;
+                    http.post(
+                      url,
+                      headers: {
+                          HttpHeaders.contentTypeHeader: "application/json",
+                      },
+                      body: json.encode({
+                          "content": Provider.of<Auth>(context).user.email,
+                          "email": description,
+                        })
+                      
+                    );
                     Navigator.pop(context);
                   },
                 ),
