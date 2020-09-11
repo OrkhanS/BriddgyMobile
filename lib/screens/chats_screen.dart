@@ -177,94 +177,91 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         try {
                                           var check = json.decode(_rooms[index].lastMessage.toString()) as Map<String, dynamic>;
                                           iscontract = true;
-                                        }catch (e) {
-                                              iscontract=false;
-                                          }
+                                        } catch (e) {
+                                          iscontract = false;
+                                        }
                                         return Column(
                                           children: <Widget>[
                                             Menu(
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                                                child: ListTile(
-                                                  leading: imageUrl == Api.noPictureImage
-                                                      ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 50.0)
-                                                      : ClipRRect(
-                                                          borderRadius: BorderRadius.circular(25.0),
-                                                          child: Image.network(
-                                                            imageUrl,
-                                                            errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                              return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 50.0);
-                                                            },
-                                                            height: 50,
-                                                            width: 50,
-                                                            fit: BoxFit.fitWidth,
-                                                          ),
+                                              child: ListTile(
+                                                leading: imageUrl == Api.noPictureImage
+                                                    ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 60.0)
+                                                    : ClipRRect(
+                                                        borderRadius: BorderRadius.circular(35.0),
+                                                        child: Image.network(
+                                                          imageUrl,
+                                                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                            return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 60.0);
+                                                          },
+                                                          height: 60,
+                                                          width: 60,
+                                                          fit: BoxFit.cover,
                                                         ),
-                                                  title: Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        user.firstName + " " + user.lastName + "  ",
-                                                        style: TextStyle(fontSize: 15.0),
                                                       ),
-                                                      user.online
-                                                          ? Icon(
-                                                              MdiIcons.circle,
-                                                              color: Colors.green,
-                                                              size: 12,
-                                                            )
-                                                          : SizedBox()
-                                                    ],
-                                                  ),
-                                                  subtitle: Text(
-                                                    iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
-                                                    style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),
-                                                    maxLines: 2,
-                                                  ),
-                                                  trailing:
-                                                      //////////////////////////////////////////////////////////////////
-                                                      provider.newMessage[_rooms[index].id] != null
-                                                          ?
-
-                                                          /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
-                                                          provider.newMessage[_rooms[index].id] != 0
-                                                              ?
-
-                                                              /// IF LENGHT IS NOT 0, SHOWING THE BADGE
-                                                              Badge(
-                                                                  badgeColor: Colors.green,
-                                                                  badgeContent: Text(
-                                                                    provider.newMessage[_rooms[index].id].toString(),
-                                                                    style: TextStyle(color: Colors.white),
-                                                                  ),
-                                                                  child: Icon(Icons.arrow_forward_ios),
-                                                                )
-                                                              : Icon(
-                                                                  Icons.arrow_forward_ios,
-                                                                  size: 14.0,
-                                                                )
-                                                          : Icon(
-                                                              Icons.arrow_forward_ios,
-                                                              size: 14.0,
-                                                            ),
-                                                  //////////////////////////////////////////////////////////////////////////
-                                                  onTap: () {
-                                                    var room = _rooms[index]; 
-                                                    provider.readMessages(_rooms[index].id);
-                                                    provider.messagesLoading = true;
-                                                    provider.fetchAndSetMessages(index);
-                                                    
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (__) => ChatWindow(
-                                                              provider: provider,
-                                                              room: room,
-                                                              user: user,
-                                                              token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                              auth: Provider.of<Auth>(context, listen: false))),
-                                                    );
-                                                  },
+                                                title: Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      user.firstName + " " + user.lastName + "  ",
+                                                      style: TextStyle(fontSize: 15.0),
+                                                    ),
+                                                    user.online
+                                                        ? Icon(
+                                                            MdiIcons.circle,
+                                                            color: Colors.green,
+                                                            size: 12,
+                                                          )
+                                                        : SizedBox()
+                                                  ],
                                                 ),
+                                                subtitle: Text(
+                                                  iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
+                                                  style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),
+                                                  maxLines: 2,
+                                                ),
+                                                trailing:
+                                                    //////////////////////////////////////////////////////////////////
+                                                    provider.newMessage[_rooms[index].id] != null
+                                                        ?
+
+                                                        /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
+                                                        provider.newMessage[_rooms[index].id] != 0
+                                                            ?
+
+                                                            /// IF LENGHT IS NOT 0, SHOWING THE BADGE
+                                                            Badge(
+                                                                badgeColor: Colors.green,
+                                                                badgeContent: Text(
+                                                                  provider.newMessage[_rooms[index].id].toString(),
+                                                                  style: TextStyle(color: Colors.white),
+                                                                ),
+                                                                child: Icon(Icons.arrow_forward_ios),
+                                                              )
+                                                            : Icon(
+                                                                Icons.arrow_forward_ios,
+                                                                size: 14.0,
+                                                              )
+                                                        : Icon(
+                                                            Icons.arrow_forward_ios,
+                                                            size: 14.0,
+                                                          ),
+                                                //////////////////////////////////////////////////////////////////////////
+                                                onTap: () {
+                                                  var room = _rooms[index];
+                                                  provider.readMessages(_rooms[index].id);
+                                                  provider.messagesLoading = true;
+                                                  provider.fetchAndSetMessages(index);
+
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (__) => ChatWindow(
+                                                            provider: provider,
+                                                            room: room,
+                                                            user: user,
+                                                            token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                            auth: Provider.of<Auth>(context, listen: false))),
+                                                  );
+                                                },
                                               ),
                                               items: [
                                                 MenuItem(t(context, 'info'), () {

@@ -171,7 +171,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     },
                                     height: 70,
                                     width: 70,
-                                    fit: BoxFit.fitWidth,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                           Positioned(

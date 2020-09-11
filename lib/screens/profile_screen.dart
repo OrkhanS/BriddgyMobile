@@ -494,7 +494,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           },
                                           height: 70,
                                           width: 70,
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                 Provider.of<Auth>(context, listen: false).isAuth

@@ -92,8 +92,7 @@ class _ChatWindowState extends State<ChatWindow> {
         initCommunication(id);
       });
       print("Room Socket Connected");
-    } catch (e) {
-    }  
+    } catch (e) {}
   }
 
   addListener(Function callback) {
@@ -120,54 +119,46 @@ class _ChatWindowState extends State<ChatWindow> {
     }
   }
 
-
-  void readMessageSockets(text){
+  void readMessageSockets(text) {
     if (_channelRoom != null) {
-        if (_channelRoom.sink != null) {
-          try {
-            _channelRoom.sink.add(text);
-          } catch (e) {
-    
-          }   
-        }
+      if (_channelRoom.sink != null) {
+        try {
+          _channelRoom.sink.add(text);
+        } catch (e) {}
+      }
     }
   }
 
   void handleSendMessage() {
     var text = textEditingController.value.text.trim();
-     if(text.length!=0){
-    textEditingController.clear();
-    var tempMessage = Message.fromJson({
-      "id": 200,
-      "date_created": DateTime.now().toString(),
-      "date_modified": DateTime.now().toString(),
-      "text": text.toString(),
-      "sender": widget.auth.user.id,
-      "recipients": []
-    });
+    if (text.length != 0) {
+      textEditingController.clear();
+      var tempMessage = Message.fromJson({
+        "id": 200,
+        "date_created": DateTime.now().toString(),
+        "date_modified": DateTime.now().toString(),
+        "text": text.toString(),
+        "sender": widget.auth.user.id,
+        "recipients": []
+      });
 
-    if (_channelRoom != null) {
-      try {
-        if (_channelRoom.sink != null) {
-          try {
-            _channelRoom.sink.add(text);
-          } catch (e) {
-    
+      if (_channelRoom != null) {
+        try {
+          if (_channelRoom.sink != null) {
+            try {
+              _channelRoom.sink.add(text);
+            } catch (e) {}
+            // widget.provider.messages[id].insert(0, tempMessage);
+            // widget.provider.changeChatRoomPlace(id);
           }
-          // widget.provider.messages[id].insert(0, tempMessage);
-          // widget.provider.changeChatRoomPlace(id);
-        }
-      } catch (e) {
-
+        } catch (e) {}
       }
+
+      setState(() {
+        _messages.insert(0, tempMessage);
+      });
+      widget.provider.changeLastMessage(id, tempMessage.text);
     }
-
-    setState(() {
-      _messages.insert(0, tempMessage);
-    });
-    widget.provider.changeLastMessage(id,tempMessage.text);
-
-  }
   }
 
   var triangle = CustomPaint(
@@ -210,9 +201,7 @@ class _ChatWindowState extends State<ChatWindow> {
           widget.provider.changeChatRoomPlace(id);
           widget.provider.contractBody = "";
         }
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
     if (widget.provider.messages[widget.room.id] == null) {
       List<Message> temp = [];
@@ -221,23 +210,18 @@ class _ChatWindowState extends State<ChatWindow> {
     } else {
       widget.provider.messages[widget.room.id]["data"].insert(0, tempMessage);
     }
-    widget.provider.changeLastMessage(id,"Contract");
-
+    widget.provider.changeLastMessage(id, "Contract");
   }
 
   @override
   Widget build(BuildContext context) {
-    if(firstEntry){
+    if (firstEntry) {
       firstEntry = false;
-        var a = json.encode({
-        "briddgy_message_field_for_online":"True",
-        "user_id":me.id,
-        "room_id":id
-      });
+      var a = json.encode({"briddgy_message_field_for_online": "True", "user_id": me.id, "room_id": id});
       Timer(Duration(milliseconds: 300), () {
         readMessageSockets(a);
       });
-    }   
+    }
 
     if (widget.provider.isChatRoomPageActive == false) {
       widget.provider.isChatRoomPageActive = true;
@@ -315,11 +299,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
           if (widget.provider.messages[widget.room.id] != null && !messageLoader) {
             if (widget.provider.messages[widget.room.id].isNotEmpty) {
-              var a = json.encode({
-                "briddgy_message_field_for_online":"True",
-                "user_id":me.id,
-                "room_id":id
-              });
+              var a = json.encode({"briddgy_message_field_for_online": "True", "user_id": me.id, "room_id": id});
               readMessageSockets(a);
               _messages = widget.provider.messages[widget.room.id]["data"];
               if (nextMessagesURL == "FirstCall") {
@@ -438,7 +418,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                         },
                                         height: 50,
                                         width: 50,
-                                        fit: BoxFit.fitWidth,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                             ),
@@ -491,10 +471,8 @@ class _ChatWindowState extends State<ChatWindow> {
                                       var check = json.decode(_messages[index].text) as Map<String, dynamic>;
                                       iscontract = true;
                                     } catch (e) {
-                              
-                                      iscontract=false;
+                                      iscontract = false;
                                     }
-
 
                                     bool reverse = false;
                                     if (widget.user.id != _messages[index].sender || _messages[index].sender == "me") {
@@ -520,7 +498,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                                       },
                                                       height: 50,
                                                       width: 50,
-                                                      fit: BoxFit.fitWidth,
+                                                      fit: BoxFit.cover,
                                                     ),
                                                   ),
                                           )
@@ -535,7 +513,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                                   },
                                                   height: 50,
                                                   width: 50,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               );
                                     if (iscontract) {
