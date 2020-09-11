@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:briddgy/screens/account_screen.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
@@ -30,8 +31,8 @@ import 'package:path/path.dart';
 import 'package:async/async.dart';
 
 class ProfileScreen extends StatefulWidget {
-  var user;
-  ProfileScreen({this.user});
+  final User user;
+  ProfileScreen({@required this.user});
   static const routeName = '/profile';
 
   @override
@@ -53,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool messageButton = true;
   var imageUrl;
   String url;
-  Size size; 
+  Size size;
   bool picturePosting = false;
   var imageFile;
   String nextReviewURL = "FirstCall";
@@ -75,49 +76,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     fetchAndSetStatistics();
     super.initState();
   }
+
   void _openGallery(BuildContext context) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
     this.setState(() {
-        imageFile = picture;
-      });
-      upload(context);
-    }
-    Future upload(context) async {
-      setState(() {
-        picturePosting = true;
-      });
-      var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-      var length = await imageFile.length();
-
-      var uri = Uri.parse(Api.addUserImage);
-      var token = Provider.of<Auth>(context, listen: false).myTokenFromStorage;
-      var request = new http.MultipartRequest("PUT", uri);
-      var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
-      request.headers['Authorization'] = "Token " + token;
-
-      request.files.add(multipartFile);
-      var response = await request.send().then((value) {
-        if (value.statusCode == 201) {
-          value.stream.transform(utf8.decoder).listen((value) {
-            setState(() {
-              picturePosting = false;
-              Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
-              imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
-            });
-          });
-          Flushbar(
-            title: "${t(context, 'success')}!",
-            backgroundColor: Colors.green[800],
-            message: "${t(context, 'image_changed')}.",
-            padding: const EdgeInsets.all(8),
-            borderRadius: 10,
-            duration: Duration(seconds: 2),
-          )..show(context);
-        }
-      });
+      imageFile = picture;
+    });
+    upload(context);
   }
 
- 
+  Future upload(context) async {
+    setState(() {
+      picturePosting = true;
+    });
+    var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var length = await imageFile.length();
+
+    var uri = Uri.parse(Api.addUserImage);
+    var token = Provider.of<Auth>(context, listen: false).myTokenFromStorage;
+    var request = new http.MultipartRequest("PUT", uri);
+    var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
+    request.headers['Authorization'] = "Token " + token;
+
+    request.files.add(multipartFile);
+    var response = await request.send().then((value) {
+      if (value.statusCode == 201) {
+        value.stream.transform(utf8.decoder).listen((value) {
+          setState(() {
+            picturePosting = false;
+            Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
+            imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
+          });
+        });
+        Flushbar(
+          title: "${t(context, 'success')}!",
+          backgroundColor: Colors.green[800],
+          message: "${t(context, 'image_changed')}.",
+          padding: const EdgeInsets.all(8),
+          borderRadius: 10,
+          duration: Duration(seconds: 2),
+        )..show(context);
+      }
+    });
+  }
 
   Future removeReview(i) async {
     showDialog(
@@ -252,8 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Provider.of<Auth>(context, listen: false).isAuth
               ? auth.userdetail.id == user.id
-                  ?  
-                  RaisedButton.icon(
+                  ? RaisedButton.icon(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       color: Theme.of(context).scaffoldBackgroundColor,
                       elevation: 3,
@@ -261,12 +261,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       icon: Icon(
-                        Icons.edit,
+                        Icons.settings,
                         color: Theme.of(context).primaryColor,
                         size: 18,
                       ),
                       label: Text(
-                        t(context, 'edit'),
+                        t(context, 'settings'),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
@@ -275,11 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (__) => EditProfileScreen(
-                                    user: user,
-                                    auth: auth,
-                                  )),
+                          MaterialPageRoute(builder: (__) => AccountScreen()),
                         );
                       },
                     )
@@ -395,17 +391,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          IconButton(
-                            icon: Icon(
-                              Icons.chevron_left,
-                              size: 21,
-                              //color: Colors.white,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                          Provider.of<Auth>(context, listen: false).isAuth
+                              ? auth.userdetail.id != user.id
+                                  ? IconButton(
+                                      icon: Icon(
+                                        Icons.chevron_left,
+                                        size: 21,
+                                        //color: Colors.white,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    )
+                                  : SizedBox(width: 20)
+                              : SizedBox(width: 20),
                           Column(
                             children: <Widget>[
                               Row(
@@ -413,8 +413,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   GestureDetector(
                                     onTap: () {},
                                     child: Icon(
-                                      MdiIcons.shieldCheck,
-                                      color: Colors.green,
+                                      MdiIcons.email,
+                                      color: user.isEmailVerified ? Colors.green : Colors.red,
+                                      size: 17,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      MdiIcons.phone,
+                                      color: user.isNumberVerified ? Colors.green : Colors.red,
+                                      size: 17,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      Icons.tag_faces,
+                                      color: user.isPhotoVerified ? Colors.green : Colors.red,
                                       size: 17,
                                     ),
                                   ),
@@ -828,7 +844,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
-                if(picturePosting)ProgressIndicatorWidget(show: true),
+                if (picturePosting) ProgressIndicatorWidget(show: true),
                 Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, int i) {

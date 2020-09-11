@@ -314,5 +314,6 @@
 
     "review_added": "Review Added!",
     "review_not_added_contract": "You need to have a contract to add a review.",
-    "review_not_added": "You have already reviewed this user, remove to add a new review."
+    "review_not_added": "You have already reviewed this user, remove to add a new review.",
+    "settings" : "Settings"
 }
