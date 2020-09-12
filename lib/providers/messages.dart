@@ -28,7 +28,7 @@ class Messages extends ChangeNotifier {
   List roomIDsWhileChatRoomActive = [];
   String roomIDofActiveChatRoom = " ";
   String contractBody = "";
-  bool messageFlushbar = false;
+  bool readMessageText = false;
   var auth;
 
   String get getToken {
@@ -211,6 +211,16 @@ class Messages extends ChangeNotifier {
     }
   }
 
+  userReadMessage(auth,data){
+      for (var i = 0; i < chats.length; i++) {
+        if (chats[i].id == data["room_id"]) {
+          if(auth.user.id == chats[i].unread1[1])chats[i].unread2[0] = 0;
+          else chats[i].unread1[0] = 0;
+          notifyListeners();
+        }
+    }
+  }
+
   changeChatRoomPlace(id) {
     if (id == "ChangewithList") {
       for (var i = 0; i < roomIDsWhileChatRoomActive.length; i++) {
@@ -310,11 +320,12 @@ class Messages extends ChangeNotifier {
   }
 
 
-  changeLastMessage(id,text){
+  changeLastMessage(id,text,auth){
     for (var i = 0; i < chats.length; i++) {
       if (chats[i].id == id) {
         chats[i].lastMessage = text;
-        chats.indexOf(chats[i]);
+        if(auth.user.id == chats[i].unread1[1])chats[i].unread2[0] = 1;
+        else chats[i].unread1[0] = 1;
         chats.insert(0, chats.removeAt(i));
         notifyListeners();
       }

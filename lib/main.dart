@@ -193,7 +193,10 @@ class _MyAppState extends State<MyApp> {
   /// Callback which is invoked each time that we are receiving
   /// a message from the server
   /// ----------------------------------------------------------
-  _onReceptionOfMessageFromServer(message) {}
+  _onReceptionOfMessageFromServer(message) {
+    message = json.decode(message);
+    if(message["type"] == "ReadMessage")messageProvider.userReadMessage(authProvider,message);
+  }
 
   @override
   void dispose() {

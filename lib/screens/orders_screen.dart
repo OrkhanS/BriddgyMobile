@@ -246,9 +246,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                   icon: Icon(MdiIcons.login),
                   backgroundColor: Colors.white,
-                  borderColor: Theme.of(context).primaryColor,
+                  borderColor: Colors.red,
                   padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 120),
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 80),
                   borderRadius: 10,
                   duration: Duration(seconds: 5),
                 )..show(context);

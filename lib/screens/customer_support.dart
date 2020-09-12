@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:briddgy/models/api.dart';
 import 'package:briddgy/providers/auth.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -110,20 +111,39 @@ class _CustomerSupportState extends State<CustomerSupport> {
                     ),
                   ),
                   onPressed: () {
-                    description = "Subject:" + title + "  Content:" +description;
-                    final url = Api.writeDeleteReview;
+                    description = "Subject:" + title + "<br>Content:" +description;
+                    final url = Api.customerSupport;
                     http.post(
                       url,
                       headers: {
                           HttpHeaders.contentTypeHeader: "application/json",
                       },
                       body: json.encode({
-                          "content": Provider.of<Auth>(context).user.email,
-                          "email": description,
+                          "content": description,
+                          "email": Provider.of<Auth>(context,listen: false).user.email,
                         })
                       
                     );
                     Navigator.pop(context);
+                    Flushbar(
+                      flushbarStyle: FlushbarStyle.GROUNDED,
+                      titleText: Text(
+                        "Success",
+                        style: TextStyle(color: Colors.black, fontSize: 22),
+                      ),
+                      messageText: Text(
+                        "Your message has been sent!",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      icon: Icon(MdiIcons.login),
+                      backgroundColor: Colors.white,
+                      borderColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.all(10),
+                      margin: EdgeInsets.only(left: 20, right: 20, bottom: 80),
+                      borderRadius: 10,
+                      duration: Duration(seconds: 2),
+                    )..show(context);
+
                   },
                 ),
               ),

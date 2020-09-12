@@ -62,10 +62,12 @@ class _ChatWindowState extends State<ChatWindow> {
   String imageUrlMe, imageUrlUser;
   var contract;
   bool firstEntry = true;
+  bool userRead = false;
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
   void initState() {
+    widget.provider.roomIDofActiveChatRoom=widget.room.id.toString();
     textEditingController = TextEditingController();
     scrollController = ScrollController();
     id = widget.room.id.toString();
@@ -75,6 +77,8 @@ class _ChatWindowState extends State<ChatWindow> {
     widget.provider.roomIDofActiveChatroom = id;
     imageUrlMe = me.avatarpic == null ? Api.noPictureImage : Api.storageBucket + me.avatarpic.toString();
     imageUrlUser = widget.user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + widget.user.avatarpic.toString();
+    if(me.id != widget.room.unread1[1]) {widget.room.unread1[0] == 0 ? userRead=true : userRead=false;}
+    else{widget.room.unread2[0] == 0 ? userRead=true : userRead=false;}
     initCommunication(id);
     super.initState();
   }
@@ -163,10 +167,10 @@ class _ChatWindowState extends State<ChatWindow> {
     }
 
     setState(() {
+      userRead = false;
       _messages.insert(0, tempMessage);
     });
-    widget.provider.changeLastMessage(id,tempMessage.text);
-
+    widget.provider.changeLastMessage(id,tempMessage.text, Provider.of<Auth>(context, listen: false));
   }
   }
 
@@ -312,25 +316,24 @@ class _ChatWindowState extends State<ChatWindow> {
       child: Consumer<Messages>(
         builder: (context, provider, child) {
           bool messageLoader = provider.messagesLoading;
-
-          if (widget.provider.messages[widget.room.id] != null && !messageLoader) {
-            if (widget.provider.messages[widget.room.id].isNotEmpty) {
+          if (provider.messages[widget.room.id] != null && !messageLoader) {
+            if (provider.messages[widget.room.id].isNotEmpty) {
               var a = json.encode({
                 "briddgy_message_field_for_online":"True",
                 "user_id":me.id,
                 "room_id":id
               });
               readMessageSockets(a);
-              _messages = widget.provider.messages[widget.room.id]["data"];
+              _messages = provider.messages[widget.room.id]["data"];
               if (nextMessagesURL == "FirstCall") {
-                nextMessagesURL = widget.provider.messages[widget.room.id]["next"];
+                nextMessagesURL = provider.messages[widget.room.id]["next"];
               }
               messageLoader = false;
             } else {
               messageLoader = true;
             }
           }
-          if (widget.provider.contractBody != "") contractMessage();
+          if (provider.contractBody != "") contractMessage();
           return Scaffold(
             resizeToAvoidBottomPadding: true,
             body: SafeArea(
@@ -357,10 +360,10 @@ class _ChatWindowState extends State<ChatWindow> {
                                 size: 24,
                               ),
                               onPressed: () {
-                                widget.provider.messages[widget.room.id]["data"] = _messages;
-                                widget.provider.isChatRoomPageActive = false;
-                                widget.provider.changeChatRoomPlace("ChangewithList");
-                                widget.provider.notifFun();
+                                provider.messages[widget.room.id]["data"] = _messages;
+                                provider.isChatRoomPageActive = false;
+                                provider.changeChatRoomPlace("ChangewithList");
+                                provider.notifFun();
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -494,6 +497,7 @@ class _ChatWindowState extends State<ChatWindow> {
                               
                                       iscontract=false;
                                     }
+                                    
 
 
                                     bool reverse = false;
@@ -851,15 +855,30 @@ class _ChatWindowState extends State<ChatWindow> {
                                     }
 
                                     if (reverse) {
-                                      return Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: EdgeInsets.all(!iscontract ? 8.0 : 0),
-                                            child: message,
+                                      return Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: EdgeInsets.all(!iscontract ? 8.0 : 0),
+                                                child: message,
+                                              ),
+                                              if (!iscontract) avatar,
+                                            ],
                                           ),
-                                          if (!iscontract) avatar,
+                                      if(index == 0 && userRead)
+                                          Align(
+                                            alignment: Alignment.bottomRight,
+                                            child: Container(
+                                              padding: EdgeInsets.only(right:5),
+                                              child: Text(
+                                                "Read",
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       );
                                     } else {
@@ -874,8 +893,11 @@ class _ChatWindowState extends State<ChatWindow> {
                                         ],
                                       );
                                     }
+
                                   },
+
                                 ),
+                                
                               ),
                               Align(
                                 alignment: Alignment.topCenter,
@@ -920,6 +942,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                   },
                                 ),
                               ),
+
                             ],
                           ),
                   ),
