@@ -441,7 +441,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                         },
                                         height: 50,
                                         width: 50,
-                                        fit: BoxFit.fitWidth,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                             ),
