@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:utf/utf.dart';
+
 Message messageFromJson(String str) => Message.fromJson(json.decode(str));
 
 String messageToJson(Message data) => json.encode(data.toJson());
@@ -29,7 +31,7 @@ class Message {
         id: json["id"],
         dateCreated: DateTime.parse(json["date_created"]),
         dateModified: DateTime.parse(json["date_modified"]),
-        text: json["text"].toString(),
+        text: decodeUtf8(json["text"].codeUnits),
         sender: json["sender"],
         recipients: List<dynamic>.from(json["recipients"].map((x) => x)),
       );

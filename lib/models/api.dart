@@ -1,6 +1,6 @@
 class Api {
-  static const String orderLink = "http://briddgy-web.herokuapp.com/en/orders?id=";
-  static const String tripLink = "http://briddgy-web.herokuapp.com/en/trips?id=";
+  static const String orderLink = "https://briddgy.com/en/orders?id=";
+  static const String tripLink = "https://briddgy.com/en/trips?id=";
   static const storageBucket = "https://storage.googleapis.com/briddgy-media/";
   static const String address = "https://backend.briddgy.com/";
   static const roomSocket = "wss://backend.briddgy.com/chat/";

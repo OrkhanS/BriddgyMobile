@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:briddgy/localization/localization_constants.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flushbar/flushbar.dart';
@@ -25,280 +26,253 @@ class TripWidget extends StatelessWidget {
     if (imageUrl == null) {
       imageUrl = trip.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + trip.owner.avatarpic.toString();
     }
-    return Column(
-      children: <Widget>[
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (__) => TripScreen(
-                  trip: trip,
-                ),
-              ),
-            );
-          },
-          child: Container(
-            height: 80,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (__) => TripScreen(
+              trip: trip,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            SizedBox(
+              width: 5,
+            ),
+            Stack(
               children: <Widget>[
-                SizedBox(
-                  width: 5,
-                ),
-                Stack(
-                  children: <Widget>[
-                    modeProfile
-                        ? Container(
-                            width: 70,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Text(
-                                  trip.numberOfContracts.toString(),
-                                  style: TextStyle(fontSize: 25),
-                                ),
-                                //todo i18n
-                                Text(
-                                  "Active Contracts",
-                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                  textAlign: TextAlign.center,
-                                ),
-//                                RaisedButton(
-//                                  color: Colors.blue,
-//                                  onPressed: () {},
-//                                  child: Text("Find Orders"),
-//                                )
-                              ],
-                            ),
-                          )
-
-//                    Text(
-//                            trip.numberOfContracts.toString() ,
-//                            style: Theme.of(context).textTheme.headline3,
-//                          )
-                        : imageUrl == Api.noPictureImage
-                            ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(25.0),
-                                child: Image.network(
-                                  imageUrl,
-                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                    return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
-                                  },
-                                  height: 70,
-                                  width: 70,
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
-                    modeProfile
-                        ? SizedBox()
-                        : Positioned(
-                            left: 17,
-                            right: 17,
-                            bottom: 0,
-                            child: Container(
-                              height: 18,
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 30),
-                                border: Border.all(color: Colors.green, width: 1),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.star,
-                                    size: 12,
-                                    color: Colors.green,
-                                  ),
-                                  Text(
-                                    trip.owner.rating.toString(),
-                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                  ],
-                ),
-                VerticalDivider(),
-                Expanded(
-                  flex: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          trip.owner.firstName + " " + trip.owner.lastName,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Icon(
-                                Icons.location_on,
-                                color: Theme.of(context).primaryColor,
-                                size: 16,
-                              ),
-                              Text(
-                                "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii + ", " + trip.destination.country,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.date_range,
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
+                modeProfile
+                    ? Container(
+                        width: 70,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
                             Text(
-                              "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
-                              style: TextStyle(color: Colors.grey[600]),
+                              trip.numberOfContracts.toString(),
+                              style: TextStyle(fontSize: 25),
                             ),
-                            Expanded(
-                              child: SizedBox(),
-                            ),
-                            Icon(
-                              MdiIcons.weightKilogram,
-                              color: Theme.of(context).primaryColor,
-                              size: 16,
-                            ),
+                            //todo i18n
                             Text(
-                              "  " + trip.weightLimit.toString() + ' kg',
-                              style: TextStyle(color: Colors.grey[600]),
+                              "Active Contracts",
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
-                        Row(
-                          children: <Widget>[],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                //todo check if I am the owner
-                //todo if user is the owner, then replace the button below with delete button
-                if (Provider.of<Auth>(context, listen: false).isAuth)
-                  if (trip.owner.id == Provider.of<Auth>(context, listen: false).user.id)
-                    GestureDetector(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: Text("Are you sure you want to delete this order?"),
-                            content: Text("This action cannot be undone"),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                onPressed: () {
-                                  Navigator.of(ctx).pop();
-                                },
+                      )
+                    : imageUrl == Api.noPictureImage
+                        ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(35.0),
+                            child: Image.network(
+                              imageUrl,
+                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                              },
+                              height: 70,
+                              width: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                modeProfile
+                    ? SizedBox()
+                    : Positioned(
+                        left: 17,
+                        right: 17,
+                        bottom: 0,
+                        child: Container(
+                          height: 18,
+                          decoration: BoxDecoration(
+                            color: Color.fromRGBO(255, 255, 255, 30),
+                            border: Border.all(color: Colors.green, width: 1),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Icon(
+                                Icons.star,
+                                size: 12,
+                                color: Colors.green,
                               ),
-                              FlatButton(
-                                child: Text('Yes,delete!'),
-                                onPressed: () {
-                                  var url = Api.orders + trip.id.toString() + '/';
-                                  http.delete(
-                                    url,
-                                    headers: {
-                                      HttpHeaders.contentTypeHeader: "application/json",
-                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                    },
-                                  ).then((value) {});
-                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                                  orderprovider.myorders.removeAt(i);
-                                  orderprovider.notify();
-                                  Navigator.of(ctx).pop();
-                                  Flushbar(
-                                    flushbarStyle: FlushbarStyle.GROUNDED,
-                                    titleText: Text(
-                                      "Success",
-                                      style: TextStyle(color: Colors.black, fontSize: 22),
-                                    ),
-                                    messageText: Text(
-                                      "Order has been deleted",
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                    icon: Icon(MdiIcons.delete),
-                                    backgroundColor: Colors.white,
-                                    borderColor: Theme.of(context).primaryColor,
-                                    padding: const EdgeInsets.all(10),
-                                    margin: EdgeInsets.only(left: 20, right: 20, bottom: 50),
-                                    borderRadius: 10,
-                                    duration: Duration(seconds: 5),
-                                  )..show(context);
-                                },
+                              Text(
+                                trip.owner.rating.toString(),
+                                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.red[200],
-                          ),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          color: Colors.red[400],
                         ),
                       ),
-                    )
-                  else
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.grey[200],
-//                    border: Border.all(
-////                      color: Colors.grey[400],
-//                      width: 0.8,
-//                      color: Theme.of(context).primaryColor,
-//                    ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Icon(
-                          Icons.chevron_right,
-                          size: 25,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-
-                SizedBox(width: 10),
               ],
             ),
-          ),
+            Container(
+              margin: const EdgeInsets.all(8),
+              color: Colors.grey[200],
+              width: 1,
+              height: 80,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                t(context, 'from'),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                trip.source.cityAscii,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+//                                    color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              Text(
+                                trip.source.country,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          MdiIcons.airplane,
+//                            color: Theme.of(context).primaryColor,
+                          color: Colors.grey[700],
+
+                          size: 30,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                t(context, 'to'),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                trip.destination.cityAscii,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+//                                    color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                              Text(
+                                trip.destination.country,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          trip.weightLimit.toString() + " " + t(context, 'kg'),
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                        Spacer(),
+                        Text(
+                          DateFormat("d MMM yyy").format(trip.date),
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+//                Expanded(
+//                  flex: 5,
+//                  child: Padding(
+//                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+//                    child: Column(
+//                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                      crossAxisAlignment: CrossAxisAlignment.start,
+//                      children: <Widget>[
+//                        Text(
+//                          trip.owner.firstName + " " + trip.owner.lastName,
+//                          overflow: TextOverflow.ellipsis,
+//                          maxLines: 1,
+//                          style: TextStyle(fontSize: 20, color: Colors.grey[600], fontWeight: FontWeight.bold),
+//                        ),
+//                        Expanded(
+//                          child: Row(
+//                            mainAxisAlignment: MainAxisAlignment.start,
+//                            children: <Widget>[
+//                              Icon(
+//                                Icons.location_on,
+//                                color: Theme.of(context).primaryColor,
+//                                size: 16,
+//                              ),
+//                              Text(
+//                                "  " + trip.source.cityAscii + " > " + trip.destination.cityAscii + ", " + trip.destination.country,
+//                                overflow: TextOverflow.ellipsis,
+//                                maxLines: 1,
+//                                style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.normal),
+//                              ),
+//                            ],
+//                          ),
+//                        ),
+//                        Row(
+//                          children: <Widget>[
+//                            Icon(
+//                              Icons.date_range,
+//                              color: Theme.of(context).primaryColor,
+//                              size: 16,
+//                            ),
+//                            Text(
+//                              "  " + DateFormat('dd MMMM').format(trip.date), //Todo: date
+//                              style: TextStyle(color: Colors.grey[600]),
+//                            ),
+//                            Expanded(
+//                              child: SizedBox(),
+//                            ),
+//                            Icon(
+//                              MdiIcons.weightKilogram,
+//                              color: Theme.of(context).primaryColor,
+//                              size: 16,
+//                            ),
+//                            Text(
+//                              "  " + trip.weightLimit.toString() + ' kg',
+//                              style: TextStyle(color: Colors.grey[600]),
+//                            ),
+//                          ],
+//                        ),
+//                        Row(
+//                          children: <Widget>[],
+//                        )
+//                      ],
+//                    ),
+//                  ),
+//                ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 90.0),
-          child: Divider(
-            height: 4,
-            color: Colors.black45,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -190,7 +190,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
             ),
           ),
           AnimatedContainer(
-            duration: Duration(milliseconds: 200),
+            duration: Duration(milliseconds: 250),
+            curve: Curves.decelerate,
             padding: EdgeInsets.symmetric(horizontal: 15),
             height: _expanded ? 140 : 0,
             child: Form(
@@ -201,7 +202,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                       Expanded(
                         child: TypeAheadFormField(
                           keepSuggestionsOnLoading: false,
-                          debounceDuration: const Duration(milliseconds: 200),
+                          debounceDuration: const Duration(milliseconds: 250),
                           textFieldConfiguration: TextFieldConfiguration(
                             onChanged: (value) {
                               widget.from = null;

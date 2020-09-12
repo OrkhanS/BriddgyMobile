@@ -405,7 +405,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       },
                                     )
                                   : SizedBox(width: 20)
-                              : SizedBox(width: 20),
+                              : IconButton(
+                                  icon: Icon(
+                                    Icons.chevron_left,
+                                    size: 21,
+                                    //color: Colors.white,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
                           Column(
                             children: <Widget>[
                               Row(
@@ -484,7 +494,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           },
                                           height: 70,
                                           width: 70,
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                 Provider.of<Auth>(context, listen: false).isAuth
@@ -854,7 +864,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         return OrderWidget(
                           order: orders[i],
                           i: i,
-                          modeProfile: auth.userdetail.id == user.id ? true : false,
+                          modeProfile: auth.user != null ? auth.userdetail.id == user.id ? true : false : false,
                         );
                       else {
                         return TripWidget(

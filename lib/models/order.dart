@@ -55,7 +55,7 @@ class Order {
         weight: json["weight"].toDouble(),
         price: json["price"].toDouble(),
         trip: json["trip"],
-        description: json["description"].toString(),
+        description: decodeUtf8(json["description"].codeUnits),
         title: decodeUtf8(json["title"].codeUnits),
 //        title: json["title"],
         deliverer: json["deliverer"],
