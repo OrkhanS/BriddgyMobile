@@ -45,10 +45,10 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
 
   Future filterAndSetTrips() async {
     var provider = widget.ordersProvider;
-   provider.filtering = true;
-    provider.isLoadingOrders = true;
+    provider.filtering = true;
+    provider.isLoadingTrips = true;
     provider.notify();
-    if (urlFilter == null) urlFilter = Api.orders + "?";
+    if (urlFilter == null) urlFilter = Api.trips + "?";
     if (from != null && !urlFilter.contains("origin")) {
       flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "origin=" + from.toString()
@@ -93,7 +93,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
           widget.ordersProvider.trips = _suggested;
           widget.ordersProvider.allTripsDetails = {"next": data["next"], "count": data["count"]};
           widget.ordersProvider.isLoadingTrips = false;
-          provider.filtering = false;
+          widget.ordersProvider.filtering = false;
           widget.ordersProvider.notify();
         },
       );

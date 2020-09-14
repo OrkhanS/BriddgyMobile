@@ -260,7 +260,7 @@ class _TripScreenState extends State<TripsScreen> {
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 5.0),
-              child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+              child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider),
             ),
           ),
           body: SafeArea(
