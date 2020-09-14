@@ -199,12 +199,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-        if (orderstripsProvider.orders.isNotEmpty) {
-          _orders = [];
-          _orders = orderstripsProvider.orders;
-          if (nextOrderURL == "FirstCall") {
-            nextOrderURL = orderstripsProvider.detailsOrder["next"];
-          }
+        _orders = [];
+        _orders = orderstripsProvider.orders;
+        if (nextOrderURL == "FirstCall") {
+          nextOrderURL = orderstripsProvider.detailsOrder["next"];
         }
         return Scaffold(
           bottomNavigationBar: BottomAppBar(

@@ -45,10 +45,9 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
 
   Future filterAndSetOrders() async {
     var provider = widget.ordersProvider;
+    provider.filtering = true;
     provider.isLoadingOrders = true;
     provider.notify();
-    print(from);
-    print(urlFilter);
     if (urlFilter == null) urlFilter = Api.orders + "?";
     if (from != null && !urlFilter.contains("origin")) {
       flagWeight == false && flagTo == false && flagFrom == false
@@ -73,7 +72,6 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
           ? urlFilter = urlFilter + "min_price=" + price.toString()
           : urlFilter = urlFilter + "&min_price=" + price.toString();
     }
-    print(urlFilter);
 
     await http
         .get(
@@ -96,12 +94,11 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
           for (var i = 0; i < data["results"].length; i++) {
             _suggested.add(Order.fromJson(data["results"][i]));
           }
-          print("Suggested " + _suggested.length.toString());
-          print("Orders before " + provider.orders.length.toString());
+
           provider.isLoadingOrders = false;
+          provider.filtering = false;
           provider.orders = [];
           provider.orders = _suggested;
-          print("Orders after " + provider.orders.length.toString());
           provider.allOrdersDetails = {"next": data["next"], "count": data["count"]};
           provider.notify();
         },
@@ -230,6 +227,8 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
                                           ),
                                           onPressed: () {
                                             setState(() {
+                                              _searchBarFrom = t(context, 'anywhere');
+                                              urlFilter = null;
                                               from = null;
                                               this._typeAheadController1.text = '';
                                             });
@@ -295,6 +294,8 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
                                           ),
                                           onPressed: () {
                                             setState(() {
+                                              _searchBarTo = t(context, 'anywhere');
+                                              urlFilter = null;
                                               this._typeAheadController2.text = '';
                                               to = null;
                                             });
@@ -355,6 +356,8 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
                                         ),
                                         onPressed: () {
                                           setState(() {
+                                            urlFilter = null;
+                                             _searchBarWeight = t(context, 'any');
                                             this._typeAheadController3.text = '';
                                             weight = null;
                                           });
@@ -400,6 +403,7 @@ class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
                                         ),
                                         onPressed: () {
                                           setState(() {
+                                            urlFilter = null;
                                             this._typeAheadController4.text = '';
                                             price = null;
                                           });
