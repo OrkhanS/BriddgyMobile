@@ -22,7 +22,7 @@ class TripFilterBottomBar extends StatefulWidget {
 }
 
 class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
-  final TextEditingController _typeAheadController = TextEditingController();
+  final TextEditingController _typeAheadController1 = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
   final TextEditingController _typeAheadController3 = TextEditingController();
   final TextEditingController _typeAheadController4 = TextEditingController();
@@ -45,28 +45,29 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
 
   Future filterAndSetTrips() async {
     var provider = widget.ordersProvider;
+    provider.filtering = true;
     provider.isLoadingTrips = true;
     provider.notify();
-
     if (urlFilter == null) urlFilter = Api.trips + "?";
-    if (from != null) {
+    if (from != null && !urlFilter.contains("origin")) {
       flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "origin=" + from.toString()
           : urlFilter = urlFilter + "&origin=" + from.toString();
       flagFrom = true;
     }
-    if (to != null) {
+    if (to != null && !urlFilter.contains("dest")) {
       flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "dest=" + to.toString()
           : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
-    if (weight != null) {
+    if (weight != null && !urlFilter.contains("weight")) {
       flagWeight == false && flagTo == false && flagFrom == false
           ? urlFilter = urlFilter + "weight=" + weight.toString()
           : urlFilter = urlFilter + "&weight=" + weight.toString();
       flagWeight = true;
     }
+
     await http
         .get(
       urlFilter,
@@ -92,6 +93,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
           widget.ordersProvider.trips = _suggested;
           widget.ordersProvider.allTripsDetails = {"next": data["next"], "count": data["count"]};
           widget.ordersProvider.isLoadingTrips = false;
+          widget.ordersProvider.filtering = false;
           widget.ordersProvider.notify();
         },
       );
@@ -208,7 +210,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                             onChanged: (value) {
                               from = null;
                             },
-                            controller: this._typeAheadController,
+                            controller: this._typeAheadController1,
                             decoration: InputDecoration(
                               labelText: t(context, 'from'),
                               hintText: ' ${t(context, 'paris')}',
@@ -228,8 +230,12 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                                   size: 15,
                                 ),
                                 onPressed: () {
-                                  this._typeAheadController.text = '';
-                                  from = null;
+                                  setState(() {
+                                    _searchBarFrom = t(context, 'anywhere');
+                                    urlFilter = null;
+                                    from = null;
+                                    this._typeAheadController1.text = '';
+                                  });
                                 },
                               ),
                             ),
@@ -246,7 +252,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                             return suggestionsBox;
                           },
                           onSuggestionSelected: (suggestion) {
-                            this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
+                            this._typeAheadController1.text = suggestion.cityAscii + ", " + suggestion.country;
                             from = suggestion.id.toString();
                             _searchBarFrom = suggestion.cityAscii;
                           },
@@ -291,8 +297,12 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                                   size: 15,
                                 ),
                                 onPressed: () {
-                                  this._typeAheadController2.text = '';
-                                  to = null;
+                                  setState(() {
+                                    _searchBarTo = t(context, 'anywhere');
+                                    urlFilter = null;
+                                    this._typeAheadController2.text = '';
+                                    to = null;
+                                  });
                                 },
                               ),
                             ),
@@ -349,8 +359,11 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
 //                                size: 15,
 //                              ),
 //                              onPressed: () {
-//                                this._typeAheadController3.text = '';
-//                                weight = null;
+//                                  urlFilter = null;
+                              //     _searchBarWeight = t(context, 'any');
+                              //   this._typeAheadController3.text = '';
+                              //   weight = null;
+                              // });
 //                              },
 //                            ),
 //                          ),
@@ -438,6 +451,15 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           provider.fetchAndSetTrips();
                           urlFilter = null;
                           setState(() {
+                            urlFilter = null;
+                            this._typeAheadController1.text = '';
+                            this._typeAheadController2.text = '';
+                            this._typeAheadController3.text = '';
+                            this._typeAheadController4.text = '';
+
+                            from = null;
+                            to = null;
+                            weight = null;
                             _expanded = !_expanded;
                           });
                         },

@@ -37,7 +37,7 @@ class Trip {
         source: Destination.fromJson(json["source"]),
         destination: Destination.fromJson(json["destination"]),
         date: DateTime.parse(json["date"]),
-        weightLimit: json["weight_limit"].toDouble(),
+        weightLimit: double.parse(json["weight_limit"].toString()),
         numberOfContracts: json["number_of_contracts"],
         description: utf8.decode(json["description"].toString().codeUnits),
       );

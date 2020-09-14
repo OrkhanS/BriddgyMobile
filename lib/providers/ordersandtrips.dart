@@ -1,7 +1,9 @@
+import 'package:briddgy/providers/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:briddgy/models/api.dart';
 import 'package:briddgy/models/order.dart';
 import 'package:briddgy/models/trip.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -24,6 +26,7 @@ class OrdersTripsProvider with ChangeNotifier {
   Map allOrdersDetails = {};
   Map allMyOrderDetails = {};
   Map allMyTripsDetails = {};
+  bool filtering = false;
 
   bool get notLoadingOrders {
     return isLoadingOrders;
@@ -258,8 +261,6 @@ class OrdersTripsProvider with ChangeNotifier {
       notifyListeners();
     });
   }
-
-
 
 
   removeAllDataOfProvider() {

@@ -290,8 +290,8 @@ class _MyAppState extends State<MyApp> {
         if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
-        if (orderstripsProvider.isLoadingOrders) orderstripsProvider.fetchAndSetOrders();
-        if (orderstripsProvider.isLoadingTrips) orderstripsProvider.fetchAndSetTrips();
+        if (orderstripsProvider.isLoadingOrders && !orderstripsProvider.filtering) orderstripsProvider.fetchAndSetOrders();
+        if (orderstripsProvider.isLoadingTrips && !orderstripsProvider.filtering) orderstripsProvider.fetchAndSetTrips();
         if (auth.isLoadingUserForMain && auth.token != null)
           auth.fetchAndSetUserDetails().whenComplete(() {
             if (auth.user == null) {
