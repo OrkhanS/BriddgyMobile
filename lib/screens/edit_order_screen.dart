@@ -15,7 +15,7 @@ import 'package:briddgy/models/api.dart';
 import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:briddgy/screens/my_orders.dart';
+import 'package:briddgy/screens/my_orders_screen.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -72,7 +72,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (__) => MyItems(
+              builder: (__) => MyOrderScreen(
                 token: token,
                 orderstripsProvider: orderstripsProvider,
               ),
@@ -103,7 +103,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (__) => MyItems(
+                        builder: (__) => MyOrderScreen(
                           token: token,
                           orderstripsProvider: orderstripsProvider,
                         ),
@@ -157,7 +157,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
   }
 
   void _openGallery(BuildContext context, i) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery,maxHeight: 400, maxWidth: 400);
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
     this.setState(() {
       if (i == 1)
         imageFile1 = picture;
@@ -171,7 +171,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
   }
 
   void _openCamera(BuildContext context, i) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.camera,maxHeight: 400, maxWidth: 400);
+    var picture = await ImagePicker.pickImage(source: ImageSource.camera, maxHeight: 400, maxWidth: 400);
     this.setState(() {
       if (i == 1)
         imageFile1 = picture;

@@ -18,11 +18,11 @@ import 'package:flushbar/flushbar.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 
-import 'my_trips.dart';
+import 'my_trips_screen.dart';
 
 class AddTripScreen extends StatefulWidget {
-  OrdersTripsProvider orderstripsProvider;
-  var token;
+  final OrdersTripsProvider orderstripsProvider;
+  final String token;
   AddTripScreen({this.orderstripsProvider, this.token});
   static const routeName = '/trip/add_trip';
 
@@ -331,7 +331,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                               Navigator.pop(context);
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (__) => MyTrips()),
+                                MaterialPageRoute(builder: (__) => MyTripsScreen()),
                               );
 
                               Flushbar(

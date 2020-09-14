@@ -14,20 +14,20 @@ import 'package:briddgy/models/city.dart';
 import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:briddgy/screens/my_orders.dart';
+import 'package:briddgy/screens/my_orders_screen.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 
-class AddItemScreen extends StatefulWidget {
-  static const routeName = '/orders/add_item';
+class AddOrderScreen extends StatefulWidget {
+  static const routeName = '/orders/add_order';
   @override
-  _AddItemScreenState createState() => _AddItemScreenState();
+  _AddOrderScreenState createState() => _AddOrderScreenState();
 }
 
-class _AddItemScreenState extends State<AddItemScreen> {
+class _AddOrderScreenState extends State<AddOrderScreen> {
   String title;
   String from, to, description;
   String weight, price;
@@ -67,7 +67,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (__) => MyItems(
+              builder: (__) => MyOrderScreen(
                 token: token,
                 orderstripsProvider: orderstripsProvider,
               ),
@@ -99,7 +99,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (__) => MyItems(
+                        builder: (__) => MyOrderScreen(
                           token: token,
                           orderstripsProvider: orderstripsProvider,
                         ),

@@ -224,7 +224,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 if (widget.auth.userdetail.isEmailVerified) {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (__) => AddItemScreen()),
+                    MaterialPageRoute(builder: (__) => AddOrderScreen()),
                   );
                 } else {
                   Navigator.push(

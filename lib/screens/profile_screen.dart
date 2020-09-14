@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:briddgy/screens/account_screen.dart';
+import 'package:briddgy/screens/add_trip_screen.dart';
 import 'package:briddgy/widgets/components.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -27,6 +28,7 @@ import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:briddgy/widgets/review_widget.dart';
 import 'package:briddgy/widgets/trip_widget.dart';
 import 'package:provider/provider.dart';
+import 'add_order_screen.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -209,31 +211,88 @@ class _ProfileScreenState extends State<ProfileScreen> {
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           floatingActionButton: Provider.of<Auth>(context, listen: false).isAuth
               ? auth.userdetail.id == user.id
-                  ? RaisedButton.icon(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      ),
-                      icon: Icon(
-                        Icons.settings,
-                        color: Theme.of(context).primaryColor,
-                        size: 18,
-                      ),
-                      label: Text(
-                        t(context, 'settings'),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        RaisedButton.icon(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          icon: Icon(
+                            Icons.add,
+                            color: Theme.of(context).primaryColorDark,
+                            size: 18,
+                          ),
+                          label: Text(
+                            t(context, 'add_order'),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (__) => AddOrderScreen()),
+                            );
+                          },
                         ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (__) => AccountScreen()),
-                        );
-                      },
+                        RaisedButton.icon(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          icon: Icon(
+                            Icons.add,
+                            color: Theme.of(context).primaryColorDark,
+                            size: 18,
+                          ),
+                          label: Text(
+                            t(context, 'trip-add'),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColorDark,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (__) => AddTripScreen()),
+                            );
+                          },
+                        ),
+//                        RaisedButton.icon(
+//                          padding: EdgeInsets.symmetric(horizontal: 10),
+//                          color: Theme.of(context).scaffoldBackgroundColor,
+//                          elevation: 3,
+//                          shape: RoundedRectangleBorder(
+//                            borderRadius: BorderRadius.circular(18.0),
+//                          ),
+//                          icon: Icon(
+//                            Icons.settings,
+//                            color: Theme.of(context).primaryColor,
+//                            size: 18,
+//                          ),
+//                          label: Text(
+//                            t(context, 'settings'),
+//                            style: TextStyle(
+//                              fontWeight: FontWeight.bold,
+//                              color: Theme.of(context).primaryColor,
+//                            ),
+//                          ),
+//                          onPressed: () {
+//                            Navigator.push(
+//                              context,
+//                              MaterialPageRoute(builder: (__) => AccountScreen()),
+//                            );
+//                          },
+//                        ),
+                      ],
                     )
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -246,14 +305,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           icon: Icon(
                             Icons.add,
-                            color: Colors.blue,
+                            color: Theme.of(context).primaryColorDark,
                             size: 18,
                           ),
                           label: Text(
                             t(context, 'review-add'),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                              color: Theme.of(context).primaryColorDark,
                             ),
                           ),
                           onPressed: () {
@@ -360,7 +419,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Navigator.of(context).pop();
                                       },
                                     )
-                                  : SizedBox(width: 20)
+                                  : IconButton(
+                                      icon: Icon(
+                                        Icons.settings,
+                                        size: 21,
+                                        //color: Colors.white,
+                                        color: Colors.blueGrey,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (__) => AccountScreen()),
+                                        );
+                                      },
+                                    )
                               : IconButton(
                                   icon: Icon(
                                     Icons.chevron_left,
@@ -397,10 +469,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   t(context, 'member_since') + DateFormat("d MMM yyyy").format(user.date_joined).toString(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: Colors.grey[700],
-//                                color: Theme.of(context).primaryColor,
+                                    color: Colors.grey[600],
                                     fontSize: 14,
-//                                fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -414,6 +485,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       size: 17,
                                     ),
                                   ),
+                                  SizedBox(width: 5),
                                   GestureDetector(
                                     onTap: () {},
                                     child: Icon(
@@ -422,6 +494,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       size: 17,
                                     ),
                                   ),
+                                  SizedBox(width: 5),
                                   GestureDetector(
                                     onTap: () {},
                                     child: Icon(
@@ -454,27 +527,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               fit: BoxFit.cover,
                                             ),
                                           ),
-                                    Provider.of<Auth>(context, listen: false).isAuth
-                                        ? auth.userdetail.id == user.id
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(builder: (__) => AccountScreen()),
-                                                  );
-                                                },
-                                                child: CircleAvatar(
-                                                  radius: 35,
-                                                  backgroundColor: Color.fromRGBO(125, 125, 125, 120),
-                                                  child: Icon(
-                                                    Icons.settings,
-                                                    color: Colors.white,
-                                                    size: 20,
-                                                  ),
-                                                ),
-                                              )
-                                            : SizedBox()
-                                        : SizedBox(),
+//                                    Provider.of<Auth>(context, listen: false).isAuth
+//                                        ? auth.userdetail.id == user.id
+//                                            ? GestureDetector(
+//                                                onTap: () {
+//                                                  Navigator.push(
+//                                                    context,
+//                                                    MaterialPageRoute(builder: (__) => AccountScreen()),
+//                                                  );
+//                                                },
+//                                                child: CircleAvatar(
+//                                                  radius: 35,
+//                                                  backgroundColor: Color.fromRGBO(125, 125, 125, 120),
+//                                                  child: Icon(
+//                                                    Icons.settings,
+//                                                    color: Colors.white,
+//                                                    size: 20,
+//                                                  ),
+//                                                ),
+//                                              )
+//                                            : SizedBox()
+//                                        : SizedBox(),
                                   ],
                                 ),
                                 StaticRatingBarWidget(

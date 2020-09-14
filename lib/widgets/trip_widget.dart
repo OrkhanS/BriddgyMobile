@@ -71,19 +71,26 @@ class TripWidget extends StatelessWidget {
                     : Column(
                         children: [
                           imageUrl == Api.noPictureImage
-                              ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                              ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0)
                               : ClipRRect(
                                   borderRadius: BorderRadius.circular(35.0),
                                   child: Image.network(
                                     imageUrl,
                                     errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                      return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                                      return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0);
                                     },
-                                    height: 70,
-                                    width: 70,
+                                    height: 60,
+                                    width: 60,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
+                          Text(
+                            trip.owner.firstName.substring(0, trip.owner.firstName.length > 8 ? 8 : trip.owner.firstName.length) +
+                                " " +
+                                trip.owner.lastName[0] +
+                                ".",
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey[900]),
+                          ),
                           StaticRatingBarWidget(rating: trip.owner.rating),
                         ],
                       ),

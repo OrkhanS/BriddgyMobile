@@ -15,9 +15,8 @@ import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 
 class TripFilterBottomBar extends StatefulWidget {
-  var from, to, weight, date;
   OrdersTripsProvider ordersProvider;
-  TripFilterBottomBar({this.ordersProvider, this.from, this.to, this.weight, this.date});
+  TripFilterBottomBar({this.ordersProvider});
   @override
   _TripFilterBottomBarState createState() => _TripFilterBottomBarState();
 }
@@ -31,6 +30,8 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
   String _searchBarFrom = "Anywhere";
   String _searchBarTo = "Anywhere";
   String _searchBarDate = "Any";
+
+  String from, to, weight, date;
 
   List _suggested = [];
   List _cities = [];
@@ -48,22 +49,22 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
     provider.notify();
 
     if (urlFilter == null) urlFilter = Api.trips + "?";
-    if (widget.from != null) {
+    if (from != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "origin=" + widget.from.toString()
-          : urlFilter = urlFilter + "&origin=" + widget.from.toString();
+          ? urlFilter = urlFilter + "origin=" + from.toString()
+          : urlFilter = urlFilter + "&origin=" + from.toString();
       flagFrom = true;
     }
-    if (widget.to != null) {
+    if (to != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "dest=" + widget.to.toString()
-          : urlFilter = urlFilter + "&dest=" + widget.to.toString();
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
-    if (widget.weight != null) {
+    if (weight != null) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "weight=" + widget.weight.toString()
-          : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
+          ? urlFilter = urlFilter + "weight=" + weight.toString()
+          : urlFilter = urlFilter + "&weight=" + weight.toString();
       flagWeight = true;
     }
     await http
@@ -205,7 +206,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           debounceDuration: const Duration(milliseconds: 250),
                           textFieldConfiguration: TextFieldConfiguration(
                             onChanged: (value) {
-                              widget.from = null;
+                              from = null;
                             },
                             controller: this._typeAheadController,
                             decoration: InputDecoration(
@@ -228,7 +229,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                                 ),
                                 onPressed: () {
                                   this._typeAheadController.text = '';
-                                  widget.from = null;
+                                  from = null;
                                 },
                               ),
                             ),
@@ -246,18 +247,18 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           },
                           onSuggestionSelected: (suggestion) {
                             this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
-                            widget.from = suggestion.id.toString();
+                            from = suggestion.id.toString();
                             _searchBarFrom = suggestion.cityAscii;
                           },
                           validator: (value) {
-                            widget.from = value.toString();
+                            from = value.toString();
 
                             if (value.isEmpty) {
                               return t(context, 'select_city');
                             }
                           },
                           onSaved: (value) {
-                            widget.from = value;
+                            from = value;
                           },
                         ),
                       ),
@@ -268,7 +269,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           debounceDuration: const Duration(milliseconds: 200),
                           textFieldConfiguration: TextFieldConfiguration(
                             onChanged: (value) {
-                              widget.to = null;
+                              to = null;
                             },
                             controller: this._typeAheadController2,
                             decoration: InputDecoration(
@@ -291,7 +292,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                                 ),
                                 onPressed: () {
                                   this._typeAheadController2.text = '';
-                                  widget.to = null;
+                                  to = null;
                                 },
                               ),
                             ),
@@ -309,16 +310,16 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                           },
                           onSuggestionSelected: (suggestion) {
                             this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
-                            widget.to = suggestion.id.toString();
+                            to = suggestion.id.toString();
                             _searchBarTo = suggestion.cityAscii;
                           },
                           validator: (value) {
-                            widget.to = value.toString();
+                            to = value.toString();
                             if (value.isEmpty) {
                               return t(context, 'select_city');
                             }
                           },
-                          onSaved: (value) => widget.to = value,
+                          onSaved: (value) => to = value,
                         ),
                       ),
                     ],
@@ -349,14 +350,14 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
 //                              ),
 //                              onPressed: () {
 //                                this._typeAheadController3.text = '';
-//                                widget.weight = null;
+//                                weight = null;
 //                              },
 //                            ),
 //                          ),
 //                          keyboardType: TextInputType.number,
 ////
 //                          onChanged: (String val) {
-//                            widget.weight = val;
+//                            weight = val;
 //                          },
 //                          onSaved: (value) {
 ////                        _authData['email'] = value;
@@ -391,7 +392,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
 //                              ),
 //                              onPressed: () {
 //                                this._typeAheadController4.text = '';
-//                                widget.date = null;
+//                                date = null;
 //                              },
 //                            ),
 //                            //icon: Icon(Icons.location_on),
@@ -399,7 +400,7 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
 //                          keyboardType: TextInputType.number,
 //                          onChanged: (String val) {
 //                            _searchBarDate = val;
-//                            widget.date = val;
+//                            date = val;
 //                          },
 //                          onSaved: (value) {
 ////                        _authData['email'] = value;
@@ -428,10 +429,10 @@ class _TripFilterBottomBarState extends State<TripFilterBottomBar> {
                         ),
                         onTap: () {
                           var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                          widget.from = null;
-                          widget.to = null;
-                          widget.weight = null;
-                          widget.date = null;
+                          from = null;
+                          to = null;
+                          weight = null;
+                          date = null;
                           provider.isLoadingTrips = true;
                           provider.notify();
                           provider.fetchAndSetTrips();

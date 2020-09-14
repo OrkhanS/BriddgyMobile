@@ -50,7 +50,7 @@ class _TripScreenState extends State<TripsScreen> {
   String _value = "Sort By";
   final formKey = new GlobalKey<FormState>();
   String urlFilter = "";
-  bool connectionLost=false;
+  bool connectionLost = false;
 
   bool isLoading = true;
   bool _isfetchingnew = false;
@@ -260,7 +260,7 @@ class _TripScreenState extends State<TripsScreen> {
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 5.0),
-              child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+              child: TripFilterBottomBar(ordersProvider: widget.orderstripsProvider),
             ),
           ),
           body: SafeArea(
@@ -273,11 +273,13 @@ class _TripScreenState extends State<TripsScreen> {
                     Widget child,
                   ) {
                     final bool connected = connectivity != ConnectivityResult.none;
-                    if(!connected) connectionLost = true;
-                    else{
-                      if(connectionLost) {
-                        widget.orderstripsProvider.fetchAndSetOrders(); widget.orderstripsProvider.fetchAndSetTrips();
-                        Provider.of<Messages>(context,listen: false).fetchAndSetRooms(widget.auth, false);
+                    if (!connected)
+                      connectionLost = true;
+                    else {
+                      if (connectionLost) {
+                        widget.orderstripsProvider.fetchAndSetOrders();
+                        widget.orderstripsProvider.fetchAndSetTrips();
+                        Provider.of<Messages>(context, listen: false).fetchAndSetRooms(widget.auth, false);
                       }
                     }
                     return !connected
