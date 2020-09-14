@@ -1,3 +1,4 @@
+import 'package:briddgy/screens/web_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -14,7 +15,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'FirebaseMessaging.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes:  <String> ['profile', 'email'],
+  scopes: <String>['profile', 'email'],
 );
 GoogleSignInAccount _currentUser;
 
@@ -61,14 +62,15 @@ class _AuthScreenState extends State<AuthScreen> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   String deviceToken;
 
-  bool _obscureText = true;
+  bool _obscureText1 = true;
+  bool _obscureText2 = true;
   @override
   void initState() {
     _getToken();
 
     // TODO: implement initState
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account){
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       setState(() {
         _currentUser = account;
       });
@@ -154,9 +156,15 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  void _toggle() {
+  void _toggle1() {
     setState(() {
-      _obscureText = !_obscureText;
+      _obscureText1 = !_obscureText1;
+    });
+  }
+
+  void _toggle2() {
+    setState(() {
+      _obscureText2 = !_obscureText2;
     });
   }
 
@@ -207,7 +215,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     },
                   ),
                 ),
-                if (_authMode == AuthMode.Signup)
+                if (_authMode == AuthMode.Signup) ...[
                   Container(
                     width: deviceSize.width * 0.8,
                     child: TextFormField(
@@ -222,13 +230,12 @@ class _AuthScreenState extends State<AuthScreen> {
                       },
                     ),
                   ),
-                if (_authMode == AuthMode.Signup)
                   Container(
                     width: deviceSize.width * 0.8,
                     child: TextFormField(
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
-                        labelText: t(context, 'surname'),
+                        labelText: t(context, 'last_name'),
                         icon: Icon(MdiIcons.accountTie),
                       ),
                       //validator: _authMode == AuthMode.Signup ? (value) {} : null,
@@ -237,6 +244,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       },
                     ),
                   ),
+                ],
                 Container(
                   width: deviceSize.width * 0.8,
                   child: TextFormField(
@@ -244,11 +252,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       labelText: t(context, 'password'),
                       icon: Icon(Icons.vpn_key),
                       suffixIcon: IconButton(
-                        icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
-                        onPressed: _toggle,
+                        icon: Icon(_obscureText1 ? Icons.visibility_off : Icons.visibility),
+                        onPressed: _toggle1,
                       ),
                     ),
-                    obscureText: _obscureText,
+                    obscureText: _obscureText1,
                     controller: _passwordController,
                     validator: (value) {
                       if (value.isEmpty || value.length < 5) {
@@ -269,8 +277,12 @@ class _AuthScreenState extends State<AuthScreen> {
                       decoration: InputDecoration(
                         labelText: t(context, 'repeat_password'),
                         icon: Icon(Icons.repeat),
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureText2 ? Icons.visibility_off : Icons.visibility),
+                          onPressed: _toggle2,
+                        ),
                       ),
-                      obscureText: true,
+                      obscureText: _obscureText2,
                       validator: _authMode == AuthMode.Signup
                           ? (value) {
                               if (value != _passwordController.text) {
@@ -403,7 +415,16 @@ class _AuthScreenState extends State<AuthScreen> {
                               ' ${t(context, 'privacy')} ',
                               style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
                             ),
-                            onTap: _switchAuthMode,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (__) => WebScreen(
+                                      title: t(context, "privacy"),
+                                      url: 'https://briddgy.com/privacy',
+                                    ),
+                                  ));
+                            },
                           ),
                           Text(
                             t(context, 'and'),
@@ -417,7 +438,16 @@ class _AuthScreenState extends State<AuthScreen> {
                               ' ${t(context, 'terms')} ',
                               style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
                             ),
-                            onTap: _switchAuthMode,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (__) => WebScreen(
+                                      title: t(context, "terms"),
+                                      url: 'https://briddgy.com/terms',
+                                    ),
+                                  ));
+                            },
                           ),
                         ],
                       ),
@@ -436,18 +466,17 @@ class _AuthScreenState extends State<AuthScreen> {
 }
 
 Widget _google() {
-  Future<void> googleSignIN() async{
-      try{
-        await _googleSignIn.signIn();
-      }catch(error){
-        print(error);
-      }
+  Future<void> googleSignIN() async {
+    try {
+      await _googleSignIn.signIn();
+    } catch (error) {
+      print(error);
     }
+  }
+
   return OutlineButton(
     splashColor: Colors.grey,
-    onPressed: () {
-
-    },
+    onPressed: () {},
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     highlightElevation: 0,
     borderSide: BorderSide(color: Colors.grey),

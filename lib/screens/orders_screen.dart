@@ -55,7 +55,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   List _suggested = [];
   List _cities = [];
   List _orders = [];
-  bool connectionLost=false;
+  bool connectionLost = false;
   bool newMessage = false;
 
   @override
@@ -199,21 +199,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Consumer<OrdersTripsProvider>(
       builder: (context, orderstripsProvider, child) {
-        if (orderstripsProvider.isLoadingOrders == false) {
+        if (orderstripsProvider.orders.isNotEmpty) {
+          _orders = [];
           _orders = orderstripsProvider.orders;
           if (nextOrderURL == "FirstCall") {
             nextOrderURL = orderstripsProvider.detailsOrder["next"];
           }
         }
         return Scaffold(
-          
           bottomNavigationBar: BottomAppBar(
             notchMargin: 8,
             shape: CircularNotchedRectangle(),
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 5.0),
-              child: FilterBottomBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
+              child: OrderFilterBottomBar(ordersProvider: orderstripsProvider),
             ),
           ),
           resizeToAvoidBottomPadding: true,
@@ -297,20 +297,20 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ConnectivityResult connectivity,
                     Widget child,
                   ) {
-                    
                     final bool connected = connectivity != ConnectivityResult.none;
-                    if(!connected) connectionLost = true;
-                    else{
-                      if(connectionLost) {
-                        widget.orderstripsProvider.fetchAndSetOrders(); widget.orderstripsProvider.fetchAndSetTrips();
-                        Provider.of<Messages>(context,listen: false).fetchAndSetRooms(widget.auth, false);
+                    if (!connected)
+                      connectionLost = true;
+                    else {
+                      if (connectionLost) {
+                        widget.orderstripsProvider.fetchAndSetOrders();
+                        widget.orderstripsProvider.fetchAndSetTrips();
+                        Provider.of<Messages>(context, listen: false).fetchAndSetRooms(widget.auth, false);
                       }
                     }
                     return !connected
                         ? OfflineWidget()
                         : Column(
                             children: <Widget>[
-                             
 //                    FilterBar(ordersProvider: orderstripsProvider, from: from, to: to, weight: weight, price: price),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),

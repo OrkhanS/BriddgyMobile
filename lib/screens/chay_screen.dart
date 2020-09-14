@@ -85,6 +85,9 @@ class _ChayScreenState extends State<ChayScreen> {
               style: TextStyle(color: Colors.white),
             ),
           ),
+          SizedBox(
+            height: 10,
+          ),
         ],
       ),
     ));

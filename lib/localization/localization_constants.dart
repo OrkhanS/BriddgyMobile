@@ -13,6 +13,7 @@ String t(BuildContext context, String key) {
 
 const String ENGLISH = 'en';
 const String RUSSIAN = 'ru';
+const String AZERI = 'az';
 
 //language code
 const String LANGUAGE_CODE = 'languageCode';
@@ -33,6 +34,9 @@ Locale _locale(String languageCode) {
       break;
     case RUSSIAN:
       _temp = Locale(languageCode, 'RU');
+      break;
+    case AZERI:
+      _temp = Locale(languageCode, 'AZ');
       break;
     default:
       _temp = Locale(ENGLISH, 'US');

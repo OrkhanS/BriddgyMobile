@@ -1,7 +1,7 @@
 {
   "paris": "Paris",
   "berlin": "Berlin",
-  "anywhere": "Hər hansı yer",
+  "anywhere": "Hər yer",
   "any": "Hər",
   "max_weight": "Maksimum çəki (kq):",
   "reward_usd": "Mükafat (ABŞ dollarında):",
@@ -13,7 +13,6 @@
   "find_trips": "Səfərləri tapın",
   "email_verify_instructions": "E-poçt ünvanınıza göndərilən 4 rəqəmli kodu daxil edin",
   "verify_phone": "Telefonunuzu təsdiqləyin",
-  
   "success": "Müvəffəqiyyət",
   "failed": "Xəta",
   "you_r_verified": "Artıq təsdiqləndiniz.",
@@ -258,7 +257,7 @@
   "profile": "Profil",
   "view_profile": "Profilə Bax",
   "logout": "Çıxış",
-  "settings": "Parametrler",
+  "settings": "Ayarlar",
   "about_briddgy1": "Briddgy sifarişçilər və səyahət edənlər ilə körpülər bağlayacaq bir sosial şəbəkədir. Böyüməkdə olan cəmiyyətimizin bir hissəsi olun. Yeni insanlarla tanış olun və səyahət edərək pul qazanın. Asan, sürətli və Etibarlış",
   "email": "E-poçt",
   "password": "Şifrə",
@@ -333,5 +332,4 @@
   "active_deal": "Aktiv Müqavilələr",
   "active_deal_plural": "Aktif Müqavilə",
   "resend_code": "Tekrar gönder"
-
 }

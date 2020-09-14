@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:briddgy/localization/localization_constants.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flushbar/flushbar.dart';
@@ -13,6 +14,7 @@ import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 
+import 'components.dart';
 import 'generators.dart';
 
 class TripWidget extends StatelessWidget {
@@ -66,52 +68,57 @@ class TripWidget extends StatelessWidget {
                           ],
                         ),
                       )
-                    : imageUrl == Api.noPictureImage
-                        ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(35.0),
-                            child: Image.network(
-                              imageUrl,
-                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
-                              },
-                              height: 70,
-                              width: 70,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                modeProfile
-                    ? SizedBox()
-                    : Positioned(
-                        left: 17,
-                        right: 17,
-                        bottom: 0,
-                        child: Container(
-                          height: 18,
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 255, 255, 30),
-                            border: Border.all(color: Colors.green, width: 1),
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(20),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Icon(
-                                Icons.star,
-                                size: 12,
-                                color: Colors.green,
-                              ),
-                              Text(
-                                trip.owner.rating.toString(),
-                                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                              )
-                            ],
-                          ),
-                        ),
+                    : Column(
+                        children: [
+                          imageUrl == Api.noPictureImage
+                              ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(35.0),
+                                  child: Image.network(
+                                    imageUrl,
+                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                      return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                                    },
+                                    height: 70,
+                                    width: 70,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                          StaticRatingBarWidget(rating: trip.owner.rating),
+                        ],
                       ),
+//                modeProfile
+//                    ? SizedBox()
+//                    : Positioned(
+//                        left: 17,
+//                        right: 17,
+//                        bottom: 0,
+//                        child: Container(
+//                          height: 18,
+//                          decoration: BoxDecoration(
+//                            color: Color.fromRGBO(255, 255, 255, 30),
+//                            border: Border.all(color: Colors.green, width: 1),
+//                            borderRadius: BorderRadius.all(
+//                              Radius.circular(20),
+//                            ),
+//                          ),
+//                          child: Row(
+//                            mainAxisSize: MainAxisSize.max,
+//                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                            children: <Widget>[
+//                              Icon(
+//                                Icons.star,
+//                                size: 12,
+//                                color: Colors.green,
+//                              ),
+//                              Text(
+//                                trip.owner.rating.toString(),
+//                                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+//                              )
+//                            ],
+//                          ),
+//                        ),
+//                      ),
               ],
             ),
             Container(

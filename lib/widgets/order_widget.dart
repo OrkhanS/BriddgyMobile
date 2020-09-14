@@ -89,7 +89,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                       ),
                     )
                   : ClipRRect(
-                      borderRadius: BorderRadius.circular(2.0),
+                      borderRadius: BorderRadius.circular(5.0),
                       child: Image.network(
                         imageUrl,
                         errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
@@ -112,6 +112,24 @@ class _OrderWidgetState extends State<OrderWidget> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
                   child: Column(
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              order.title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(
+                        height: 5,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -345,17 +363,21 @@ class _OrderSimpleWidgetState extends State<OrderSimpleWidget> {
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Row(
               children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(25.0),
-                  child: Image.network(
-                    imageUrl,
-                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                      return SizedBox();
-                    },
-                    height: 80,
-                    width: 80,
-                    fit: BoxFit.fitWidth,
-                  ),
+                Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(25.0),
+                      child: Image.network(
+                        imageUrl,
+                        errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                          return SizedBox();
+                        },
+                        height: 80,
+                        width: 80,
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ],
                 ),
 //                CircleAvatar(
 //                  radius: 40,

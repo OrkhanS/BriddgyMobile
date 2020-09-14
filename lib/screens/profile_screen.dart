@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:briddgy/screens/account_screen.dart';
+import 'package:briddgy/widgets/components.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
@@ -27,8 +28,6 @@ import 'package:briddgy/widgets/review_widget.dart';
 import 'package:briddgy/widgets/trip_widget.dart';
 import 'package:provider/provider.dart';
 import 'edit_profile_screen.dart';
-import 'package:path/path.dart';
-import 'package:async/async.dart';
 
 class ProfileScreen extends StatefulWidget {
   final User user;
@@ -75,49 +74,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     loadTrips();
     fetchAndSetStatistics();
     super.initState();
-  }
-
-  void _openGallery(BuildContext context) async {
-    var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
-    this.setState(() {
-      imageFile = picture;
-    });
-    upload(context);
-  }
-
-  Future upload(context) async {
-    setState(() {
-      picturePosting = true;
-    });
-    var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-    var length = await imageFile.length();
-
-    var uri = Uri.parse(Api.addUserImage);
-    var token = Provider.of<Auth>(context, listen: false).myTokenFromStorage;
-    var request = new http.MultipartRequest("PUT", uri);
-    var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
-    request.headers['Authorization'] = "Token " + token;
-
-    request.files.add(multipartFile);
-    var response = await request.send().then((value) {
-      if (value.statusCode == 201) {
-        value.stream.transform(utf8.decoder).listen((value) {
-          setState(() {
-            picturePosting = false;
-            Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
-            imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
-          });
-        });
-        Flushbar(
-          title: "${t(context, 'success')}!",
-          backgroundColor: Colors.green[800],
-          message: "${t(context, 'image_changed')}.",
-          padding: const EdgeInsets.all(8),
-          borderRadius: 10,
-          duration: Duration(seconds: 2),
-        )..show(context);
-      }
-    });
   }
 
   Future removeReview(i) async {
@@ -420,30 +376,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: <Widget>[
                               Row(
                                 children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Icon(
-                                      MdiIcons.email,
-                                      color: user.isEmailVerified ? Colors.green : Colors.red,
-                                      size: 17,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Icon(
-                                      MdiIcons.phone,
-                                      color: user.isNumberVerified ? Colors.green : Colors.red,
-                                      size: 17,
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Icon(
-                                      Icons.tag_faces,
-                                      color: user.isPhotoVerified ? Colors.green : Colors.red,
-                                      size: 17,
-                                    ),
-                                  ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                     child: Text(
@@ -472,78 +404,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                          Expanded(
-                            child: SizedBox(
-                              height: 1,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
-                            child: Stack(
-                              children: <Widget>[
-                                imageUrl == Api.noPictureImage
-                                    ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                                    : ClipRRect(
-                                        borderRadius: BorderRadius.circular(40.0),
-                                        child: Image.network(
-                                          imageUrl,
-                                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                            return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                          },
-                                          height: 70,
-                                          width: 70,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                Provider.of<Auth>(context, listen: false).isAuth
-                                    ? auth.userdetail.id == user.id
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              _openGallery(context);
-                                            },
-                                            child: CircleAvatar(
-                                              radius: 35,
-                                              backgroundColor: Color.fromRGBO(125, 125, 125, 175),
-                                              child: Icon(
-                                                Icons.edit,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          )
-                                        : SizedBox()
-                                    : SizedBox(),
-                                Positioned(
-                                  left: 17,
-                                  right: 17,
-                                  bottom: 0,
-                                  child: Container(
-                                    height: 18,
-                                    decoration: BoxDecoration(
-                                      color: Color.fromRGBO(255, 255, 255, 30),
-                                      border: Border.all(color: Colors.green, width: 1),
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(20),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.star,
-                                          size: 12,
-                                          color: Colors.green,
-                                        ),
-                                        Text(
-                                          user.rating.toString(),
-                                          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                        )
-                                      ],
+                              Row(
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      Icons.tag_faces,
+                                      color: user.isPhotoVerified ? Colors.green : Colors.grey,
+                                      size: 17,
                                     ),
                                   ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      MdiIcons.phone,
+                                      color: user.isNumberVerified ? Colors.green : Colors.grey,
+                                      size: 17,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Icon(
+                                      MdiIcons.email,
+                                      color: user.isEmailVerified ? Colors.green : Colors.grey,
+                                      size: 17,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            child: Column(
+                              children: [
+                                Stack(
+                                  children: <Widget>[
+                                    imageUrl == Api.noPictureImage
+                                        ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
+                                        : ClipRRect(
+                                            borderRadius: BorderRadius.circular(40.0),
+                                            child: Image.network(
+                                              imageUrl,
+                                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
+                                              },
+                                              height: 70,
+                                              width: 70,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                    Provider.of<Auth>(context, listen: false).isAuth
+                                        ? auth.userdetail.id == user.id
+                                            ? GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (__) => AccountScreen()),
+                                                  );
+                                                },
+                                                child: CircleAvatar(
+                                                  radius: 35,
+                                                  backgroundColor: Color.fromRGBO(125, 125, 125, 120),
+                                                  child: Icon(
+                                                    Icons.settings,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                              )
+                                            : SizedBox()
+                                        : SizedBox(),
+                                  ],
+                                ),
+                                StaticRatingBarWidget(
+                                  rating: user.rating,
                                 ),
                               ],
                             ),
