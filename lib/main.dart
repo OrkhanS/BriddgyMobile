@@ -98,23 +98,20 @@ class _MyAppState extends State<MyApp> {
       onLaunch: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
         setState(() {
-         _controller.index = 2;
-       });
+          _controller.index = 2;
+        });
       },
       onResume: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
-       setState(() {
-         _controller.index = 2;
-       });
-      },
-        
-    );
-      _firebaseMessaging.requestNotificationPermissions(
-            const IosNotificationSettings(sound: true, badge: true, alert: true));
-          _firebaseMessaging.onIosSettingsRegistered
-            .listen((IosNotificationSettings settings) {
-          print("Settings registered: $settings");
+        setState(() {
+          _controller.index = 2;
         });
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
   }
 
   Future getToken() async {
@@ -195,7 +192,7 @@ class _MyAppState extends State<MyApp> {
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
     message = json.decode(message);
-    if(message["type"] == "ReadMessage")messageProvider.userReadMessage(authProvider,message);
+    if (message["type"] == "ReadMessage") messageProvider.userReadMessage(authProvider, message);
   }
 
   @override
@@ -417,6 +414,7 @@ class _MyAppState extends State<MyApp> {
           supportedLocales: [
             const Locale('en', 'US'), // English, no country code
             const Locale('ru', 'RU'), // Russian, no country code
+            const Locale('az', 'AZ'), // Azeri, no country code
           ],
           localeResolutionCallback: (deviceLocale, supportedLocales) {
             for (var locale in supportedLocales) {

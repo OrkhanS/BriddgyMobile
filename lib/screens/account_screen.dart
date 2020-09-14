@@ -1,16 +1,24 @@
+import 'package:briddgy/screens/about_screen.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/models/api.dart';
-import 'package:briddgy/screens/profile_screen.dart';
 import 'package:briddgy/widgets/generators.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import 'package:briddgy/models/user.dart';
-import 'chay_screen1.dart';
+import 'chay_screen.dart';
 import 'languages_screen.dart';
 import 'package:share/share.dart';
 import 'package:briddgy/screens/customer_support.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:briddgy/providers/auth.dart';
 
 class AccountScreen extends StatefulWidget {
   static const routeName = '/accountscreen';
@@ -27,14 +35,61 @@ class _AccountScreenState extends State<AccountScreen> {
 
   var token;
 
+  bool picturePosting = false;
+  var imageFile;
+
+  void _openGallery(BuildContext context) async {
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
+    this.setState(() {
+      imageFile = picture;
+    });
+    upload(context);
+  }
+
+  Future upload(context) async {
+    setState(() {
+      picturePosting = true;
+    });
+    var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var length = await imageFile.length();
+
+    var uri = Uri.parse(Api.addUserImage);
+    var token = Provider.of<Auth>(context, listen: false).myTokenFromStorage;
+    var request = new http.MultipartRequest("PUT", uri);
+    var multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFile.path));
+    request.headers['Authorization'] = "Token " + token;
+
+    request.files.add(multipartFile);
+    var response = await request.send().then((value) {
+      if (value.statusCode == 201) {
+        value.stream.transform(utf8.decoder).listen((value) {
+          setState(() {
+            picturePosting = false;
+            Provider.of<Auth>(context, listen: false).changeUserAvatar(json.decode(value)["name"].toString());
+            imageUrl = Api.storageBucket + json.decode(value)["name"].toString();
+          });
+        });
+        Flushbar(
+          title: "${t(context, 'success')}!",
+          backgroundColor: Colors.green[800],
+          message: "${t(context, 'image_changed')}.",
+          padding: const EdgeInsets.all(8),
+          borderRadius: 10,
+          duration: Duration(seconds: 2),
+        )..show(context);
+      }
+    });
+  }
+
   @override
   void initState() {
+    auth = Provider.of<Auth>(this.context, listen: false);
+
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    auth = Provider.of<Auth>(context, listen: true);
     if (auth.userdetail != null) {
       user = auth.userdetail;
       token = auth.token;
@@ -76,20 +131,90 @@ class _AccountScreenState extends State<AccountScreen> {
                             Navigator.of(context).pop();
                           },
                         ),
-                        imageUrl == Api.noPictureImage
-                            ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(35.0),
-                                child: Image.network(
-                                  imageUrl,
-                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                    return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                  },
-                                  height: 70,
-                                  width: 70,
-                                  fit: BoxFit.fitWidth,
+                        Stack(
+                          children: <Widget>[
+                            imageUrl == Api.noPictureImage
+                                ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(40.0),
+                                    child: Image.network(
+                                      imageUrl,
+                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                        return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
+                                      },
+                                      height: 70,
+                                      width: 70,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                            Stack(
+                              children: <Widget>[
+                                imageUrl == Api.noPictureImage
+                                    ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
+                                    : ClipRRect(
+                                        borderRadius: BorderRadius.circular(40.0),
+                                        child: Image.network(
+                                          imageUrl,
+                                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                            return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
+                                          },
+                                          height: 70,
+                                          width: 70,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                Provider.of<Auth>(context, listen: false).isAuth
+                                    ? auth.userdetail.id == user.id
+                                        ? GestureDetector(
+                                            onTap: () {
+                                              _openGallery(context);
+                                            },
+                                            child: CircleAvatar(
+                                              radius: 35,
+                                              backgroundColor: Color.fromRGBO(125, 125, 125, 175),
+                                              child: Icon(
+                                                Icons.edit,
+                                                color: Colors.white,
+                                                size: 18,
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox()
+                                    : SizedBox(),
+                                Positioned(
+                                  left: 17,
+                                  right: 17,
+                                  bottom: 0,
+                                  child: Container(
+                                    height: 18,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromRGBO(255, 255, 255, 30),
+                                      border: Border.all(color: Colors.green, width: 1),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.star,
+                                          size: 12,
+                                          color: Colors.green,
+                                        ),
+                                        Text(
+                                          user.rating.toString(),
+                                          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            )
+                          ],
+                        ),
                         VerticalDivider(),
                         Column(
                           children: <Widget>[
@@ -265,16 +390,44 @@ class _AccountScreenState extends State<AccountScreen> {
                             );
                           },
                         ),
+//                        ListTile(
+//                          leading: Icon(Icons.star_border),
+//                          onLongPress: () {
+//                            Navigator.push(
+//                              context,
+//                              MaterialPageRoute(builder: (__) => ChayScreen()),
+//                            );
+//                          },
+//                          title: Text(
+//                            t(context, 'rate_leave_suggestion'), //Todo: App Rating
+//                            style: TextStyle(
+//                              fontSize: 17,
+//                              color: Colors.grey[600],
+//                            ),
+//                          ),
+//                          trailing: Container(
+//                              decoration: BoxDecoration(
+//                                borderRadius: BorderRadius.all(Radius.circular(15)),
+//                                color: Colors.grey[200],
+//                              ),
+//                              child: Icon(Icons.navigate_next)),
+//                        ),
                         ListTile(
-                          leading: Icon(Icons.star_border),
+                          leading: Icon(Icons.info_outline),
                           onLongPress: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (__) => ChayScreen()),
                             );
                           },
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (__) => AboutScreen()),
+                            );
+                          },
                           title: Text(
-                            t(context, 'rate_leave_suggestion'), //Todo: App Rating
+                            t(context, 'about'), //Todo: App Rating
                             style: TextStyle(
                               fontSize: 17,
                               color: Colors.grey[600],

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:briddgy/widgets/components.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flushbar/flushbar.dart';
@@ -139,52 +140,27 @@ class _TripScreenState extends State<TripScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Stack(
-                        children: <Widget>[
-                          imageUrl == Api.noPictureImage
-                              ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(40.0),
-                                  child: Image.network(
-                                    imageUrl,
-                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                      return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
-                                    },
-                                    height: 70,
-                                    width: 70,
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                          Positioned(
-                            left: 17,
-                            right: 17,
-                            bottom: 0,
-                            child: Container(
-                              height: 18,
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 30),
-                                border: Border.all(color: Colors.green, width: 1),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.star,
-                                    size: 12,
-                                    color: Colors.green,
-                                  ),
-                                  Text(
-                                    trip.owner.rating.toString(),
-                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: <Widget>[
+                              imageUrl == Api.noPictureImage
+                                  ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(40.0),
+                                      child: Image.network(
+                                        imageUrl,
+                                        errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                          return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
+                                        },
+                                        height: 70,
+                                        width: 70,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                            ],
                           ),
+                          StaticRatingBarWidget(rating: trip.owner.rating),
                         ],
                       ),
                     ),

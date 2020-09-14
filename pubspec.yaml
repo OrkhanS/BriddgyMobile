@@ -58,6 +58,7 @@ dependencies:
   flutter_offline: ^0.3.0
   connectivity: ^0.4.9+2
   google_sign_in: ^4.5.3
+  webview_flutter: ^0.3.22+1
 
 
 
@@ -87,8 +88,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - i18n/en.json
-    - i18n/ru.json
+    - i18n/
     - assets/photos/
 
   #  - images/a_dot_ham.jpeg

@@ -13,19 +13,21 @@ import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 
-class FilterBottomBar extends StatefulWidget {
-  var from, to, weight, price;
-  OrdersTripsProvider ordersProvider;
-  FilterBottomBar({this.ordersProvider, this.from, this.to, this.weight, this.price});
+class OrderFilterBottomBar extends StatefulWidget {
+  final OrdersTripsProvider ordersProvider;
+  OrderFilterBottomBar({this.ordersProvider});
   @override
-  _FilterBottomBarState createState() => _FilterBottomBarState();
+  _OrderFilterBottomBarState createState() => _OrderFilterBottomBarState();
 }
 
-class _FilterBottomBarState extends State<FilterBottomBar> {
-  final TextEditingController _typeAheadController = TextEditingController();
+class _OrderFilterBottomBarState extends State<OrderFilterBottomBar> {
+  final TextEditingController _typeAheadController1 = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
   final TextEditingController _typeAheadController3 = TextEditingController();
   final TextEditingController _typeAheadController4 = TextEditingController();
+
+  String from, to;
+  String weight, price;
 
   String _searchBarFrom = "Anywhere";
   String _searchBarTo = "Anywhere";
@@ -45,30 +47,33 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
     var provider = widget.ordersProvider;
     provider.isLoadingOrders = true;
     provider.notify();
+    print(from);
+    print(urlFilter);
     if (urlFilter == null) urlFilter = Api.orders + "?";
-    if (widget.from != null) {
+    if (from != null && !urlFilter.contains("origin")) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "origin=" + widget.from.toString()
-          : urlFilter = urlFilter + "&origin=" + widget.from.toString();
+          ? urlFilter = urlFilter + "origin=" + from.toString()
+          : urlFilter = urlFilter + "&origin=" + from.toString();
       flagFrom = true;
     }
-    if (widget.to != null) {
+    if (to != null && !urlFilter.contains("dest")) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "dest=" + widget.to.toString()
-          : urlFilter = urlFilter + "&dest=" + widget.to.toString();
+          ? urlFilter = urlFilter + "dest=" + to.toString()
+          : urlFilter = urlFilter + "&dest=" + to.toString();
       flagTo = true;
     }
-    if (widget.weight != null) {
+    if (weight != null && !urlFilter.contains("weight")) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "weight=" + widget.weight.toString()
-          : urlFilter = urlFilter + "&weight=" + widget.weight.toString();
+          ? urlFilter = urlFilter + "weight=" + weight.toString()
+          : urlFilter = urlFilter + "&weight=" + weight.toString();
       flagWeight = true;
     }
-    if (widget.price != null) {
+    if (price != null && !urlFilter.contains("min_price")) {
       flagWeight == false && flagTo == false && flagFrom == false
-          ? urlFilter = urlFilter + "min_price=" + widget.price.toString()
-          : urlFilter = urlFilter + "&min_price=" + widget.price.toString();
+          ? urlFilter = urlFilter + "min_price=" + price.toString()
+          : urlFilter = urlFilter + "&min_price=" + price.toString();
     }
+    print(urlFilter);
 
     await http
         .get(
@@ -86,14 +91,18 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
       setState(
         () {
           Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+          print(data["results"].length);
           _suggested = [];
           for (var i = 0; i < data["results"].length; i++) {
             _suggested.add(Order.fromJson(data["results"][i]));
           }
+          print("Suggested " + _suggested.length.toString());
+          print("Orders before " + provider.orders.length.toString());
+          provider.isLoadingOrders = false;
           provider.orders = [];
           provider.orders = _suggested;
+          print("Orders after " + provider.orders.length.toString());
           provider.allOrdersDetails = {"next": data["next"], "count": data["count"]};
-          provider.isLoadingOrders = false;
           provider.notify();
         },
       );
@@ -198,9 +207,9 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                     debounceDuration: const Duration(milliseconds: 200),
                                     textFieldConfiguration: TextFieldConfiguration(
                                       onChanged: (value) {
-                                        widget.from = null;
+                                        from = null;
                                       },
-                                      controller: this._typeAheadController,
+                                      controller: this._typeAheadController1,
                                       decoration: InputDecoration(
                                         labelText: t(context, 'from'),
                                         hintText: ' ${t(context, 'paris')}',
@@ -220,8 +229,10 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                             size: 15,
                                           ),
                                           onPressed: () {
-                                            this._typeAheadController.text = '';
-                                            widget.from = null;
+                                            setState(() {
+                                              from = null;
+                                              this._typeAheadController1.text = '';
+                                            });
                                           },
                                         ),
                                       ),
@@ -238,19 +249,19 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                       return suggestionsBox;
                                     },
                                     onSuggestionSelected: (suggestion) {
-                                      this._typeAheadController.text = suggestion.cityAscii + ", " + suggestion.country;
-                                      widget.from = suggestion.id.toString();
+                                      this._typeAheadController1.text = suggestion.cityAscii + ", " + suggestion.country;
+                                      from = suggestion.id.toString();
                                       _searchBarFrom = suggestion.cityAscii;
                                     },
                                     validator: (value) {
-                                      widget.from = value.toString();
+                                      from = value.toString();
 
                                       if (value.isEmpty) {
                                         return t(context, 'select_city');
                                       }
                                     },
                                     onSaved: (value) {
-                                      widget.from = value;
+                                      from = value;
                                     },
                                   ),
                                 ),
@@ -261,7 +272,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                     debounceDuration: const Duration(milliseconds: 200),
                                     textFieldConfiguration: TextFieldConfiguration(
                                       onChanged: (value) {
-                                        widget.to = null;
+                                        to = null;
                                       },
                                       controller: this._typeAheadController2,
                                       decoration: InputDecoration(
@@ -283,8 +294,10 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                             size: 15,
                                           ),
                                           onPressed: () {
-                                            this._typeAheadController2.text = '';
-                                            widget.to = null;
+                                            setState(() {
+                                              this._typeAheadController2.text = '';
+                                              to = null;
+                                            });
                                           },
                                         ),
                                       ),
@@ -302,16 +315,16 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                     },
                                     onSuggestionSelected: (suggestion) {
                                       this._typeAheadController2.text = suggestion.cityAscii + ", " + suggestion.country;
-                                      widget.to = suggestion.id.toString();
+                                      to = suggestion.id.toString();
                                       _searchBarTo = suggestion.cityAscii;
                                     },
                                     validator: (value) {
-                                      widget.to = value.toString();
+                                      to = value.toString();
                                       if (value.isEmpty) {
                                         return t(context, 'select_city');
                                       }
                                     },
-                                    onSaved: (value) => widget.to = value,
+                                    onSaved: (value) => to = value,
                                   ),
                                 ),
                               ],
@@ -341,8 +354,10 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                           size: 15,
                                         ),
                                         onPressed: () {
-                                          this._typeAheadController3.text = '';
-                                          widget.weight = null;
+                                          setState(() {
+                                            this._typeAheadController3.text = '';
+                                            weight = null;
+                                          });
                                         },
                                       ),
                                     ),
@@ -350,7 +365,7 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
 //
                                     onChanged: (String val) {
                                       _searchBarWeight = val;
-                                      widget.weight = val;
+                                      weight = val;
                                     },
                                     onSaved: (value) {
 //                        _authData['email'] = value;
@@ -384,15 +399,17 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                           size: 15,
                                         ),
                                         onPressed: () {
-                                          this._typeAheadController4.text = '';
-                                          widget.price = null;
+                                          setState(() {
+                                            this._typeAheadController4.text = '';
+                                            price = null;
+                                          });
                                         },
                                       ),
                                       //icon: Icon(Icons.location_on),
                                     ),
                                     keyboardType: TextInputType.number,
                                     onChanged: (String val) {
-                                      widget.price = val;
+                                      price = val;
                                     },
                                     onSaved: (value) {
 //                        _authData['email'] = value;
@@ -421,18 +438,25 @@ class _FilterBottomBarState extends State<FilterBottomBar> {
                                   ),
                                   onTap: () {
                                     var provider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                                    widget.from = null;
-                                    widget.to = null;
-                                    widget.weight = null;
-                                    widget.price = null;
+
                                     provider.isLoadingOrders = true;
                                     provider.notify();
                                     provider.fetchAndSetOrders();
                                     _searchBarFrom = t(context, 'anywhere');
                                     _searchBarTo = t(context, 'anywhere');
                                     _searchBarWeight = t(context, 'any');
-                                    urlFilter = null;
                                     setState(() {
+                                      urlFilter = null;
+
+                                      this._typeAheadController1.text = '';
+                                      this._typeAheadController2.text = '';
+                                      this._typeAheadController3.text = '';
+                                      this._typeAheadController4.text = '';
+
+                                      from = null;
+                                      to = null;
+                                      weight = null;
+                                      price = null;
                                       _expanded = !_expanded;
                                     });
                                   },

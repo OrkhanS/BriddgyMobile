@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flushbar/flushbar.dart';
@@ -141,36 +142,47 @@ class _VerifyPhoneScreenState extends State<VerifyPhoneScreen> {
                     ],
                   ),
                 )),
-                SizedBox(
-                  height: 20,
-                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.grey[400],
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        IntlPhoneField(
-                          autoValidate: true,
-                          decoration: InputDecoration(
-                            labelText: t(context, 'phone_number'),
-
-//                            border: InputBorder.,
-                          ),
-                          initialCountryCode: 'AZ',
-                          onChanged: (value) {
-                            phone = value.completeNumber.toString();
-                          },
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.grey[400],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          prefixText: "+ ",
+                          labelText: t(context, 'phone_number'),
+                          icon: Icon(Icons.phone_android),
+                          border: InputBorder.none,
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value.length > 15) {
+                            return ("Phone number is too long");
+                          } else
+                            return null;
+                        },
+                        onChanged: (value) {
+                          phone = value;
+                        },
+                      )
+//                    IntlPhoneField(
+//                      autoValidate: true,
+//                      decoration: InputDecoration(
+//                        labelText: t(context, 'phone_number'),
+//
+////                            border: InputBorder.,
+//                      ),
+//                      initialCountryCode: 'AZ',
+//                      onChanged: (value) {
+//                        phone = value.completeNumber.toString();
+//                      },
+//                    ),
+                      ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),

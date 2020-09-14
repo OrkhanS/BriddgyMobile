@@ -52,24 +52,24 @@ class _LanguageScreenState extends State<LanguageScreen> {
                       onTap: () {
                         _changeLanguage(x);
                         Navigator.pop(context);
-                        Flushbar(
-                          flushbarStyle: FlushbarStyle.GROUNDED,
-                          titleText: Text(
-                            "Warning",
-                            style: TextStyle(color: Colors.black, fontSize: 22),
-                          ),
-                          messageText: Text(
-                            "You need to Log in to add Item!",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          icon: Icon(MdiIcons.login),
-                          backgroundColor: Colors.white,
-                          borderColor: Theme.of(context).primaryColor,
-                          padding: const EdgeInsets.all(10),
-                          margin: EdgeInsets.only(left: 20, right: 20, bottom: 120),
-                          borderRadius: 10,
-                          duration: Duration(seconds: 5),
-                        )..show(context);
+//                        Flushbar(
+//                          flushbarStyle: FlushbarStyle.GROUNDED,
+//                          titleText: Text(
+//                            "Language Changed",
+//                            style: TextStyle(color: Colors.black, fontSize: 22),
+//                          ),
+//                          messageText: Text(
+//                            "You need to Log in to add Item!",
+//                            style: TextStyle(color: Colors.black),
+//                          ),
+//                          icon: Icon(MdiIcons.login),
+//                          backgroundColor: Colors.white,
+//                          borderColor: Theme.of(context).primaryColor,
+//                          padding: const EdgeInsets.all(10),
+//                          margin: EdgeInsets.only(left: 20, right: 20, bottom: 40),
+//                          borderRadius: 10,
+//                          duration: Duration(seconds: 5),
+//                        )..show(context);
                       },
                     ),
                 ],
