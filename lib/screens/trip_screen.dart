@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:briddgy/widgets/components.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -247,8 +248,18 @@ class _TripScreenState extends State<TripScreen> {
                                             FlatButton(
                                               child: Text(t(context, 'yes_delete')),
                                               onPressed: () {
-                                                //todo Orxan
                                                 Navigator.of(ctx).pop();
+                                                  var url = Api.orders + trip.id.toString() + '/';
+                                                  http.delete(
+                                                    url,
+                                                    headers: {
+                                                      HttpHeaders.contentTypeHeader: "application/json",
+                                                      "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                    },
+                                                  ).then((value) {});
+                                                  var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
+                                                  orderprovider.mytrips.removeAt(widget.i);
+                                                  orderprovider.notify();
                                               },
                                             )
                                           ],

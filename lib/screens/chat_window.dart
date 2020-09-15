@@ -98,7 +98,6 @@ class _ChatWindowState extends State<ChatWindow> {
         reset();
         initCommunication(id);
       });
-      print("Room Socket Connected");
     } catch (e) {}
   }
 
@@ -306,8 +305,12 @@ class _ChatWindowState extends State<ChatWindow> {
           bool messageLoader = provider.messagesLoading;
           if (provider.messages[widget.room.id] != null && !messageLoader) {
             if (provider.messages[widget.room.id].isNotEmpty) {
-              var a = json.encode({"briddgy_message_field_for_online": "True", "user_id": me.id, "room_id": id});
-              readMessageSockets(a);
+              print(provider.readMessageRequest); 
+              if(provider.readMessageRequest){
+                provider.readMessageRequest = false;
+                var a = json.encode({"briddgy_message_field_for_online": "True", "user_id": me.id, "room_id": id});
+                readMessageSockets(a);
+              }
               _messages = provider.messages[widget.room.id]["data"];
               if (nextMessagesURL == "FirstCall") {
                 nextMessagesURL = provider.messages[widget.room.id]["next"];

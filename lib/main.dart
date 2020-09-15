@@ -90,7 +90,6 @@ class _MyAppState extends State<MyApp> {
 
   _configureFirebaseListerners() {
     socketConnectedFirebase = true;
-    print("ConnectedFirebase");
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         neWMessage.addMessages(message.values.last, authProvider);
@@ -150,7 +149,6 @@ class _MyAppState extends State<MyApp> {
             reset();
             initCommunication(authProvider, messageProvider);
           });
-          print("Alert Connected");
           socketConnected = true;
         }
       } catch (e) {
@@ -191,8 +189,11 @@ class _MyAppState extends State<MyApp> {
   /// a message from the server
   /// ----------------------------------------------------------
   _onReceptionOfMessageFromServer(message) {
-    message = json.decode(message);
-    if (message["type"] == "ReadMessage") messageProvider.userReadMessage(authProvider, message);
+    try {
+      message = json.decode(message);
+      if (message["type"] == "ReadMessage") messageProvider.userReadMessage(authProvider, message);
+    } catch (e) {
+    }    
   }
 
   @override

@@ -57,8 +57,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // widget.provider.isChatsLoading = true;
-    // widget.provider.fetchAndSetRooms(widget.auth, false);
+    widget.provider.isChatRoomPageActive = false;
+    widget.provider.roomIDofActiveChatroom = "Empty";
     if (myid == "empty" && Provider.of<Auth>(context, listen: false).userdetail != null) {
       myid = Provider.of<Auth>(context, listen: false).userdetail.id.toString();
     }
@@ -250,7 +250,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                                   provider.readMessages(_rooms[index].id);
                                                   provider.messagesLoading = true;
                                                   provider.fetchAndSetMessages(index);
-
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(

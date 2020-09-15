@@ -29,7 +29,9 @@ class Messages extends ChangeNotifier {
   String roomIDofActiveChatRoom = " ";
   String contractBody = "";
   bool readMessageText = false;
+  bool readMessageRequest = false;
   var auth;
+  bool newMessageFromUser = false;
 
   String get getToken {
     return tokenforROOM;
@@ -163,6 +165,7 @@ class Messages extends ChangeNotifier {
           
         // }
       }
+      else{ readMessageRequest = true; notifyListeners();}
       changeChatRoomPlace(roomid);
       notifyListeners();
     }
@@ -172,8 +175,9 @@ class Messages extends ChangeNotifier {
   Map get messages => _messages;
 
   void readMessages(id) {
+    roomIDofActiveChatroom = id;
     if (newMessage[id] != null) newMessage.remove(id);
-    //Here also send readmessage request (backend not ready)
+    notifyListeners();
   }
 
   bool get arethereNewMessage {
