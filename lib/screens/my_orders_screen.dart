@@ -11,16 +11,16 @@ import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 
-class MyItems extends StatefulWidget {
+class MyOrderScreen extends StatefulWidget {
   var token, orderstripsProvider;
-  MyItems({this.token, this.orderstripsProvider});
+  MyOrderScreen({this.token, this.orderstripsProvider});
   static const routeName = '/account/myitems';
 
   @override
-  _MyItemsState createState() => _MyItemsState();
+  _MyOrderScreenState createState() => _MyOrderScreenState();
 }
 
-class _MyItemsState extends State<MyItems> {
+class _MyOrderScreenState extends State<MyOrderScreen> {
   List _orders = [];
   bool isLoading = true;
   bool _isfetchingnew = false;
@@ -42,8 +42,7 @@ class _MyItemsState extends State<MyItems> {
   }
 
   Future _loadData() async {
-    if (nextOrderURL.toString() != "null" &&
-        nextOrderURL.toString() != "FirstCall") {
+    if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FirstCall") {
       String url = nextOrderURL;
       print(url);
       try {
@@ -51,12 +50,11 @@ class _MyItemsState extends State<MyItems> {
           url,
           headers: {
             HttpHeaders.contentTypeHeader: "application/json",
-            "Authorization": "Token " + Provider.of<Auth>(context,listen: false).myTokenFromStorage,
+            "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
           },
         ).then((response) {
           print(response.statusCode);
-          Map<String, dynamic> data =
-              json.decode(response.body) as Map<String, dynamic>;
+          Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
 
           for (var i = 0; i < data["results"].length; i++) {
             _orders.add(Order.fromJson(data["results"][i]));
@@ -105,9 +103,7 @@ class _MyItemsState extends State<MyItems> {
                     ),
                     title: Text(
                       t(context, 'my-orders'),
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                     ),
                     elevation: 1,
                   ),
@@ -121,9 +117,7 @@ class _MyItemsState extends State<MyItems> {
                         )
                       : NotificationListener<ScrollNotification>(
                           onNotification: (ScrollNotification scrollInfo) {
-                            if (!_isfetchingnew &&
-                                scrollInfo.metrics.pixels ==
-                                    scrollInfo.metrics.maxScrollExtent) {
+                            if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
                               // start loading data
                               setState(() {
                                 _isfetchingnew = true;
@@ -142,7 +136,9 @@ class _MyItemsState extends State<MyItems> {
                           ),
                         ),
                 ),
-                ProgressIndicatorWidget(show: _isfetchingnew,),
+                ProgressIndicatorWidget(
+                  show: _isfetchingnew,
+                ),
               ],
             ),
           ),

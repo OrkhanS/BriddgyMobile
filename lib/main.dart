@@ -9,7 +9,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:briddgy/screens/add_order_screen.dart';
 import 'package:briddgy/screens/add_trip_screen.dart';
 import 'package:briddgy/screens/auth_screen.dart';
-import 'package:briddgy/screens/my_trips.dart';
+import 'package:briddgy/screens/my_trips_screen.dart';
 import 'package:briddgy/screens/trips_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,7 @@ import 'package:briddgy/screens/order_screen.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:briddgy/providers/messages.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
-import 'package:briddgy/screens/my_orders.dart';
+import 'package:briddgy/screens/my_orders_screen.dart';
 import 'package:briddgy/screens/contracts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -471,10 +471,10 @@ class _MyAppState extends State<MyApp> {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
             TripsScreen.routeName: (ctx) => TripsScreen(),
             ChatWindow.routeName: (ctx) => ChatWindow(),
-            AddItemScreen.routeName: (ctx) => AddItemScreen(),
+            AddOrderScreen.routeName: (ctx) => AddOrderScreen(),
             AddTripScreen.routeName: (ctx) => AddTripScreen(),
-            MyItems.routeName: (ctx) => MyItems(),
-            MyTrips.routeName: (ctx) => MyTrips(),
+            MyOrderScreen.routeName: (ctx) => MyOrderScreen(),
+            MyTripsScreen.routeName: (ctx) => MyTripsScreen(),
             Contracts.routeName: (ctx) => Contracts(),
             AccountScreen.routeName: (ctx) => AccountScreen(),
           },
@@ -483,3 +483,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+void printer(cart) {}

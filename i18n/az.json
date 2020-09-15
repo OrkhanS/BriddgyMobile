@@ -92,7 +92,7 @@
 
   "add_item": "Sifariş Əlavə et",
   "add_image": "Şəkil Əlavə et",
-  "add_order": "Əlavə et",
+  "add_order": "Sifariş Əlavə et",
   "item_add_error": "Sifariş Əlavə edilmədi, birdaha yoxlayın!",
 
   "error_occurred": "Xəta baş verdi",
@@ -206,7 +206,7 @@
   "here-could-be-ad": "Bu sizin reklamınız ola bilər",
   "show-chatroom": "Mesajları göstər",
   "trip-does-not-exist": "Bağışlayın. Belə səfər yoxdur",
-  "trip-add": "Yeni Səfər əlavə edin",
+  "trip-add": "Səfər əlavə edin",
   "trips-subtitle": "Bütün Səyahətçiləri gözdən keçirin",
   "trip-catch-phrase": "Növbəti çatdırıcını axtarın!",
   "trip-information": "Səfər məlumatı",
@@ -280,7 +280,7 @@
   "item_weight": "Məhsul Ağırlığı",
   "reward": "Mükafat",
   "from": "Haradan",
-  "to": "Hara",
+  "to": "Haraya",
   "see_more": "Daha çox gör",
   "sort_by": "Sırala",
   "results": "Nəticələr",

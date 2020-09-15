@@ -181,36 +181,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                           )
                                         : SizedBox()
                                     : SizedBox(),
-                                Positioned(
-                                  left: 17,
-                                  right: 17,
-                                  bottom: 0,
-                                  child: Container(
-                                    height: 18,
-                                    decoration: BoxDecoration(
-                                      color: Color.fromRGBO(255, 255, 255, 30),
-                                      border: Border.all(color: Colors.green, width: 1),
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(20),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Icon(
-                                          Icons.star,
-                                          size: 12,
-                                          color: Colors.green,
-                                        ),
-                                        Text(
-                                          user.rating.toString(),
-                                          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
                               ],
                             )
                           ],

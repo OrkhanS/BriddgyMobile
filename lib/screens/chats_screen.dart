@@ -180,131 +180,98 @@ class _ChatsScreenState extends State<ChatsScreen> {
                                         } catch (e) {
                                           iscontract = false;
                                         }
-                                        return Column(
-                                          children: <Widget>[
-                                            Menu(
-                                              child: ListTile(
-                                                leading: imageUrl == Api.noPictureImage
-                                                    ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 60.0)
-                                                    : ClipRRect(
-                                                        borderRadius: BorderRadius.circular(35.0),
-                                                        child: Image.network(
-                                                          imageUrl,
-                                                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                            return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 60.0);
-                                                          },
-                                                          height: 60,
-                                                          width: 60,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                title: Row(
-                                                  children: <Widget>[
-                                                    Text(
-                                                      user.firstName + " " + user.lastName + "  ",
-                                                      style: TextStyle(fontSize: 15.0),
-                                                    ),
-                                                    user.online
-                                                        ? Icon(
-                                                            MdiIcons.circle,
-                                                            color: Colors.green,
-                                                            size: 12,
-                                                          )
-                                                        : SizedBox()
-                                                  ],
-                                                ),
-                                                subtitle: Text(
-                                                  iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
-                                                  style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),
-                                                  maxLines: 2,
-                                                ),
-                                                trailing:
-                                                    //////////////////////////////////////////////////////////////////
-                                                    provider.newMessage[_rooms[index].id] != null
-                                                        ?
-
-                                                        /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
-                                                        provider.newMessage[_rooms[index].id] != 0
-                                                            ?
-
-                                                            /// IF LENGHT IS NOT 0, SHOWING THE BADGE
-                                                            Badge(
-                                                                badgeColor: Colors.green,
-                                                                badgeContent: Text(
-                                                                  provider.newMessage[_rooms[index].id].toString(),
-                                                                  style: TextStyle(color: Colors.white),
-                                                                ),
-                                                                child: Icon(Icons.arrow_forward_ios),
-                                                              )
-                                                            : Icon(
-                                                                Icons.arrow_forward_ios,
-                                                                size: 14.0,
-                                                              )
-                                                        : Icon(
-                                                            Icons.arrow_forward_ios,
-                                                            size: 14.0,
-                                                          ),
-                                                //////////////////////////////////////////////////////////////////////////
-                                                onTap: () {
-                                                  var room = _rooms[index];
-                                                  provider.readMessages(_rooms[index].id);
-                                                  provider.messagesLoading = true;
-                                                  provider.fetchAndSetMessages(index);
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (__) => ChatWindow(
-                                                            provider: provider,
-                                                            room: room,
-                                                            user: user,
-                                                            token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                            auth: Provider.of<Auth>(context, listen: false))),
-                                                  );
-                                                },
-                                              ),
-                                              items: [
-                                                MenuItem(t(context, 'info'), () {
-                                                  Alert(
-                                                    context: context,
-                                                    type: AlertType.info,
-                                                    title: t(context, 'conversation_start') +
-                                                        _rooms[index]["date_created"].toString().substring(0, 10) +
-                                                        "\n",
-                                                    buttons: [
-                                                      DialogButton(
-                                                        child: Text(
-                                                          t(context, 'back'),
-                                                          style: TextStyle(color: Colors.white, fontSize: 20),
-                                                        ),
-                                                        onPressed: () => Navigator.pop(context),
-                                                        color: Color.fromRGBO(0, 179, 134, 1.0),
-                                                      ),
-                                                      DialogButton(
-                                                        child: Text(
-                                                          t(context, 'report'),
-                                                          style: TextStyle(color: Colors.white, fontSize: 20),
-                                                        ),
-                                                        onPressed: () => {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (__) => ReportUser(
-                                                                      user: _rooms[index]["members"],
-                                                                      message: null,
-                                                                    )),
-                                                          ),
-                                                        },
-                                                        color: Color.fromRGBO(0, 179, 134, 1.0),
-                                                      )
-                                                    ],
-                                                    content: Text(t(context, 'chats_cant_be_deleted')),
-                                                  ).show();
-                                                }),
-                                              ],
-                                              decoration: MenuDecoration(),
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(color: Colors.grey[300]),
                                             ),
-                                            Divider(),
-                                          ],
+                                          ),
+                                          child: ListTile(
+                                            leading: imageUrl == Api.noPictureImage
+                                                ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 55.0)
+                                                : ClipRRect(
+                                                    borderRadius: BorderRadius.circular(35.0),
+                                                    child: Image.network(
+                                                      imageUrl,
+                                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
+                                                        return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 55.0);
+                                                      },
+                                                      height: 55,
+                                                      width: 55,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                            title: Row(
+                                              children: <Widget>[
+                                                Text(
+                                                  user.firstName + " " + user.lastName + "  ",
+                                                  style: TextStyle(fontSize: 15.0),
+                                                ),
+                                                user.online
+                                                    ? Icon(
+                                                        MdiIcons.circle,
+                                                        color: Colors.green,
+                                                        size: 12,
+                                                      )
+                                                    : SizedBox()
+                                              ],
+                                            ),
+                                            subtitle: Text(
+                                              iscontract ? t(context, "contract") : _rooms[index].lastMessage.toString(),
+                                              style: TextStyle(fontSize: 15.0, color: iscontract ? Colors.blue : Colors.grey[700]),
+                                              maxLines: 2,
+                                            ),
+                                            trailing: provider.newMessage[_rooms[index].id] != null
+                                                ?
+
+                                                /// IF NEWMESSAGE ROOM IS NOT NULL, CHECKING THE LENGTH
+                                                provider.newMessage[_rooms[index].id] != 0
+                                                    ?
+
+                                                    /// IF LENGHT IS NOT 0, SHOWING THE BADGE
+                                                    Badge(
+                                                        badgeColor: Colors.green,
+                                                        badgeContent: Text(
+                                                          provider.newMessage[_rooms[index].id].toString(),
+                                                          style: TextStyle(color: Colors.white),
+                                                        ),
+                                                        child: Container(
+                                                            decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                              color: Colors.grey[200],
+                                                            ),
+                                                            child: Icon(Icons.navigate_next)),
+                                                      )
+                                                    : Container(
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                          color: Colors.grey[200],
+                                                        ),
+                                                        child: Icon(Icons.navigate_next))
+                                                : Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                                                      color: Colors.grey[200],
+                                                    ),
+                                                    child: Icon(Icons.navigate_next)),
+                                            onTap: () {
+                                              var room = _rooms[index];
+                                              provider.readMessages(_rooms[index].id);
+                                              provider.messagesLoading = true;
+                                              provider.fetchAndSetMessages(index);
+
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (__) => ChatWindow(
+                                                        provider: provider,
+                                                        room: room,
+                                                        user: user,
+                                                        token: Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                                                        auth: Provider.of<Auth>(context, listen: false))),
+                                              );
+                                            },
+                                          ),
                                         );
                                       },
                                     ),

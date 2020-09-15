@@ -15,16 +15,16 @@ import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/gestures.dart';
 
-class MyTrips extends StatefulWidget {
+class MyTripsScreen extends StatefulWidget {
   var token, orderstripsProvider;
-  MyTrips({this.token, this.orderstripsProvider});
+  MyTripsScreen({this.token, this.orderstripsProvider});
   static const routeName = '/account/mytrips';
 
   @override
-  _MyTripsState createState() => _MyTripsState();
+  _MyTripsScreenState createState() => _MyTripsScreenState();
 }
 
-class _MyTripsState extends State<MyTrips> {
+class _MyTripsScreenState extends State<MyTripsScreen> {
   List _trips = [];
   bool isLoading = true;
   bool _isfetchingnew = false;
@@ -32,10 +32,10 @@ class _MyTripsState extends State<MyTrips> {
 
   @override
   void initState() {
-    if(widget.orderstripsProvider != null){
-        if (widget.orderstripsProvider.mytrips.isEmpty) {
-          widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
-        } 
+    if (widget.orderstripsProvider != null) {
+      if (widget.orderstripsProvider.mytrips.isEmpty) {
+        widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
+      }
     }
     super.initState();
   }
@@ -57,11 +57,10 @@ class _MyTripsState extends State<MyTrips> {
             url,
             headers: {
               HttpHeaders.contentTypeHeader: "application/json",
-              "Authorization": "Token " + Provider.of<Auth>(context,listen: false).myTokenFromStorage,
+              "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
             },
           ).then((response) {
-            Map<String, dynamic> data =
-                json.decode(response.body) as Map<String, dynamic>;
+            Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
             for (var i = 0; i < data["results"].length; i++) {
               _trips.add(Trip.fromJson(data["results"][i]));
             }
@@ -83,7 +82,7 @@ class _MyTripsState extends State<MyTrips> {
           if (nextTripURL == "FirstCall") {
             nextTripURL = orderstripsProvider.detailsMyTrip["next"];
           }
-        } 
+        }
         return Scaffold(
           body: SafeArea(
             child: Column(
@@ -138,7 +137,9 @@ class _MyTripsState extends State<MyTrips> {
                           ),
                   ),
                 ),
-                ProgressIndicatorWidget(show: _isfetchingnew,),
+                ProgressIndicatorWidget(
+                  show: _isfetchingnew,
+                ),
               ],
             ),
           ),
