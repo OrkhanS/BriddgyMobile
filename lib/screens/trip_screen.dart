@@ -249,16 +249,18 @@ class _TripScreenState extends State<TripScreen> {
                                               child: Text(t(context, 'yes_delete')),
                                               onPressed: () {
                                                 Navigator.of(ctx).pop();
-                                                  var url = Api.orders + trip.id.toString() + '/';
+                                                  var url = Api.trips + trip.id.toString() + '/';
                                                   http.delete(
                                                     url,
                                                     headers: {
                                                       HttpHeaders.contentTypeHeader: "application/json",
                                                       "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
                                                     },
-                                                  ).then((value) {});
+                                                  ).then((value) {
+                                                    print(value.statusCode);
+                                                  });
                                                   var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                                                  orderprovider.mytrips.removeAt(widget.i);
+                                                  orderprovider.mytrips.removeAt(orderprovider.mytrips.indexOf(trip));
                                                   orderprovider.notify();
                                               },
                                             )

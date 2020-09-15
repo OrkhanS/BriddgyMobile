@@ -31,7 +31,6 @@ class Messages extends ChangeNotifier {
   bool readMessageText = false;
   bool readMessageRequest = false;
   var auth;
-  bool newMessageFromUser = false;
 
   String get getToken {
     return tokenforROOM;

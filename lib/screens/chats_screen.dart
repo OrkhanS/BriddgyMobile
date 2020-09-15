@@ -46,9 +46,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   void initState() {
-    // if(widget.provider.chats.isEmpty){
-    //   widget.provider.fetchAndSetRooms(widget.auth,false);
-    // }
     pageController = PageController(viewportFraction: viewportFraction);
     widget.provider.isChatRoomPageActive = false;
     widget.provider.roomIDofActiveChatroom = "Empty";
