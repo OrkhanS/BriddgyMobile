@@ -339,7 +339,6 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         t(context, 'yes_delete'),
                                                       ),
                                                       onPressed: () {
-                                                        Navigator.of(ctx).pop();
                                                         var url = Api.orders + order.id.toString() + '/';
                                                         http.delete(
                                                           url,
@@ -351,6 +350,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                                         var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
                                                         orderprovider.myorders.removeAt(widget.i);
                                                         orderprovider.notify();
+                                                        Navigator.of(ctx).pop();                                                        
                                                       },
                                                     )
                                                   ],
