@@ -1,11 +1,11 @@
 import 'package:briddgy/screens/about_screen.dart';
+import 'package:briddgy/widgets/components.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/models/api.dart';
-import 'package:briddgy/widgets/generators.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import 'package:briddgy/models/user.dart';
@@ -133,56 +133,28 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                         Stack(
                           children: <Widget>[
-                            imageUrl == Api.noPictureImage
-                                ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                                : ClipRRect(
-                                    borderRadius: BorderRadius.circular(40.0),
-                                    child: Image.network(
-                                      imageUrl,
-                                      errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                        return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                      },
-                                      height: 70,
-                                      width: 70,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                            Stack(
-                              children: <Widget>[
-                                imageUrl == Api.noPictureImage
-                                    ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                                    : ClipRRect(
-                                        borderRadius: BorderRadius.circular(40.0),
-                                        child: Image.network(
-                                          imageUrl,
-                                          errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                            return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                          },
-                                          height: 70,
-                                          width: 70,
-                                          fit: BoxFit.cover,
+                            AvatarPicWidget(
+                              user: user,
+                              size: 70,
+                            ),
+                            Provider.of<Auth>(context, listen: false).isAuth
+                                ? auth.userdetail.id == user.id
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          _openGallery(context);
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 35,
+                                          backgroundColor: Color.fromRGBO(125, 125, 125, 175),
+                                          child: Icon(
+                                            Icons.edit,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
                                         ),
-                                      ),
-                                Provider.of<Auth>(context, listen: false).isAuth
-                                    ? auth.userdetail.id == user.id
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              _openGallery(context);
-                                            },
-                                            child: CircleAvatar(
-                                              radius: 35,
-                                              backgroundColor: Color.fromRGBO(125, 125, 125, 175),
-                                              child: Icon(
-                                                Icons.edit,
-                                                color: Colors.white,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          )
-                                        : SizedBox()
-                                    : SizedBox(),
-                              ],
-                            )
+                                      )
+                                    : SizedBox()
+                                : SizedBox(),
                           ],
                         ),
                         VerticalDivider(),

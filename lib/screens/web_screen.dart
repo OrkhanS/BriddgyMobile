@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class WebScreen extends StatelessWidget {
   WebScreen({@required this.title, @required this.url});
@@ -28,13 +28,13 @@ class WebScreen extends StatelessWidget {
                 )
               ],
             ),
-            // Container(
-            //   height: MediaQuery.of(context).size.height - 140,
-            //   child: WebView(
-            //     debuggingEnabled: false,
-            //     initialUrl: url,
-            //   ),
-            // ),
+            Container(
+              height: MediaQuery.of(context).size.height - 140,
+              child: WebView(
+                debuggingEnabled: false,
+                initialUrl: url,
+              ),
+            ),
           ],
         ),
       ),

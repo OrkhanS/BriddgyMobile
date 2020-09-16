@@ -22,7 +22,6 @@ import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/messages.dart';
 import 'package:briddgy/screens/add_review.dart';
 import 'package:briddgy/screens/chats_screen.dart';
-import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/order_widget.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:briddgy/widgets/review_widget.dart';
@@ -72,6 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _reviews = [];
     _tabSelected = 1;
     imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
+//    if (Provider.of<Auth>(context))
     loadOrders();
     loadTrips();
     fetchAndSetStatistics();
@@ -511,45 +511,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
                             child: Column(
                               children: [
-                                Stack(
-                                  children: <Widget>[
-                                    imageUrl == Api.noPictureImage
-                                        ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0)
-                                        : ClipRRect(
-                                            borderRadius: BorderRadius.circular(40.0),
-                                            child: Image.network(
-                                              imageUrl,
-                                              errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                                return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 70.0);
-                                              },
-                                              height: 70,
-                                              width: 70,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-//                                    Provider.of<Auth>(context, listen: false).isAuth
-//                                        ? auth.userdetail.id == user.id
-//                                            ? GestureDetector(
-//                                                onTap: () {
-//                                                  Navigator.push(
-//                                                    context,
-//                                                    MaterialPageRoute(builder: (__) => AccountScreen()),
-//                                                  );
-//                                                },
-//                                                child: CircleAvatar(
-//                                                  radius: 35,
-//                                                  backgroundColor: Color.fromRGBO(125, 125, 125, 120),
-//                                                  child: Icon(
-//                                                    Icons.settings,
-//                                                    color: Colors.white,
-//                                                    size: 20,
-//                                                  ),
-//                                                ),
-//                                              )
-//                                            : SizedBox()
-//                                        : SizedBox(),
-                                  ],
-                                ),
+                                AvatarPicWidget(user: user),
                                 StaticRatingBarWidget(
                                   rating: user.rating,
                                 ),

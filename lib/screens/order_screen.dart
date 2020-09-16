@@ -1,32 +1,25 @@
-import 'dart:convert';
 import 'dart:io';
+import 'package:briddgy/widgets/components.dart';
+import 'package:briddgy/widgets/order_widget.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/locale.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/models/api.dart';
 import 'package:briddgy/models/order.dart';
 import 'package:briddgy/providers/auth.dart';
 import 'package:briddgy/providers/messages.dart';
-import 'package:briddgy/screens/apply_for_order.dart';
 import 'package:briddgy/screens/chats_screen.dart';
-import 'package:briddgy/screens/edit_order_screen.dart';
-import 'package:briddgy/screens/profile_screen.dart';
-import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:utf/utf.dart';
-import '../ad_manager.dart';
-import '../main.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -39,16 +32,17 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
+  Future<List<Order>> _suggestions;
   var _current;
   Order order;
-  var imageUrl;
   bool messageDeliveryButton = true;
   List<Widget> imageList = [];
 
   @override
   void initState() {
+    super.initState();
     order = widget.order;
-    imageUrl = order.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + order.owner.avatarpic.toString();
+    _suggestions = fetchOrderSuggestions(order, context);
     if (order.orderimage.isEmpty) {
 //      imageList.add(FadeInImage.memoryNetwork(
 //        placeholder: kTransparentImage,
@@ -62,7 +56,6 @@ class _OrderScreenState extends State<OrderScreen> {
         ));
       }
     }
-    super.initState();
   }
 
   @override
@@ -71,146 +64,7 @@ class _OrderScreenState extends State<OrderScreen> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (__) => ProfileScreen(
-                              user: order.owner,
-                            )),
-                  );
-                },
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      color: Theme.of(context).primaryColor,
-                      icon: Icon(
-                        Icons.chevron_left,
-                        size: 24,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Text(
-                                  order.owner.firstName + " " + order.owner.lastName,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-//                                style: TextStyle(
-//                                  fontStyle: ,
-//                                  color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
-//                                  fontSize: 20,
-//                                ),
-                                ),
-                              ),
-                              order.owner.online
-                                  ? Icon(
-                                      MdiIcons.circle,
-                                      color: Colors.green,
-                                      size: 14,
-                                    )
-                                  : Icon(
-                                      MdiIcons.circle,
-                                      color: Colors.grey[600],
-                                      size: 14,
-                                    ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: order.owner.online
-                                ? Text(
-                                    ('online'),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.green[500],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  )
-                                : Text(
-                                    t(context, 'last_online') + DateFormat.yMMMd().format(order.owner.lastOnline),
-                                    style: TextStyle(
-                                      color: Colors.grey[500],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Stack(
-                        children: <Widget>[
-                          imageUrl == Api.noPictureImage
-                              ? InitialsAvatarWidget(order.owner.firstName.toString(), order.owner.lastName.toString(), 70.0)
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(40.0),
-                                  child: Image.network(
-                                    imageUrl,
-                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                      return InitialsAvatarWidget(order.owner.firstName.toString(), order.owner.lastName.toString(), 70.0);
-                                    },
-                                    height: 70,
-                                    width: 70,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                          Positioned(
-                            left: 17,
-                            right: 17,
-                            bottom: 0,
-                            child: Container(
-                              height: 18,
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 30),
-                                border: Border.all(color: Colors.green, width: 1),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.star,
-                                    size: 12,
-                                    color: Colors.green,
-                                  ),
-                                  Text(
-                                    order.owner.rating.toString(),
-                                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            UserAppbarWidget(user: order.owner),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -256,186 +110,78 @@ class _OrderScreenState extends State<OrderScreen> {
                               );
                             }).toList(),
                           ),
-                          buildOrderInfo(order: order),
+                          OrderInfoWidget(order: order),
                           messageDeliveryButton
                               ? Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: <Widget>[
-//                                RaisedButton.icon(
-//                                  padding: EdgeInsets.symmetric(horizontal: 20),
-////                            color: Theme.of(context).scaffoldBackgroundColor,
-//                                  color: Colors.white,
-//
-//                                  elevation: 2,
-//                                  shape: RoundedRectangleBorder(
-//                                    borderRadius: BorderRadius.circular(18.0),
-//                                  ),
-//                                  icon: Icon(
-//                                    MdiIcons.scriptTextOutline,
-////                              color: Colors.white,
-//                                    color: Theme.of(context).primaryColor,
-//                                    size: 18,
-//                                  ),
-//                                  label: Text(
-//                                    " Apply for Delivery",
-//                                    style: TextStyle(
-//                                      fontWeight: FontWeight.bold,
-////                                color: Colors.white,
-//                                      color: Theme.of(context).primaryColor,
-//                                    ),
-//                                  ),
-//                                  onPressed: () {
-//                                    Navigator.push(
-//                                      context,
-//                                      MaterialPageRoute(builder: (__) => ApplyForOrderScreen()),
-//                                    );
-//                                  },
-//                                ),
                                       Expanded(
                                         child: SizedBox(),
                                       ),
                                       if (Provider.of<Auth>(context, listen: false).isAuth)
                                         if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
-                                          RaisedButton.icon(
-                                            padding: EdgeInsets.symmetric(horizontal: 20),
-                                            color: Colors.red,
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            icon: Icon(
-                                              Icons.delete_outline,
-                                              color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
-                                              size: 18,
-                                            ),
-                                            label: Text(
-                                              " ${t(context, 'delete')}",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
-//                                    color: Theme.of(context).primaryColor,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (ctx) => AlertDialog(
-                                                  title: Text(t(context, 'confirm_deletion')),
-                                                  content: Text(t(context, 'action_cant_be_undone')),
-                                                  actions: <Widget>[
-                                                    FlatButton(
-                                                      child: Text(
-                                                        t(context, 'cancel'),
-                                                        style: TextStyle(color: Colors.red),
-                                                      ),
-                                                      onPressed: () {
-                                                        Navigator.of(ctx).pop();
-                                                      },
-                                                    ),
-                                                    FlatButton(
-                                                      child: Text(
-                                                        t(context, 'yes_delete'),
-                                                      ),
-                                                      onPressed: () {
-                                                        var url = Api.orders + order.id.toString() + '/';
-                                                        http.delete(
-                                                          url,
-                                                          headers: {
-                                                            HttpHeaders.contentTypeHeader: "application/json",
-                                                            "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                          },
-                                                        ).then((value) {});
-                                                        var orderprovider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                                                        orderprovider.myorders.removeAt(widget.i);
-                                                        orderprovider.notify();
-                                                        Navigator.of(ctx).pop();
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                              );
-//                                      Navigator.push(
-//                                        context,
-//                                        MaterialPageRoute(builder: (__) => EditOrderScreen(order)),
-//                                      );
-                                            },
-                                          )
+                                          DeleteButtonWidget(object: order)
                                         else
-                                          RaisedButton.icon(
-                                            padding: EdgeInsets.symmetric(horizontal: 20),
-                                            color: Colors.green,
-                                            elevation: 5,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(5.0),
-                                            ),
-                                            icon: Icon(
-                                              MdiIcons.chatOutline,
-                                              color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
-                                              size: 18,
-                                            ),
-                                            label: Text(
-                                              " ${t(context, 'message')}",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
-//                                    color: Theme.of(context).primaryColor,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                messageDeliveryButton = false;
-                                              });
-                                              var auth = Provider.of<Auth>(context, listen: false);
-                                              var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                                              messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
-                                                    if (messageProvider.isChatRoomCreated)
-                                                      {
-                                                        setState(() {
-                                                          messageDeliveryButton = true;
-                                                        }),
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (__) => ChatsScreen(
-                                                                    provider: messageProvider,
-                                                                    auth: auth,
-                                                                    shouldOpenTop: true,
-                                                                  )),
-                                                        ),
-                                                        Flushbar(
-                                                          title: t(context, 'success'),
-                                                          message: t(context, 'chat_with') +
-                                                              order.owner.firstName.toString() +
-                                                              t(context, "has_been_started"),
-                                                          padding: const EdgeInsets.all(20),
-                                                          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                                          borderRadius: 10,
-                                                          duration: Duration(seconds: 3),
-                                                        )..show(context)
-                                                      }
-                                                    else
-                                                      {
-                                                        setState(() {
-                                                          messageDeliveryButton = true;
-                                                        }),
-                                                        Flushbar(
-                                                          title: t(context, 'failure'),
-                                                          message: t(context, 'please_try_again'),
-                                                          padding: const EdgeInsets.all(8),
-                                                          borderRadius: 10,
-                                                          duration: Duration(seconds: 3),
-                                                        )..show(context)
-                                                      }
-                                                  });
-                                            },
-                                          ),
+                                          MessageButton(context),
                                     ],
                                   ),
                                 )
                               : ProgressIndicatorWidget(show: true),
+                          Text(
+                            "Similar Orders:",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                          FutureBuilder<List<Order>>(
+                            future: _suggestions,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data.length == 1 || snapshot.data.length == 0) {
+                                  return Center(
+                                      child: Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: MediaQuery.of(context).size.height * 0.2,
+                                          padding: EdgeInsets.symmetric(horizontal: 40),
+                                          child: SvgPicture.asset(
+                                            "assets/photos/empty_order.svg",
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: Text(
+                                            //todo i18n
+                                            "No results",
+//                                    t(context, 'empty_results'),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 25,
+                                              color: Colors.grey[500],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ));
+                                } else
+                                  for (var x in snapshot.data)
+                                    if (x.id != order.id)
+                                      return OrderWidget(order: x);
+                                    else
+                                      return SizedBox();
+                              } else if (snapshot.hasError) {
+                                return Text("${snapshot.error}");
+                              }
+
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -449,7 +195,77 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 
-  Widget buildOrderInfo({@required Order order}) {
+  RaisedButton MessageButton(BuildContext context) {
+    return RaisedButton.icon(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      color: Colors.green,
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      icon: Icon(
+        MdiIcons.chatOutline,
+        color: Colors.white,
+//                              color: Theme.of(context).primaryColor,
+        size: 18,
+      ),
+      label: Text(
+        " ${t(context, 'message')}",
+        style: TextStyle(
+          fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
+//                                    color: Theme.of(context).primaryColor,
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          messageDeliveryButton = false;
+        });
+        var auth = Provider.of<Auth>(context, listen: false);
+        var messageProvider = Provider.of<Messages>(context, listen: false);
+
+        messageProvider.createRooms(order.owner.id, auth).whenComplete(() => {
+              if (messageProvider.isChatRoomCreated)
+                {
+                  setState(() {
+                    messageDeliveryButton = true;
+                  }),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (__) => ChatsScreen(provider: messageProvider, auth: auth)),
+                  ),
+                  Flushbar(
+                    title: t(context, 'success'),
+                    message: t(context, 'chat_with') + order.owner.firstName.toString() + t(context, "has_been_started"),
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    borderRadius: 10,
+                    duration: Duration(seconds: 3),
+                  )..show(context)
+                }
+              else
+                {
+                  setState(() {
+                    messageDeliveryButton = true;
+                  }),
+                  Flushbar(
+                    title: t(context, 'failure'),
+                    message: t(context, 'please_try_again'),
+                    padding: const EdgeInsets.all(8),
+                    borderRadius: 10,
+                    duration: Duration(seconds: 3),
+                  )..show(context)
+                }
+            });
+      },
+    );
+  }
+}
+
+class OrderInfoWidget extends StatelessWidget {
+  OrderInfoWidget({@required this.order});
+  final Order order;
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

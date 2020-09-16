@@ -17,7 +17,6 @@ import 'package:briddgy/providers/messages.dart';
 import 'package:briddgy/screens/chats_screen.dart';
 import 'package:briddgy/screens/profile_screen.dart';
 import 'package:briddgy/screens/verify_phone_screen.dart';
-import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -36,14 +35,11 @@ class TripScreen extends StatefulWidget {
 }
 
 class _TripScreenState extends State<TripScreen> {
-  var _current;
   Trip trip;
-  var imageUrl;
   bool messageDeliveryButton = true;
   @override
   void initState() {
     trip = widget.trip;
-    imageUrl = trip.owner.avatarpic == null ? Api.noPictureImage : Api.storageBucket + trip.owner.avatarpic.toString();
     super.initState();
   }
 
@@ -53,150 +49,12 @@ class _TripScreenState extends State<TripScreen> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (__) => ProfileScreen(
-                              user: trip.owner,
-                            )),
-                  );
-                },
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      color: Theme.of(context).primaryColor,
-                      icon: Icon(
-                        Icons.chevron_left,
-                        size: 24,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Text(
-                                  trip.owner.firstName + " " + trip.owner.lastName,
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-//                                style: TextStyle(
-//                                  fontStyle: ,
-//                                  color: Colors.white,
-//                                  fontWeight: FontWeight.bold,
-//                                  fontSize: 20,
-//                                ),
-                                ),
-                              ),
-                              trip.owner.online
-                                  ? Icon(
-                                      MdiIcons.circle,
-                                      color: Colors.green,
-                                      size: 14,
-                                    )
-                                  : Icon(
-                                      MdiIcons.circle,
-                                      color: Colors.grey[600],
-                                      size: 14,
-                                    ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: trip.owner.online
-                                ? Text(
-                                    ('online'),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.green[500],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  )
-                                : Text(
-                                    t(context, 'last_online') + DateFormat.yMMMd().format(trip.owner.lastOnline),
-                                    style: TextStyle(
-                                      color: Colors.grey[500],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: <Widget>[
-                              imageUrl == Api.noPictureImage
-                                  ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0)
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(40.0),
-                                      child: Image.network(
-                                        imageUrl,
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                          return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 70.0);
-                                        },
-                                        height: 70,
-                                        width: 70,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                          StaticRatingBarWidget(rating: trip.owner.rating),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-//            Padding(
-//              padding: EdgeInsets.symmetric(horizontal: 10),
-////              child: AppBar(
-////                backgroundColor: Colors.white,
-////                centerTitle: true,
-////                leading: IconButton(
-////                  color: Theme.of(context).primaryColor,
-////                  icon: Icon(
-////                    Icons.chevron_left,
-////                    size: 24,
-////                  ),
-////                  onPressed: () {
-////                    Navigator.of(context).pop();
-////                  },
-////                ),
-////                title: Text(
-////                 trip.title.toString(),
-////                  style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-//                ),
-//                elevation: 1,
-//              ),
-//            ),
+            UserAppbarWidget(user: trip.owner),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    //
-
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Column(
@@ -208,58 +66,7 @@ class _TripScreenState extends State<TripScreen> {
                               Row(
                                 children: [
                                   Spacer(),
-                                  RaisedButton.icon(
-                                    padding: EdgeInsets.symmetric(horizontal: 20),
-                                    color: Colors.red,
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                    icon: Icon(
-                                      Icons.delete_outline,
-                                      color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
-                                      size: 18,
-                                    ),
-                                    label: Text(
-                                      " ${t(context, 'delete')}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
-//                                    color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: Text(t(context, 'confirm_deletion')),
-                                          content: Text(t(context, 'action_cant_be_undone')),
-                                          actions: <Widget>[
-                                            FlatButton(
-                                              child: Text(
-                                                t(context, 'cancel'),
-                                                style: TextStyle(color: Colors.red),
-                                              ),
-                                              onPressed: () {
-                                                Navigator.of(ctx).pop();
-                                              },
-                                            ),
-                                            FlatButton(
-                                              child: Text(t(context, 'yes_delete')),
-                                              onPressed: () {
-                                                //todo Orxan
-                                                Navigator.of(ctx).pop();
-                                              },
-                                            )
-                                          ],
-                                        ),
-                                      );
-//                                      Navigator.push(
-//                                        context,
-//                                        MaterialPageRoute(builder: (__) => EditOrderScreen(order)),
-//                                      );
-                                    },
-                                  ),
+                                  DeleteButtonWidget(object: trip),
                                   SizedBox(width: 20),
                                 ],
                               )
@@ -300,77 +107,8 @@ class _TripScreenState extends State<TripScreen> {
 //                                    );
 //                                  },
 //                                ),
-                                          Expanded(
-                                            child: SizedBox(),
-                                          ),
-                                          RaisedButton.icon(
-                                              padding: EdgeInsets.symmetric(horizontal: 20),
-                                              color: Colors.green,
-                                              elevation: 5,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                              ),
-                                              icon: Icon(
-                                                MdiIcons.chatOutline,
-                                                color: Colors.white,
-//                              color: Theme.of(context).primaryColor,
-                                                size: 18,
-                                              ),
-                                              label: Text(
-                                                " ${t(context, 'message')}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w800, color: Colors.white, fontSize: 17,
-//                                    color: Theme.of(context).primaryColor,
-                                                ),
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  messageDeliveryButton = false;
-                                                });
-                                                var auth = Provider.of<Auth>(context, listen: false);
-                                                var messageProvider = Provider.of<Messages>(context, listen: false);
-
-                                                messageProvider.createRooms(trip.owner.id, auth).whenComplete(() => {
-                                                      if (messageProvider.isChatRoomCreated)
-                                                        {
-                                                          setState(() {
-                                                            messageDeliveryButton = true;
-                                                          }),
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (__) => ChatsScreen(
-                                                                      provider: messageProvider,
-                                                                      auth: auth,
-                                                                      shouldOpenTop: true,
-                                                                    )),
-                                                          ),
-                                                          Flushbar(
-                                                            title: t(context, 'success'),
-                                                            message: t(context, 'chat_with') +
-                                                                trip.owner.firstName.toString() +
-                                                                t(context, 'has_been_started'),
-                                                            padding: const EdgeInsets.all(20),
-                                                            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                                            borderRadius: 10,
-                                                            duration: Duration(seconds: 3),
-                                                          )..show(context)
-                                                        }
-                                                      else
-                                                        {
-                                                          setState(() {
-                                                            messageDeliveryButton = true;
-                                                          }),
-                                                          Flushbar(
-                                                            title: t(context, 'failure'),
-                                                            message: t(context, 'please_try_again'),
-                                                            padding: const EdgeInsets.all(8),
-                                                            borderRadius: 10,
-                                                            duration: Duration(seconds: 3),
-                                                          )..show(context)
-                                                        }
-                                                    });
-                                              }),
+                                          Spacer(),
+                                          MessageButtonWidget(user: trip.owner),
                                         ],
                                       ),
                                     )

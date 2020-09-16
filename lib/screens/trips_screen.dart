@@ -22,6 +22,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:briddgy/screens/add_trip_screen.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class TripsScreen extends StatefulWidget {
   OrdersTripsProvider orderstripsProvider;
@@ -243,11 +244,22 @@ class _TripScreenState extends State<TripsScreen> {
                 }
               } else {
                 Flushbar(
-                  title: t(context, 'warning'),
-                  message: "You need to Log in to add Item!",
-                  padding: const EdgeInsets.all(8),
+                  flushbarStyle: FlushbarStyle.FLOATING,
+                  titleText: Text(
+                    "Warning",
+                    style: TextStyle(color: Colors.black, fontSize: 22),
+                  ),
+                  messageText: Text(
+                    "You need to Log in to add Item!",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  icon: Icon(MdiIcons.login),
+                  backgroundColor: Colors.white,
+//                  borderColor: Colors.red,
+                  borderColor: Colors.grey[400],
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
                   borderRadius: 10,
-                  duration: Duration(seconds: 3),
+                  duration: Duration(seconds: 5),
                 )..show(context);
               }
             },
@@ -348,13 +360,13 @@ class _TripScreenState extends State<TripsScreen> {
                                                 child: Column(
                                                   children: [
                                                     Container(
-                                                      height: 400,
-                                                      width: 200,
-                                                      padding: EdgeInsets.all(10),
+                                                      height: MediaQuery.of(context).size.height * 0.4,
+                                                      padding: EdgeInsets.symmetric(horizontal: 40),
                                                       child: SvgPicture.asset(
                                                         "assets/photos/empty_order.svg",
                                                       ),
                                                     ),
+                                                    Spacer(),
                                                     Padding(
                                                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                                                       child: Text(
@@ -366,6 +378,7 @@ class _TripScreenState extends State<TripsScreen> {
                                                         ),
                                                       ),
                                                     ),
+                                                    Spacer(),
                                                   ],
                                                 ),
                                               ))

@@ -1,3 +1,4 @@
+import 'package:briddgy/widgets/components.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:briddgy/localization/localization_constants.dart';
 import 'package:briddgy/models/api.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:briddgy/widgets/generators.dart';
 import 'package:briddgy/widgets/progress_indicator_widget.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
@@ -29,7 +29,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   User user;
   bool picturePosting = false;
   bool changeInFields = false;
-  
+
   void _openGallery(BuildContext context) async {
     var picture = await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 400, maxWidth: 400);
     this.setState(() {
@@ -140,20 +140,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     Stack(
                       children: [
-                        imageUrl == Api.noPictureImage
-                            ? InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 90.0)
-                            : ClipRRect(
-                                borderRadius: BorderRadius.circular(100.0),
-                                child: Image.network(
-                                  imageUrl,
-                                  errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                    return InitialsAvatarWidget(user.firstName.toString(), user.lastName.toString(), 90.0);
-                                  },
-                                  height: 90,
-                                  width: 90,
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
+                        AvatarPicWidget(
+                          user: user,
+                          size: 90,
+                        ),
                         GestureDetector(
                           onTap: () {
                             _openGallery(context);

@@ -15,7 +15,6 @@ import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:provider/provider.dart';
 
 import 'components.dart';
-import 'generators.dart';
 
 class TripWidget extends StatelessWidget {
   final Trip trip;
@@ -70,20 +69,9 @@ class TripWidget extends StatelessWidget {
                       )
                     : Column(
                         children: [
-                          imageUrl == Api.noPictureImage
-                              ? InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0)
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(35.0),
-                                  child: Image.network(
-                                    imageUrl,
-                                    errorBuilder: (BuildContext context, Object exception, StackTrace stackTrace) {
-                                      return InitialsAvatarWidget(trip.owner.firstName.toString(), trip.owner.lastName.toString(), 60.0);
-                                    },
-                                    height: 60,
-                                    width: 60,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                          AvatarPicWidget(
+                            user: trip.owner,
+                          ),
                           Text(
                             trip.owner.firstName.substring(0, trip.owner.firstName.length > 8 ? 8 : trip.owner.firstName.length) +
                                 " " +

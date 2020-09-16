@@ -73,7 +73,7 @@ class OrdersTripsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  notify(){
+  notify() {
     notifyListeners();
   }
 
@@ -81,8 +81,7 @@ class OrdersTripsProvider with ChangeNotifier {
     String url = Api.orders + "?order_by=-date";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userData')) {
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
     }
     http
@@ -98,9 +97,9 @@ class OrdersTripsProvider with ChangeNotifier {
             },
     )
         .then((onValue) {
-      orders = []; allOrdersDetails = {};
-      Map<String, dynamic> data =
-          json.decode(onValue.body) as Map<String, dynamic>;
+      orders = [];
+      allOrdersDetails = {};
+      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
       for (var i = 0; i < data["results"].length; i++) {
         orders.add(Order.fromJson(data["results"][i]));
       }
@@ -120,8 +119,7 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      Map<String, dynamic> data =
-          json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         myorders.add(Order.fromJson(data["results"][i]));
@@ -142,8 +140,7 @@ class OrdersTripsProvider with ChangeNotifier {
         HttpHeaders.contentTypeHeader: "application/json",
       },
     ).then((onValue) {
-      Map<String, dynamic> data =
-          json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         orders.add(Order.fromJson(data["results"][i]));
@@ -161,8 +158,7 @@ class OrdersTripsProvider with ChangeNotifier {
         HttpHeaders.contentTypeHeader: "application/json",
       },
     ).then((onValue) {
-      Map<String, dynamic> data =
-          json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         trips.add(Trip.fromJson(data["results"][i]));
@@ -202,8 +198,7 @@ class OrdersTripsProvider with ChangeNotifier {
     const url = Api.trips + "?order_by=-date";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('userData')) {
-      final extractedUserData =
-          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
       token = extractedUserData['token'];
     }
     http
@@ -220,13 +215,12 @@ class OrdersTripsProvider with ChangeNotifier {
     )
         .then(
       (response) {
-        Map<String, dynamic> data =
-            json.decode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
         trips = [];
         for (var i = 0; i < data["results"].length; i++) {
           trips.add(Trip.fromJson(data["results"][i]));
         }
-        isLoadingTrips = false;        
+        isLoadingTrips = false;
         allTripsDetails = {"next": data["next"], "count": data["count"]};
         notifyListeners();
       },
@@ -235,11 +229,11 @@ class OrdersTripsProvider with ChangeNotifier {
 
   Future fetchAndSetMyTrips(myToken) async {
     var token = myToken;
-    if(token==null){
+    if (token == null) {
       final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      return false;
-    }
+      if (!prefs.containsKey('userData')) {
+        return false;
+      }
       token = json.decode(prefs.getString('userData')) as Map<String, Object>;
     }
     const url = Api.myTrips;
@@ -250,8 +244,7 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + token,
       },
     ).then((onValue) {
-      Map<String, dynamic> data =
-          json.decode(onValue.body) as Map<String, dynamic>;
+      Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
 
       for (var i = 0; i < data["results"].length; i++) {
         mytrips.add(Trip.fromJson(data["results"][i]));
@@ -261,7 +254,6 @@ class OrdersTripsProvider with ChangeNotifier {
       notifyListeners();
     });
   }
-
 
   removeAllDataOfProvider() {
     _orders = [];
@@ -277,5 +269,69 @@ class OrdersTripsProvider with ChangeNotifier {
     allMyOrderDetails = {};
     allMyTripsDetails = {};
     notifyListeners();
+  }
+
+  Future<http.Response> deleteOrder(BuildContext context, Order order) async {
+    final http.Response response = await http.delete(
+      Api.orders + order.id.toString() + '/',
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+      },
+    );
+    Provider.of<OrdersTripsProvider>(context, listen: false).myorders.remove(order);
+    Provider.of<OrdersTripsProvider>(context, listen: false).notify();
+    return response;
+  }
+
+  Future<http.Response> deleteTrip(BuildContext context, Trip trip) async {
+    final http.Response response = await http.delete(
+      Api.trips + trip.id.toString() + '/',
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+      },
+    );
+    Provider.of<OrdersTripsProvider>(context, listen: false).mytrips.remove(trip);
+    Provider.of<OrdersTripsProvider>(context, listen: false).notify();
+    return response;
+  }
+}
+
+Future<List<Order>> fetchOrderSuggestions(Order order, BuildContext context) async {
+  List<Order> _orders = [];
+  final response = await http.get(Api.orders + "?origin=" + order.source.id.toString() + "&dest=" + order.destination.id.toString(), headers: {
+    HttpHeaders.contentTypeHeader: "application/json",
+    if (Provider.of<Auth>(context, listen: false).isAuth) "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage
+  });
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+    for (var i = 0; i < data["results"].length; i++) {
+      _orders.add(Order.fromJson(data["results"][i]));
+    }
+
+    return _orders;
+  } else {
+    throw Exception('Failed to load order Suggestions');
+  }
+}
+
+Future<List<Trip>> fetchTripSuggestions(Trip trip, BuildContext context) async {
+  List<Trip> trips = [];
+  final response = await http.get(Api.trips + "?origin=" + trip.source.id.toString() + "&dest=" + trip.destination.id.toString(), headers: {
+    HttpHeaders.contentTypeHeader: "application/json",
+    if (Provider.of<Auth>(context, listen: false).isAuth) "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage
+  });
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+    for (var i = 0; i < data["results"].length; i++) {
+      trips.add(Trip.fromJson(data["results"][i]));
+    }
+
+    return trips;
+  } else {
+    throw Exception('Failed to load trip Suggestions');
   }
 }

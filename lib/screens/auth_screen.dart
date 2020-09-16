@@ -64,6 +64,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
   bool _obscureText1 = true;
   bool _obscureText2 = true;
+
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _firstNameFocus = FocusNode();
+  final FocusNode _lastNameFocus = FocusNode();
+  final FocusNode _pass1Focus = FocusNode();
+  final FocusNode _pass2Focus = FocusNode();
+
   @override
   void initState() {
     _getToken();
@@ -168,6 +175,11 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
+  _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
@@ -180,25 +192,29 @@ class _AuthScreenState extends State<AuthScreen> {
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  _authMode == AuthMode.Login ? t(context, 'login') : t(context, 'sign_up'),
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    _authMode == AuthMode.Login ? t(context, 'login') : t(context, 'sign_up'),
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold,
 //                    color: Colors.grey[700],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Container(
-//                padding: EdgeInsets.symmetric(horizontal: 15),
-                  width: deviceSize.width * 0.8,
-                  child: TextFormField(
+                  SizedBox(
+                    height: 30,
+                  ),
+                  TextFormField(
+                    focusNode: _emailFocus,
+                    textInputAction: TextInputAction.next,
+                    onFieldSubmitted: (term) {
+                      _fieldFocusChange(context, _emailFocus, (_authMode == AuthMode.Signup) ? _firstNameFocus : _pass1Focus);
+                    },
                     decoration: InputDecoration(
                       labelText: t(context, 'email'),
                       icon: Icon(Icons.alternate_email),
@@ -214,11 +230,13 @@ class _AuthScreenState extends State<AuthScreen> {
                       _authData['email'] = value;
                     },
                   ),
-                ),
-                if (_authMode == AuthMode.Signup) ...[
-                  Container(
-                    width: deviceSize.width * 0.8,
-                    child: TextFormField(
+                  if (_authMode == AuthMode.Signup) ...[
+                    TextFormField(
+                      focusNode: _firstNameFocus,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (term) {
+                        _fieldFocusChange(context, _firstNameFocus, _lastNameFocus);
+                      },
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
                         labelText: t(context, 'name'),
@@ -229,10 +247,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         _authData['firstname'] = value;
                       },
                     ),
-                  ),
-                  Container(
-                    width: deviceSize.width * 0.8,
-                    child: TextFormField(
+                    TextFormField(
+                      focusNode: _lastNameFocus,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (term) {
+                        _fieldFocusChange(context, _lastNameFocus, _pass1Focus);
+                      },
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
                         labelText: t(context, 'last_name'),
@@ -243,11 +263,18 @@ class _AuthScreenState extends State<AuthScreen> {
                         _authData['lastname'] = value;
                       },
                     ),
-                  ),
-                ],
-                Container(
-                  width: deviceSize.width * 0.8,
-                  child: TextFormField(
+                  ],
+                  TextFormField(
+                    focusNode: _pass1Focus,
+                    textInputAction: (_authMode == AuthMode.Signup) ? TextInputAction.next : TextInputAction.done,
+                    onFieldSubmitted: (term) {
+                      if (_authMode == AuthMode.Signup) {
+                        _fieldFocusChange(context, _pass1Focus, _pass2Focus);
+                      } else {
+                        _pass1Focus.unfocus();
+                        _submit();
+                      }
+                    },
                     decoration: InputDecoration(
                       labelText: t(context, 'password'),
                       icon: Icon(Icons.vpn_key),
@@ -268,11 +295,14 @@ class _AuthScreenState extends State<AuthScreen> {
                       _authData['password'] = value;
                     },
                   ),
-                ),
-                if (_authMode == AuthMode.Signup)
-                  Container(
-                    width: deviceSize.width * 0.8,
-                    child: TextFormField(
+                  if (_authMode == AuthMode.Signup)
+                    TextFormField(
+                      focusNode: _pass2Focus,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (term) {
+                        _pass2Focus.unfocus();
+                        _submit();
+                      },
                       enabled: _authMode == AuthMode.Signup,
                       decoration: InputDecoration(
                         labelText: t(context, 'repeat_password'),
@@ -292,11 +322,10 @@ class _AuthScreenState extends State<AuthScreen> {
                             }
                           : null,
                     ),
+                  SizedBox(
+                    height: 10,
                   ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
 //                Expanded(
 //                  child: new Container(
 //                      margin: const EdgeInsets.only(left: 10.0, right: 20.0),
@@ -317,7 +346,7 @@ class _AuthScreenState extends State<AuthScreen> {
 //                        height: 36,
 //                      )),
 //                ),
-                ]),
+                  ]),
 //                SizedBox(
 //                  height: 10,
 //                ),
@@ -332,131 +361,135 @@ class _AuthScreenState extends State<AuthScreen> {
 //                    _google(),
 //                  ],
 //                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    if (_isLoading)
-                      CircularProgressIndicator()
-                    else
-                      RaisedButton(
-                        child: Text(
-                          _authMode == AuthMode.Login ? t(context, 'login') : t(context, 'sign_up'),
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        onPressed: () {
-                          _submit();
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.3, vertical: 15.0),
-                        color: Theme.of(context).primaryColor,
-                        textColor: Theme.of(context).primaryTextTheme.button.color,
-                      ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      _authMode == AuthMode.Login ? t(context, 'dont_have_an_acc') : t(context, 'already_member'),
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    InkWell(
-                      child: Text(
-                        '${_authMode == AuthMode.Login ? ' ${t(context, 'sign_up')}' : ' ${t(context, 'login')}'} ',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
-                      ),
-                      onTap: _switchAuthMode,
-                    ),
-                  ],
-                ),
-                InkWell(
-                  child: Text(
-                    '${t(context, 'forgot')} ?',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (__) => ForgotPasswordScreen()),
-                    );
-                  },
-                ),
-                if (_authMode == AuthMode.Signup)
                   SizedBox(
                     height: 20,
                   ),
-                if (_authMode == AuthMode.Signup)
-                  Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Center(
-                        child: Container(
-                          width: deviceSize.width * 0.6,
+                      if (_isLoading)
+                        CircularProgressIndicator()
+                      else
+                        RaisedButton(
                           child: Text(
-                            t(context, 'by_creating'),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[500],
-                            ),
+                            _authMode == AuthMode.Login ? t(context, 'login') : t(context, 'sign_up'),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          onPressed: () {
+                            _submit();
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.3, vertical: 15.0),
+                          color: Theme.of(context).primaryColor,
+                          textColor: Theme.of(context).primaryTextTheme.button.color,
                         ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        _authMode == AuthMode.Login ? t(context, 'dont_have_an_acc') : t(context, 'already_member'),
+                        style: TextStyle(color: Colors.grey[600]),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          InkWell(
-                            child: Text(
-                              ' ${t(context, 'privacy')} ',
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (__) => WebScreen(
-                                      title: t(context, "privacy"),
-                                      url: 'https://briddgy.com/privacy',
-                                    ),
-                                  ));
-                            },
-                          ),
-                          Text(
-                            t(context, 'and'),
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                          InkWell(
-                            child: Text(
-                              ' ${t(context, 'terms')} ',
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (__) => WebScreen(
-                                      title: t(context, "terms"),
-                                      url: 'https://briddgy.com/terms',
-                                    ),
-                                  ));
-                            },
-                          ),
-                        ],
+                      InkWell(
+                        child: Text(
+                          '${_authMode == AuthMode.Login ? ' ${t(context, 'sign_up')}' : ' ${t(context, 'login')}'} ',
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
+                        ),
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          _switchAuthMode();
+                        },
                       ),
                     ],
                   ),
-                SizedBox(
-                  height: 30,
-                ),
-              ],
+                  InkWell(
+                    child: Text(
+                      '${t(context, 'forgot')} ?',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (__) => ForgotPasswordScreen()),
+                      );
+                    },
+                  ),
+                  if (_authMode == AuthMode.Signup)
+                    SizedBox(
+                      height: 20,
+                    ),
+                  if (_authMode == AuthMode.Signup)
+                    Column(
+                      children: <Widget>[
+                        Center(
+                          child: Container(
+                            width: deviceSize.width * 0.6,
+                            child: Text(
+                              t(context, 'by_creating'),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            InkWell(
+                              child: Text(
+                                ' ${t(context, 'privacy')} ',
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (__) => WebScreen(
+                                        title: t(context, "privacy"),
+                                        url: 'https://briddgy.com/privacy',
+                                      ),
+                                    ));
+                              },
+                            ),
+                            Text(
+                              t(context, 'and'),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                            InkWell(
+                              child: Text(
+                                ' ${t(context, 'terms')} ',
+                                style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).accentColor, fontSize: 13),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (__) => WebScreen(
+                                        title: t(context, "terms"),
+                                        url: 'https://briddgy.com/terms',
+                                      ),
+                                    ));
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

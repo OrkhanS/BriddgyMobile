@@ -160,7 +160,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.dispose();
   }
 
-//    return Form(
   Future _loadData() async {
     if (nextOrderURL.toString() != "null" && nextOrderURL.toString() != "FirstCall") {
       String url = nextOrderURL;
@@ -231,9 +230,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   );
                 }
               } else {
-//                navbar("1");
                 Flushbar(
-                  flushbarStyle: FlushbarStyle.GROUNDED,
+                  flushbarStyle: FlushbarStyle.FLOATING,
                   titleText: Text(
                     "Warning",
                     style: TextStyle(color: Colors.black, fontSize: 22),
@@ -244,9 +242,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   ),
                   icon: Icon(MdiIcons.login),
                   backgroundColor: Colors.white,
-                  borderColor: Colors.red,
-                  padding: const EdgeInsets.all(10),
-                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 80),
+//                  borderColor: Colors.red,
+                  borderColor: Colors.grey[400],
+                  margin: EdgeInsets.only(left: 20, right: 20, bottom: 30),
                   borderRadius: 10,
                   duration: Duration(seconds: 5),
                 )..show(context);
@@ -374,13 +372,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                 child: Column(
                                                   children: [
                                                     Container(
-                                                      height: 400,
-                                                      width: 200,
-                                                      padding: EdgeInsets.all(10),
+                                                      height: MediaQuery.of(context).size.height * 0.3,
+                                                      padding: EdgeInsets.symmetric(horizontal: 40),
                                                       child: SvgPicture.asset(
                                                         "assets/photos/empty_order.svg",
                                                       ),
                                                     ),
+                                                    Spacer(),
                                                     Padding(
                                                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                                                       child: Text(
@@ -392,6 +390,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                                         ),
                                                       ),
                                                     ),
+                                                    Spacer(),
                                                   ],
                                                 ),
                                               ))
