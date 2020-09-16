@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
+import 'package:briddgy/screens/profile_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -43,6 +44,8 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
 
+
+ 
   Future upload(id, token, orderstripsProvider, context) async {
     var stream, length, multipartFile;
     var uri = Uri.parse(Api.addOrderImage);
@@ -58,20 +61,17 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
       request.files.add(multipartFile);
     }
 
-    await request.send().then((response) {
+    try {
+      var requestNow = await request.send().then((response) {
       if (response.statusCode == 201) {
         errorInImageUpload = false;
         orderstripsProvider.myorders = [];
         orderstripsProvider.isLoadingMyOrders = true;
-        Navigator.pop(context);
         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (__) => MyOrderScreen(
-                token: token,
-                orderstripsProvider: orderstripsProvider,
-              ),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (__) => ProfileScreen(user: Provider.of<Auth>(context,listen:false).user),
+          ));
         Flushbar(
           title: "${t(context, 'success')}!",
           backgroundColor: Colors.green[800],
@@ -95,14 +95,10 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                 onPressed: () {
                   orderstripsProvider.myorders = [];
                   orderstripsProvider.isLoadingMyOrders = true;
-                  Navigator.pop(context);
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (__) => MyOrderScreen(
-                          token: token,
-                          orderstripsProvider: orderstripsProvider,
-                        ),
+                        builder: (__) => ProfileScreen(user: Provider.of<Auth>(context,listen:false).user),
                       ));
                 },
               ),
@@ -122,8 +118,51 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
         );
       }
     });
+
+    var response = await requestNow.timeout(const Duration(seconds: 10));
+  
+      
+    } catch (e) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(t(context, 'image_size_error')),
+            content: Text(t(context, 'another_image_prompt')),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(
+                  t(context, 'no'),
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () {
+                  orderstripsProvider.myorders = [];
+                  orderstripsProvider.isLoadingMyOrders = true;
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (__) => ProfileScreen(user: Provider.of<Auth>(context,listen:false).user),
+                      ));
+                },
+              ),
+              FlatButton(
+                child: Text(t(context, 'pick_another_image')),
+                onPressed: () {
+                  setState(() {
+                    addItemButton = true;
+                    imageFiles = [];
+                    errorInImageUpload = true;
+                  });
+                  Navigator.of(ctx).pop();
+                },
+              )
+            ],
+          ),
+        );
+        }
   }
 
+  
   Future<void> _showSelectionDialog(BuildContext context, i) {
     return showDialog(
         context: context,
@@ -222,6 +261,102 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future postOrder() async{
+        var token = Provider.of<Auth>(context, listen: false).token;
+        var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
+        try {
+          
+        if (errorInImageUpload) {
+          setState(() {
+            addItemButton = false;
+          });
+          upload(orderId.toString(), token, orderstripsProvider, context);
+        } else {
+          String url = Api.orders;
+          if (title == null || from == null || to == null || weight == null || price == null) {
+            setState(() {
+              addItemButton = true;
+            });
+            Flushbar(
+              title: "${t(context, 'warning')}!",
+              message: t(context, 'fill_fields'),
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.all(20),
+              borderRadius: 10,
+              duration: Duration(seconds: 3),
+            )..show(context);
+          } else {
+            setState(() {
+              addItemButton = false;
+            });
+            var request = http.post(url,
+                headers: {
+                  HttpHeaders.contentTypeHeader: "application/json",
+                  "Authorization": "Token " + token,
+                },
+                body: json.encode({
+                  "title": title,
+                  "dimensions": 0,
+                  "source": from,
+                  "destination": to,
+                  "date": DateTime.now().toString().substring(0, 10),
+                  "address": "ads",
+                  "weight": weight,
+                  "price": price,
+                  "trip": null,
+                  "description": description
+                })).then((response) {
+                if (response.statusCode == 201) {
+                  Map data = json.decode(response.body);
+                  if(imageFiles.isNotEmpty) upload(data["id"].toString(), token, orderstripsProvider, context);
+                  else{
+                      errorInImageUpload = false;
+                      orderstripsProvider.myorders = [];
+                      orderstripsProvider.isLoadingMyOrders = true;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (__) => ProfileScreen(user: Provider.of<Auth>(context,listen:false).user),
+                        ));
+                      Flushbar(
+                        title: "${t(context, 'success')}!",
+                        backgroundColor: Colors.green[800],
+                        message: t(context, 'item_added'),
+                        padding: const EdgeInsets.all(8),
+                        borderRadius: 10,
+                        duration: Duration(seconds: 3),
+                      )..show(context);
+                  }
+                } else {
+                  setState(() {
+                    addItemButton = true;
+                  });
+                  Flushbar(
+                    title: "${t(context, 'warning')}!",
+                    message: t(context, 'item_add_error'),
+                    padding: const EdgeInsets.all(8),
+                    borderRadius: 10,
+                    duration: Duration(seconds: 3),
+                  )..show(context);
+                }
+            });
+            var response = await request.timeout(const Duration(seconds: 10));
+          }
+        }
+        } catch (e) {
+            setState(() {
+              addItemButton = true;
+            });
+            Flushbar(
+              title: "${t(context, 'warning')}!",
+              message: t(context, 'item_add_error'),
+              padding: const EdgeInsets.all(8),
+              borderRadius: 10,
+              duration: Duration(seconds: 3),
+            )..show(context);
+        }
+  }
+
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.white10,
       statusBarIconBrightness: Brightness.dark,
@@ -530,68 +665,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                           ),
                         ),
                         onPressed: () {
-                          var token = Provider.of<Auth>(context, listen: false).token;
-                          var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
-                          if (errorInImageUpload) {
-                            setState(() {
-                              addItemButton = false;
-                            });
-                            upload(orderId.toString(), token, orderstripsProvider, context);
-                          } else {
-                            String url = Api.orders;
-                            if (title == null || from == null || to == null || weight == null || price == null) {
-                              setState(() {
-                                addItemButton = true;
-                              });
-                              Flushbar(
-                                title: "${t(context, 'warning')}!",
-                                message: t(context, 'fill_fields'),
-                                padding: const EdgeInsets.all(8),
-                                margin: const EdgeInsets.all(20),
-                                borderRadius: 10,
-                                duration: Duration(seconds: 3),
-                              )..show(context);
-                            } else {
-                              setState(() {
-                                addItemButton = false;
-                              });
-                              http
-                                  .post(url,
-                                      headers: {
-                                        HttpHeaders.CONTENT_TYPE: "application/json",
-                                        "Authorization": "Token " + token,
-                                      },
-                                      body: json.encode({
-                                        "title": title,
-                                        "dimensions": 0,
-                                        "source": from,
-                                        "destination": to,
-                                        "date": DateTime.now().toString().substring(0, 10),
-                                        "address": "ads",
-                                        "weight": weight,
-                                        "price": price,
-                                        "trip": null,
-                                        "description": description
-                                      }))
-                                  .then((response) {
-                                if (response.statusCode == 201) {
-                                  Map data = json.decode(response.body);
-                                  upload(data["id"].toString(), token, orderstripsProvider, context);
-                                } else {
-                                  setState(() {
-                                    addItemButton = true;
-                                  });
-                                  Flushbar(
-                                    title: "${t(context, 'warning')}!",
-                                    message: t(context, 'item_add_error'),
-                                    padding: const EdgeInsets.all(8),
-                                    borderRadius: 10,
-                                    duration: Duration(seconds: 3),
-                                  )..show(context);
-                                }
-                              });
-                            }
-                          }
+                          postOrder();
                         },
                       ),
                     )

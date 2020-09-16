@@ -65,6 +65,7 @@ class _ChatWindowState extends State<ChatWindow> {
   final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
   final String nodeEndPoint = 'http://192.168.43.171:3000/image';
   @override
+  
   void initState() {
 //    widget.provider.fetchAndSetMessages(index);
     widget.provider.roomIDofActiveChatRoom = widget.room.id.toString();
@@ -78,9 +79,9 @@ class _ChatWindowState extends State<ChatWindow> {
 //    imageUrlMe = me.avatarpic == null ? Api.noPictureImage : Api.storageBucket + me.avatarpic.toString();
     imageUrlUser = widget.user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + widget.user.avatarpic.toString();
     if (me.id != widget.room.unread1[1]) {
-      widget.room.unread1[0] == 0 ? userRead = true : userRead = false;
+      widget.room.unread1[0] == 0 ? widget.provider.readMessageRequest = true : widget.provider.readMessageRequest = false;
     } else {
-      widget.room.unread2[0] == 0 ? userRead = true : userRead = false;
+      widget.room.unread2[0] == 0 ? widget.provider.readMessageRequest = true : widget.provider.readMessageRequest = false;
     }
     initCommunication(id);
     super.initState();
@@ -98,7 +99,6 @@ class _ChatWindowState extends State<ChatWindow> {
         reset();
         initCommunication(id);
       });
-      print("Room Socket Connected");
     } catch (e) {}
   }
 
@@ -170,7 +170,7 @@ class _ChatWindowState extends State<ChatWindow> {
       }
 
       setState(() {
-        userRead = false;
+        widget.provider.readMessageRequest = false;
         _messages.insert(0, tempMessage);
       });
       widget.provider.changeLastMessage(id, tempMessage.text, Provider.of<Auth>(context, listen: false));
@@ -305,10 +305,14 @@ class _ChatWindowState extends State<ChatWindow> {
       child: Consumer<Messages>(
         builder: (context, provider, child) {
           bool messageLoader = provider.messagesLoading;
+          userRead = widget.provider.readMessageRequest;
           if (provider.messages[widget.room.id] != null && !messageLoader) {
             if (provider.messages[widget.room.id].isNotEmpty) {
-              var a = json.encode({"briddgy_message_field_for_online": "True", "user_id": me.id, "room_id": id});
-              readMessageSockets(a);
+              if(provider.readMessageRequest){
+                provider.readMessageRequest = false;
+                var a = json.encode({"briddgy_message_field_for_online": "True", "user_id": me.id, "room_id": id});
+                readMessageSockets(a);
+              }
               _messages = provider.messages[widget.room.id]["data"];
               if (nextMessagesURL == "FirstCall") {
                 nextMessagesURL = provider.messages[widget.room.id]["next"];

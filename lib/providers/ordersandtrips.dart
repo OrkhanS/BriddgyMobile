@@ -212,8 +212,7 @@ class OrdersTripsProvider with ChangeNotifier {
           : {
               HttpHeaders.contentTypeHeader: "application/json",
             },
-    )
-        .then(
+    ).then(
       (response) {
         Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
         trips = [];
