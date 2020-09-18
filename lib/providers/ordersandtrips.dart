@@ -259,6 +259,8 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 
   Future<http.Response> deleteOrder(BuildContext context, Order order) async {
+    myorders.remove(order);
+
     final http.Response response = await http.delete(
       Api.orders + order.id.toString() + '/',
       headers: {
@@ -266,12 +268,13 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
       },
     );
-    Provider.of<OrdersTripsProvider>(context, listen: false).myorders.remove(order);
-    Provider.of<OrdersTripsProvider>(context, listen: false).notify();
+    if (response.statusCode != 204) mytrips.add(order);
+    notifyListeners();
     return response;
   }
 
   Future<http.Response> deleteTrip(BuildContext context, Trip trip) async {
+    mytrips.remove(trip);
     final http.Response response = await http.delete(
       Api.trips + trip.id.toString() + '/',
       headers: {
@@ -279,8 +282,9 @@ class OrdersTripsProvider with ChangeNotifier {
         "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
       },
     );
-    Provider.of<OrdersTripsProvider>(context, listen: false).mytrips.remove(trip);
-    Provider.of<OrdersTripsProvider>(context, listen: false).notify();
+    if (response.statusCode != 204) mytrips.add(trip);
+
+    notifyListeners();
     return response;
   }
 }

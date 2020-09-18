@@ -206,6 +206,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isMine) {
+      orders = Provider.of<OrdersTripsProvider>(context).myorders;
+      trips = Provider.of<OrdersTripsProvider>(context).mytrips;
+    }
     return Consumer<Auth>(
       builder: (context, provider, child) {
         if (!provider.reviewsloading) {

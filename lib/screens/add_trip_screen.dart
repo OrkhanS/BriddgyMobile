@@ -335,14 +335,17 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                 addTripButton = true;
                               });
                               Map<String, dynamic> data = json.decode(value.body) as Map<String, dynamic>;
-                              data["source"]=data["sourceDetails"];
-                              data["destination"]=data["destinationDetails"];
-                              data["numberOfContracts"]=0;
-                              var trip = Trip.fromJson(data); 
+                              data["source"] = data["sourceDetails"];
+                              data["destination"] = data["destinationDetails"];
+                              data["numberOfContracts"] = 0;
+                              var trip = Trip.fromJson(data);
                               ordersTripsProvider.mytrips.add(trip);
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (__) => ProfileScreen(user: Provider.of<Auth>(context, listen: false).user,)),
+                                MaterialPageRoute(
+                                    builder: (__) => ProfileScreen(
+                                          user: Provider.of<Auth>(context, listen: false).user,
+                                        )),
                               );
 
                               Flushbar(

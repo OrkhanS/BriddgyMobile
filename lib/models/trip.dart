@@ -37,8 +37,8 @@ class Trip {
         source: Destination.fromJson(json["source"]),
         destination: Destination.fromJson(json["destination"]),
         date: DateTime.parse(json["date"]),
-        weightLimit: json["weight_limit"].runtimeType!=double ? double.parse(json["weight_limit"].toString()) : json["weight_limit"],
-        numberOfContracts: json["number_of_contracts"],
+        weightLimit: json["weight_limit"].runtimeType != double ? double.parse(json["weight_limit"].toString()) : json["weight_limit"],
+        numberOfContracts: json["number_of_contracts"] ?? 0,
         description: utf8.decode(json["description"].toString().codeUnits),
       );
 
