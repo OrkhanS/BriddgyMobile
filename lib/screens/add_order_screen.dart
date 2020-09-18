@@ -266,6 +266,9 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                   Map data = json.decode(response.body);
                   if(imageFiles.isNotEmpty) upload(data["id"].toString(), token, orderstripsProvider, context);
                   else{
+                    setState(() {
+                      addItemButton = true;
+                    });
                       errorInImageUpload = false;
                       orderstripsProvider.myorders = [];
                       orderstripsProvider.isLoadingMyOrders = true;
