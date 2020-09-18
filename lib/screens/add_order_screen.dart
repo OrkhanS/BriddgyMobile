@@ -41,36 +41,42 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
   bool addItemButton = true;
   bool errorInImageUpload = false;
   String orderId;
+  Map<String, dynamic> data;
 
   final TextEditingController _typeAheadController = TextEditingController();
   final TextEditingController _typeAheadController2 = TextEditingController();
 
 
  
-  Future upload(id, token, orderstripsProvider, context) async {
+  Future upload(id, token, orderstripsProvider, context,data) async {
     var stream, length, multipartFile;
     var uri = Uri.parse(Api.addOrderImage);
     var request = new http.MultipartRequest("PUT", uri);
     request.headers['Authorization'] = "Token " + token;
     request.fields["order_id"] = id.toString();
     orderId = id.toString();
-
+    List orderimage = [];
     for (var i = 0; i < imageFiles.length; i++) {
       stream = new http.ByteStream(DelegatingStream.typed(imageFiles[i].openRead()));
       length = await imageFiles[i].length();
       multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFiles[i].path));
       request.files.add(multipartFile);
+      orderimage.add(request.files[i].filename);
     }
       await request.send().then((response) {
       if (response.statusCode == 201) {
         errorInImageUpload = false;
-        orderstripsProvider.myorders = [];
-        orderstripsProvider.isLoadingMyOrders = true;
+        setState(() {
+          addItemButton = true;
+        });
+        data["orderimage"] = orderimage;
+        var order = Order.fromJson(data); 
+        orderstripsProvider.myorders.add(order);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (__) => ProfileScreen(user: Provider.of<Auth>(context,listen:false).user),
-          ));
+        ));
         Flushbar(
           title: "${t(context, 'success')}!",
           backgroundColor: Colors.green[800],
@@ -79,6 +85,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
           borderRadius: 10,
           duration: Duration(seconds: 3),
         )..show(context);
+
       } else {
         showDialog(
           context: context,
@@ -227,7 +234,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
           setState(() {
             addItemButton = false;
           });
-          upload(orderId.toString(), token, ordersTripsProvider, context);
+          upload(orderId.toString(), token, ordersTripsProvider, context,data);
         } else {
           String url = Api.orders;
           if (title == null || from == null || to == null || weight == null || price == null) {
@@ -264,16 +271,15 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                   "description": description
                 })).then((response) {
                 if (response.statusCode == 201) {
-                  Map data = json.decode(response.body);
-                  if(imageFiles.isNotEmpty) upload(data["id"].toString(), token, ordersTripsProvider, context);
+                  Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+                  data["source"]=data["sourceDetails"];
+                  data["destination"]=data["destinationDetails"];
+                  if(imageFiles.isNotEmpty) upload(data["id"].toString(), token, ordersTripsProvider, context,data);
                   else{
                     setState(() {
                       addItemButton = true;
                     });
                       errorInImageUpload = false;
-                      Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
-                      data["source"]=data["sourceDetails"];
-                      data["destination"]=data["destinationDetails"];
                       var order = Order.fromJson(data); 
                       ordersTripsProvider.myorders.add(order);
                       Navigator.push(
