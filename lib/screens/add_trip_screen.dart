@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:briddgy/models/trip.dart';
+import 'package:briddgy/models/user.dart';
+import 'package:briddgy/screens/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -31,7 +34,7 @@ class AddTripScreen extends StatefulWidget {
 }
 
 class _AddTripScreenState extends State<AddTripScreen> {
-  String departureDate = DateTime.now().toString().substring(0, 11);
+  String departureDate = DateTime.now().toString().substring(0, 10);
   String from, to;
   String weight;
   List _suggested = [];
@@ -294,6 +297,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                       ),
                       onPressed: () {
                         var token = Provider.of<Auth>(context, listen: false).token;
+                        var ordersTripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
                         const url = Api.trips;
                         if (from == null || to == null || weight == null) {
                           setState(() {
@@ -325,18 +329,26 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                     "description": description
                                   }))
                               .then((value) {
+                            print(value);
                             if (value.statusCode == 201) {
-                              widget.orderstripsProvider.loadedMyTrips = true;
-                              widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
-                              Navigator.pop(context);
+                              setState(() {
+                                addTripButton = true;
+                              });
+                              Map<String, dynamic> data = json.decode(value.body) as Map<String, dynamic>;
+                              data["source"]=data["sourceDetails"];
+                              data["destination"]=data["destinationDetails"];
+                              data["numberOfContracts"]=0;
+                              var trip = Trip.fromJson(data); 
+                              ordersTripsProvider.mytrips.add(trip);
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (__) => MyTripsScreen()),
+                                MaterialPageRoute(builder: (__) => ProfileScreen(user: Provider.of<Auth>(context, listen: false).user,)),
                               );
 
                               Flushbar(
                                 title: t(context, 'trip_added'),
                                 message: t(context, 'trips_in_acc_page'),
+                                backgroundColor: Colors.green[800],
                                 padding: const EdgeInsets.all(8),
                                 margin: const EdgeInsets.all(10),
                                 borderRadius: 10,
