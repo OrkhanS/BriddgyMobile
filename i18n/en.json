@@ -45,7 +45,7 @@
     "order": "Order",
     "contract_plural": "Contracts",
     "terms": "Terms & Conditions",
-    "profile": "View Profile",
+    "view-profile": "View Profile",
     "message_plural": "Messages",
     "message": "Message",
     "navbar-drawer-text": "Connect with people for your go to P2P delivery provider",
@@ -316,5 +316,9 @@
     "review_not_added_contract": "You need to have a contract to add a review.",
     "review_not_added": "You have already reviewed this user, remove to add a new review.",
     "settings" : "Settings",
-    "about": "About"
+    "about": "About",
+
+
+    "chats": "Chats",
+    "profile": "Profile"
 }

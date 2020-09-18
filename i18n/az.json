@@ -137,7 +137,7 @@
   "select_order_of": "Sifarişi seçin ",
   "select_your_order": "Sifarişinizi seçin",
   "summary": "Qısa Mezmun",
-  "contract_proposed_by": "Müqavilə təklif olundu: ",
+  "contract_proposed_by": "Təklif elədi:",
   "order_owner": "Sifariş sahibi: ",
   "deliverer": "Çatdırıcı",
   "trip_date": "Səyahət Tarixi",
@@ -331,5 +331,8 @@
   "not_assigned": "Təyin Olunmayıb",
   "active_deal": "Aktiv Müqavilələr",
   "active_deal_plural": "Aktif Müqavilə",
-  "resend_code": "Tekrar gönder"
+  "resened_code": "Tekrar gönder",
+
+
+  "chats": "Çat"
 }

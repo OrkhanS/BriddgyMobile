@@ -192,8 +192,7 @@ class _MyAppState extends State<MyApp> {
     try {
       message = json.decode(message);
       if (message["type"] == "ReadMessage") messageProvider.userReadMessage(authProvider, message);
-    } catch (e) {
-    }    
+    } catch (e) {}
   }
 
   @override
@@ -306,103 +305,6 @@ class _MyAppState extends State<MyApp> {
           statusBarColor: Colors.white10,
           statusBarIconBrightness: Brightness.dark,
         ));
-        List<Widget> _buildScreens() {
-          return [
-            OrdersScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
-            TripsScreen(orderstripsProvider: orderstripsProvider, room: message, auth: auth, token: tokenforROOM),
-            ChatsScreen(provider: message, auth: auth),
-//                  NotificationScreen(),
-            auth.isAuth
-                ?
-//            AccountScreen(token: tokenforROOM, auth: auth, provider: orderstripsProvider)
-                auth.user != null
-                    ? ProfileScreen(
-                        user: auth.user,
-                      )
-                    : ProgressIndicatorWidget(show: true)
-                : AuthScreen(),
-          ];
-        }
-
-        List<PersistentBottomNavBarItem> _navBarsItems(BuildContext ctx) {
-          return [
-//            BottomNavigationBarItem(
-//              title: Text('Trips'),
-//              icon: Icon(MdiIcons.roadVariant),
-//              activeIcon: Icon(MdiIcons.road),
-//            ),
-//            BottomNavigationBarItem(
-//              title: Text('Chats'),
-//              icon: newmessage.arethereNewMessage == true
-//                  ? Badge(
-//                badgeColor: Colors.green,
-//                badgeContent: Text(
-//                  newmessage.newMessages.length.toString(),
-//                  style: TextStyle(color: Colors.white),
-//                ),
-//                child: Icon(MdiIcons.forumOutline),
-//              )
-//                  : Icon(MdiIcons.forumOutline),
-//              activeIcon: Icon(MdiIcons.forum),
-//            ),
-////        BottomNavigationBarItem(
-////          title: Text('Notifications'),
-////          icon: Icon(Icons.notifications_none),
-////          activeIcon: Icon(Icons.notifications),
-////        ),
-//            BottomNavigationBarItem(
-//              title: Text('Account'),
-//              icon: Icon(MdiIcons.accountSettingsOutline),
-//              activeIcon: Icon(MdiIcons.accountSettings),
-//            ),'
-
-            PersistentBottomNavBarItem(
-//              title: t(ctx, "order_plural"),
-              title: "Orders",
-              icon: _controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),
-              activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[400],
-            ),
-            PersistentBottomNavBarItem(
-              title: ("Trips"),
-              icon: _controller.index == 1 ? Icon(MdiIcons.roadVariant) : Icon(MdiIcons.road),
-              activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[400],
-            ),
-            PersistentBottomNavBarItem(
-              title: ("Chats"),
-              icon: _controller.index == 2
-                  ? messageProvider.arethereNewMessage == true
-                      ? Badge(
-                          badgeColor: Colors.green,
-                          badgeContent: Text(
-                            messageProvider.newMessages.length.toString(),
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          child: Icon(MdiIcons.forum),
-                        )
-                      : Icon(MdiIcons.forum)
-                  : messageProvider.arethereNewMessage == true
-                      ? Badge(
-                          badgeColor: Colors.green,
-                          badgeContent: Text(
-                            messageProvider.newMessages.length.toString(),
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          child: Icon(MdiIcons.forumOutline),
-                        )
-                      : Icon(MdiIcons.forumOutline),
-              activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[400],
-            ),
-            PersistentBottomNavBarItem(
-              title: ("Profile"),
-              icon: _controller.index == 3 ? Icon(MdiIcons.accountSettings) : Icon(MdiIcons.accountSettingsOutline),
-              activeColor: Colors.teal[700],
-              inactiveColor: Colors.grey[400],
-            ),
-          ];
-        }
 
         return MaterialApp(
           locale: _locale,
@@ -435,37 +337,12 @@ class _MyAppState extends State<MyApp> {
             accentColor: Colors.green,
             fontFamily: 'Open Sans',
           ),
-          home: PersistentTabView(
+          home: NBItem1(
+            orderstripsProvider: orderstripsProvider,
+            message: message,
+            auth: auth,
+            tokenforROOM: tokenforROOM,
             controller: _controller,
-            screens: _buildScreens(),
-            items: _navBarsItems(context),
-            confineInSafeArea: true,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            handleAndroidBackButtonPress: true,
-            resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
-            stateManagement: true,
-            hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
-            decoration: NavBarDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              colorBehindNavBar: Colors.white,
-            ),
-            popAllScreensOnTapOfSelectedTab: true,
-            navBarHeight: 50,
-            itemAnimationProperties: ItemAnimationProperties(
-              // Navigation Bar's items animation properties.
-              duration: Duration(milliseconds: 50),
-              curve: Curves.ease,
-            ),
-            screenTransitionAnimation: ScreenTransitionAnimation(
-              // Screen transition animation on change of selected tab.
-              animateTabTransition: true,
-              curve: Curves.ease,
-              duration: Duration(milliseconds: 50),
-            ),
-            onItemSelected: (index) {
-              setState(() {});
-            },
-            navBarStyle: NavBarStyle.style6, // Choose the nav bar style with this property.
           ),
           routes: {
             OrdersScreen.routeName: (ctx) => OrdersScreen(),
@@ -484,4 +361,115 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-void printer(cart) {}
+class NBItem1 extends StatefulWidget {
+  NBItem1({this.orderstripsProvider, this.message, this.auth, this.tokenforROOM, @required this.controller});
+  var orderstripsProvider, message, auth, tokenforROOM, controller;
+
+  @override
+  _NBItem1State createState() => _NBItem1State();
+}
+
+class _NBItem1State extends State<NBItem1> {
+  List<Widget> _buildScreens() {
+    return [
+      OrdersScreen(orderstripsProvider: widget.orderstripsProvider, room: widget.message, auth: widget.auth, token: widget.tokenforROOM),
+      TripsScreen(orderstripsProvider: widget.orderstripsProvider, room: widget.message, auth: widget.auth, token: widget.tokenforROOM),
+      ChatsScreen(provider: widget.message, auth: widget.auth),
+//                  NotificationScreen(),
+      widget.auth.isAuth
+          ?
+//            AccountScreen(token: tokenforROOM, auth: auth, provider: orderstripsProvider)
+          widget.auth.user != null
+              ? ProfileScreen(
+                  user: widget.auth.user,
+                )
+              : ProgressIndicatorWidget(show: true)
+          : AuthScreen(),
+    ];
+  }
+
+  List<PersistentBottomNavBarItem> _navBarsItems(context) {
+    return [
+      PersistentBottomNavBarItem(
+        title: t(context, "order_plural"),
+        icon: widget.controller.index == 0 ? Icon(MdiIcons.packageVariant) : Icon(MdiIcons.packageVariantClosed),
+        activeColor: Colors.teal[700],
+        inactiveColor: Colors.grey[400],
+      ),
+      PersistentBottomNavBarItem(
+        title: t(context, "trip_plural"),
+        icon: widget.controller.index == 1 ? Icon(MdiIcons.roadVariant) : Icon(MdiIcons.road),
+        activeColor: Colors.teal[700],
+        inactiveColor: Colors.grey[400],
+      ),
+      PersistentBottomNavBarItem(
+        title: t(context, "chats"),
+        icon: widget.controller.index == 2
+            ? widget.message.arethereNewMessage == true
+                ? Badge(
+                    badgeColor: Colors.green,
+                    badgeContent: Text(
+                      widget.message.newMessages.length.toString(),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    child: Icon(MdiIcons.forum),
+                  )
+                : Icon(MdiIcons.forum)
+            : widget.message.arethereNewMessage == true
+                ? Badge(
+                    badgeColor: Colors.green,
+                    badgeContent: Text(
+                      widget.message.newMessages.length.toString(),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    child: Icon(MdiIcons.forumOutline),
+                  )
+                : Icon(MdiIcons.forumOutline),
+        activeColor: Colors.teal[700],
+        inactiveColor: Colors.grey[400],
+      ),
+      PersistentBottomNavBarItem(
+        title: t(context, "profile"),
+        icon: widget.controller.index == 3 ? Icon(MdiIcons.accountSettings) : Icon(MdiIcons.accountSettingsOutline),
+        activeColor: Colors.teal[700],
+        inactiveColor: Colors.grey[400],
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PersistentTabView(
+      controller: widget.controller,
+      screens: _buildScreens(),
+      items: _navBarsItems(context),
+      confineInSafeArea: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      handleAndroidBackButtonPress: true,
+      resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when keyboard appears.
+      stateManagement: true,
+      hideNavigationBarWhenKeyboardShows: true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument.
+      decoration: NavBarDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        colorBehindNavBar: Colors.white,
+      ),
+      popAllScreensOnTapOfSelectedTab: true,
+      navBarHeight: 50,
+      itemAnimationProperties: ItemAnimationProperties(
+        // Navigation Bar's items animation properties.
+        duration: Duration(milliseconds: 400),
+        curve: Curves.ease,
+      ),
+
+      screenTransitionAnimation: ScreenTransitionAnimation(
+        animateTabTransition: false,
+//        curve: Curves.ease,
+//        duration: Duration(milliseconds: 400),
+      ),
+      onItemSelected: (index) {
+        setState(() {});
+      },
+      navBarStyle: NavBarStyle.style6, // Choose the nav bar style with this property.
+    );
+  }
+}

@@ -448,6 +448,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: <Widget>[
                               Row(
                                 children: <Widget>[
+                                  Icon(
+                                    MdiIcons.email,
+                                    color: user.isEmailVerified ? Colors.green : Colors.grey,
+                                    size: 15,
+                                  ),
+                                  Icon(
+                                    MdiIcons.phone,
+                                    color: user.isNumberVerified ? Colors.green : Colors.grey,
+                                    size: 15,
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                     child: Text(
@@ -475,36 +485,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                               ),
-                              Row(
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Icon(
-                                      Icons.tag_faces,
-                                      color: user.isPhotoVerified ? Colors.green : Colors.grey,
-                                      size: 17,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Icon(
-                                      MdiIcons.phone,
-                                      color: user.isNumberVerified ? Colors.green : Colors.grey,
-                                      size: 17,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Icon(
-                                      MdiIcons.email,
-                                      color: user.isEmailVerified ? Colors.green : Colors.grey,
-                                      size: 17,
-                                    ),
-                                  ),
-                                ],
-                              ),
+//                              Row(
+//                                children: <Widget>[
+////                                  GestureDetector(
+////                                    onTap: () {},
+////                                    child: Icon(
+////                                      Icons.tag_faces,
+////                                      color: user.isPhotoVerified ? Colors.green : Colors.grey,
+////                                      size: 17,
+////                                    ),
+////                                  ),
+//                                  SizedBox(width: 5),
+//                                  Icon(
+//                                    MdiIcons.phone,
+//                                    color: user.isNumberVerified ? Colors.green : Colors.grey,
+//                                    size: 17,
+//                                  ),
+//                                  Icon(
+//                                    MdiIcons.email,
+//                                    color: user.isEmailVerified ? Colors.green : Colors.grey,
+//                                    size: 17,
+//                                  ),
+//                                ],
+//                              ),
                             ],
                           ),
                           Padding(
