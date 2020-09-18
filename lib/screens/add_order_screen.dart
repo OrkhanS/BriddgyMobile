@@ -60,9 +60,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
       multipartFile = new http.MultipartFile('file', stream, length, filename: basename(imageFiles[i].path));
       request.files.add(multipartFile);
     }
-
-    try {
-      var requestNow = await request.send().then((response) {
+      await request.send().then((response) {
       if (response.statusCode == 201) {
         errorInImageUpload = false;
         orderstripsProvider.myorders = [];
@@ -117,50 +115,9 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
           ),
         );
       }
-    });
-
-    var response = await requestNow.timeout(const Duration(seconds: 10));
-  
+    });  
       
-    } catch (e) {
-      showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(t(context, 'image_size_error')),
-            content: Text(t(context, 'another_image_prompt')),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  t(context, 'no'),
-                  style: TextStyle(color: Colors.red),
-                ),
-                onPressed: () {
-                  orderstripsProvider.myorders = [];
-                  orderstripsProvider.isLoadingMyOrders = true;
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (__) => ProfileScreen(user: Provider.of<Auth>(context,listen:false).user),
-                      ));
-                },
-              ),
-              FlatButton(
-                child: Text(t(context, 'pick_another_image')),
-                onPressed: () {
-                  setState(() {
-                    addItemButton = true;
-                    imageFiles = [];
-                    errorInImageUpload = true;
-                  });
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
-        );
-        }
-  }
+}
 
   
   Future<void> _showSelectionDialog(BuildContext context, i) {
@@ -264,7 +221,6 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
     Future postOrder() async{
         var token = Provider.of<Auth>(context, listen: false).token;
         var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
-        try {
           
         if (errorInImageUpload) {
           setState(() {
@@ -340,20 +296,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                   )..show(context);
                 }
             });
-            var response = await request.timeout(const Duration(seconds: 10));
           }
-        }
-        } catch (e) {
-            setState(() {
-              addItemButton = true;
-            });
-            Flushbar(
-              title: "${t(context, 'warning')}!",
-              message: t(context, 'item_add_error'),
-              padding: const EdgeInsets.all(8),
-              borderRadius: 10,
-              duration: Duration(seconds: 3),
-            )..show(context);
         }
   }
 
