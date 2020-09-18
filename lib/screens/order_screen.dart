@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:briddgy/models/trip.dart';
 import 'package:briddgy/widgets/components.dart';
 import 'package:briddgy/widgets/order_widget.dart';
+import 'package:briddgy/widgets/trip_widget.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flushbar/flushbar.dart';
@@ -32,17 +34,23 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  Future<List<Order>> _suggestions;
+  Future<List<Object>> _suggestions;
   var _current;
   Order order;
   bool messageDeliveryButton = true;
   List<Widget> imageList = [];
 
+  bool isMine = false;
+
   @override
   void initState() {
     super.initState();
     order = widget.order;
-    _suggestions = fetchOrderSuggestions(order, context);
+    if (Provider.of<Auth>(context, listen: false).isAuth) if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id) isMine = true;
+    if (isMine)
+      _suggestions = fetchTripSuggestions(order.source.id.toString(), order.destination.id.toString(), context);
+    else
+      _suggestions = fetchOrderSuggestions(order.source.id.toString(), order.destination.id.toString(), context);
     if (order.orderimage.isEmpty) {
 //      imageList.add(FadeInImage.memoryNetwork(
 //        placeholder: kTransparentImage,
@@ -120,20 +128,16 @@ class _OrderScreenState extends State<OrderScreen> {
                                       Expanded(
                                         child: SizedBox(),
                                       ),
-                                      if (Provider.of<Auth>(context, listen: false).isAuth)
-                                        if (order.owner.id == Provider.of<Auth>(context, listen: false).user.id)
-                                          DeleteButtonWidget(object: order)
-                                        else
-                                          MessageButton(context),
+                                      if (isMine) DeleteButtonWidget(object: order) else MessageButton(context),
                                     ],
                                   ),
                                 )
                               : ProgressIndicatorWidget(show: true),
                           Text(
-                            "Similar Orders:",
+                            isMine ? "Suggested Trips" : "Similar Orders:",
                             style: Theme.of(context).textTheme.headline6,
                           ),
-                          FutureBuilder<List<Order>>(
+                          FutureBuilder<List<Object>>(
                             future: _suggestions,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
@@ -168,9 +172,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                   ));
                                 } else
                                   for (var x in snapshot.data)
-                                    if (x.id != order.id)
+                                    if (x != order) {
+                                      if (x is Trip) return TripWidget(trip: x);
+
                                       return OrderWidget(order: x);
-                                    else
+                                    } else
                                       return SizedBox();
                               } else if (snapshot.hasError) {
                                 return Text("${snapshot.error}");

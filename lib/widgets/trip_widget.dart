@@ -39,6 +39,9 @@ class TripWidget extends StatelessWidget {
         );
       },
       child: Card(
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+//        shadowColor: Theme.of(context).primaryColor,
+//        elevation: 1,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[

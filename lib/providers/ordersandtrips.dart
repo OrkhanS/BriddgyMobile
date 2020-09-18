@@ -212,7 +212,8 @@ class OrdersTripsProvider with ChangeNotifier {
           : {
               HttpHeaders.contentTypeHeader: "application/json",
             },
-    ).then(
+    )
+        .then(
       (response) {
         Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
         trips = [];
@@ -297,9 +298,9 @@ class OrdersTripsProvider with ChangeNotifier {
   }
 }
 
-Future<List<Order>> fetchOrderSuggestions(Order order, BuildContext context) async {
+Future<List<Order>> fetchOrderSuggestions(String source, String dest, BuildContext context) async {
   List<Order> _orders = [];
-  final response = await http.get(Api.orders + "?origin=" + order.source.id.toString() + "&dest=" + order.destination.id.toString(), headers: {
+  final response = await http.get(Api.orders + "?origin=" + source + "&dest=" + dest, headers: {
     HttpHeaders.contentTypeHeader: "application/json",
     if (Provider.of<Auth>(context, listen: false).isAuth) "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage
   });
@@ -316,9 +317,18 @@ Future<List<Order>> fetchOrderSuggestions(Order order, BuildContext context) asy
   }
 }
 
-Future<List<Trip>> fetchTripSuggestions(Trip trip, BuildContext context) async {
+Future<List<Trip>> fetchTripSuggestions(String source, String dest, BuildContext context) async {
   List<Trip> trips = [];
-  final response = await http.get(Api.trips + "?origin=" + trip.source.id.toString() + "&dest=" + trip.destination.id.toString(), headers: {
+//  Trip trip;
+//  Order order;
+//  if (object is Trip)
+//    trip = object;
+//  else
+//    order = object;
+//
+//  String origin, dest;
+
+  final response = await http.get(Api.trips + "?origin=" + source + "&dest=" + dest, headers: {
     HttpHeaders.contentTypeHeader: "application/json",
     if (Provider.of<Auth>(context, listen: false).isAuth) "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage
   });

@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:briddgy/widgets/components.dart';
+import 'package:briddgy/widgets/order_widget.dart';
+import 'package:briddgy/widgets/trip_widget.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -37,9 +41,17 @@ class TripScreen extends StatefulWidget {
 class _TripScreenState extends State<TripScreen> {
   Trip trip;
   bool messageDeliveryButton = true;
+  Future<List<Object>> _suggestions;
+  bool isMine = false;
+
   @override
   void initState() {
     trip = widget.trip;
+    if (Provider.of<Auth>(context, listen: false).isAuth) if (trip.owner.id == Provider.of<Auth>(context, listen: false).user.id) isMine = true;
+    if (isMine)
+      _suggestions = fetchOrderSuggestions(trip.source.id.toString(), trip.destination.id.toString(), context);
+    else
+      _suggestions = fetchTripSuggestions(trip.source.id.toString(), trip.destination.id.toString(), context);
     super.initState();
   }
 
@@ -113,6 +125,60 @@ class _TripScreenState extends State<TripScreen> {
                                       ),
                                     )
                                   : ProgressIndicatorWidget(show: true),
+                          Text(
+                            isMine ? "Suggested Orders" : "Similar Trips:",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                          FutureBuilder<List<Object>>(
+                            future: _suggestions,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data.length == 1 || snapshot.data.length == 0) {
+                                  return Center(
+                                      child: Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: MediaQuery.of(context).size.height * 0.2,
+                                          padding: EdgeInsets.symmetric(horizontal: 40),
+                                          child: SvgPicture.asset(
+                                            "assets/photos/empty_order.svg",
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: Text(
+                                            //todo i18n
+                                            "No results",
+//                                    t(context, 'empty_results'),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 25,
+                                              color: Colors.grey[500],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ));
+                                } else
+                                  for (var x in snapshot.data) {
+                                    if (x != trip) {
+                                      if (x is Order) return OrderWidget(order: x);
+                                      return TripWidget(trip: x);
+                                    } else
+                                      return SizedBox();
+                                  }
+                              } else if (snapshot.hasError) {
+                                return Text("${snapshot.error}");
+                              }
+
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
