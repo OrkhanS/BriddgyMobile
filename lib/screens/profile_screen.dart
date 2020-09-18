@@ -192,11 +192,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    auth = Provider.of<Auth>(this.context, listen: false);
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   auth = Provider.of<Auth>(this.context, listen: false);
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {

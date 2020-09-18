@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
+import 'package:briddgy/models/order.dart';
 import 'package:briddgy/screens/profile_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -220,13 +221,13 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
   Widget build(BuildContext context) {
     Future postOrder() async{
         var token = Provider.of<Auth>(context, listen: false).token;
-        var orderstripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
+        var ordersTripsProvider = Provider.of<OrdersTripsProvider>(context, listen: false);
           
         if (errorInImageUpload) {
           setState(() {
             addItemButton = false;
           });
-          upload(orderId.toString(), token, orderstripsProvider, context);
+          upload(orderId.toString(), token, ordersTripsProvider, context);
         } else {
           String url = Api.orders;
           if (title == null || from == null || to == null || weight == null || price == null) {
@@ -264,14 +265,17 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                 })).then((response) {
                 if (response.statusCode == 201) {
                   Map data = json.decode(response.body);
-                  if(imageFiles.isNotEmpty) upload(data["id"].toString(), token, orderstripsProvider, context);
+                  if(imageFiles.isNotEmpty) upload(data["id"].toString(), token, ordersTripsProvider, context);
                   else{
                     setState(() {
                       addItemButton = true;
                     });
                       errorInImageUpload = false;
-                      orderstripsProvider.myorders = [];
-                      orderstripsProvider.isLoadingMyOrders = true;
+                      Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+                      data["source"]=data["sourceDetails"];
+                      data["destination"]=data["destinationDetails"];
+                      var order = Order.fromJson(data); 
+                      ordersTripsProvider.myorders.add(order);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
