@@ -290,6 +290,8 @@ class _MyAppState extends State<MyApp> {
         if (message.isChatsLoadingForMain && auth.isAuth && auth.user != null) message.fetchAndSetRooms(auth, false);
         if (!socketConnectedFirebase) _configureFirebaseListerners();
         if (auth.user != null && !socketConnected) initCommunication(auth, message);
+        if (auth.isAuth && orderstripsProvider.loadedMyOrders) orderstripsProvider.fetchAndSetMyOrders(auth.token);
+        if (auth.isAuth && orderstripsProvider.loadedMyTrips) orderstripsProvider.fetchAndSetMyTrips(auth.token);
         if (orderstripsProvider.isLoadingOrders && !orderstripsProvider.filtering) orderstripsProvider.fetchAndSetOrders();
         if (orderstripsProvider.isLoadingTrips && !orderstripsProvider.filtering) orderstripsProvider.fetchAndSetTrips();
         if (auth.isLoadingUserForMain && auth.token != null)
@@ -350,8 +352,6 @@ class _MyAppState extends State<MyApp> {
             ChatWindow.routeName: (ctx) => ChatWindow(),
             AddOrderScreen.routeName: (ctx) => AddOrderScreen(),
             AddTripScreen.routeName: (ctx) => AddTripScreen(),
-            MyOrderScreen.routeName: (ctx) => MyOrderScreen(),
-            MyTripsScreen.routeName: (ctx) => MyTripsScreen(),
             Contracts.routeName: (ctx) => Contracts(),
             AccountScreen.routeName: (ctx) => AccountScreen(),
           },

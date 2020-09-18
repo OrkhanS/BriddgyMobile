@@ -19,26 +19,14 @@ class OrdersTripsProvider with ChangeNotifier {
   List _mytrips = [];
   bool isLoadingOrders = true;
   bool isLoadingTrips = true;
-  bool isLoadingMyOrders = true;
-  bool isLoadingMyTrips = true;
+  bool loadedMyOrders = true;
+  bool loadedMyTrips = true;
   String token;
   Map allTripsDetails = {};
   Map allOrdersDetails = {};
   Map allMyOrderDetails = {};
   Map allMyTripsDetails = {};
   bool filtering = false;
-
-  bool get notLoadingOrders {
-    return isLoadingOrders;
-  }
-
-  bool get isloadingMyorders {
-    return isLoadingMyOrders;
-  }
-
-  bool get notLoaded {
-    return isLoadingTrips;
-  }
 
   List get orders {
     return _orders;
@@ -120,12 +108,12 @@ class OrdersTripsProvider with ChangeNotifier {
       },
     ).then((onValue) {
       Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
-
+      myorders = [];
       for (var i = 0; i < data["results"].length; i++) {
         myorders.add(Order.fromJson(data["results"][i]));
       }
       allMyOrderDetails = {"next": data["next"], "count": data["count"]};
-      isLoadingMyOrders = false;
+      loadedMyOrders = false;
       notifyListeners();
     });
   }
@@ -245,12 +233,11 @@ class OrdersTripsProvider with ChangeNotifier {
       },
     ).then((onValue) {
       Map<String, dynamic> data = json.decode(onValue.body) as Map<String, dynamic>;
+      mytrips = [];
+      for (var i = 0; i < data["results"].length; i++) mytrips.add(Trip.fromJson(data["results"][i]));
 
-      for (var i = 0; i < data["results"].length; i++) {
-        mytrips.add(Trip.fromJson(data["results"][i]));
-      }
       allMyTripsDetails = {"next": data["next"], "count": data["count"]};
-      isLoadingMyTrips = false;
+      loadedMyTrips = false;
       notifyListeners();
     });
   }
@@ -262,7 +249,7 @@ class OrdersTripsProvider with ChangeNotifier {
     _mytrips = [];
     isLoadingOrders = true;
     isLoadingTrips = true;
-    isLoadingMyOrders = true;
+    loadedMyOrders = true;
     token = null;
     allTripsDetails = {};
     allOrdersDetails = {};

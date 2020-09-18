@@ -326,7 +326,7 @@ class _AddTripScreenState extends State<AddTripScreen> {
                                   }))
                               .then((value) {
                             if (value.statusCode == 201) {
-                              widget.orderstripsProvider.isLoadingMyTrips = true;
+                              widget.orderstripsProvider.loadedMyTrips = true;
                               widget.orderstripsProvider.fetchAndSetMyTrips(widget.token);
                               Navigator.pop(context);
                               Navigator.push(

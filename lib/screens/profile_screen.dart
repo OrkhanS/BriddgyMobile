@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:briddgy/providers/ordersandtrips.dart';
 import 'package:briddgy/screens/account_screen.dart';
 import 'package:briddgy/screens/add_trip_screen.dart';
 import 'package:briddgy/widgets/components.dart';
@@ -52,13 +53,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List orders = [];
   List trips = [];
   bool messageButton = true;
-  var imageUrl;
   String url;
   Size size;
   bool picturePosting = false;
   var imageFile;
   String nextReviewURL = "FirstCall";
   Auth auth;
+  bool isMine = false;
 
   @override
   void initState() {
@@ -70,10 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     auth.fetchAndSetReviews(url);
     _reviews = [];
     _tabSelected = 1;
-    imageUrl = user.avatarpic == null ? Api.noPictureImage : Api.storageBucket + user.avatarpic.toString();
-//    if (Provider.of<Auth>(context))
-    loadOrders();
-    loadTrips();
+
     fetchAndSetStatistics();
     super.initState();
   }
@@ -195,7 +193,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void didChangeDependencies() {
     auth = Provider.of<Auth>(this.context, listen: false);
+    if (Provider.of<Auth>(context, listen: false).isAuth) if (user.id == Provider.of<Auth>(context, listen: false).user.id) isMine = true;
     super.didChangeDependencies();
+    if (isMine) {
+      orders = Provider.of<OrdersTripsProvider>(context).myorders;
+      trips = Provider.of<OrdersTripsProvider>(context).mytrips;
+    } else {
+      loadOrders();
+      loadTrips();
+    }
   }
 
   @override

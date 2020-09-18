@@ -120,7 +120,7 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
                         _loadData();
                       }
                     },
-                    child: orderstripsProvider.isLoadingMyTrips
+                    child: orderstripsProvider.loadedMyTrips
                         ? ListView(
                             children: <Widget>[
                               for (var i = 0; i < 5; i++) TripFadeWidget(),

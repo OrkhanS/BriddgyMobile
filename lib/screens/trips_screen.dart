@@ -337,7 +337,7 @@ class _TripScreenState extends State<TripsScreen> {
                                 ]),
                               ),
                               Expanded(
-                                child: orderstripsProvider.notLoaded != false
+                                child: orderstripsProvider.isLoadingTrips
                                     ? ListView(
                                         children: <Widget>[
                                           for (var i = 0; i < 10; i++) TripFadeWidget(),

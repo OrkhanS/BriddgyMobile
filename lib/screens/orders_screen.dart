@@ -346,7 +346,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 ]),
                               ),
                               Expanded(
-                                child: orderstripsProvider.notLoadingOrders
+                                child: orderstripsProvider.isLoadingOrders
                                     ? ListView(
                                         children: <Widget>[
                                           for (var i = 0; i < 10; i++) OrderFadeWidget(),

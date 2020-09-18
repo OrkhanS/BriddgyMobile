@@ -69,14 +69,14 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
         orderstripsProvider.myorders = [];
         orderstripsProvider.isLoadingMyOrders = true;
         Navigator.pop(context);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (__) => MyOrderScreen(
-                token: token,
-                orderstripsProvider: orderstripsProvider,
-              ),
-            ));
+//        Navigator.push(
+//            context,
+//            MaterialPageRoute(
+//              builder: (__) => MyOrderScreen(
+//                token: token,
+//                orderstripsProvider: orderstripsProvider,
+//              ),
+//            ));
         Flushbar(
           title: "${t(context, 'success')}!",
           message: t(context, 'item_added'),
@@ -100,14 +100,14 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
                   orderstripsProvider.myorders = [];
                   orderstripsProvider.isLoadingMyOrders = true;
                   Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (__) => MyOrderScreen(
-                          token: token,
-                          orderstripsProvider: orderstripsProvider,
-                        ),
-                      ));
+//                  Navigator.push(
+//                      context,
+//                      MaterialPageRoute(
+//                        builder: (__) => MyOrderScreen(
+//                          token: token,
+//                          orderstripsProvider: orderstripsProvider,
+//                        ),
+//                      ));
                 },
               ),
               FlatButton(
