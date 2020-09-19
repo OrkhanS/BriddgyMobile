@@ -556,216 +556,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                                 ),
                                               ),
                                             )
-                                          : Container(
-                                              width: MediaQuery.of(context).size.width * 0.75,
-                                              padding: EdgeInsets.all(20),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey[200],
-//                                          color: Theme.of(context).scaffoldBackgroundColor,
-                                                borderRadius: BorderRadius.circular(10),
-                                                border: Border.all(color: Colors.grey[500]),
-                                              ),
-                                              child: Column(
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 4),
-                                                    child: SvgPicture.asset(
-                                                      "assets/photos/handshake.svg",
-                                                      height: 100,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Text(
-                                                      t(context, 'contract_details'),
-                                                      style: TextStyle(
-                                                        fontSize: 22,
-                                                        color: Theme.of(context).primaryColor,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        t(context, 'contract_proposed_by'),
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height: 1,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        " ${_order.owner.firstName} ${_order.owner.lastName}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        t(context, 'order_owner'),
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(child: SizedBox()),
-                                                      Text(
-                                                        " ${_order.owner.firstName} ${_order.owner.lastName}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "${t(context, 'order')}: ",
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(
-                                                        child: SizedBox(),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          _order.title,
-                                                          style: TextStyle(fontSize: 15),
-                                                          textAlign: TextAlign.end,
-                                                          softWrap: false,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "${t(context, 'deliverer')}: ",
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(child: SizedBox()),
-                                                      Text(
-                                                        " ${_trip.owner.firstName} ${_trip.owner.lastName}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "${t(context, 'from')}:",
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(child: SizedBox()),
-                                                      Text(
-                                                        " ${_trip.source.cityAscii}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "${t(context, 'to')}:",
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(child: SizedBox()),
-                                                      Text(
-                                                        "${_trip.destination.cityAscii}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "${t(context, 'trip_date')}:",
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(child: SizedBox()),
-                                                      Text(
-                                                        DateFormat('d MMM yyyy').format(_trip.date),
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: <Widget>[
-                                                      Text(
-                                                        "${t(context, 'reward')}:",
-                                                        style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-                                                      ),
-                                                      Expanded(child: SizedBox()),
-                                                      Text(
-                                                        "\$${_order.price}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 5),
-                                                  if (contract["complete"] == null)
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                                      children: [
-                                                        RaisedButton(
-                                                          color: Colors.white,
-                                                          child: Text(
-                                                            t(context, 'reject'),
-                                                            style: TextStyle(color: Colors.red),
-                                                          ),
-                                                          onPressed: () {
-                                                            //todo orxan reject
-                                                          },
-                                                        ),
-                                                        RaisedButton(
-                                                          color: Colors.blue,
-                                                          child: Text(
-                                                            t(context, 'accept'),
-                                                            style: TextStyle(color: Colors.white),
-                                                          ),
-                                                          onPressed: () {
-                                                            final url = Api.applyForDelivery;
-                                                            http
-                                                                .put(
-                                                              url,
-                                                              headers: {
-                                                                HttpHeaders.contentTypeHeader: "application/json",
-                                                                "Authorization":
-                                                                    "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
-                                                              },
-                                                              body: json.encode(
-                                                                {'order': _order.id, 'trip': _trip.id, 'idOfmessage': _messages[index].id},
-                                                              ),
-                                                            )
-                                                                .then((response) {
-                                                              if (response.statusCode == 200) {
-                                                                print("Accepted");
-                                                                //todo Rasul
-                                                                // need to show that contract approved or how?
-
-                                                              } else {
-                                                                //todo Rasul
-                                                                // Here show an error message how you want
-                                                                // use  below code to give detailed
-
-                                                                print(json.decode(response.body)["detail"]);
-                                                              }
-                                                            });
-                                                          },
-                                                        ),
-                                                      ],
-                                                    )
-                                                  else
-                                                    Row(
-                                                      children: [
-                                                        Expanded(child: SizedBox()),
-                                                        Text(
-                                                          "Contract Accepted",
-                                                          style: TextStyle(color: Colors.green),
-                                                        ),
-                                                        Icon(Icons.check, color: Colors.green),
-                                                      ],
-                                                    ),
-                                                ],
-                                              ),
-                                            );
+                                          : ContractWidget(context, index);
 
                                       Widget message;
 
@@ -886,6 +677,218 @@ class _ChatWindowState extends State<ChatWindow> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Container ContractWidget(BuildContext context, int index) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.75,
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+//                                          color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey[500]),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: SvgPicture.asset(
+              "assets/photos/handshake.svg",
+              height: 100,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              t(context, 'contract_details'),
+              style: TextStyle(
+                fontSize: 22,
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                t(context, 'contract_proposed_by'),
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(
+                child: SizedBox(
+                  height: 1,
+                ),
+              ),
+              Text(
+                " ${_order.owner.firstName} ${_order.owner.lastName}",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                t(context, 'order_owner'),
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(child: SizedBox()),
+              Text(
+                " ${_order.owner.firstName} ${_order.owner.lastName}",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                "${t(context, 'order')}: ",
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(
+                child: SizedBox(),
+              ),
+              Expanded(
+                child: Text(
+                  _order.title,
+                  style: TextStyle(fontSize: 15),
+                  textAlign: TextAlign.end,
+                  softWrap: false,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                "${t(context, 'deliverer')}: ",
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(child: SizedBox()),
+              Text(
+                " ${_trip.owner.firstName} ${_trip.owner.lastName}",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                "${t(context, 'from')}:",
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(child: SizedBox()),
+              Text(
+                " ${_trip.source.cityAscii}",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                "${t(context, 'to')}:",
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(child: SizedBox()),
+              Text(
+                "${_trip.destination.cityAscii}",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                "${t(context, 'trip_date')}:",
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(child: SizedBox()),
+              Text(
+                DateFormat('d MMM yyyy').format(_trip.date),
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(
+                "${t(context, 'reward')}:",
+                style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+              ),
+              Expanded(child: SizedBox()),
+              Text(
+                "\$${_order.price}",
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          ),
+          SizedBox(height: 5),
+          if (contract["complete"] == null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                RaisedButton(
+                  color: Colors.white,
+                  child: Text(
+                    t(context, 'reject'),
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () {
+                    //todo orxan reject
+                  },
+                ),
+                RaisedButton(
+                  color: Colors.blue,
+                  child: Text(
+                    t(context, 'accept'),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    final url = Api.applyForDelivery;
+                    http
+                        .put(
+                      url,
+                      headers: {
+                        HttpHeaders.contentTypeHeader: "application/json",
+                        "Authorization": "Token " + Provider.of<Auth>(context, listen: false).myTokenFromStorage,
+                      },
+                      body: json.encode(
+                        {'order': _order.id, 'trip': _trip.id, 'idOfmessage': _messages[index].id},
+                      ),
+                    )
+                        .then((response) {
+                      if (response.statusCode == 200) {
+                        print("Accepted");
+                        //todo Rasul
+                        // need to show that contract approved or how?
+
+                      } else {
+                        //todo Rasul
+                        // Here show an error message how you want
+                        // use  below code to give detailed
+
+                        print(json.decode(response.body)["detail"]);
+                      }
+                    });
+                  },
+                ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                Expanded(child: SizedBox()),
+                Text(
+                  "Contract Accepted",
+                  style: TextStyle(color: Colors.green),
+                ),
+                Icon(Icons.check, color: Colors.green),
+              ],
+            ),
+        ],
       ),
     );
   }
