@@ -39,6 +39,7 @@ import 'localization/localization_constants.dart';
 import 'models/api.dart';
 
 void main() {
+  SharedPreferences.setMockInitialValues({});
   runApp(MyApp());
 }
 
@@ -71,6 +72,9 @@ class _MyAppState extends State<MyApp> {
   IOWebSocketChannel alertChannel;
 
   Locale _locale;
+  SharedPreferences sharedPreferences;
+
+
 
   PersistentTabController _controller = PersistentTabController(initialIndex: 0);
 
@@ -80,28 +84,52 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+
   @override
   void initState() {
     _currentIndex = 0;
     super.initState();
     getToken();
     _pageController = PageController(initialPage: 0);
+    // SharedPreferences.getInstance().then((SharedPreferences sp) {
+    //   sharedPreferences = sp;
+    //   // _testValue = sharedPreferences.getBool(spKey);
+    //   // // will be null if never previously saved
+    //   print("sp:");
+    //   print(sharedPreferences.getString("authData"));
+    //   setState(() {});
+    // });
   }
-
-  _configureFirebaseListerners() {
+   _configureFirebaseListerners() async {
     socketConnectedFirebase = true;
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, authProvider);
+        if(Platform.isIOS){
+          neWMessage.addMessages(json.encode(message), authProvider);
+        }
+        else{
+           neWMessage.addMessages(message.values.last, authProvider);
+        }
       },
       onLaunch: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, authProvider);
+        if(Platform.isIOS){
+          neWMessage.addMessages(json.encode(message), authProvider);
+        }
+        else{
+          neWMessage.addMessages(message.values.last, authProvider);
+        }
         setState(() {
           _controller.index = 2;
         });
       },
+      onBackgroundMessage: null,
       onResume: (Map<String, dynamic> message) async {
-        neWMessage.addMessages(message.values.last, authProvider);
+        if(Platform.isIOS){
+          neWMessage.addMessages(json.encode(message), authProvider);
+        }
+        else{
+          neWMessage.addMessages(message.values.last, authProvider);
+        }
         setState(() {
           _controller.index = 2;
         });

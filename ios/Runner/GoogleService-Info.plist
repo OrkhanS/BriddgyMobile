@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>824781282420-6g2r63fv6r1c6vi2430nf93r04u4gdp6.apps.googleusercontent.com</string>
+	<string>824781282420-2dmjj9s4v7qrck7pb0j14pd7g43mkb3j.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.824781282420-6g2r63fv6r1c6vi2430nf93r04u4gdp6</string>
+	<string>com.googleusercontent.apps.824781282420-2dmjj9s4v7qrck7pb0j14pd7g43mkb3j</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBifVKhOiD7u39QTPByXece5aK-d3jdgKc</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>life.optify.briddgy</string>
+	<string>life.optify.briddgy.iOS</string>
 	<key>PROJECT_ID</key>
 	<string>briddgy-ff554</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:824781282420:ios:9974d0c4962cbbe45c8521</string>
+	<string>1:824781282420:ios:29dd8b4abc3eb2e65c8521</string>
 	<key>DATABASE_URL</key>
 	<string>https://briddgy-ff554.firebaseio.com</string>
 </dict>

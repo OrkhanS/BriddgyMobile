@@ -271,7 +271,7 @@ class Auth with ChangeNotifier {
             'password2': password,
             'first_name': firstname,
             'last_name': lastname,
-            'deviceToken': "deviceID",
+            'deviceToken': deviceID,
           },
         ),
       );
@@ -326,8 +326,10 @@ class Auth with ChangeNotifier {
         },
       );
       prefs.setString('userData', userData);
+      // print(prefs.get("userData"));
       fetchAndSetUserDetails();
     } catch (error) {
+      print(error);
       throw error;
     }
   }
@@ -335,9 +337,12 @@ class Auth with ChangeNotifier {
   Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
+      // print("no user data in shared preference");
+
       return false;
     }
     final extractedUserData = json.decode(prefs.getString('userData')) as Map<String, Object>;
+    // print(prefs.getString('userData'));
     _token = extractedUserData['token'];
     myToken = extractedUserData['token'];
     myTokenFromStorage = extractedUserData['token'];
@@ -356,6 +361,7 @@ class Auth with ChangeNotifier {
         body: json.encode({"token": _token}));
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('userData');
+
     prefs.commit();
     prefs.clear();
     Provider.of<OrdersTripsProvider>(context, listen: false).removeAllDataOfProvider();

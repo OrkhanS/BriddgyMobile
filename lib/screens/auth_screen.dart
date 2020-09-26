@@ -8,16 +8,16 @@ import 'package:briddgy/screens/verify_email_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth.dart';
 import '../models/http_exception.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 import 'FirebaseMessaging.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: <String>['profile', 'email'],
-);
-GoogleSignInAccount _currentUser;
+// GoogleSignIn _googleSignIn = GoogleSignIn(
+//   scopes: <String>['profile', 'email'],
+// );
+// GoogleSignInAccount _currentUser;
 
 enum AuthMode { Signup, Login }
 
@@ -77,18 +77,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
     // TODO: implement initState
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      setState(() {
-        _currentUser = account;
-      });
-    });
-    _googleSignIn.signInSilently();
+    // _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+    //   setState(() {
+    //     _currentUser = account;
+    //   });
+    // });
+    // _googleSignIn.signInSilently();
   }
 
-  _getToken() {
-    _firebaseMessaging.getToken().then((device) {
-      deviceToken = device;
-    });
+  _getToken() async{
+    deviceToken = await _firebaseMessaging.getToken();
   }
 
   void _showErrorDialog(String message) {
@@ -501,7 +499,7 @@ class _AuthScreenState extends State<AuthScreen> {
 Widget _google() {
   Future<void> googleSignIN() async {
     try {
-      await _googleSignIn.signIn();
+      // await _googleSignIn.signIn();
     } catch (error) {
       print(error);
     }

@@ -90,6 +90,9 @@ class Messages extends ChangeNotifier {
   }
 
   addMessages(message, auth) {
+    if(Platform.isIOS){
+      message = json.decode(message);
+    }
     var tempMessage = Message.fromJson({
       "id": int.parse(message["session_id"]),
       "date_created": DateTime.now().toString(),
@@ -98,6 +101,7 @@ class Messages extends ChangeNotifier {
       "sender": int.parse(message["sender"]),
       "recipients": []
     });
+
     var roomid = message["room_id"];
     // Checking if ChatRoom is already exists
     try {

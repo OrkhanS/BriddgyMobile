@@ -278,36 +278,135 @@ class _TripScreenState extends State<TripsScreen> {
           body: SafeArea(
             child: Stack(
               children: <Widget>[
-                OfflineBuilder(
-                  connectivityBuilder: (
-                    BuildContext context,
-                    ConnectivityResult connectivity,
-                    Widget child,
-                  ) {
-                    final bool connected = connectivity != ConnectivityResult.none;
-                    if (!connected)
-                      connectionLost = true;
-                    else {
-                      if (connectionLost) {
-                        widget.orderstripsProvider.fetchAndSetOrders();
-                        widget.orderstripsProvider.fetchAndSetTrips();
-                        Provider.of<Messages>(context, listen: false).fetchAndSetRooms(widget.auth, false);
-                      }
-                    }
-                    return !connected
-                        ? OfflineWidget()
-                        : Column(
-                            children: <Widget>[
+//                 OfflineBuilder(
+//                   connectivityBuilder: (
+//                     BuildContext context,
+//                     ConnectivityResult connectivity,
+//                     Widget child,
+//                   ) {
+//                     final bool connected = connectivity != ConnectivityResult.none;
+//                     if (!connected)
+//                       connectionLost = true;
+//                     else {
+//                       if (connectionLost) {
+//                         widget.orderstripsProvider.fetchAndSetOrders();
+//                         widget.orderstripsProvider.fetchAndSetTrips();
+//                         Provider.of<Messages>(context, listen: false).fetchAndSetRooms(widget.auth, false);
+//                       }
+//                     }
+//                     return !connected
+//                         ? OfflineWidget()
+//                         : Column(
+//                             children: <Widget>[
+// //                    FilterBarTrip(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
+//                               Padding(
+//                                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
+//                                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+//                                   Text(
+//                                     orderstripsProvider.detailsTrip.isEmpty
+//                                         ? "${t(context, 'result_plural')}: 0"
+//                                         : "${t(context, 'result_plural')}: " + orderstripsProvider.detailsTrip["count"].toString(),
+//                                     style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
+//                                   ),
+// //                        DropdownButton(
+// //                          hint: Text(_value),
+// //                          items: [
+// //                            DropdownMenuItem(
+// //                              value: 0,
+// //                              child: Text(
+// //                                "Reset",
+// //                              ),
+// //                            ),
+// //                            DropdownMenuItem(
+// //                              value: 1,
+// //                              child: Text(
+// //                                "Ranking",
+// //                              ),
+// //                            ),
+// //                            DropdownMenuItem(
+// //                              value: 2,
+// //                              child: Text(
+// //                                "Weight",
+// //                              ),
+// //                            ),
+// //                          ],
+// //                          onChanged: (value) {
+// //                            sortData(value, orderstripsProvider);
+// //                          },
+// //                        ),
+//                                 ]),
+//                               ),
+//                               Expanded(
+//                                 child: orderstripsProvider.isLoadingTrips
+//                                     ? ListView(
+//                                         children: <Widget>[
+//                                           for (var i = 0; i < 10; i++) TripFadeWidget(),
+//                                         ],
+//                                       )
+//                                     : NotificationListener<ScrollNotification>(
+//                                         onNotification: (ScrollNotification scrollInfo) {
+//                                           if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+//                                             // start loading data
+//                                             setState(() {
+//                                               _isfetchingnew = true;
+//                                             });
+//                                             _loadData();
+//                                           }
+//                                         },
+//                                         child: _trips.length == 0
+//                                             ? Center(
+//                                                 child: Padding(
+//                                                 padding: const EdgeInsets.all(20.0),
+//                                                 child: Column(
+//                                                   children: [
+//                                                     Container(
+//                                                       height: MediaQuery.of(context).size.height * 0.4,
+//                                                       padding: EdgeInsets.symmetric(horizontal: 40),
+//                                                       child: SvgPicture.asset(
+//                                                         "assets/photos/empty_order.svg",
+//                                                       ),
+//                                                     ),
+//                                                     Spacer(),
+//                                                     Padding(
+//                                                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
+//                                                       child: Text(
+//                                                         t(context, 'empty_results'),
+//                                                         textAlign: TextAlign.center,
+//                                                         style: TextStyle(
+//                                                           fontSize: 25,
+//                                                           color: Colors.grey[500],
+//                                                         ),
+//                                                       ),
+//                                                     ),
+//                                                     Spacer(),
+//                                                   ],
+//                                                 ),
+//                                               ))
+//                                             : ListView.builder(
+//                                                 itemBuilder: (context, int i) {
+//                                                   return TripWidget(trip: _trips[i], i: i);
+//                                                 },
+//                                                 itemCount: _trips == null ? 0 : _trips.length,
+//                                               ),
+//                                       ),
+//                               ),
+//                             ],
+//                           );
+//                   },
+//                   child: SizedBox(),
+//                 ),
+                Column(
+                  children: <Widget>[
 //                    FilterBarTrip(ordersProvider: widget.orderstripsProvider, from: from, to: to, weight: weight),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                                  Text(
-                                    orderstripsProvider.detailsTrip.isEmpty
-                                        ? "${t(context, 'result_plural')}: 0"
-                                        : "${t(context, 'result_plural')}: " + orderstripsProvider.detailsTrip["count"].toString(),
-                                    style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
-                                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                        Text(
+                          orderstripsProvider.detailsTrip.isEmpty
+                              ? "${t(context, 'result_plural')}: 0"
+                              : "${t(context, 'result_plural')}: " + orderstripsProvider.detailsTrip["count"].toString(),
+                          style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.bold),
+                        ),
 //                        DropdownButton(
 //                          hint: Text(_value),
 //                          items: [
@@ -334,66 +433,63 @@ class _TripScreenState extends State<TripsScreen> {
 //                            sortData(value, orderstripsProvider);
 //                          },
 //                        ),
-                                ]),
-                              ),
-                              Expanded(
-                                child: orderstripsProvider.isLoadingTrips
-                                    ? ListView(
-                                        children: <Widget>[
-                                          for (var i = 0; i < 10; i++) TripFadeWidget(),
-                                        ],
-                                      )
-                                    : NotificationListener<ScrollNotification>(
-                                        onNotification: (ScrollNotification scrollInfo) {
-                                          if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-                                            // start loading data
-                                            setState(() {
-                                              _isfetchingnew = true;
-                                            });
-                                            _loadData();
-                                          }
-                                        },
-                                        child: _trips.length == 0
-                                            ? Center(
-                                                child: Padding(
-                                                padding: const EdgeInsets.all(20.0),
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      height: MediaQuery.of(context).size.height * 0.4,
-                                                      padding: EdgeInsets.symmetric(horizontal: 40),
-                                                      child: SvgPicture.asset(
-                                                        "assets/photos/empty_order.svg",
-                                                      ),
-                                                    ),
-                                                    Spacer(),
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                                      child: Text(
-                                                        t(context, 'empty_results'),
-                                                        textAlign: TextAlign.center,
-                                                        style: TextStyle(
-                                                          fontSize: 25,
-                                                          color: Colors.grey[500],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Spacer(),
-                                                  ],
-                                                ),
-                                              ))
-                                            : ListView.builder(
-                                                itemBuilder: (context, int i) {
-                                                  return TripWidget(trip: _trips[i], i: i);
-                                                },
-                                                itemCount: _trips == null ? 0 : _trips.length,
-                                              ),
+                      ]),
+                    ),
+                    Expanded(
+                      child: orderstripsProvider.isLoadingTrips
+                          ? ListView(
+                        children: <Widget>[
+                          for (var i = 0; i < 10; i++) TripFadeWidget(),
+                        ],
+                      )
+                          : NotificationListener<ScrollNotification>(
+                        onNotification: (ScrollNotification scrollInfo) {
+                          if (!_isfetchingnew && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                            // start loading data
+                            setState(() {
+                              _isfetchingnew = true;
+                            });
+                            _loadData();
+                          }
+                        },
+                        child: _trips.length == 0
+                            ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height * 0.4,
+                                    padding: EdgeInsets.symmetric(horizontal: 40),
+                                    child: SvgPicture.asset(
+                                      "assets/photos/empty_order.svg",
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                    child: Text(
+                                      t(context, 'empty_results'),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 25,
+                                        color: Colors.grey[500],
                                       ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                ],
                               ),
-                            ],
-                          );
-                  },
-                  child: SizedBox(),
+                            ))
+                            : ListView.builder(
+                          itemBuilder: (context, int i) {
+                            return TripWidget(trip: _trips[i], i: i);
+                          },
+                          itemCount: _trips == null ? 0 : _trips.length,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 ProgressIndicatorWidget(
                   show: _isfetchingnew,
